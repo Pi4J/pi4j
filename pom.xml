@@ -260,11 +260,11 @@
         org.apache.tools.ant.util.FileUtils.getFileUtils()
         -->
         <ant-contrib.version>20020829</ant-contrib.version>
-        <ant-jsch.version>1.10.8</ant-jsch.version>
+        <ant-jsch.version>1.10.15</ant-jsch.version>
         <jsch.version>0.1.55</jsch.version>
-        <junit.jupiter.version>5.10.2</junit.jupiter.version>
+        <junit.jupiter.version>5.11.3</junit.jupiter.version>
         <slf4j.version>2.0.12</slf4j.version>
-        <jserialcomm.version>2.10.4</jserialcomm.version>
+        <jserialcomm.version>2.11.0</jserialcomm.version>
 
         <!-- PLUGIN VERSIONS -->
         <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
