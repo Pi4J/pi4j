@@ -268,7 +268,7 @@
 
         <!-- PLUGIN VERSIONS -->
         <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
-        <exec-maven-plugin.version>3.2.0</exec-maven-plugin.version>
+        <exec-maven-plugin.version>3.5.0</exec-maven-plugin.version>
         <jdeb.version>1.8</jdeb.version>
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
@@ -708,6 +708,28 @@
 
         <!-- GLOBAL BUILD PLUGINS (used when building all modules) -->
 		<plugins>
+            <!-- SPECIFY MINIMAL MAVEN VERSION -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>[3.9,)</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
 			<!-- USE LATEST SCM PLUGIN TO SUPPORT GIT -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
