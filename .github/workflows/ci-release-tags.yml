@@ -14,11 +14,6 @@ jobs:
     - uses: actions/checkout@v4
     - name: Get latest Docker image
       run: docker pull pi4j/pi4j-builder:2.0
-    - name: Validating Java and Maven versions
-      env:
-        MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-        MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-      run: docker run --env MAVEN_USERNAME=$MAVEN_USERNAME --env MAVEN_PASSWORD=$MAVEN_PASSWORD --user "$(id -u):$(id -g)" --rm --volume $(pwd):/build pi4j/pi4j-builder:2.0 -v
     - name: Build entire Pi4J Project in Docker
       env:
         MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
