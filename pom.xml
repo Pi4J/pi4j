@@ -3,17 +3,17 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.pi4j</groupId>
 	<artifactId>pi4j-parent</artifactId>
-	<version>2.7.0-SNAPSHOT</version>
+	<version>3.0.0-SNAPSHOT</version>
 	<name>Pi4J :: Parent POM</name>
 	<description>Parent Maven POM for the Pi4J Project</description>
-	<url>https://v2.pi4j.com</url>
+	<url>https://pi4j.com</url>
 	<inceptionYear>2012</inceptionYear>
 	<packaging>pom</packaging>
 
 	<!-- ORGANIZATION -->
 	<organization>
 		<name>Pi4J</name>
-		<url>https://v2.pi4j.com</url>
+		<url>https://pi4j.com</url>
 	</organization>
 
 	<!-- LICENSE -->
@@ -111,14 +111,14 @@
 
 	<!-- SOURCE CONTROL -->
 	<scm>
-		<developerConnection>scm:git:ssh://git@github.com/Pi4J/pi4j-v2.git</developerConnection>
-		<connection>scm:git:ssh://git@github.com/Pi4J/pi4j-v2.git</connection>
-		<url>https://github.com/Pi4J/pi4j-v2.git</url>
+		<developerConnection>scm:git:ssh://git@github.com/Pi4J/pi4j.git</developerConnection>
+		<connection>scm:git:ssh://git@github.com/Pi4J/pi4j.git</connection>
+		<url>https://github.com/Pi4J/pi4j.git</url>
 	</scm>
 
 	<!-- ISSUE MANAGEMENT -->
 	<issueManagement>
-		<url>https://github.com/Pi4J/pi4j-v2/issues</url>
+		<url>https://github.com/Pi4J/pi4j/issues</url>
 		<system>github</system>
 	</issueManagement>
 
@@ -249,7 +249,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- JAVA COMPILER VERSIONS -->
-        <java.version>11</java.version>
+        <java.version>21</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 

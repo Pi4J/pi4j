@@ -4,7 +4,7 @@
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.pi4j/pi4j-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.pi4j/pi4j-core)
 [![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/com.pi4j/pi4j-core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/#nexus-search;gav~com.pi4j~~~~)
-[![License](https://img.shields.io/github/license/pi4j/pi4j-v2)](http://www.apache.org/licenses/LICENSE-2.0)
+[![License](https://img.shields.io/github/license/pi4j/pi4j)](http://www.apache.org/licenses/LICENSE-2.0)
 
 [![Site](https://img.shields.io/badge/Website-pi4j.com-green)](https://pi4j.com)
 [![Chat on Slack](https://img.shields.io/badge/Chat-on%20Slack-blue)](https://join.slack.com/t/pi4j/shared_invite/zt-1ttqt8wgj-E6t69qaLrNuCMPLiYnBCsg)
@@ -24,8 +24,8 @@ This project is intended to provide a **friendly object-oriented I/O API and imp
 
 ![Pi4J diagram](https://pi4j.com/assets/about/home/pi4j-overview.jpg)
 
-* Pi4J V2 Discussions: [github.com/Pi4J/pi4j-v2/discussions](https://github.com/Pi4J/pi4j-v2/discussions)
-* Pi4J V2 issues: [github.com/Pi4J/pi4j-v2/issues](https://github.com/Pi4J/pi4j-v2/issues)
+* Pi4J V2 Discussions: [github.com/Pi4J/pi4j/discussions](https://github.com/Pi4J/pi4j/discussions)
+* Pi4J V2 issues: [github.com/Pi4J/pi4j/issues](https://github.com/Pi4J/pi4j/issues)
 
 Builds are available from:
 
@@ -60,7 +60,7 @@ while (true) {
 For full description of the code structure, how to compile... see
 the ["About the code" on our website](https://pi4j.com/architecture/about-the-code/).
 
-![Pi4J V2 code structure](assets/draw.io/pi4j-v2-code-structure.jpg)
+![Pi4J V2 code structure](assets/draw.io/pi4j-code-structure.jpg)
 
 ### Project Overview
 
@@ -68,7 +68,7 @@ Starting with the Pi4J 2.0 builds, the Pi4J project is prioritizing focus
 on providing Java programs access, control and communication with the core
 I/O capabilities of the Raspberry Pi platform.
 
-Read all about it on [pi4j.com: "What’s New in 2.0?"](https://pi4j.com/about/new-in-v2/).
+Read all about it on [pi4j.com: "What’s New in 2.0?"](https://pi4j.com/about/new-in/).
 
 ### Build Instructions
 
@@ -109,10 +109,10 @@ with your experience, ideas, and what you would like to contribute to the projec
 
 * **Releases**
   * V1: [github.com/Pi4J/pi4j-v1/releases](https://github.com/Pi4J/pi4j-v1/releases) (archived)
-  * V2: [github.com/Pi4J/pi4j-v2/releases](https://github.com/Pi4J/pi4j-v2/releases)
+  * V2: [github.com/Pi4J/pi4j/releases](https://github.com/Pi4J/pi4j/releases)
 * **Source Code**: 
   * V1: [github.com/Pi4J/pi4j-v1/branches](https://github.com/Pi4J/pi4j-v1/branches) (archived)
-  * V2: [github.com/Pi4J/pi4j-v2/branches](https://github.com/Pi4J/pi4j-v2/branches)
+  * V2: [github.com/Pi4J/pi4j/branches](https://github.com/Pi4J/pi4j/branches)
 
 ## License
 
