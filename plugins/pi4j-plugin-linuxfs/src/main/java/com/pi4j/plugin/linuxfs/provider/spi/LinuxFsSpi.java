@@ -102,7 +102,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
     private final byte 	SPI_MODE_2	=	(SPI_CPOL|0);
     private final byte 	SPI_MODE_3	=	(SPI_CPOL|SPI_CPHA);
 
-    private final static String SPI_DEVICE_BASE = "/dev/spidev0.";
+    private final static String SPI_DEVICE_BASE = "/dev/spidev";
     private final LinuxLibC libc = LinuxLibC.INSTANCE;
     private int fd;
 
@@ -114,7 +114,13 @@ public class LinuxFsSpi extends SpiBase implements Spi {
     public void open() {
         super.open();
 
-        String spiDev = SPI_DEVICE_BASE + config().bus().getBus();
+        // From the docs (https://www.kernel.org/doc/html/v6.12/spi/spidev.html):
+        // For a SPI device with chipselect C on bus B, you should see:
+        //
+        // /dev/spidevB.C ...
+        //    character special device, major number 153 with a dynamically chosen minor device number.
+        //    This is the node that userspace programs will open, created by “udev” or “mdev”.
+        String spiDev = SPI_DEVICE_BASE + config().bus().getBus() + "." + config().getChipSelect().getChipSelect();
         fd = libc.open(spiDev, LinuxLibC.O_RDWR);
         if (fd < 0) {
             throw new RuntimeException("Failed to open SPI device " + spiDev);
