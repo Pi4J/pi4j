@@ -27,7 +27,6 @@ package com.pi4j.plugin.raspberrypi.provider.spi;
  * #L%
  */
 
-import com.pi4j.io.exception.IOAlreadyExistsException;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.io.spi.SpiProviderBase;

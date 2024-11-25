@@ -31,6 +31,7 @@ package com.pi4j.io.gpio.analog;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <ANALOG_TYPE>
  */
 public class AnalogValueChangeEvent<ANALOG_TYPE extends Analog> implements AnalogEvent {
 

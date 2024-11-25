@@ -156,7 +156,7 @@ public interface PiGpio_Serial {
     /**
      * This function writes multiple bytes from the byte buffer to the serial device
      * associated with the handle from the given offset index to the specified length.
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is not
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -183,7 +183,7 @@ public interface PiGpio_Serial {
     /**
      * This function writes multiple bytes from the byte buffer to the serial device
      * associated with the handle from the current buffer position to the specified length.
-     *
+     * <p>
      * NOTE:  The contents from the byte buffer is read
      *        from the current position index up to the length
      *        requested or up to the buffer's remaining limit;
@@ -214,7 +214,7 @@ public interface PiGpio_Serial {
      * This function writes multiple bytes from the byte buffer to the serial device
      * associated with the handle.  The contents of the byte buffer are written from
      * the buffer's current position to the buffer's limit.
-     *
+     * <p>
      * NOTE:  The contents from the byte buffer is read
      *        from the current position index up to the buffer's
      *        remaining limit.  If the buffer's current position
@@ -385,7 +385,7 @@ public interface PiGpio_Serial {
     /**
      * Read data from the serial device into the provided byte buffer at the given
      * offset and up to the specified data length (number of bytes).
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is not
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -428,7 +428,7 @@ public interface PiGpio_Serial {
     /**
      * Read data from the serial device into the provided byte buffer starting
      * with the current buffer position to the provided length.
-     *
+     * <p>
      * NOTE:  The data bytes read from the serial device are copied/
      *        inserted into the byte buffer starting at the current
      *        position index up to the length requested or up to the
@@ -459,7 +459,7 @@ public interface PiGpio_Serial {
     /**
      * Read data from the serial device into the provided byte buffer starting with
      * the buffer's current position up to available space remaining in the buffer.
-     *
+     * <p>
      * NOTE:  The data bytes read from the serial device are copied/
      *        inserted into the byte buffer starting at the current
      *        position index up to the buffer's remaining limit. If

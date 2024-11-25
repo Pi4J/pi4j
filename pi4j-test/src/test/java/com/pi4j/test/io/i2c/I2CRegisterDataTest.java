@@ -68,7 +68,7 @@ public class I2CRegisterDataTest {
         // An auto context enabled AUTO-DETECT loading
         // which will load any detected Pi4J extension
         // libraries (Platforms and Providers) from the class path
-        pi4j = Pi4J.newAutoContext();
+        pi4j = Pi4J.newContextBuilder().autoDetectMockPlugins().autoDetectPlatforms().build();
     }
 
     @AfterAll

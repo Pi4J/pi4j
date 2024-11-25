@@ -377,7 +377,7 @@ public class PiGpioPacket {
 
     /**
      * The packet may indicate the number of bytes to expect from the stream.
-     *
+     * <p>
      * E.g. I2C packets provide this value via {@link PiGpioPacket#p3}
      *
      * @param packet the packet being read

@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <T>
  */
 public abstract class IdentityBase<T> implements Extension<T> {
 

@@ -27,7 +27,6 @@ package com.pi4j.plugin.mock.provider.pwm;
  * #L%
  */
 
-import com.pi4j.io.exception.IOAlreadyExistsException;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.pwm.PwmProviderBase;

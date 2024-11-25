@@ -28,7 +28,6 @@ package com.pi4j.plugin.linuxfs.provider.i2c;
  */
 
 
-import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.context.Context;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.i2c.I2C;

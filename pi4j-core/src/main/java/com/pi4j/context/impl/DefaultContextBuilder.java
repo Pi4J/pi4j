@@ -87,7 +87,7 @@ public class DefaultContextBuilder implements ContextBuilder {
     @Override
     public ContextBuilder add(Platform... platform) {
         if(platform != null && platform.length > 0)
-            this.platforms.addAll(Arrays.asList(platform));
+            this.platforms.addAll(List.of(platform));
         return this;
     }
 
@@ -95,7 +95,7 @@ public class DefaultContextBuilder implements ContextBuilder {
     @Override
     public ContextBuilder add(Provider... provider) {
         if(provider != null && provider.length > 0)
-            this.providers.addAll(Arrays.asList(provider));
+            this.providers.addAll(List.of(provider));
         return this;
     }
 

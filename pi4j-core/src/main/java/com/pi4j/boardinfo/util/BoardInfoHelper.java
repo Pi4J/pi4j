@@ -62,7 +62,8 @@ public class BoardInfoHelper {
 
     /**
      * Flag indicating that the board is using the RP1 chip for GPIO.
-     * https://www.raspberrypi.com/documentation/microcontrollers/rp1.html
+     * <a href="https://www.raspberrypi.com/documentation/microcontrollers/rp1.html">https://www.raspberrypi.com/documentation/microcontrollers/rp1.html</a>
+     * @return
      */
     public static boolean usesRP1() {
         return instance.boardInfo.getBoardModel() == BoardModel.MODEL_5_B;

@@ -52,6 +52,7 @@ public class DefaultDigitalInputConfigBuilder
     /**
      * <p>newInstance.</p>
      *
+     * @param context
      * @return a {@link com.pi4j.io.gpio.digital.DigitalInputConfigBuilder} object.
      */
     public static DigitalInputConfigBuilder newInstance(Context context) {

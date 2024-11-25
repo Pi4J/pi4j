@@ -53,6 +53,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <PLATFORM>
  */
 public abstract class PlatformBase<PLATFORM extends Platform>
         extends ExtensionBase<Platform>

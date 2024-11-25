@@ -51,6 +51,8 @@ public class LinuxFsPwmProviderImpl extends PwmProviderBase implements LinuxFsPw
 
     /**
      * <p>Constructor for LinuxFsPwmProviderImpl.</p>
+     * @param pwmFileSystemPath
+     * @param pwmChip
      */
     public LinuxFsPwmProviderImpl(String pwmFileSystemPath, int pwmChip) {
         this.id = ID;
@@ -67,6 +69,7 @@ public class LinuxFsPwmProviderImpl extends PwmProviderBase implements LinuxFsPw
 
     /**
      * <p>Constructor for LinuxFsPwmProviderImpl.</p>
+     * @param pwmFileSystemPath
      */
     public LinuxFsPwmProviderImpl(String pwmFileSystemPath) {
         this.id = ID;

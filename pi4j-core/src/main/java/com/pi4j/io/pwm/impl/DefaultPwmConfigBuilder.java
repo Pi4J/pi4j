@@ -54,6 +54,7 @@ public class DefaultPwmConfigBuilder
     /**
      * <p>newInstance.</p>
      *
+     * @param context
      * @return a {@link com.pi4j.io.pwm.PwmConfigBuilder} object.
      */
     public static PwmConfigBuilder newInstance(Context context) {

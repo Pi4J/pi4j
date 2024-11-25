@@ -38,7 +38,7 @@ import java.util.Collection;
  * I2C Register Data Writer Interface for Pi4J Data Communications
  *
  * @author Robert Savage
- *
+ * <p>
  * Based on previous contributions from:
  *        Daniel Sendula,
  *        <a href="http://raspelikan.blogspot.co.at">RasPelikan</a>
@@ -196,7 +196,7 @@ public interface I2CRegisterDataWriter {
     /**
      * Write a buffer of byte values starting from a given offset index in the
      * array up to the provided length to a specific I2C device register.
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is no
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -224,7 +224,7 @@ public interface I2CRegisterDataWriter {
     /**
      * Write a buffer of byte values starting from the first byte in the buffer
      * up to the provided length to a specific I2C device register.
-     *
+     * <p>
      * NOTE:  The contents from the byte buffer is read
      *        from the current position index up to the length
      *        requested or up to the buffer's remaining limit;
@@ -253,7 +253,7 @@ public interface I2CRegisterDataWriter {
 
     /**
      * Write a buffer of byte values (all bytes in buffer) to a specific I2C device register.
-     *
+     * <p>
      * NOTE:  The contents from the byte buffer is read
      *        from the current position index up to the buffer's
      *        remaining limit.  If the buffer's current position
@@ -278,7 +278,7 @@ public interface I2CRegisterDataWriter {
 
     /**
      * Write multiple byte buffers to a specific I2C device register.
-     *
+     * <p>
      * NOTE:  The contents from each byte buffer is read
      *        from the current position index up to the buffer's
      *        remaining limit.  If the buffer's current position
@@ -615,7 +615,7 @@ public interface I2CRegisterDataWriter {
     /**
      * Writes a character buffer with a given offset and length using a specified
      * character set to encode the chars into bytes to a specific I2C device register.
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is no
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -646,7 +646,7 @@ public interface I2CRegisterDataWriter {
     /**
      * Write a character buffer starting at first index to a given length using
      * a specified character set to encode the chars into bytes to a specific I2C device register.
-     *
+     * <p>
      * NOTE:  The contents from the character buffer is read
      *        from the current position index up to the length
      *        requested or up to the buffer's remaining limit;
@@ -677,7 +677,7 @@ public interface I2CRegisterDataWriter {
     /**
      * Write a character buffer using a specified character set
      * to encode the chars into bytes to a specific I2C device register.
-     *
+     * <p>
      * NOTE:  The contents from the character buffer is read
      *        from the current position index up to the buffer's
      *        remaining limit.  If the buffer's current position
@@ -704,7 +704,7 @@ public interface I2CRegisterDataWriter {
     /**
      * Writes multiple character buffers using a specified character
      * set to encode the chars into bytes to a specific I2C device register.
-     *
+     * <p>
      * NOTE:  The contents from each character buffer is read
      *        from the current position index up to the buffer's
      *        remaining limit.  If the buffer's current position

@@ -24,6 +24,11 @@
  */
 module com.pi4j {
 
+    // for tests
+    opens com.pi4j.boardinfo.definition;
+    opens com.pi4j.boardinfo.model;
+    opens com.pi4j.boardinfo.util;
+
     // depends on SLF4J
     requires org.slf4j;
 

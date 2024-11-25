@@ -67,7 +67,7 @@ public class PiGpioDigitalInput extends DigitalInputBase implements DigitalInput
 
     /**
      * PIGPIO Pin Change Event Handler
-     *
+     * <p>
      * This listener implementation will forward pin change events received from PIGPIO
      * to registered Pi4J 'DigitalChangeEvent' event listeners on this digital pin.
      */

@@ -49,6 +49,7 @@ public class DefaultAnalogInputConfigBuilder
     /**
      * <p>newInstance.</p>
      *
+     * @param context
      * @return a {@link com.pi4j.io.gpio.analog.AnalogInputConfigBuilder} object.
      */
     public static AnalogInputConfigBuilder newInstance(Context context) {

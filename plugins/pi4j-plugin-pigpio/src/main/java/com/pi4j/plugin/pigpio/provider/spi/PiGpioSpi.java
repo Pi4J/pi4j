@@ -53,22 +53,22 @@ public class PiGpioSpi extends SpiBase implements Spi {
      * @param piGpio a {@link com.pi4j.library.pigpio.PiGpio} object.
      * @param provider a {@link com.pi4j.io.spi.SpiProvider} object.
      * @param config a {@link com.pi4j.io.spi.SpiConfig} object.
-     *
+     * <p>
      * ------------------------------------------------------------------
      * spiFlags consists of the least significant 22 bits.
      * ------------------------------------------------------------------
      * 21 20 19 18 17 16 15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0
      *  b  b  b  b  b  b  R  T  n  n  n  n  W  A u2 u1 u0 p2 p1 p0  m  m
-     *
+     * <p>
      * [mm]     defines the SPI mode.
      *          Warning: modes 1 and 3 do not appear to work on the auxiliary SPI.
-     *
+     * <p>
      *          Mode POL PHA
      *           0    0   0
      *           1    0   1
      *           2    1   0
      *           3    1   1
-     *
+     * <p>
      * [px]     is 0 if CEx is active low (default) and 1 for active high.
      * [ux]     is 0 if the CEx GPIO is reserved for SPI (default) and 1 otherwise.
      * [A]      is 0 for the main SPI, 1 for the auxiliary SPI.

@@ -46,6 +46,7 @@ public class LinuxFsDigitalInputProviderImpl extends DigitalInputProviderBase im
 
     /**
      * <p>Constructor for LinuxFsDigitalInputProviderImpl.</p>
+     * @param gpioFileSystemPath
      */
     public LinuxFsDigitalInputProviderImpl(String gpioFileSystemPath) {
         this.id = ID;

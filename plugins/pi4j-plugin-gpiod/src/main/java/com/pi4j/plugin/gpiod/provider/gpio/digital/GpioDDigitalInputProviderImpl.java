@@ -1,7 +1,6 @@
 package com.pi4j.plugin.gpiod.provider.gpio.digital;
 
 
-import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.ShutdownException;

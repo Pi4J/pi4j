@@ -87,7 +87,7 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      *
      * Initializes the library.
      * (The Java implementation of this function does not return a value)
-     *
+     * <p>
      * gpioInitialise must be called before using the other library functions with the following exceptions:
      * - gpioCfg*
      * - gpioVersion
@@ -134,7 +134,7 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      * {@inheritDoc}
      *
      * Shutdown the library.
-     *
+     * <p>
      * Returns nothing.
      * Call before program exit.
      * This function resets the used DMA channels, releases memory, and terminates any running threads.
@@ -174,16 +174,16 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      * {@inheritDoc}
      *
      * Returns the hardware revision.
-     *
+     * <p>
      * If the hardware revision can not be found or is not a valid hexadecimal number the function returns 0.
      * The hardware revision is the last few characters on the Revision line of /proc/cpuinfo.
      * The revision number can be used to determine the assignment of GPIO to pins (see gpio).
-     *
+     * <p>
      * There are at least three types of board.
      *  - Type 1 boards have hardware revision numbers of 2 and 3.
      *  - Type 2 boards have hardware revision numbers of 4, 5, 6, and 15.
      *  - Type 3 boards have hardware revision numbers of 16 or greater.
-     *
+     * <p>
      *     for "Revision : 0002" the function returns 2.
      *     for "Revision : 000f" the function returns 15.
      *     for "Revision : 000g" the function returns 0.
@@ -243,7 +243,7 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      * {@inheritDoc}
      *
      * Sets the GPIO mode, typically input or output.
-     *
+     * <p>
      * gpio: 0-53
      * mode: 0-7
      * @see <a href="http://abyz.me.uk/rpi/pigpio/cif.html#gpioSetMode">PIGPIO::gpioSetMode</a>
@@ -296,17 +296,17 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      * {@inheritDoc}
      *
      * Sets a glitch filter on a GPIO.  (AKA Debounce)
-     *
+     * <p>
      * Level changes on the GPIO are not reported unless the level has been stable for at
      * least 'steady' microseconds. The level is then reported. Level changes of less
      * than 'steady' microseconds are ignored.
-     *
+     * <p>
      * This filter affects the GPIO samples returned to callbacks set up with:
      *  - gpioSetAlertFunc
      *  - gpioSetAlertFuncEx
      *  - gpioSetGetSamplesFunc
      *  - gpioSetGetSamplesFuncEx.
-     *
+     * <p>
      * It does not affect interrupts set up with gpioSetISRFunc, gpioSetISRFuncEx, or
      * levels read by gpioRead, gpioRead_Bits_0_31, or gpioRead_Bits_32_53.
      * Each (stable) edge will be timestamped steady microseconds after it was first detected.
@@ -326,11 +326,11 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      * {@inheritDoc}
      *
      * Sets a noise filter on a GPIO.
-     *
+     * <p>
      * Level changes on the GPIO are ignored until a level which has been stable for 'steady'
      * microseconds is detected. Level changes on the GPIO are then reported for 'active'
      * microseconds after which the process repeats.
-     *
+     * <p>
      * This filter affects the GPIO samples returned to callbacks set up with:
      *  - gpioSetAlertFunc
      *  - gpioSetAlertFuncEx
@@ -338,7 +338,7 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      *  - gpioSetGetSamplesFuncEx.     *
      * It does not affect interrupts set up with gpioSetISRFunc, gpioSetISRFuncEx, or
      * levels read by gpioRead, gpioRead_Bits_0_31, or gpioRead_Bits_32_53.
-     *
+     * <p>
      * Level changes before and after the active period may be reported.
      * Your software must be designed to cope with such reports.
      * @see <a href="http://abyz.me.uk/rpi/pigpio/cif.html#gpioGlitchFilter">PIGPIO::gpioGlitchFilter</a>
@@ -364,7 +364,7 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      * {@inheritDoc}
      *
      * Starts PWM on the GPIO, dutycycle between 0 (off) and range (fully on). Range defaults to 255.
-     *
+     * <p>
      * This and the servo functionality use the DMA and PWM or PCM peripherals to control and schedule
      * the pulse lengths and duty cycles.
      * @see <a href="http://abyz.me.uk/rpi/pigpio/cif.html#gpioPWM">PIGPIO::gpioPWM</a>
@@ -384,11 +384,11 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      * {@inheritDoc}
      *
      * Returns the PWM dutycycle setting for the GPIO.
-     *
+     * <p>
      * For normal PWM the dutycycle will be out of the defined range for the GPIO (see gpioGetPWMrange).
      * If a hardware clock is active on the GPIO the reported dutycycle will be 500000 (500k) out of 1000000 (1M).
      * If hardware PWM is active on the GPIO the reported dutycycle will be out of a 1000000 (1M).
-     *
+     * <p>
      * Normal PWM range defaults to 255.
      * @see <a href="http://abyz.me.uk/rpi/pigpio/cif.html#gpioGetPWMdutycycle">PIGPIO::gpioGetPWMdutycycle</a>
      */
@@ -409,10 +409,10 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      * Selects the dutycycle range to be used for the GPIO. Subsequent calls to gpioPWM will use a dutycycle
      * between 0 (off) and range (fully on.  If PWM is currently active on the GPIO its dutycycle will be
      * scaled to reflect the new range.
-     *
+     * <p>
      * The real range, the number of steps between fully off and fully on for each frequency,
      * is given in the following table.
-     *
+     * <p>
      *  -------------------------------------------------------
      *   #1	   #2	 #3	   #4	 #5	   #6	 #7	    #8	   #9
      *   25,   50,  100,  125,  200,  250,  400,   500,   625,
@@ -420,9 +420,9 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      *  #10   #11   #12   #13   #14   #15    #16   #17    #18
      *  800, 1000, 1250, 2000, 2500, 4000, 5000, 10000, 20000
      *  -------------------------------------------------------
-     *
+     * <p>
      * The real value set by gpioPWM is (dutycycle * real range) / range.
-     *
+     * <p>
      * Example
      *   gpioSetPWMrange(24, 2000); // Now 2000 is fully on
      *                              //     1000 is half on
@@ -483,34 +483,34 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      * {@inheritDoc}
      *
      * Sets the frequency in hertz to be used for the GPIO.
-     *
+     * <p>
      * If PWM is currently active on the GPIO it will be switched off and then back on at the new frequency.
      * Each GPIO can be independently set to one of 18 different PWM frequencies.
      * The selectable frequencies depend upon the sample rate which may be 1, 2, 4, 5, 8, or 10 microseconds (default 5).
-     *
+     * <p>
      * The frequencies for each sample rate are:
-     *
+     * <p>
      *                        Hertz
-     *
+     * <p>
      *        1: 40000 20000 10000 8000 5000 4000 2500 2000 1600
      *            1250  1000   800  500  400  250  200  100   50
-     *
+     * <p>
      *        2: 20000 10000  5000 4000 2500 2000 1250 1000  800
      *             625   500   400  250  200  125  100   50   25
-     *
+     * <p>
      *        4: 10000  5000  2500 2000 1250 1000  625  500  400
      *             313   250   200  125  100   63   50   25   13
      * sample
      *  rate
      *  (us)  5:  8000  4000  2000 1600 1000  800  500  400  320
      *             250   200   160  100   80   50   40   20   10
-     *
+     * <p>
      *        8:  5000  2500  1250 1000  625  500  313  250  200
      *             156   125   100   63   50   31   25   13    6
-     *
+     * <p>
      *       10:  4000  2000  1000  800  500  400  250  200  160
      *             125   100    80   50   40   25   20   10    5
-     *
+     * <p>
      *
      * Example:
      *    gpioSetPWMfrequency(23, 0); // Set GPIO23 to lowest frequency.
@@ -534,11 +534,11 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      * {@inheritDoc}
      *
      * Returns the frequency (in hertz) used for the GPIO
-     *
+     * <p>
      * For normal PWM the frequency will be that defined for the GPIO by gpioSetPWMfrequency.
      * If a hardware clock is active on the GPIO the reported frequency will be that set by gpioHardwareClock.
      * If hardware PWM is active on the GPIO the reported frequency will be that set by gpioHardwarePWM.
-     *
+     * <p>
      * Example:
      *    f = gpioGetPWMfrequency(23); // Get frequency used for GPIO23.
      * @see <a href="http://abyz.me.uk/rpi/pigpio/cif.html#gpioGetPWMfrequency">PIGPIO::gpioGetPWMfrequency</a>
@@ -559,28 +559,28 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      *
      * Starts hardware PWM on a GPIO at the specified frequency and duty-cycle.
      * Frequencies above 30MHz are unlikely to work.
-     *
+     * <p>
      * NOTE: Any waveform started by gpioWaveTxSend, or gpioWaveChain will be cancelled.
-     *
+     * <p>
      * This function is only valid if the pigpio main clock is PCM.
      * The main clock defaults to PCM but may be overridden by a call to gpioCfgClock.
-     *
+     * <p>
      * The same PWM channel is available on multiple GPIO. The latest frequency and duty-cycle
      * setting will be used by all GPIO which share a PWM channel.
-     *
+     * <p>
      * The GPIO must be one of the following.
-     *
+     * <p>
      *   12  PWM channel 0  All models but A and B
      *   13  PWM channel 1  All models but A and B
      *   18  PWM channel 0  All models
      *   19  PWM channel 1  All models but A and B
-     *
+     * <p>
      *   40  PWM channel 0  Compute module only
      *   41  PWM channel 1  Compute module only
      *   45  PWM channel 1  Compute module only
      *   52  PWM channel 0  Compute module only
      *   53  PWM channel 1  Compute module only
-     *
+     * <p>
      *
      * The actual number of steps between off and fully on is the integral part of
      * 250M/PWMfreq (375M/PWMfreq for the BCM2711).
@@ -634,35 +634,35 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      * {@inheritDoc}
      *
      * Starts servo pulses on the GPIO, 0 (off), 500 (most anti-clockwise) to 2500 (most clockwise).
-     *
+     * <p>
      * The range supported by servos varies and should probably be determined by experiment. A value
      * of 1500 should always be safe and represents the mid-point of rotation. You can DAMAGE a servo
      * if you command it to move beyond its limits.
-     *
+     * <p>
      * The following causes an on pulse of 1500 microseconds duration to be transmitted on GPIO 17 at
      * a rate of 50 times per second. This will command a servo connected to GPIO 17 to rotate to its
      * mid-point.
-     *
+     * <p>
      * Example:
      *  - gpioServo(17, 1000); // Move servo to safe position anti-clockwise.
      *  - gpioServo(23, 1500); // Move servo to centre position.
      *  - gpioServo(25, 2000); // Move servo to safe position clockwise.
-     *
+     * <p>
      * OTHER UPDATE RATES:
      * This function updates servos at 50Hz. If you wish to use a different
      * update frequency you will have to use the PWM functions.
-     *
+     * <p>
      *    PWM Hz      50     100    200    400    500
      *    1E6/Hz   20000   10000   5000   2500   2000
-     *
+     * <p>
      * Firstly set the desired PWM frequency using gpioSetPWMfrequency.
      * Then set the PWM range using gpioSetPWMrange to 1E6/frequency. Doing this
      * allows you to use units of microseconds when setting the servo pulsewidth.
-     *
+     * <p>
      * E.g. If you want to update a servo connected to GPIO25 at 400Hz*
      *  - gpioSetPWMfrequency(25, 400);
      *  - gpioSetPWMrange(25, 2500);
-     *
+     * <p>
      * Thereafter use the PWM command to move the servo, e.g. gpioPWM(25, 1500) will set a 1500 us pulse.
      * @see <a href="http://abyz.me.uk/rpi/pigpio/cif.html#gpioServo">PIGPIO::gpioServo</a>
      */
@@ -747,17 +747,17 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      *
      * Returns the current system tick.
      * Tick is the number of microseconds since system boot.
-     *
+     * <p>
      * As tick is an unsigned 32 bit quantity it wraps around after 2^32 microseconds, which is
      * approximately 1 hour 12 minutes.  You don't need to worry about the wrap around as long as you
      * take a tick (uint32_t) from another tick, i.e. the following code will always provide the
      * correct difference.
-     *
+     * <p>
      * Example
      *   uint32_t startTick, endTick;
      *   int diffTick;
      *   startTick = gpioTick();
-     *
+     * <p>
      *   // do some processing
      *   endTick = gpioTick();
      *   diffTick = endTick - startTick;
@@ -786,7 +786,7 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      * This returns a handle for the device at the address on the I2C bus.
      * Physically buses 0 and 1 are available on the Pi.
      * Higher numbered buses will be available if a kernel supported bus multiplexor is being used.
-     *
+     * <p>
      * The GPIO used are given in the following table.
      *         SDA   SCL
      * I2C0     0     1
@@ -1033,7 +1033,7 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      *
      * This writes data bytes to the specified register of the device associated with the handle and reads a
      * device specified number of bytes of data in return.
-     *
+     * <p>
      * The SMBus 2.0 documentation states that a minimum of 1 byte may be sent and a minimum of 1 byte may be received.
      * The total number of bytes sent/received must be 32 or less.
      */
@@ -1057,7 +1057,7 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      *
      * This writes data bytes to the specified register of the device associated with handle and reads a
      * device specified number of bytes of data in return.
-     *
+     * <p>
      * The SMBus 2.0 documentation states that a minimum of 1 byte may be sent and a minimum of 1 byte may be received.
      * The total number of bytes sent/received must be 32 or less.
      * @see <a href="http://abyz.me.uk/rpi/pigpio/cif.html#i2cBlockProcessCall">PIGPIO::i2cBlockProcessCall</a>
@@ -1361,39 +1361,39 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      * This function opens a SPI device channel at a specified baud rate and with specified flags.
      * Data will be transferred at baud bits per second.
      * The flags may be used to modify the default behaviour of 4-wire operation, mode 0, active low chip select.
-     *
+     * <p>
      * The Pi has two SPI peripherals: main and auxiliary.
      * The main SPI has two chip selects (channels), the auxiliary has three.
      * The auxiliary SPI is available on all models but the A and B.
-     *
+     * <p>
      * The GPIO pins used are given in the following table.
-     *
+     * <p>
      *             MISO    MOSI   SCLK   CE0   CE1   CE2
      *             -------------------------------------
      *   Main SPI    9      10     11      8	 7	   -
      *   Aux SPI    19      20     21     18	17    16
-     *
+     * <p>
      *
      *  spiChan  : 0-1 (0-2 for the auxiliary SPI)
      *  baud     : 32K-125M (values above 30M are unlikely to work)
      *  spiFlags : see below
-     *
+     * <p>
      * spiFlags consists of the least significant 22 bits.
      * -----------------------------------------------------------------
      * 21 20 19 18 17 16 15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0
      *  b  b  b  b  b  b  R  T  n  n  n  n  W  A u2 u1 u0 p2 p1 p0  m  m
      * -----------------------------------------------------------------
-     *
+     * <p>
      * [mm] defines the SPI mode.
      *      (Warning: modes 1 and 3 do not appear to work on the auxiliary SPI.)
-     *
+     * <p>
      *      Mode POL  PHA
      *      -------------
      *       0    0    0
      *       1    0    1
      *       2    1    0
      *       3    1    1
-     *
+     * <p>
      * [px] is 0 if CEx is active low (default) and 1 for active high.
      * [ux] is 0 if the CEx GPIO is reserved for SPI (default) and 1 otherwise.
      * [A] is 0 for the main SPI, 1 for the auxiliary SPI.
@@ -1402,12 +1402,12 @@ public class PiGpioNativeImpl extends PiGpioBase implements PiGpio {
      * [T] is 1 if the least significant bit is transmitted on MOSI first, the default (0) shifts the most significant bit out first. Auxiliary SPI only.
      * [R] is 1 if the least significant bit is received on MISO first, the default (0) receives the most significant bit first. Auxiliary SPI only.
      * [bbbbbb] defines the word size in bits (0-32). The default (0) sets 8 bits per word. Auxiliary SPI only.
-     *
+     * <p>
      * The spiRead, spiWrite, and spiXfer functions transfer data packed into 1, 2, or 4 bytes according to the word size in bits.
      *  - For bits 1-8 there will be one byte per word.
      *  - For bits 9-16 there will be two bytes per word.
      *  - For bits 17-32 there will be four bytes per word.
-     *
+     * <p>
      * Multi-byte transfers are made in least significant byte first order.
      * E.g. to transfer 32 11-bit words buf should contain 64 bytes and count should be 64.
      * E.g. to transfer the 14 bit value 0x1ABC send the bytes 0xBC followed by 0x1A.

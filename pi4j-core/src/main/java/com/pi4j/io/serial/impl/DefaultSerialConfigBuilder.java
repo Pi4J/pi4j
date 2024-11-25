@@ -49,6 +49,7 @@ public class DefaultSerialConfigBuilder
     /**
      * <p>newInstance.</p>
      *
+     * @param context
      * @return a {@link com.pi4j.io.serial.SerialConfigBuilder} object.
      */
     public static SerialConfigBuilder newInstance(Context context) {

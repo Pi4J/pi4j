@@ -1,4 +1,6 @@
-package com.pi4j.test;/*-
+package com.pi4j.test;
+
+/*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J

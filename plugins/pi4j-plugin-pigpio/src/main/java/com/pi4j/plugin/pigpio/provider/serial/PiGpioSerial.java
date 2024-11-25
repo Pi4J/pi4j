@@ -37,8 +37,6 @@ import com.pi4j.io.serial.SerialProvider;
 import com.pi4j.library.pigpio.PiGpio;
 import com.pi4j.library.pigpio.PiGpioMode;
 
-import java.io.IOException;
-
 /**
  * <p>PiGpioSerial class.</p>
  *

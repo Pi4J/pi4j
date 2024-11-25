@@ -104,20 +104,20 @@ public interface PiGpio_GPIO {
 
     /**
      * Sets a glitch filter on a GPIO.  (AKA Debounce)
-     *
+     * <p>
      * Level changes on the GPIO are not reported unless the level has been stable for at
      * least 'steady' microseconds. The level is then reported. Level changes of less
      * than 'steady' microseconds are ignored.
-     *
+     * <p>
      * This filter affects the GPIO samples returned to callbacks set up with:
      *  - gpioSetAlertFunc
      *  - gpioSetAlertFuncEx
      *  - gpioSetGetSamplesFunc
      *  - gpioSetGetSamplesFuncEx.
-     *
+     * <p>
      * It does not affect interrupts set up with gpioSetISRFunc, gpioSetISRFuncEx, or
      * levels read by gpioRead, gpioRead_Bits_0_31, or gpioRead_Bits_32_53.
-     *
+     * <p>
      * Each (stable) edge will be timestamped steady microseconds after it was first detected.
      *
      * @param pin gpio pin address (valid pins are 0-31)
@@ -128,11 +128,11 @@ public interface PiGpio_GPIO {
 
     /**
      * Sets a noise filter on a GPIO.
-     *
+     * <p>
      * Level changes on the GPIO are ignored until a level which has been stable for 'steady'
      * microseconds is detected. Level changes on the GPIO are then reported for 'active'
      * microseconds after which the process repeats.
-     *
+     * <p>
      * This filter affects the GPIO samples returned to callbacks set up with:
      *  - gpioSetAlertFunc
      *  - gpioSetAlertFuncEx
@@ -140,7 +140,7 @@ public interface PiGpio_GPIO {
      *  - gpioSetGetSamplesFuncEx.     *
      * It does not affect interrupts set up with gpioSetISRFunc, gpioSetISRFuncEx, or
      * levels read by gpioRead, gpioRead_Bits_0_31, or gpioRead_Bits_32_53.
-     *
+     * <p>
      * Level changes before and after the active period may be reported.
      * Your software must be designed to cope with such reports.
      *

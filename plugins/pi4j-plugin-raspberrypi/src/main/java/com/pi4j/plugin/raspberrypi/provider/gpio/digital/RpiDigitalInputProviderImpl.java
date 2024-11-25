@@ -27,7 +27,6 @@ package com.pi4j.plugin.raspberrypi.provider.gpio.digital;
  * #L%
  */
 
-import com.pi4j.io.exception.IOAlreadyExistsException;
 import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalInputProviderBase;

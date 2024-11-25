@@ -50,6 +50,7 @@ public class DefaultI2CConfigBuilder
     /**
      * <p>newInstance.</p>
      *
+     * @param context
      * @return a {@link com.pi4j.io.i2c.I2CConfigBuilder} object.
      */
     public static I2CConfigBuilder newInstance(Context context) {

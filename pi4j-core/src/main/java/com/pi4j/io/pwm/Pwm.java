@@ -209,7 +209,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      *  period.  The duty-cycle range is valid from 0 to 100 including
      *  factional values. (Values above 50% mean the signal will remain
      *  HIGH more time than LOW.)
-     *
+     * <p>
      *  Example: A value of 50 represents a duty-cycle where half of
      *  the time period the signal is LOW and the other half is HIGH.
      *
@@ -224,7 +224,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      *  period.  The duty-cycle range is valid from 0 to 100 including
      *  factional values. (Values above 50% mean the signal will remain
      *  HIGH more time than LOW.)
-     *
+     * <p>
      *  Example: A value of 50 represents a duty-cycle where half of
      *  the time period the signal is LOW and the other half is HIGH.
      *
@@ -242,7 +242,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      *  'Pwm::On()' method.  Call 'Pwm::On()' if you wish to make a live/
      *  immediate change to the duty-cycle on an existing PWM signal.
      *  (Values above 50% mean the signal will remain HIGH more time than LOW.)
-     *
+     * <p>
      *  Example: A value of 50 represents a duty-cycle where half of
      *  the time period the signal is LOW and the other half is HIGH.
      *
@@ -260,7 +260,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      *  'Pwm::On()' method.  Call 'Pwm::On()' if you wish to make a live/
      *  immediate change to the duty-cycle on an existing PWM signal.
      *  (Values above 50% mean the signal will remain HIGH more time than LOW.)
-     *
+     * <p>
      *  Example: A value of 50 represents a duty-cycle where half of
      *  the time period the signal is LOW and the other half is HIGH.
      *
@@ -274,7 +274,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      *  Get the configured frequency value in Hertz (number of cycles per second)
      *  that the PWM signal generator should attempt to output when the PWM signal
      *  is turned 'ON'.
-     *
+     * <p>
      *  Please note that certain PWM signal generators may be limited to specific
      *  frequency bands and may not generate all possible explicit frequency values.
      *  After enabling the PWM signal using the 'on(..) method, you can check the
@@ -291,7 +291,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      *  Get the configured frequency value in Hertz (number of cycles per second)
      *  that the PWM signal generator should attempt to output when the PWM signal
      *  is turned 'ON'.
-     *
+     * <p>
      *  Please note that certain PWM signal generators may be limited to specific
      *  frequency bands and may not generate all possible explicit frequency values.
      *  After enabling the PWM signal using the 'on(...)' method, you can check the
@@ -307,7 +307,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     /**
      *  Get the actual frequency value in Hertz (number of cycles per second)
      *  applied by the PWM signal generator after the PWM signal is turned 'ON'.
-     *
+     * <p>
      *  Please note that certain PWM signal generators may be limited to specific
      *  frequency bands and may not generate all possible explicit frequency values.
      *  After enabling the PWM signal using the 'on(...)' method, you can call this
@@ -322,7 +322,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     /**
      *  Get the actual frequency value in Hertz (number of cycles per second)
      *  applied by the PWM signal generator after the PWM signal is turned 'ON'.
-     *
+     * <p>
      *  Please note that certain PWM signal generators may be limited to specific
      *  frequency bands and may not generate all possible explicit frequency values.
      *  After enabling the PWM signal using the 'on(...)' method, you can call this
@@ -337,7 +337,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     /**
      *  Set the configured frequency value in Hertz (number of cycles per second)
      *  that the PWM signal generator should use when the PWM signal is turned 'ON'.
-     *
+     * <p>
      *  Note: This method will not update a live PWM signal, but rather stage the
      *  frequency value for subsequent call to the 'Pwm::On()' method.  Call 'Pwm::On()'
      *  if you wish to make a live/immediate change to the duty-cycle on an existing
@@ -351,7 +351,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     /**
      *  Set the configured frequency value in Hertz (number of cycles per second)
      *  that the PWM signal generator should use when the PWM signal is turned 'ON'.
-     *
+     * <p>
      *  Note: This method will not update a live PWM signal, but rather stage the
      *  frequency value for subsequent call to the 'Pwm::On()' method.  Call 'Pwm::On()'
      *  if you wish to make a live/immediate change to the duty-cycle on an existing

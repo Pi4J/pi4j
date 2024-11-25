@@ -42,6 +42,9 @@ import java.util.Map;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <CONFIG_TYPE>
+ * @param <IO_TYPE>
+ * @param <PROVIDER_TYPE>
  */
 public abstract class ProviderBase<PROVIDER_TYPE extends Provider, IO_TYPE extends IO, CONFIG_TYPE extends Config>
         extends ExtensionBase<PROVIDER_TYPE>

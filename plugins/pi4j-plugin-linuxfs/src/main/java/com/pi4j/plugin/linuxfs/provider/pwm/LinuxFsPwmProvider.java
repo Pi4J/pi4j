@@ -45,6 +45,8 @@ public interface LinuxFsPwmProvider extends PwmProvider {
     /**
      * <p>newInstance.</p>
      *
+     * @param pwmFileSystemPath
+     * @param pwmChip
      * @return a {@link LinuxFsPwmProvider} object.
      */
     static LinuxFsPwmProvider newInstance(String pwmFileSystemPath, int pwmChip) {
@@ -54,6 +56,7 @@ public interface LinuxFsPwmProvider extends PwmProvider {
     /**
      * <p>newInstance.</p>
      *
+     * @param pwmChip
      * @return a {@link LinuxFsPwmProvider} object.
      */
     static LinuxFsPwmProvider newInstance(int pwmChip) {

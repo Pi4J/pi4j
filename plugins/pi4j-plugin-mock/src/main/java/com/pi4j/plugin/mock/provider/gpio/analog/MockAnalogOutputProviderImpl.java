@@ -27,7 +27,6 @@ package com.pi4j.plugin.mock.provider.gpio.analog;
  * #L%
  */
 
-import com.pi4j.io.exception.IOAlreadyExistsException;
 import com.pi4j.io.gpio.analog.AnalogOutput;
 import com.pi4j.io.gpio.analog.AnalogOutputConfig;
 import com.pi4j.io.gpio.analog.AnalogOutputProviderBase;

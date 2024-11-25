@@ -1,22 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.pi4j</groupId>
-	<artifactId>pi4j-parent</artifactId>
-	<version>2.7.0-SNAPSHOT</version>
-	<name>Pi4J :: Parent POM</name>
-	<description>Parent Maven POM for the Pi4J Project</description>
-	<url>https://v2.pi4j.com</url>
-	<inceptionYear>2012</inceptionYear>
-	<packaging>pom</packaging>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.pi4j</groupId>
+    <artifactId>pi4j-parent</artifactId>
+    <version>2.7.1-SNAPSHOT</version>
+    <name>Pi4J :: Parent POM</name>
+    <description>Parent Maven POM for the Pi4J Project</description>
+    <url>https://v2.pi4j.com</url>
+    <inceptionYear>2012</inceptionYear>
+    <packaging>pom</packaging>
 
-	<!-- ORGANIZATION -->
-	<organization>
-		<name>Pi4J</name>
-		<url>https://v2.pi4j.com</url>
-	</organization>
+    <!-- ORGANIZATION -->
+    <organization>
+        <name>Pi4J</name>
+        <url>https://v2.pi4j.com</url>
+    </organization>
 
-	<!-- LICENSE -->
+    <!-- LICENSE -->
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -26,25 +26,25 @@
         </license>
     </licenses>
 
-	<!-- DEVELOPERS/CONTRIBUTORS -->
-	<developers>
-		<developer>
-			<name>Robert Savage</name>
-			<email>robert@pi4j.com</email>
-			<url>http://robertsavage.me</url>
+    <!-- DEVELOPERS/CONTRIBUTORS -->
+    <developers>
+        <developer>
+            <name>Robert Savage</name>
+            <email>robert@pi4j.com</email>
+            <url>http://robertsavage.me</url>
             <organization>Savage Software</organization>
-			<organizationUrl>http://savagesoftware.com</organizationUrl>
+            <organizationUrl>http://savagesoftware.com</organizationUrl>
             <properties>
                 <blog>http://savagehomeautomation.com</blog>
                 <linikedin>https://www.linkedin.com/in/robert-savage</linikedin>
                 <twitter>https://twitter.com/savageautomate</twitter>
             </properties>
-			<roles>
-				<role>sponsor</role>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-		</developer>
+            <roles>
+                <role>sponsor</role>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+        </developer>
         <developer>
             <name>Daniel Sendula</name>
             <email>daniel@pi4j.com</email>
@@ -66,16 +66,16 @@
                 <role>developer</role>
             </roles>
         </developer>
-		<developer>
-			<id>eitch</id>
-			<name>Robert von Burg</name>
-			<email>eitch@eitchnet.ch</email>
-			<url>http://strolch.li</url>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</developer>
+        <developer>
+            <id>eitch</id>
+            <name>Robert von Burg</name>
+            <email>eitch@eitchnet.ch</email>
+            <url>http://strolch.li</url>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
         <developer>
             <id>alex9849</id>
             <name>Alexander Liggesmeyer</name>
@@ -85,7 +85,7 @@
             </roles>
             <timezone>+1</timezone>
         </developer>
-	</developers>
+    </developers>
     <contributors>
         <contributor>
             <name>Marcus Hirt</name>
@@ -109,33 +109,33 @@
         </contributor>
     </contributors>
 
-	<!-- SOURCE CONTROL -->
-	<scm>
-		<developerConnection>scm:git:ssh://git@github.com/Pi4J/pi4j-v2.git</developerConnection>
-		<connection>scm:git:ssh://git@github.com/Pi4J/pi4j-v2.git</connection>
-		<url>https://github.com/Pi4J/pi4j-v2.git</url>
-	</scm>
+    <!-- SOURCE CONTROL -->
+    <scm>
+        <developerConnection>scm:git:ssh://git@github.com/Pi4J/pi4j-v2.git</developerConnection>
+        <connection>scm:git:ssh://git@github.com/Pi4J/pi4j-v2.git</connection>
+        <url>https://github.com/Pi4J/pi4j-v2.git</url>
+    </scm>
 
-	<!-- ISSUE MANAGEMENT -->
-	<issueManagement>
-		<url>https://github.com/Pi4J/pi4j-v2/issues</url>
-		<system>github</system>
-	</issueManagement>
+    <!-- ISSUE MANAGEMENT -->
+    <issueManagement>
+        <url>https://github.com/Pi4J/pi4j-v2/issues</url>
+        <system>github</system>
+    </issueManagement>
 
-	<!-- DISTRIBUTION REPOSITORIES -->
-	<distributionManagement>
-		<downloadUrl>https://pi4j.com/download</downloadUrl>
-		<repository>
-			<id>sonatype-oss-staging</id>
-			<name>Sonatype Open Source Maven Repository</name>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-		</repository>
-		<snapshotRepository>
-			<id>sonatype-oss-snapshots</id>
-			<name>Sonatype Open Source Maven Snapshots Repository</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
+    <!-- DISTRIBUTION REPOSITORIES -->
+    <distributionManagement>
+        <downloadUrl>https://pi4j.com/download</downloadUrl>
+        <repository>
+            <id>sonatype-oss-staging</id>
+            <name>Sonatype Open Source Maven Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+        <snapshotRepository>
+            <id>sonatype-oss-snapshots</id>
+            <name>Sonatype Open Source Maven Snapshots Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <!-- DEPENDENCY REPOSITORIES -->
     <repositories>
@@ -152,8 +152,8 @@
         </repository>
     </repositories>
 
-	<!-- PROJECT MODULES -->
-	<modules>
+    <!-- PROJECT MODULES -->
+    <modules>
         <!-- THE FOLLOWING MODULES ARE V2 -->
         <module>libraries/pi4j-library</module>
         <module>pi4j-core</module>
@@ -162,8 +162,8 @@
         <module>pi4j-distribution</module>
     </modules>
 
-	<!-- BUILD PROPERTIES -->
-	<properties>
+    <!-- BUILD PROPERTIES -->
+    <properties>
         <!-- =================================================================== -->
         <!-- SELECT THE PROPER COMPILER OPTION FOR THE NATIVE LIBRARY BUILDS     -->
         <!-- The supported options are:                                          -->
@@ -276,10 +276,11 @@
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
         <maven-bundle-plugin.version>5.1.2</maven-bundle-plugin.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
         <maven-gpg-plugin.version>3.2.1</maven-gpg-plugin.version>
         <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
-        <maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
+        <maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
         <maven-release-plugin.version>3.0.0-M4</maven-release-plugin.version>
         <maven-resource-plugin.version>3.2.0</maven-resource-plugin.version>
         <maven-scm-plugin.version>1.11.2</maven-scm-plugin.version>
@@ -314,7 +315,7 @@
         <raspberrypi.password>raspberry</raspberrypi.password>
         <raspberrypi.deploydirectory>/home/pi/deploy</raspberrypi.deploydirectory>
         <raspberrypi.jvmOptions/>
-	</properties>
+    </properties>
 
     <!-- PROJECT DEPENDENCIES -->
     <dependencyManagement>
@@ -399,21 +400,21 @@
 
     </dependencies>
 
-	<!-- BUILD INSTRUCTIONS -->
-	<build>
+    <!-- BUILD INSTRUCTIONS -->
+    <build>
 
         <!-- GLOBAL PROJECT RESOURCES -->
-		<resources>
-			<resource>
-				<directory>${basedir}</directory>
-				<filtering>false</filtering>
-				<includes>
-					<include>LICENSE.txt</include>
-					<include>NOTICE.txt</include>
-					<include>README.md</include>
-				</includes>
-			</resource>
-		</resources>
+        <resources>
+            <resource>
+                <directory>${basedir}</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>LICENSE.txt</include>
+                    <include>NOTICE.txt</include>
+                    <include>README.md</include>
+                </includes>
+            </resource>
+        </resources>
 
         <!-- PLUGIN MANAGEMENT -->
         <pluginManagement>
@@ -502,6 +503,14 @@
                             </goals>
                         </execution>
                     </executions>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <detectJavaApiLink>false</detectJavaApiLink>
+                        <doclint>none</doclint>
+                        <!-- Optional: skip errors -->
+                        <failOnError>false</failOnError>
+                        <additionalOptions>-Xdoclint:none</additionalOptions>
+                    </configuration>
                 </plugin>
 
                 <!-- DOWNLOAD LICENSE, README & NOTICE ARTIFACTS -->
@@ -698,50 +707,50 @@
         </pluginManagement>
 
         <!-- GLOBAL BUILD PLUGINS (used when building all modules) -->
-		<plugins>
-			<!-- USE LATEST SCM PLUGIN TO SUPPORT GIT -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-scm-plugin</artifactId>
-				<configuration>
-					<goals>install</goals>
-				</configuration>
-			</plugin>
+        <plugins>
+            <!-- USE LATEST SCM PLUGIN TO SUPPORT GIT -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <configuration>
+                    <goals>install</goals>
+                </configuration>
+            </plugin>
 
-			<!-- ATTACH LICENSE AS ARTIFACT -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-artifacts</id>
-						<phase>package</phase>
-						<goals>
-							<goal>attach-artifact</goal>
-						</goals>
-						<configuration>
-							<artifacts>
-								<artifact>
-									<file>${basedir}/LICENSE.txt</file>
-									<type>txt</type>
-									<classifier>license</classifier>
-								</artifact>
-								<artifact>
-									<file>${basedir}/NOTICE.txt</file>
-									<type>txt</type>
-									<classifier>notice</classifier>
-								</artifact>
-								<artifact>
-									<file>${basedir}/README.md</file>
-									<type>md</type>
-									<classifier>readme</classifier>
-								</artifact>
-							</artifacts>
-						</configuration>
-					</execution>
-				</executions>
-				<inherited>false</inherited>
-			</plugin>
+            <!-- ATTACH LICENSE AS ARTIFACT -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${basedir}/LICENSE.txt</file>
+                                    <type>txt</type>
+                                    <classifier>license</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>${basedir}/NOTICE.txt</file>
+                                    <type>txt</type>
+                                    <classifier>notice</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>${basedir}/README.md</file>
+                                    <type>md</type>
+                                    <classifier>readme</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+                <inherited>false</inherited>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -761,9 +770,29 @@
                     </execution>
                 </executions>
             </plugin>
-		</plugins>
-	</build>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven-checkstyle-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>checkstyle-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <failsOnError>true</failsOnError>
+                    <configLocation>config/checkstyle/checkstyle.xml</configLocation>
+                    <excludes>**/module-info.java</excludes>
+                    <outputFileFormat>plain</outputFileFormat>
+                    <consoleOutput>true</consoleOutput>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <reporting>
         <plugins>
             <plugin>

@@ -32,6 +32,8 @@ import com.pi4j.io.IOAddressConfigBuilder;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <BUILDER_TYPE>
+ * @param <CONFIG_TYPE>
  */
 public interface GpioConfigBuilder<BUILDER_TYPE extends GpioConfigBuilder, CONFIG_TYPE extends GpioConfig>
         extends IOAddressConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {

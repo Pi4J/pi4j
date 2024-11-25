@@ -37,6 +37,7 @@ import java.util.Map;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <CONFIG_TYPE>
  */
 public class ConfigBase<CONFIG_TYPE extends Config> implements Config<CONFIG_TYPE> {
 

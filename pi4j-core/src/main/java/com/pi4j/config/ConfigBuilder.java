@@ -37,6 +37,8 @@ import java.util.Properties;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <BUILDER_TYPE>
+ * @param <CONFIG_TYPE>
  */
 public interface ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends Builder<CONFIG_TYPE> {
     /**

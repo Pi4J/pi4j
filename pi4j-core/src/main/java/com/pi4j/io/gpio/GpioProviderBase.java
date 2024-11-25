@@ -32,6 +32,9 @@ import com.pi4j.provider.ProviderBase;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <CONFIG_TYPE>
+ * @param <IO_TYPE>
+ * @param <PROVIDER_TYPE>
  */
 public abstract class GpioProviderBase<
             PROVIDER_TYPE extends GpioProvider,

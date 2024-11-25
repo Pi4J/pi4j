@@ -28,7 +28,6 @@ package com.pi4j.io.gpio.digital.impl;
 import com.pi4j.context.Context;
 import com.pi4j.io.gpio.digital.DigitalConfig;
 import com.pi4j.io.gpio.digital.DigitalConfigBuilder;
-import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.impl.IOAddressConfigBuilderBase;
 
@@ -37,6 +36,8 @@ import com.pi4j.io.impl.IOAddressConfigBuilderBase;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <BUILDER_TYPE>
+ * @param <CONFIG_TYPE>
  */
 public abstract class DigitalConfigBuilderBase<BUILDER_TYPE extends DigitalConfigBuilder, CONFIG_TYPE extends DigitalConfig>
         extends IOAddressConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>

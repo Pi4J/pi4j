@@ -36,6 +36,8 @@ import com.pi4j.context.Context;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <BUILDER_TYPE>
+ * @param <CONFIG_TYPE>
  */
 public abstract class DeviceConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
         extends ConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>

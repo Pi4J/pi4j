@@ -5,14 +5,14 @@
     <parent>
         <artifactId>pi4j-parent</artifactId>
         <groupId>com.pi4j</groupId>
-        <version>2.7.0-SNAPSHOT</version>
+        <version>2.7.1-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <!-- MAVEN ARTIFACT INFORMATION -->
     <artifactId>pi4j-library</artifactId>
-    <name>Pi4J :: LIBRARY  :: Libraries Parent POM</name>
+    <name>Pi4J :: LIBRARY :: Libraries Parent POM</name>
     <description>Pi4J Plugin Parent Maven POM</description>
     <packaging>pom</packaging>
 

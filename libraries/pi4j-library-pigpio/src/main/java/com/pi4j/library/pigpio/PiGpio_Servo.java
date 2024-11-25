@@ -27,8 +27,6 @@ package com.pi4j.library.pigpio;
  * #L%
  */
 
-import java.io.IOException;
-
 /**
  * <p>PiGpio_Servo interface.</p>
  *
@@ -39,35 +37,35 @@ public interface PiGpio_Servo {
 
     /**
      * Starts servo pulses on the GPIO, 0 (off), 500 (most anti-clockwise) to 2500 (most clockwise).
-     *
+     * <p>
      * The range supported by servos varies and should probably be determined by experiment. A value
      * of 1500 should always be safe and represents the mid-point of rotation. You can DAMAGE a servo
      * if you command it to move beyond its limits.
-     *
+     * <p>
      * The following causes an on pulse of 1500 microseconds duration to be transmitted on GPIO 17 at
      * a rate of 50 times per second. This will command a servo connected to GPIO 17 to rotate to its
      * mid-point.
-     *
+     * <p>
      * Example:
      *  - gpioServo(17, 1000); // Move servo to safe position anti-clockwise.
      *  - gpioServo(23, 1500); // Move servo to centre position.
      *  - gpioServo(25, 2000); // Move servo to safe position clockwise.
-     *
+     * <p>
      * OTHER UPDATE RATES:
      * This function updates servos at 50Hz. If you wish to use a different
      * update frequency you will have to use the PWM functions.
-     *
+     * <p>
      *    PWM Hz      50     100    200    400    500
      *    1E6/Hz   20000   10000   5000   2500   2000
-     *
+     * <p>
      * Firstly set the desired PWM frequency using gpioSetPWMfrequency.
      * Then set the PWM range using gpioSetPWMrange to 1E6/frequency. Doing this
      * allows you to use units of microseconds when setting the servo pulsewidth.
-     *
+     * <p>
      * E.g. If you want to update a servo connected to GPIO25 at 400Hz*
      *  - gpioSetPWMfrequency(25, 400);
      *  - gpioSetPWMrange(25, 2500);
-     *
+     * <p>
      * Thereafter use the PWM command to move the servo, e.g. gpioPWM(25, 1500) will set a 1500 us pulse.
      *
      * @param pin user_gpio: 0-31
@@ -78,35 +76,35 @@ public interface PiGpio_Servo {
 
     /**
      * Starts servo pulses on the GPIO, 0 (off), 500 (most anti-clockwise) to 2500 (most clockwise).
-     *
+     * <p>
      * The range supported by servos varies and should probably be determined by experiment. A value
      * of 1500 should always be safe and represents the mid-point of rotation. You can DAMAGE a servo
      * if you command it to move beyond its limits.
-     *
+     * <p>
      * The following causes an on pulse of 1500 microseconds duration to be transmitted on GPIO 17 at
      * a rate of 50 times per second. This will command a servo connected to GPIO 17 to rotate to its
      * mid-point.
-     *
+     * <p>
      * Example:
      *  - gpioServo(17, 1000); // Move servo to safe position anti-clockwise.
      *  - gpioServo(23, 1500); // Move servo to centre position.
      *  - gpioServo(25, 2000); // Move servo to safe position clockwise.
-     *
+     * <p>
      * OTHER UPDATE RATES:
      * This function updates servos at 50Hz. If you wish to use a different
      * update frequency you will have to use the PWM functions.
-     *
+     * <p>
      *    PWM Hz      50     100    200    400    500
      *    1E6/Hz   20000   10000   5000   2500   2000
-     *
+     * <p>
      * Firstly set the desired PWM frequency using gpioSetPWMfrequency.
      * Then set the PWM range using gpioSetPWMrange to 1E6/frequency. Doing this
      * allows you to use units of microseconds when setting the servo pulsewidth.
-     *
+     * <p>
      * E.g. If you want to update a servo connected to GPIO25 at 400Hz*
      *  - gpioSetPWMfrequency(25, 400);
      *  - gpioSetPWMrange(25, 2500);
-     *
+     * <p>
      * Thereafter use the PWM command to move the servo, e.g. gpioPWM(25, 1500) will set a 1500 us pulse.
      *
      * @param pin user_gpio: 0-31

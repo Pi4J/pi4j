@@ -37,6 +37,7 @@ import java.util.concurrent.Callable;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <T>
  */
 public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig, I2CProvider> implements I2C {
 

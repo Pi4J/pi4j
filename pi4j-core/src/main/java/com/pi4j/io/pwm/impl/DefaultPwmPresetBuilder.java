@@ -48,7 +48,12 @@ public class DefaultPwmPresetBuilder implements PwmPresetBuilder{
         super(); this.name = name;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Creates a new instance of {@link DefaultPwmPresetBuilder} with the specified name.
+     *
+     * @param name the name of the PWM preset
+     * @return a new {@link PwmPresetBuilder} instance
+     */
     public static PwmPresetBuilder newInstance(String name) {
         return new DefaultPwmPresetBuilder(name);
     }
