@@ -39,7 +39,7 @@ import java.util.Objects;
  * Data Writer Interface for Pi4J Data Communications
  *
  * @author Robert Savage
- *
+ * <p>
  * Based on previous contributions from:
  *        Daniel Sendula,
  *        <a href="http://raspelikan.blogspot.co.at">RasPelikan</a>
@@ -109,7 +109,7 @@ public interface IODataReader extends Readable {
     /**
      * Read data from the I/O device into the provided byte buffer at the given
      * offset and up to the specified data length (number of bytes).
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is not
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -151,7 +151,7 @@ public interface IODataReader extends Readable {
     /**
      * Read data from the I/O device into the provided byte buffer starting
      * with the first byte in the array up to the provided length.
-     *
+     * <p>
      * NOTE:  The data bytes read from the I/O device are copied/
      *        inserted into the byte buffer starting at the current
      *        position index up to the length requested or up to the
@@ -181,7 +181,7 @@ public interface IODataReader extends Readable {
     /**
      * Read data from the I/O device into the provided byte buffer starting with
      * the first byte in the array up to available space remaining in the buffer.
-     *
+     * <p>
      * NOTE:  The data bytes read from the I/O device are copied/
      *        inserted into the byte buffer starting at the current
      *        position index up to the buffer's remaining limit. If
@@ -331,7 +331,7 @@ public interface IODataReader extends Readable {
      * Read character data from the I/O device into the provided character buffer at the given
      * offset and up to the specified data length (number of characters).  Specify the character
      * set to be used to decode the bytes into chars.
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is not
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -387,7 +387,7 @@ public interface IODataReader extends Readable {
      * Read character data from the I/O device into the provided character buffer starting
      * at the zero index (first position) up to the specified data length (number of characters).
      * Specify the character set to be used to decode the bytes into chars.
-     *
+     * <p>
      * NOTE:  The data characters read and decoded from the I/O device are
      *        copied/inserted into the character buffer starting at the current
      *        position index up to the length requested or up to the buffer's
@@ -413,7 +413,7 @@ public interface IODataReader extends Readable {
      * Read character data from the I/O device into the provided character buffer starting
      * at the zero index (first position) up to available space remaining in the buffer.
      * Specify the character set to be used to decode the bytes into chars.
-     *
+     * <p>
      * NOTE:  The data characters read from the I/O device are copied/
      *        inserted into the character buffer starting at the current
      *        position index up to the buffer's remaining limit. If
@@ -439,7 +439,7 @@ public interface IODataReader extends Readable {
      * Read ASCII character data from the I/O device into the provided character buffer at the given
      * offset and up to the specified data length (number of characters).  ASCII is the internal
      * character set used to decode the bytes into chars.
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is not
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -462,7 +462,7 @@ public interface IODataReader extends Readable {
      * Read ASCII character data from the I/O device into the provided character buffer starting
      * at the zero index (first position) up to the specified data length (number of characters).
      * ASCII is the internal character set used to decode the bytes into chars.
-     *
+     * <p>
      * NOTE:  The data characters read and decoded from the I/O device are
      *        copied/inserted into the character buffer starting at the current
      *        position index up to the length requested or up to the buffer's
@@ -486,7 +486,7 @@ public interface IODataReader extends Readable {
      * Read ASCII character data from the I/O device into the provided character buffer starting
      * at the zero index (first position) up to available space remaining in the buffer.
      * ASCII is the internal character set used to decode the bytes into chars.
-     *
+     * <p>
      * NOTE:  The data characters read from the I/O device are copied/
      *        inserted into the character buffer starting at the current
      *        position index up to the buffer's remaining limit. If
@@ -520,7 +520,7 @@ public interface IODataReader extends Readable {
      * return the data read in a new byte array.  The 'offset' parameter allows you to skip
      * a certain number of bytes in the read data an excludes them from the returned
      * data byte array.
-     *
+     * <p>
      * Note: the resulting byte array size will be at most the 'length' -  'offset'.
      *
      * @param offset the offset index in the data read to start copying read data
@@ -562,7 +562,7 @@ public interface IODataReader extends Readable {
      * return the data read in a new ByteBuffer.  The 'offset' parameter allows you to skip
      * a certain number of bytes in the read data and excludes them from the returned
      * data ByteBuffer.
-     *
+     * <p>
      * Note: the resulting byte buffer size will be at most the 'length' -  'offset'.
      *
      * @param offset the offset index in the data read to start copying read data

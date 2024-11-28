@@ -49,6 +49,7 @@ public class DefaultSpiConfigBuilder
     /**
      * <p>newInstance.</p>
      *
+     * @param context
      * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
      */
     public static SpiConfigBuilder newInstance(Context context) {

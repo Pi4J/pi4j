@@ -61,6 +61,10 @@ module com.pi4j {
     exports com.pi4j.provider.exception;
     exports com.pi4j.registry;
     exports com.pi4j.util;
+    exports com.pi4j.boardinfo.datareader;
+    opens com.pi4j.boardinfo.datareader;
+    exports com.pi4j.boardinfo.util.command;
+    opens com.pi4j.boardinfo.util.command;
 
     // extensibility service interfaces
     uses com.pi4j.extension.Plugin;

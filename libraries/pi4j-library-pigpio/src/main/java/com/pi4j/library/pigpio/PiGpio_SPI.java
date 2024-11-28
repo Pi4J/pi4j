@@ -43,39 +43,39 @@ public interface PiGpio_SPI {
      * This function opens a SPI device channel at a specified baud rate and with specified flags.
      * Data will be transferred at baud bits per second.
      * The flags may be used to modify the default behaviour of 4-wire operation, mode 0, active low chip select.
-     *
+     * <p>
      * The Pi has two SPI peripherals: main and auxiliary.
      * The main SPI has two chip selects (channels), the auxiliary has three.
      * The auxiliary SPI is available on all models but the A and B.
-     *
+     * <p>
      * The GPIO pins used are given in the following table.
-     *
+     * <p>
      *             MISO    MOSI   SCLK   CE0   CE1   CE2
      *             -------------------------------------
      *   Main SPI    9      10     11      8	 7	   -
      *   Aux SPI    19      20     21     18	17    16
-     *
+     * <p>
      *
      *  spiChan  : 0-1 (0-2 for the auxiliary SPI)
      *  baud     : 32K-125M (values above 30M are unlikely to work)
      *  spiFlags : see below
-     *
+     * <p>
      * spiFlags consists of the least significant 22 bits.
      * -----------------------------------------------------------------
      * 21 20 19 18 17 16 15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0
      *  b  b  b  b  b  b  R  T  n  n  n  n  W  A u2 u1 u0 p2 p1 p0  m  m
      * -----------------------------------------------------------------
-     *
+     * <p>
      * [mm] defines the SPI mode.
      *      (Warning: modes 1 and 3 do not appear to work on the auxiliary SPI.)
-     *
+     * <p>
      *      Mode POL  PHA
      *      -------------
      *       0    0    0
      *       1    0    1
      *       2    1    0
      *       3    1    1
-     *
+     * <p>
      * [px] is 0 if CEx is active low (default) and 1 for active high.
      * [ux] is 0 if the CEx GPIO is reserved for SPI (default) and 1 otherwise.
      * [A] is 0 for the main SPI, 1 for the auxiliary SPI.
@@ -84,12 +84,12 @@ public interface PiGpio_SPI {
      * [T] is 1 if the least significant bit is transmitted on MOSI first, the default (0) shifts the most significant bit out first. Auxiliary SPI only.
      * [R] is 1 if the least significant bit is received on MISO first, the default (0) receives the most significant bit first. Auxiliary SPI only.
      * [bbbbbb] defines the word size in bits (0-32). The default (0) sets 8 bits per word. Auxiliary SPI only.
-     *
+     * <p>
      * The spiRead, spiWrite, and spiXfer functions transfer data packed into 1, 2, or 4 bytes according to the word size in bits.
      *  - For bits 1-8 there will be one byte per word.
      *  - For bits 9-16 there will be two bytes per word.
      *  - For bits 17-32 there will be four bytes per word.
-     *
+     * <p>
      * Multi-byte transfers are made in least significant byte first order.
      * E.g. to transfer 32 11-bit words buf should contain 64 bytes and count should be 64.
      * E.g. to transfer the 14 bit value 0x1ABC send the bytes 0xBC followed by 0x1A.
@@ -106,27 +106,27 @@ public interface PiGpio_SPI {
     /**
      * This function opens a SPI device channel at a specified baud rate and with default options using SPI mode 0.
      * Data will be transferred at baud bits per second.
-     *
+     * <p>
      * The Pi has two SPI peripherals: main and auxiliary.
      * The main SPI has two chip selects (channels), the auxiliary has three.
      * The auxiliary SPI is available on all models but the A and B.
-     *
+     * <p>
      * The GPIO pins used are given in the following table.
-     *
+     * <p>
      *             MISO    MOSI   SCLK   CE0   CE1   CE2
      *             -------------------------------------
      *   Main SPI    9      10     11      8	 7	   -
      *   Aux SPI    19      20     21     18	17    16
-     *
+     * <p>
      *
      *  spiChan  : 0-1 (0-2 for the auxiliary SPI)
      *  baud     : 32K-125M (values above 30M are unlikely to work)
-     *
+     * <p>
      * The spiRead, spiWrite, and spiXfer functions transfer data packed into 1, 2, or 4 bytes according to the word size in bits.
      *  - For bits 1-8 there will be one byte per word.
      *  - For bits 9-16 there will be two bytes per word.
      *  - For bits 17-32 there will be four bytes per word.
-     *
+     * <p>
      * Multi-byte transfers are made in least significant byte first order.
      * E.g. to transfer 32 11-bit words buf should contain 64 bytes and count should be 64.
      * E.g. to transfer the 14 bit value 0x1ABC send the bytes 0xBC followed by 0x1A.
@@ -264,7 +264,7 @@ public interface PiGpio_SPI {
     /**
      * This function writes multiple bytes from the byte buffer to the SPI device
      * associated with the handle from the given offset index to the specified length.
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is not
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -291,7 +291,7 @@ public interface PiGpio_SPI {
     /**
      * This function writes multiple bytes from the byte buffer to the SPI device
      * associated with the handle from the current buffer position to the specified length.
-     *
+     * <p>
      * NOTE:  The contents from the byte buffer is read
      *        from the current position index up to the length
      *        requested or up to the buffer's remaining limit;
@@ -322,7 +322,7 @@ public interface PiGpio_SPI {
      * This function writes multiple bytes from the byte buffer to the SPI device
      * associated with the handle.  The contents of the byte buffer are written from
      * the buffer's current position to the buffer's limit.
-     *
+     * <p>
      * NOTE:  The contents from the byte buffer is read
      *        from the current position index up to the buffer's
      *        remaining limit.  If the buffer's current position
@@ -493,7 +493,7 @@ public interface PiGpio_SPI {
     /**
      * Read data from the SPI device into the provided byte buffer at the given
      * offset and up to the specified data length (number of bytes).
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is not
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -536,7 +536,7 @@ public interface PiGpio_SPI {
     /**
      * Read data from the SPI device into the provided byte buffer starting
      * with the buffer's current position up to the provided length.
-     *
+     * <p>
      * NOTE:  The data bytes read from the SPI device are copied/
      *        inserted into the byte buffer starting at the current
      *        position index up to the length requested or up to the
@@ -567,7 +567,7 @@ public interface PiGpio_SPI {
     /**
      * Read data from the SPI device into the provided byte buffer starting with
      * the buffer's current position up to available space remaining in the buffer.
-     *
+     * <p>
      * NOTE:  The data bytes read from the SPI device are copied/
      *        inserted into the byte buffer starting at the current
      *        position index up to the buffer's remaining limit. If
@@ -719,7 +719,7 @@ public interface PiGpio_SPI {
      * using the same length ('numberOfBytes').  Both the 'write' and 'read' byte buffers must
      * at least have the available capacity of the defined 'numberOfBytes' + their corresponding
      * offsets.
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is not
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -771,7 +771,7 @@ public interface PiGpio_SPI {
      * current position using the same length ('numberOfBytes').  Both the 'write' and 'read'
      * byte buffers must at least have the available capacity of the defined 'numberOfBytes' +
      * their corresponding current positions.
-     *
+     * <p>
      * NOTE:  The contents from the 'write' byte buffer is read
      *        from the current position index up to the length
      *        requested or up to the buffer's remaining limit;
@@ -779,7 +779,7 @@ public interface PiGpio_SPI {
      *        position is already at the buffer's limit, then we
      *        will automatically flip the buffer to begin reading
      *        data from the zero position up to the buffer's limit     *
-     *
+     * <p>
      * NOTE:  The data bytes read from the SPI device are copied/
      *        inserted into the 'read' byte buffer starting at the current
      *        position index up to the length requested or up to the
@@ -819,7 +819,7 @@ public interface PiGpio_SPI {
      * read from the SPI device is then copied to the byte buffer at the given 'offset'
      * using the same length (number of bytes). The byte buffer must at least have the
      * available capacity of the defined 'length' + 'offset'.
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is not
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is

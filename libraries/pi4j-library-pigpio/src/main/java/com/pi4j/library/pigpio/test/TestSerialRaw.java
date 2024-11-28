@@ -51,6 +51,7 @@ public class TestSerialRaw {
      * <p>main.</p>
      *
      * @param args an array of {@link String} objects.
+     * @throws InterruptedException
      */
     public static void main(String[] args) throws InterruptedException {
         logger.info("PIGPIO VERSION   : {}", PIGPIO.gpioVersion());

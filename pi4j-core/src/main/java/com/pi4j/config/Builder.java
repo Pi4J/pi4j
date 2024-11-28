@@ -30,6 +30,7 @@ package com.pi4j.config;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <BUILT_TYPE>
  */
 public interface Builder<BUILT_TYPE> {
     /**

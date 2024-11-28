@@ -1,27 +1,51 @@
 package com.pi4j.boardinfo.definition;
 
+/*-
+ * #%L
+ * **********************************************************************
+ * ORGANIZATION  :  Pi4J
+ * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
+ * FILENAME      :  BoardModel.java
+ *
+ * This file is part of the Pi4J project. More information about
+ * this project can be found here:  https://pi4j.com/
+ * **********************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.pi4j.boardinfo.definition.BoardType.*;
 
 /**
- * Partially based on:
+ * Represents various Raspberry Pi board models along with their specifications and attributes.
  *
- * <ul>
- *      <li>Board codes: <a href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#new-style-revision-codes-in-use">raspberrypi.com/documentation/computers/raspberry-pi.html#new-style-revision-codes-in-use</a></li>
- *      <li>Old-style: <a href="https://github.com/raspberrypi/documentation/blob/develop/documentation/asciidoc/computers/raspberry-pi/revision-codes.adoc">github.com/raspberrypi/documentation/blob/develop/documentation/asciidoc/computers/raspberry-pi/revision-codes.adoc</a></li>
- *      </li><li><a href="https://en.wikipedia.org/wiki/Raspberry_Pi#Specifications">en.wikipedia.org/wiki/Raspberry_Pi</a></li>
- *      <li><a href="https://oastic.com/posts/how-to-know-which-raspberry-do-you-have/">oastic.com/posts/how-to-know-which-raspberry-do-you-have</a></li>
- *      <li><a href="https://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/">raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/</a></li>
- * </ul>
+ * <p>This class is partially based on resources such as Raspberry Pi documentation, GitHub, and other online references.</p>
+ *
+ * @see <a href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#new-style-revision-codes-in-use">Board Codes</a>
+ * @see <a href="https://github.com/raspberrypi/documentation/blob/develop/documentation/asciidoc/computers/raspberry-pi/revision-codes.adoc">Old-style Revision Codes</a>
+ * @see <a href="https://en.wikipedia.org/wiki/Raspberry_Pi#Specifications">Raspberry Pi Specifications</a>
+ * @see <a href="https://oastic.com/posts/how-to-know-which-raspberry-do-you-have/">How to Identify Your Raspberry Pi</a>
+ * @see <a href="https://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/">Checking Your Raspberry Pi Board Version</a>
  */
 public enum BoardModel {
     MODEL_1_A("Raspberry Pi 1 Model A", SINGLE_BOARD_COMPUTER,
@@ -31,8 +55,8 @@ public enum BoardModel {
         LocalDate.of(2013, 2, 1),
         Soc.BCM2835,
         Cpu.ARM1176JZF_S, 1,
-        Collections.singletonList(700),
-        Collections.singletonList(256 * 1024)),
+        List.of(700),
+        List.of(256 * 1024)),
     MODEL_1_A_PLUS("Raspberry Pi 1 Model A+", SINGLE_BOARD_COMPUTER,
         List.of("0012", "0015", "900021"),
         PiModel.MODEL_A,
@@ -40,9 +64,9 @@ public enum BoardModel {
         LocalDate.of(2014, 11, 1),
         Soc.BCM2835,
         Cpu.ARM1176JZF_S, 1,
-        Collections.singletonList(700),
+        List.of(700),
         List.of(256 * 1024, 512 * 1024),
-        Collections.singletonList("Amount of memory changed to 512Mb on 20160810")),
+        List.of("Amount of memory changed to 512Mb on 20160810")),
     MODEL_3_A_PLUS("Raspberry Pi 3 Model A+", SINGLE_BOARD_COMPUTER,
         List.of("9020e0", "9020e1"),
         PiModel.MODEL_A,
@@ -50,8 +74,8 @@ public enum BoardModel {
         LocalDate.of(2018, 11, 1),
         Soc.BCM2837B0,
         Cpu.CORTEX_A53, 4,
-        Collections.singletonList(1400),
-        Collections.singletonList(512 * 1024)),
+        List.of(1400),
+        List.of(512 * 1024)),
     MODEL_1_B("Raspberry Pi 1 Model B", SINGLE_BOARD_COMPUTER,
         List.of("0002", "0003", "0004", "0005", "0006", "000d", "000e", "000f"),
         PiModel.MODEL_B,
@@ -59,9 +83,9 @@ public enum BoardModel {
         LocalDate.of(2012, 4, 1),
         Soc.BCM2835,
         Cpu.ARM1176JZF_S, 1,
-        Collections.singletonList(700),
+        List.of(700),
         List.of(256 * 1024, 512 * 1024),
-        Collections.singletonList("Amount of memory changed to 512Mb on 20121015")),
+        List.of("Amount of memory changed to 512Mb on 20121015")),
     MODEL_1_B_PLUS("Raspberry Pi 1 Model B+", SINGLE_BOARD_COMPUTER,
         List.of("0010", "0013", "900032"),
         PiModel.MODEL_B,
@@ -69,8 +93,8 @@ public enum BoardModel {
         LocalDate.of(2014, 7, 1),
         Soc.BCM2835,
         Cpu.ARM1176JZF_S, 1,
-        Collections.singletonList(700),
-        Collections.singletonList(512 * 1024)),
+        List.of(700),
+        List.of(512 * 1024)),
     MODEL_2_B("Raspberry Pi 2 Model B", SINGLE_BOARD_COMPUTER,
         List.of("a01040", "a01041", "a21041"),
         PiModel.MODEL_B,
@@ -78,8 +102,8 @@ public enum BoardModel {
         LocalDate.of(2015, 2, 1),
         Soc.BCM2836,
         Cpu.CORTEX_A7, 4,
-        Collections.singletonList(900),
-        Collections.singletonList(1024 * 1024)),
+        List.of(900),
+        List.of(1024 * 1024)),
     MODEL_2_B_V1_2("Raspberry Pi 2 Model B V1.2", SINGLE_BOARD_COMPUTER,
         List.of("a02042", "a22042"),
         PiModel.MODEL_B,
@@ -87,8 +111,8 @@ public enum BoardModel {
         LocalDate.of(2016, 10, 1),
         Soc.BCM2837,
         Cpu.CORTEX_A53, 4,
-        Collections.singletonList(900),
-        Collections.singletonList(1024 * 1024)),
+        List.of(900),
+        List.of(1024 * 1024)),
     MODEL_3_B("Raspberry Pi 3 Model B", SINGLE_BOARD_COMPUTER,
         List.of("a02082", "a22082", "a32082", "a52082", "a22083"),
         PiModel.MODEL_B,
@@ -96,8 +120,8 @@ public enum BoardModel {
         LocalDate.of(2016, 2, 1),
         Soc.BCM2837,
         Cpu.CORTEX_A53, 4,
-        Collections.singletonList(1200),
-        Collections.singletonList(1024 * 1024)),
+        List.of(1200),
+        List.of(1024 * 1024)),
     MODEL_3_B_PLUS("Raspberry Pi 3 Model B+", SINGLE_BOARD_COMPUTER,
         List.of("a020d3", "a020d4"),
         PiModel.MODEL_B,
@@ -105,8 +129,8 @@ public enum BoardModel {
         LocalDate.of(2018, 3, 14),
         Soc.BCM2837B0,
         Cpu.CORTEX_A53, 4,
-        Collections.singletonList(1400),
-        Collections.singletonList(1024 * 1024)),
+        List.of(1400),
+        List.of(1024 * 1024)),
     MODEL_4_B("Raspberry Pi 4 Model B", SINGLE_BOARD_COMPUTER,
         List.of("a03111", "b03111", "b03112", "b03114", "b03115", "c03111", "c03112", "c03114", "c03115", "d03114", "d03115"),
         PiModel.MODEL_B,
@@ -117,14 +141,14 @@ public enum BoardModel {
         List.of(1500, 1800),
         List.of(1024 * 1024, 2048 * 1024, 4096 * 1024, 8192 * 1024)),
     MODEL_400("Raspberry Pi 400", ALL_IN_ONE_COMPUTER,
-        Collections.singletonList("c03130"),
+        List.of("c03130"),
         PiModel.MODEL_B,
         HeaderVersion.TYPE_3,
         LocalDate.of(2020, 11, 2),
         Soc.BCM2711C0,
         Cpu.CORTEX_A72, 4,
-        Collections.singletonList(1800),
-        Collections.singletonList(4096 * 1024)),
+        List.of(1800),
+        List.of(4096 * 1024)),
     MODEL_5_B("Raspberry Pi 5 Model B", SINGLE_BOARD_COMPUTER,
         List.of("b04170", "c04170", "d04170"),
         PiModel.MODEL_B,
@@ -132,7 +156,7 @@ public enum BoardModel {
         LocalDate.of(2023, 9, 28),
         Soc.BCM2712,
         Cpu.CORTEX_A76, 4,
-        Collections.singletonList(2400),
+        List.of(2400),
         List.of(2048 * 1024, 4096 * 1024, 8192 * 1024)),
     COMPUTE_1("Compute Module 1", STACK_ON_COMPUTER,
         List.of("0011", "0014", "900061"),
@@ -141,8 +165,8 @@ public enum BoardModel {
         LocalDate.of(2014, 4, 1),
         Soc.BCM2835,
         Cpu.ARM1176JZF_S, 1,
-        Collections.singletonList(700),
-        Collections.singletonList(512 * 1024)),
+        List.of(700),
+        List.of(512 * 1024)),
     COMPUTE_3("Compute Module 3", STACK_ON_COMPUTER,
         List.of("a020a0", "a220a0"),
         PiModel.COMPUTE,
@@ -150,17 +174,17 @@ public enum BoardModel {
         LocalDate.of(2017, 1, 1),
         Soc.BCM2837,
         Cpu.CORTEX_A53, 4,
-        Collections.singletonList(1200),
-        Collections.singletonList(1024 * 1024)),
+        List.of(1200),
+        List.of(1024 * 1024)),
     COMPUTE_3_PLUS("Compute Module 3+", STACK_ON_COMPUTER,
-        Collections.singletonList("a02100"),
+        List.of("a02100"),
         PiModel.COMPUTE,
         HeaderVersion.COMPUTE,
         LocalDate.of(2019, 1, 1),
         Soc.BCM2837B0,
         Cpu.CORTEX_A53, 4,
-        Collections.singletonList(1200),
-        Collections.singletonList(1024 * 1024)),
+        List.of(1200),
+        List.of(1024 * 1024)),
     COMPUTE_4("Compute Module 4", STACK_ON_COMPUTER,
         List.of("a03140", "b03140", "c03140", "d03140", "a03141", "b03141", "c03141", "d03141"),
         PiModel.COMPUTE,
@@ -168,7 +192,7 @@ public enum BoardModel {
         LocalDate.of(2020, 10, 1),
         Soc.BCM2711,
         Cpu.CORTEX_A72, 4,
-        Collections.singletonList(1500),
+        List.of(1500),
         List.of(1024 * 1024, 2048 * 1024, 4096 * 1024, 8192 * 1024)),
     // https://datasheets.raspberrypi.com/cm4s/cm4s-datasheet.pdf
     COMPUTE_4_SODIMM("Compute Module 4 SODIMM", STACK_ON_COMPUTER,
@@ -178,7 +202,7 @@ public enum BoardModel {
         LocalDate.of(2020, 10, 1),
         Soc.BCM2711,
         Cpu.CORTEX_A72, 4,
-        Collections.singletonList(1500),
+        List.of(1500),
         List.of(1024 * 1024, 2048 * 1024, 4096 * 1024, 8192 * 1024)),
     ZERO_PCB_1_2("Raspberry Pi Zero PCB V1.2", SINGLE_BOARD_COMPUTER,
         List.of("900092", "920092"),
@@ -187,8 +211,8 @@ public enum BoardModel {
         LocalDate.of(2015, 11, 1),
         Soc.BCM2835,
         Cpu.ARM1176JZF_S, 1,
-        Collections.singletonList(1000),
-        Collections.singletonList(512 * 1024)),
+        List.of(1000),
+        List.of(512 * 1024)),
     ZERO_PCB_1_3("Raspberry Pi Zero PCB V1.3", SINGLE_BOARD_COMPUTER,
         List.of("900093", "920093"),
         PiModel.ZERO,
@@ -196,26 +220,26 @@ public enum BoardModel {
         LocalDate.of(2016, 5, 1),
         Soc.BCM2835,
         Cpu.ARM1176JZF_S, 1,
-        Collections.singletonList(1000),
-        Collections.singletonList(512 * 1024)),
+        List.of(1000),
+        List.of(512 * 1024)),
     ZERO_W("Raspberry Pi Zero W", SINGLE_BOARD_COMPUTER,
-        Collections.singletonList("9000c1"),
+        List.of("9000c1"),
         PiModel.ZERO,
         HeaderVersion.TYPE_3,
         LocalDate.of(2017, 2, 28),
         Soc.BCM2835,
         Cpu.ARM1176JZF_S, 1,
-        Collections.singletonList(1000),
-        Collections.singletonList(512 * 1024)),
+        List.of(1000),
+        List.of(512 * 1024)),
     ZERO_V2("Raspberry Pi Zero V2", SINGLE_BOARD_COMPUTER,
-        Collections.singletonList("902120"),
+        List.of("902120"),
         PiModel.ZERO,
         HeaderVersion.TYPE_3,
         LocalDate.of(2021, 10, 28),
         Soc.BCM2710A1,
         Cpu.CORTEX_A53, 4,
-        Collections.singletonList(1000),
-        Collections.singletonList(512 * 1024)),
+        List.of(1000),
+        List.of(512 * 1024)),
     PICO("Raspberry Pi Pico", MICROCONTROLLER,
         new ArrayList<>(),
         PiModel.PICO,
@@ -223,8 +247,8 @@ public enum BoardModel {
         LocalDate.of(2021, 1, 1),
         Soc.RP2040,
         Cpu.CORTEX_MO_PLUS, 1,
-        Collections.singletonList(133),
-        Collections.singletonList(264 + 2048)),
+        List.of(133),
+        List.of(264 + 2048)),
     PICO_W("Raspberry Pi Pico W", MICROCONTROLLER,
         new ArrayList<>(),
         PiModel.PICO,
@@ -232,9 +256,9 @@ public enum BoardModel {
         LocalDate.of(2022, 6, 1),
         Soc.RP2040,
         Cpu.CORTEX_MO_PLUS, 1,
-        Collections.singletonList(133),
-        Collections.singletonList(264 + 2048),
-        Collections.singletonList("Same form factor as PICO but with Wi-Fi")),
+        List.of(133),
+        List.of(264 + 2048),
+        List.of("Same form factor as PICO but with Wi-Fi")),
     PICO_2("Raspberry Pi Pico 2", MICROCONTROLLER,
         new ArrayList<>(),
         PiModel.PICO,
@@ -242,8 +266,8 @@ public enum BoardModel {
         LocalDate.of(2024, 8, 8),
         Soc.RP2350,
         Cpu.CORTEX_M33, 1,
-        Collections.singletonList(150),
-        Collections.singletonList(520 + 4096)),
+        List.of(150),
+        List.of(520 + 4096)),
     PICO_2_W("Raspberry Pi Pico 2 W", MICROCONTROLLER,
         new ArrayList<>(),
         PiModel.PICO,
@@ -251,8 +275,8 @@ public enum BoardModel {
         LocalDate.of(2024, 8, 8),
         Soc.RP2350,
         Cpu.CORTEX_M33, 1,
-        Collections.singletonList(150),
-        Collections.singletonList(520 + 4096)),
+        List.of(150),
+        List.of(520 + 4096)),
     UNKNOWN("Unknown", BoardType.UNKNOWN,
         new ArrayList<>(),
         PiModel.UNKNOWN,
@@ -278,14 +302,45 @@ public enum BoardModel {
     private final List<Integer> versionsMemoryInKb;
     private final List<String> remarks;
 
+    /**
+     * Constructor for creating a {@code BoardModel} without remarks.
+     *
+     * @param label the descriptive name of the board
+     * @param boardType the type of the board
+     * @param boardCodes a list of unique codes identifying this board
+     * @param model the Pi model of the board
+     * @param headerVersion the header version
+     * @param releaseDate the release date of the board
+     * @param soc the system-on-chip used
+     * @param cpu the CPU type
+     * @param numberOfCpu the number of CPU cores
+     * @param versionsProcessorSpeedInMhz list of processor speeds in MHz
+     * @param versionsMemoryInKb list of memory sizes in KB
+     */
     BoardModel(String label, BoardType boardType, List<String> boardCodes,
                PiModel model, HeaderVersion headerVersion, LocalDate releaseDate,
                Soc soc, Cpu cpu, Integer numberOfCpu,
                List<Integer> versionsProcessorSpeedInMhz, List<Integer> versionsMemoryInKb) {
-        this(label, boardType, boardCodes, model, headerVersion, releaseDate, soc, cpu, numberOfCpu, versionsProcessorSpeedInMhz,
-            versionsMemoryInKb, new ArrayList<>());
+        this(label, boardType, boardCodes, model, headerVersion, releaseDate, soc, cpu, numberOfCpu,
+            versionsProcessorSpeedInMhz, versionsMemoryInKb, new ArrayList<>());
     }
 
+    /**
+     * Constructor for creating a {@code BoardModel}.
+     *
+     * @param label the descriptive name of the board
+     * @param boardType the type of the board
+     * @param boardCodes a list of unique codes identifying this board
+     * @param model the Pi model of the board
+     * @param headerVersion the header version
+     * @param releaseDate the release date of the board
+     * @param soc the system-on-chip used
+     * @param cpu the CPU type
+     * @param numberOfCpu the number of CPU cores
+     * @param versionsProcessorSpeedInMhz list of processor speeds in MHz
+     * @param versionsMemoryInKb list of memory sizes in KB
+     * @param remarks any remarks or notes about the board
+     */
     BoardModel(String label, BoardType boardType, List<String> boardCodes,
                PiModel model, HeaderVersion headerVersion, LocalDate releaseDate,
                Soc soc, Cpu cpu, Integer numberOfCpu,
@@ -305,6 +360,13 @@ public enum BoardModel {
         this.remarks = remarks;
     }
 
+    /**
+     * Retrieves the board model corresponding to the given board code.
+     *
+     * @param boardCode the board code to look up
+     * @return the matching {@code BoardModel} or {@code UNKNOWN} if no match is found
+     * @throws Exception if multiple matches are found
+     */
     public static BoardModel getByBoardCode(String boardCode) throws Exception {
         var matches = Arrays.stream(BoardModel.values())
             .filter(bm -> bm.boardCodes.contains(boardCode))
@@ -312,11 +374,17 @@ public enum BoardModel {
         if (matches.isEmpty()) {
             return BoardModel.UNKNOWN;
         } else if (matches.size() > 1) {
-            throw (new Exception("Too many matching models found for code " + boardCode + ", probably an error in the definitions"));
+            throw new Exception("Too many matching models found for code " + boardCode);
         }
         return matches.get(0);
     }
 
+    /**
+     * Retrieves the board model corresponding to the given board name.
+     *
+     * @param boardName the name of the board
+     * @return the matching {@code BoardModel} or {@code UNKNOWN} if no match is found
+     */
     public static BoardModel getByBoardName(String boardName) {
         var matches = Arrays.stream(BoardModel.values())
             .filter(bm -> boardName.toLowerCase().startsWith(bm.label.toLowerCase()))
@@ -329,69 +397,118 @@ public enum BoardModel {
         return matches.get(0);
     }
 
+    /**
+     * Retrieves all unique board codes from all models.
+     *
+     * @return a list of all board codes
+     */
     public static List<String> getAllBoardCodes() {
         return Arrays.stream(BoardModel.values())
-            .map(b -> b.boardCodes)
-            .flatMap(List::stream)  // Flatten the nested lists into a single stream
-            .collect(Collectors.toList()); // Collect elements into one list
+            .flatMap(b -> b.boardCodes.stream())
+            .collect(Collectors.toList());
     }
 
+    /**
+     * @return the enum name of the board model
+     */
     public String getName() {
         return name();
     }
 
+    /**
+     * @return the label of the board model
+     */
     public String getLabel() {
         return label;
     }
 
+    /**
+     * @return the board type
+     */
     public BoardType getBoardType() {
         return boardType;
     }
 
+    /**
+     * @return the list of board codes
+     */
     public List<String> getBoardCodes() {
         return boardCodes;
     }
 
+    /**
+     * @return the Pi model of the board
+     */
     public PiModel getModel() {
         return model;
     }
 
+    /**
+     * @return the header version of the board
+     */
     public HeaderVersion getHeaderVersion() {
         return headerVersion;
     }
 
+    /**
+     * @return the release date of the board
+     */
     public LocalDate getReleaseDate() {
         return releaseDate;
     }
 
+    /**
+     * @return the system-on-chip used by the board
+     */
     public Soc getSoc() {
         return soc;
     }
 
+    /**
+     * @return the CPU type used by the board
+     */
     public Cpu getCpu() {
         return cpu;
     }
 
+    /**
+     * @return the number of CPU cores
+     */
     public Integer getNumberOfCpu() {
         return numberOfCpu;
     }
 
+    /**
+     * @return a list of processor speeds in MHz
+     */
     public List<Integer> getVersionsProcessorSpeedInMhz() {
         return versionsProcessorSpeedInMhz;
     }
 
+    /**
+     * @return a list of memory sizes in KB
+     */
     public List<Integer> getVersionsMemoryInKb() {
         return versionsMemoryInKb;
     }
 
+    /**
+     * @return a list of memory sizes in MB
+     */
     public List<Float> getVersionsMemoryInMb() {
         return versionsMemoryInKb.stream().map(m -> m / 1024F).collect(Collectors.toList());
     }
 
+    /**
+     * @return a list of memory sizes in GB
+     */
     public List<Float> getVersionsMemoryInGb() {
         return versionsMemoryInKb.stream().map(m -> m / 1024F / 1024F).collect(Collectors.toList());
     }
 
+    /**
+     * @return any remarks associated with the board
+     */
     public List<String> getRemarks() {
         return remarks;
     }

@@ -71,6 +71,7 @@ public class LinuxPwm {
      * <p>Constructor for LinuxPwm.</p>
      *
      * @param systemPath a {@link String} object.
+     * @param chip
      * @param address a int.
      */
     public LinuxPwm(String systemPath, int chip, int address){

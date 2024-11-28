@@ -50,6 +50,7 @@ public class DefaultDigitalOutputConfigBuilder
     /**
      * <p>newInstance.</p>
      *
+     * @param context
      * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder} object.
      */
     public static DigitalOutputConfigBuilder newInstance(Context context) {

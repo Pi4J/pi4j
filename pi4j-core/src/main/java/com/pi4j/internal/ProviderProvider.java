@@ -116,6 +116,7 @@ public interface ProviderProvider extends ProviderAliases {
      * <p>provider.</p>
      *
      * @param providerId a {@link java.lang.String} object.
+     * @param providerClass
      * @param <T> a T object.
      * @return a T object.
      * @throws ProviderNotFoundException if the provider specified by {@code providerId} can not be found.

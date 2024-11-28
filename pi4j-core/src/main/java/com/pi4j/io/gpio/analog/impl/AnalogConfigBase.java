@@ -36,6 +36,7 @@ import java.util.Map;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <CONFIG_TYPE>
  */
 public abstract class AnalogConfigBase<CONFIG_TYPE extends AnalogConfig>
         extends IOAddressConfigBase<CONFIG_TYPE>

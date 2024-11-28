@@ -47,6 +47,7 @@ public class LinuxFsDigitalOutputProviderImpl extends DigitalOutputProviderBase
 
     /**
      * <p>Constructor for LinuxFsDigitalOutputProviderImpl.</p>
+     * @param gpioFileSystemPath
      */
     public LinuxFsDigitalOutputProviderImpl(String gpioFileSystemPath) {
         this.id = ID;

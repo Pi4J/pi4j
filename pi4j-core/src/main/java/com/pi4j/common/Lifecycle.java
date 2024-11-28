@@ -34,6 +34,7 @@ import com.pi4j.exception.ShutdownException;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <T>
  */
 public interface Lifecycle<T> {
     /**

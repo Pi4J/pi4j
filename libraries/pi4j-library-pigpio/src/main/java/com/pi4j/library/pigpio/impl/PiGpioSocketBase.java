@@ -62,7 +62,7 @@ public abstract class PiGpioSocketBase extends PiGpioBase implements PiGpio {
 
     /**
      * ALTERNATE CONSTRUCTOR
-     *
+     * <p>
      * Connects to a user specified socket hostname/ip address and port.
      *
      * @param host hostname or IP address of the RaspberryPi to connect to via TCP/IP socket.
@@ -81,7 +81,7 @@ public abstract class PiGpioSocketBase extends PiGpioBase implements PiGpio {
      *
      * Initializes the library.
      * (The Java implementation of this function does not return a value)
-     *
+     * <p>
      * gpioInitialise must be called before using the other library functions with the following exceptions:
      * - gpioCfg*
      * - gpioVersion
@@ -120,7 +120,7 @@ public abstract class PiGpioSocketBase extends PiGpioBase implements PiGpio {
      * {@inheritDoc}
      *
      * Shutdown the library.
-     *
+     * <p>
      * Returns nothing.
      * Call before program exit.
      * This function resets the used DMA channels, releases memory, and terminates any running threads.

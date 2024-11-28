@@ -34,6 +34,7 @@ import com.pi4j.io.IOConfig;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <CONFIG_TYPE>
  */
 public interface GpioConfig<CONFIG_TYPE extends Config>
         extends AddressConfig<CONFIG_TYPE>, IOConfig<CONFIG_TYPE> {

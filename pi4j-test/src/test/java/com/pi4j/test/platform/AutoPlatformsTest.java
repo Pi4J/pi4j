@@ -48,7 +48,7 @@ public class AutoPlatformsTest {
         // An auto context includes AUTO-DETECT BINDINGS enabled
         // which will load all detected Pi4J extension libraries
         // (Platforms and Providers) in the class path
-        pi4j = Pi4J.newAutoContext();
+        pi4j = Pi4J.newContextBuilder().autoDetectMockPlugins().autoDetectPlatforms().build();
     }
 
     @AfterAll

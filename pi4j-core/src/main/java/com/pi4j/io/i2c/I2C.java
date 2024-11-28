@@ -186,6 +186,8 @@ public interface I2C
      * Executes the given runnable on the I2C bus, locking the bus for the duration of the given task
      *
      * @param action the action to perform, returning a value
+     * @param <T>
+     * @return
      */
     <T> T execute(Callable<T> action);
 }

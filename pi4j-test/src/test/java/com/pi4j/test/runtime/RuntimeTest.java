@@ -52,7 +52,7 @@ public class RuntimeTest {
         // An auto context includes AUTO-DETECT BINDINGS enabled
         // which will load all detected Pi4J extension libraries
         // (Platforms and Providers) in the class path
-        Context pi4j = Pi4J.newAutoContext();
+        Context pi4j = Pi4J.newContextBuilder().autoDetectMockPlugins().autoDetectPlatforms().build();
 
         logger.info("-------------------------------------------------");
         logger.info("Pi4J CONTEXT <acquired via factory accessor>");

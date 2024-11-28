@@ -51,7 +51,7 @@ public interface PwmPresetBuilder extends Builder<PwmPreset> {
      *  period.  The duty-cycle range is valid from 0 to 100 including
      *  factional values.  (Values above 50% mean the signal will
      *  remain HIGH more time than LOW.)
-     *
+     * <p>
      *  Example: A value of 50 represents a duty-cycle where half of
      *  the time period the signal is LOW and the other half is HIGH.
      *
@@ -64,7 +64,7 @@ public interface PwmPresetBuilder extends Builder<PwmPreset> {
      *  Set the configured frequency value in Hertz (number of cycles per second)
      *  that the PWM signal generator should attempt to output when this preset
      *  is applied to a PWM instance.
-     *
+     * <p>
      *  Please note that certain PWM signal generators may be limited to specific
      *  frequency bands and may not generate all possible explicit frequency values.
      *  After enabling the PWM signal using the 'on(...)' method, you can check the

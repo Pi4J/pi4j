@@ -32,6 +32,7 @@ import com.pi4j.common.IdentityBase;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <T>
  */
 public abstract class ExtensionBase<T> extends IdentityBase<T> implements Extension<T> {
 

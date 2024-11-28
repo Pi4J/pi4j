@@ -30,6 +30,7 @@ package com.pi4j.config;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <CONFIG_TYPE>
  */
 public interface DeviceConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
 

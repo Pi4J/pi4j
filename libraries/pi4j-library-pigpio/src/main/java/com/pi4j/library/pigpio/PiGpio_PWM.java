@@ -37,7 +37,7 @@ public interface PiGpio_PWM {
 
     /**
      * Starts PWM on the GPIO, duty-cycle between 0 (off) and range (fully on). Range defaults to 255.
-     *
+     * <p>
      * This and the servo functionality use the DMA and PWM or PCM peripherals to control and schedule
      * the pulse lengths and duty cycles.
      *
@@ -49,7 +49,7 @@ public interface PiGpio_PWM {
 
     /**
      * Starts PWM on the GPIO, duty-cycle between 0 (off) and range (fully on). Range defaults to 255.
-     *
+     * <p>
      * This and the servo functionality use the DMA and PWM or PCM peripherals to control and schedule
      * the pulse lengths and duty cycles.
      *
@@ -64,11 +64,11 @@ public interface PiGpio_PWM {
 
     /**
      * Returns the PWM dutycycle setting for the GPIO.
-     *
+     * <p>
      * For normal PWM the dutycycle will be out of the defined range for the GPIO (see gpioGetPWMrange).
      * If a hardware clock is active on the GPIO the reported dutycycle will be 500000 (500k) out of 1000000 (1M).
      * If hardware PWM is active on the GPIO the reported dutycycle will be out of a 1000000 (1M).
-     *
+     * <p>
      * Normal PWM range defaults to 255.
      *
      * @param pin user_gpio: 0-31
@@ -82,10 +82,10 @@ public interface PiGpio_PWM {
      * Selects the dutycycle range to be used for the GPIO. Subsequent calls to gpioPWM will use a dutycycle
      * between 0 (off) and range (fully on.  If PWM is currently active on the GPIO its dutycycle will be
      * scaled to reflect the new range.
-     *
+     * <p>
      * The real range, the number of steps between fully off and fully on for each frequency,
      * is given in the following table.
-     *
+     * <p>
      *  -------------------------------------------------------
      *   #1	   #2	 #3	   #4	 #5	   #6	 #7	    #8	   #9
      *   25,   50,  100,  125,  200,  250,  400,   500,   625,
@@ -93,9 +93,9 @@ public interface PiGpio_PWM {
      *  #10   #11   #12   #13   #14   #15    #16   #17    #18
      *  800, 1000, 1250, 2000, 2500, 4000, 5000, 10000, 20000
      *  -------------------------------------------------------
-     *
+     * <p>
      * The real value set by gpioPWM is (dutycycle * real range) / range.
-     *
+     * <p>
      * Example
      *   gpioSetPWMrange(24, 2000); // Now 2000 is fully on
      *                              //     1000 is half on
@@ -132,34 +132,34 @@ public interface PiGpio_PWM {
 
     /**
      * Sets the frequency in hertz to be used for the GPIO.
-     *
+     * <p>
      * If PWM is currently active on the GPIO it will be switched off and then back on at the new frequency.
      * Each GPIO can be independently set to one of 18 different PWM frequencies.
      * The selectable frequencies depend upon the sample rate which may be 1, 2, 4, 5, 8, or 10 microseconds (default 5).
-     *
+     * <p>
      * The frequencies for each sample rate are:
-     *
+     * <p>
      *                        Hertz
-     *
+     * <p>
      *        1: 40000 20000 10000 8000 5000 4000 2500 2000 1600
      *            1250  1000   800  500  400  250  200  100   50
-     *
+     * <p>
      *        2: 20000 10000  5000 4000 2500 2000 1250 1000  800
      *             625   500   400  250  200  125  100   50   25
-     *
+     * <p>
      *        4: 10000  5000  2500 2000 1250 1000  625  500  400
      *             313   250   200  125  100   63   50   25   13
      * sample
      *  rate
      *  (us)  5:  8000  4000  2000 1600 1000  800  500  400  320
      *             250   200   160  100   80   50   40   20   10
-     *
+     * <p>
      *        8:  5000  2500  1250 1000  625  500  313  250  200
      *             156   125   100   63   50   31   25   13    6
-     *
+     * <p>
      *       10:  4000  2000  1000  800  500  400  250  200  160
      *             125   100    80   50   40   25   20   10    5
-     *
+     * <p>
      *
      * Example:
      *    gpioSetPWMfrequency(23, 0); // Set GPIO23 to lowest frequency.
@@ -176,11 +176,11 @@ public interface PiGpio_PWM {
 
     /**
      * Returns the frequency (in hertz) used for the GPIO
-     *
+     * <p>
      * For normal PWM the frequency will be that defined for the GPIO by gpioSetPWMfrequency.
      * If a hardware clock is active on the GPIO the reported frequency will be that set by gpioHardwareClock.
      * If hardware PWM is active on the GPIO the reported frequency will be that set by gpioHardwarePWM.
-     *
+     * <p>
      * Example:
      *    f = gpioGetPWMfrequency(23); // Get frequency used for GPIO23.
      *
@@ -194,28 +194,28 @@ public interface PiGpio_PWM {
     /**
      * Starts hardware PWM on a GPIO at the specified frequency and duty-cycle.
      * Frequencies above 30MHz are unlikely to work.
-     *
+     * <p>
      * NOTE: Any waveform started by gpioWaveTxSend, or gpioWaveChain will be cancelled.
-     *
+     * <p>
      * This function is only valid if the pigpio main clock is PCM.
      * The main clock defaults to PCM but may be overridden by a call to gpioCfgClock.
-     *
+     * <p>
      * The same PWM channel is available on multiple GPIO. The latest frequency and duty-cycle
      * setting will be used by all GPIO which share a PWM channel.
-     *
+     * <p>
      * The GPIO must be one of the following.
-     *
+     * <p>
      *   12  PWM channel 0  All models but A and B
      *   13  PWM channel 1  All models but A and B
      *   18  PWM channel 0  All models
      *   19  PWM channel 1  All models but A and B
-     *
+     * <p>
      *   40  PWM channel 0  Compute module only
      *   41  PWM channel 1  Compute module only
      *   45  PWM channel 1  Compute module only
      *   52  PWM channel 0  Compute module only
      *   53  PWM channel 1  Compute module only
-     *
+     * <p>
      *
      * The actual number of steps between off and fully on is the integral part of
      * 250M/PWMfreq (375M/PWMfreq for the BCM2711).

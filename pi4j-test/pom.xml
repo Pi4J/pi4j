@@ -11,7 +11,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>pi4j-test</artifactId>
-    <name>Pi4J :: TESTING  :: Unit/Integration Tests</name>
+    <name>Pi4J :: TESTING :: Unit/Integration Tests</name>
     <description>Pi4J Unit and Integration Tests</description>
 
     <dependencies>
@@ -241,7 +241,8 @@
                                     <target>
                                         <!-- Stop all running Java processes -->
                                         <sshexec host="${raspberrypi.ipnumber}" port="${raspberrypi.port}"
-                                                 username="${raspberrypi.username}" password="${raspberrypi.password}" trust="true"
+                                                 username="${raspberrypi.username}" password="${raspberrypi.password}"
+                                                 trust="true"
                                                  failonerror="false" usepty="true" useSystemIn="false"
                                                  suppresssystemerr="true" suppresssystemout="true"
                                                  command="sudo killall -9 java"/>
@@ -249,7 +250,8 @@
                                         <!-- Ensure target directory exists on raspberrypi -->
                                         <sshexec host="${raspberrypi.ipnumber}" port="${raspberrypi.port}"
                                                  username="${raspberrypi.username}" password="${raspberrypi.password}"
-                                                 trust="true" command="mkdir --parents ${raspberrypi.deploydirectory}; rm -f ${raspberrypi.deploydirectory}/*"/>
+                                                 trust="true"
+                                                 command="mkdir --parents ${raspberrypi.deploydirectory}; rm -f ${raspberrypi.deploydirectory}/*"/>
 
                                         <!-- Transfer distribution folder to raspberrypi via SCP -->
                                         <scp trust="true"
@@ -260,7 +262,8 @@
 
                                         <!-- Run application on Raspberry Pi -->
                                         <sshexec host="${raspberrypi.ipnumber}" port="${raspberrypi.port}"
-                                                 username="${raspberrypi.username}" password="${raspberrypi.password}" trust="true"
+                                                 username="${raspberrypi.username}" password="${raspberrypi.password}"
+                                                 trust="true"
                                                  failonerror="false" usepty="true" useSystemIn="true"
                                                  command="sudo java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 --module-path ${raspberrypi.deploydirectory} --module ${launcher.class} ${launcher.args}"/>
                                     </target>

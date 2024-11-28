@@ -99,25 +99,25 @@ public abstract class PiGpioBase implements PiGpio {
      * GPIO PINS
      * --------------------------------------------------------------------------
      * A Broadcom numbered GPIO, in the range 0-53.
-     *
+     * <p>
      * There are 54 General Purpose Input Outputs (GPIO) named GPIO0 through GPIO53.
-     *
+     * <p>
      * They are split into two banks. Bank 1 consists of GPIO0 through GPIO31.
      * Bank 2 consists of GPIO32 through GPIO53.
-     *
+     * <p>
      * All the GPIO which are safe for the user to read and write are in bank 1.
      * Not all GPIO in bank 1 are safe though. Type 1 boards have 17 safe GPIO.
      * Type 2 boards have 21. Type 3 boards have 26.
-     *
+     * <p>
      * See gpioHardwareRevision.
-     *
+     * <p>
      * The user GPIO are marked with an X in the following table.
-     *
+     * <p>
      *           0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
      * Type 1    X  X  -  -  X  -  -  X  X  X  X  X  -  -  X  X
      * Type 2    -  -  X  X  X  -  -  X  X  X  X  X  -  -  X  X
      * Type 3          X  X  X  X  X  X  X  X  X  X  X  X  X  X
-     *
+     * <p>
      *          16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
      * Type 1    -  X  X  -  -  X  X  X  X  X  -  -  -  -  -  -
      * Type 2    -  X  X  -  -  -  X  X  X  X  -  X  X  X  X  X
@@ -506,16 +506,16 @@ public abstract class PiGpioBase implements PiGpio {
      * {@inheritDoc}
      *
      * Returns the hardware revision (as hexadecimal string).
-     *
+     * <p>
      * If the hardware revision can not be found or is not a valid hexadecimal number the function returns 0.
      * The hardware revision is the last few characters on the Revision line of /proc/cpuinfo.
      * The revision number can be used to determine the assignment of GPIO to pins (see gpio).
-     *
+     * <p>
      * There are at least three types of board.
      *  - Type 1 boards have hardware revision numbers of 2 and 3.
      *  - Type 2 boards have hardware revision numbers of 4, 5, 6, and 15.
      *  - Type 3 boards have hardware revision numbers of 16 or greater.
-     *
+     * <p>
      *     for "Revision : 0002" the function returns 2.
      *     for "Revision : 000f" the function returns 15.
      *     for "Revision : 000g" the function returns 0.

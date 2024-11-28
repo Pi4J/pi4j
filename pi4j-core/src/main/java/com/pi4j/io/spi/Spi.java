@@ -223,7 +223,7 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * using the same length ('numberOfBytes').  Both the 'write' and 'read' byte buffers must
      * at least have the available capacity of the defined 'numberOfBytes' + their corresponding
      * offsets.
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is not
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -274,7 +274,7 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * current position using the same length ('numberOfBytes').  Both the 'write' and 'read'
      * byte buffers must at least have the available capacity of the defined 'numberOfBytes' +
      * their corresponding current positions.
-     *
+     * <p>
      * NOTE:  The contents from the 'write' byte buffer is read
      *        from the current position index up to the length
      *        requested or up to the buffer's remaining limit;
@@ -282,7 +282,7 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      *        position is already at the buffer's limit, then we
      *        will automatically flip the buffer to begin reading
      *        data from the zero position up to the buffer's limit     *
-     *
+     * <p>
      * NOTE:  The data bytes read from the SPI device are copied/
      *        inserted into the 'read' byte buffer starting at the current
      *        position index up to the length requested or up to the
@@ -321,7 +321,7 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * read from the SPI device is then copied to the byte buffer at the given 'offset'
      * using the same length (number of bytes). The byte buffer must at least have the
      * available capacity of the defined 'length' + 'offset'.
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is not
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is

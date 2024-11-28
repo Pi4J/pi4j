@@ -47,6 +47,7 @@ public class LinuxFsI2C extends I2CBase<LinuxFsI2CBus> implements I2C {
     /**
      * <p>Constructor for PiGpioI2C.</p>
      *
+     * @param i2CBus
      * @param provider
      *     a {@link I2CProvider} object.
      * @param config

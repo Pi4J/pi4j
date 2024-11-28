@@ -32,6 +32,7 @@ import com.pi4j.event.Listener;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <EVENT_TYPE>
  */
 public interface DigitalListener<EVENT_TYPE extends DigitalEvent> extends Listener {
     // MARKER INTERFACE

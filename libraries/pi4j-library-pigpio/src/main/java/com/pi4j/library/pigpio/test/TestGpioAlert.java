@@ -49,6 +49,7 @@ public class TestGpioAlert {
      * <p>main.</p>
      *
      * @param args an array of {@link String} objects.
+     * @throws IOException
      */
     public static void main(String[] args) throws IOException {
         String loglevel = "INFO";

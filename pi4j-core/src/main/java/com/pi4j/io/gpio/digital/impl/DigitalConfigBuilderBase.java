@@ -36,6 +36,8 @@ import com.pi4j.io.impl.IOAddressConfigBuilderBase;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <BUILDER_TYPE>
+ * @param <CONFIG_TYPE>
  */
 public abstract class DigitalConfigBuilderBase<BUILDER_TYPE extends DigitalConfigBuilder, CONFIG_TYPE extends DigitalConfig>
         extends IOAddressConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>

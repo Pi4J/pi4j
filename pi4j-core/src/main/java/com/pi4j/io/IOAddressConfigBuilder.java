@@ -34,6 +34,8 @@ import com.pi4j.provider.Provider;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <BUILDER_TYPE>
+ * @param <CONFIG_TYPE>
  */
 public interface IOAddressConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>
         extends IOConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,

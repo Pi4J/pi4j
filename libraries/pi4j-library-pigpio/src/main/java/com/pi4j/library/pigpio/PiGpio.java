@@ -132,7 +132,7 @@ public interface PiGpio extends
     
     /**
      * Initialises the library.
-     *
+     * <p>
      * Returns the pigpio version number if OK, otherwise PI_INIT_FAILED.
      * gpioInitialise must be called before using the other library functions with the following exceptions:
      * - gpioCfg*
@@ -146,7 +146,7 @@ public interface PiGpio extends
 
     /**
      * Initialises the library.
-     *
+     * <p>
      * Returns the pigpio version number if OK, otherwise PI_INIT_FAILED.
      * gpioInitialise must be called before using the other library functions with the following exceptions:
      * - gpioCfg*
@@ -160,7 +160,7 @@ public interface PiGpio extends
 
     /**
      * Initialises the library.
-     *
+     * <p>
      * Returns the pigpio version number if OK, otherwise PI_INIT_FAILED.
      * gpioInitialise must be called before using the other library functions with the following exceptions:
      * - gpioCfg*
@@ -174,7 +174,7 @@ public interface PiGpio extends
 
     /**
      * Initialises the library.
-     *
+     * <p>
      * Returns the pigpio version number if OK, otherwise PI_INIT_FAILED.
      * gpioInitialise must be called before using the other library functions with the following exceptions:
      * - gpioCfg*
@@ -188,7 +188,7 @@ public interface PiGpio extends
 
     /**
      * Shutdown/Terminate the library.
-     *
+     * <p>
      * Returns nothing.
      * Call before program exit.
      * This function resets the used DMA channels, releases memory, and terminates any running threads.
@@ -199,7 +199,7 @@ public interface PiGpio extends
 
     /**
      * Shutdown/Terminate the library.
-     *
+     * <p>
      * Returns nothing.
      * Call before program exit.
      * This function resets the used DMA channels, releases memory, and terminates any running threads.
@@ -210,7 +210,7 @@ public interface PiGpio extends
 
     /**
      * Shutdown/Terminate the library.
-     *
+     * <p>
      * Returns nothing.
      * Call before program exit.
      * This function resets the used DMA channels, releases memory, and terminates any running threads.
@@ -227,16 +227,16 @@ public interface PiGpio extends
 
     /**
      * Returns the hardware revision.
-     *
+     * <p>
      * If the hardware revision can not be found or is not a valid hexadecimal number the function returns 0.
      * The hardware revision is the last few characters on the Revision line of /proc/cpuinfo.
      * The revision number can be used to determine the assignment of GPIO to pins (see gpio).
-     *
+     * <p>
      * There are at least three types of board.
      *  - Type 1 boards have hardware revision numbers of 2 and 3.
      *  - Type 2 boards have hardware revision numbers of 4, 5, 6, and 15.
      *  - Type 3 boards have hardware revision numbers of 16 or greater.
-     *
+     * <p>
      *     for "Revision : 0002" the function returns 2.
      *     for "Revision : 000f" the function returns 15.
      *     for "Revision : 000g" the function returns 0.
@@ -249,16 +249,16 @@ public interface PiGpio extends
 
     /**
      * Returns the hardware revision (as hexadecimal string).
-     *
+     * <p>
      * If the hardware revision can not be found or is not a valid hexadecimal number the function returns 0.
      * The hardware revision is the last few characters on the Revision line of /proc/cpuinfo.
      * The revision number can be used to determine the assignment of GPIO to pins (see gpio).
-     *
+     * <p>
      * There are at least three types of board.
      *  - Type 1 boards have hardware revision numbers of 2 and 3.
      *  - Type 2 boards have hardware revision numbers of 4, 5, 6, and 15.
      *  - Type 3 boards have hardware revision numbers of 16 or greater.
-     *
+     * <p>
      *     for "Revision : 0002" the function returns 2.
      *     for "Revision : 000f" the function returns 15.
      *     for "Revision : 000g" the function returns 0.
@@ -299,17 +299,17 @@ public interface PiGpio extends
     /**
      * Returns the current system tick.
      * Tick is the number of microseconds since system boot.
-     *
+     * <p>
      * As tick is an unsigned 32 bit quantity it wraps around after 2^32 microseconds, which is
      * approximately 1 hour 12 minutes.  You don't need to worry about the wrap around as long as you
      * take a tick (uint32_t) from another tick, i.e. the following code will always provide the
      * correct difference.
-     *
+     * <p>
      * Example
      *   uint32_t startTick, endTick;
      *   int diffTick;
      *   startTick = gpioTick();
-     *
+     * <p>
      *   // do some processing
      *   endTick = gpioTick();
      *   diffTick = endTick - startTick;

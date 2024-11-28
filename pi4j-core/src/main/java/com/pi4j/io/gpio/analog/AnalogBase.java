@@ -39,6 +39,9 @@ import com.pi4j.io.gpio.GpioBase;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <ANALOG_TYPE>
+ * @param <CONFIG_TYPE>
+ * @param <PROVIDER_TYPE>
  */
 public abstract class AnalogBase<ANALOG_TYPE
         extends Analog<ANALOG_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,

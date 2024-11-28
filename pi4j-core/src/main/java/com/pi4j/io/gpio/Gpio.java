@@ -33,6 +33,9 @@ import com.pi4j.provider.Provider;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <CONFIG_TYPE>
+ * @param <IO_TYPE>
+ * @param <PROVIDER_TYPE>
  */
 public interface Gpio<IO_TYPE extends IO<IO_TYPE,CONFIG_TYPE, PROVIDER_TYPE>,
         CONFIG_TYPE extends GpioConfig,

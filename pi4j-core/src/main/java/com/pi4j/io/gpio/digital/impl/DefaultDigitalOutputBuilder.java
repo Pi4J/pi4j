@@ -48,7 +48,12 @@ public class DefaultDigitalOutputBuilder implements DigitalOutputBuilder {
     private String providerId = null;
     private Class<? extends Provider> providerClass = null;
 
-    /** {@inheritDoc} */
+    /**
+     * Creates a new instance of {@link DefaultDigitalOutputBuilder} with the specified context.
+     *
+     * @param context the context used to initialize the digital output
+     * @return a new instance of {@link DigitalOutputBuilder}
+     */
     public static DigitalOutputBuilder newInstance(Context context) {
         return new DefaultDigitalOutputBuilder(context);
     }

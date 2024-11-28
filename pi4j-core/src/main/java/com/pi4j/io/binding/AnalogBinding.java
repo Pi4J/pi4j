@@ -32,6 +32,8 @@ import com.pi4j.io.gpio.analog.AnalogValueChangeEvent;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <BINDING_TYPE>
+ * @param <MEMBER_TYPE>
  */
 public interface AnalogBinding<BINDING_TYPE extends Binding, MEMBER_TYPE> extends Binding<BINDING_TYPE, MEMBER_TYPE> {
     /**

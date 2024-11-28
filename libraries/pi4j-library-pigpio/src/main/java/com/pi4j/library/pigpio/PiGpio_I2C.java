@@ -44,7 +44,7 @@ public interface PiGpio_I2C {
      * This returns a handle for the device at the address on the I2C bus.
      * Physically buses 0 and 1 are available on the Pi.
      * Higher numbered buses will be available if a kernel supported bus multiplexor is being used.
-     *
+     * <p>
      * The GPIO used are given in the following table.
      *         SDA   SCL
      * I2C0     0     1
@@ -63,7 +63,7 @@ public interface PiGpio_I2C {
      * This returns a handle for the device at the address on the I2C bus.
      * Physically buses 0 and 1 are available on the Pi.
      * Higher numbered buses will be available if a kernel supported bus multiplexor is being used.
-     *
+     * <p>
      * The GPIO used are given in the following table.
      *         SDA   SCL
      * I2C0     0     1
@@ -216,7 +216,7 @@ public interface PiGpio_I2C {
     /**
      * This writes up to 32 bytes to the specified I2C register of the device
      * associated with the handle from the given offset index to the specified length.
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is not
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -244,7 +244,7 @@ public interface PiGpio_I2C {
     /**
      * This writes up to 32 bytes to the specified I2C register of the device
      * associated with the handle from the current position to the specified length.
-     *
+     * <p>
      * NOTE:  The contents from the byte buffer is read
      *        from the current position index up to the length
      *        requested or up to the buffer's remaining limit;
@@ -276,7 +276,7 @@ public interface PiGpio_I2C {
      * This writes up to 32 bytes to the specified I2C register of the device
      * associated with the handle.  The contents of the byte buffer are written from
      * the buffer's current position to the buffer's limit.
-     *
+     * <p>
      * NOTE:  The contents from the byte buffer is read
      *        from the current position index up to the buffer's
      *        remaining limit.  If the buffer's current position
@@ -447,7 +447,7 @@ public interface PiGpio_I2C {
      * This reads a block of up to 32 bytes from the specified register of the device associated with the handle
      * into the provided byte buffer at the given offset and up to the specified data length (number of bytes).
      * (The amount of returned data is set by the device.)
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is not
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -493,7 +493,7 @@ public interface PiGpio_I2C {
      * This reads a block of up to 32 bytes from the specified register of the device associated with the handle
      * and copies the data bytes into the provided byte buffer starting with the current buffer position.
      * (The amount of returned data is set by the device.)
-     *
+     * <p>
      * NOTE:  The data bytes read from the serial device are copied/
      *        inserted into the byte buffer starting at the current
      *        position index up to the length requested or up to the
@@ -526,7 +526,7 @@ public interface PiGpio_I2C {
      * This reads a block of up to 32 bytes from the specified register of the device associated with the handle
      * and copies the data bytes into the provided byte buffer starting with the current buffer position up to
      * the available space remaining in the buffer.  (The amount of returned data is set by the device.)
-     *
+     * <p>
      * NOTE:  The data bytes read from the serial device are copied/
      *        inserted into the byte buffer starting at the current
      *        position index up to the buffer's remaining limit. If
@@ -553,7 +553,7 @@ public interface PiGpio_I2C {
     /**
      * This writes data bytes to the specified register of the device associated with the handle and reads a
      * device specified number of bytes of data in return.
-     *
+     * <p>
      * The SMBus 2.0 documentation states that a minimum of 1 byte may be sent and a minimum of 1 byte may be received.
      * The total number of bytes sent/received must be 32 or less.
      *
@@ -573,7 +573,7 @@ public interface PiGpio_I2C {
     /**
      * This writes data bytes to the specified register of the device associated with the handle and reads a
      * device specified number of bytes of data in return.
-     *
+     * <p>
      * The SMBus 2.0 documentation states that a minimum of 1 byte may be sent and a minimum of 1 byte may be received.
      * The total number of bytes sent/received must be 32 or less.
      *
@@ -594,7 +594,7 @@ public interface PiGpio_I2C {
     /**
      * This writes data bytes to the specified register of the device associated with the handle and reads a
      * device specified number of bytes of data in return.
-     *
+     * <p>
      * The SMBus 2.0 documentation states that a minimum of 1 byte may be sent and a minimum of 1 byte may be received.
      * The total number of bytes sent/received must be 32 or less.
      *
@@ -614,7 +614,7 @@ public interface PiGpio_I2C {
     /**
      * This writes data bytes to the specified register of the device associated with the handle and reads a
      * device specified number of bytes of data in return.
-     *
+     * <p>
      * The SMBus 2.0 documentation states that a minimum of 1 byte may be sent and a minimum of 1 byte may be received.
      * The total number of bytes sent/received must be 32 or less.
      *
@@ -633,7 +633,7 @@ public interface PiGpio_I2C {
     /**
      * This writes data bytes to the specified register of the device associated with the handle and reads a
      * device specified number of bytes of data in return.
-     *
+     * <p>
      * The SMBus 2.0 documentation states that a minimum of 1 byte may be sent and a minimum of 1 byte may be received.
      * The total number of bytes sent/received must be 32 or less.
      *
@@ -651,7 +651,7 @@ public interface PiGpio_I2C {
     /**
      * This writes data bytes to the specified register of the device associated with the handle and reads a
      * device specified number of bytes of data in return.
-     *
+     * <p>
      * The SMBus 2.0 documentation states that a minimum of 1 byte may be sent and a minimum of 1 byte may be received.
      * The total number of bytes sent/received must be 32 or less.
      *
@@ -670,7 +670,7 @@ public interface PiGpio_I2C {
     /**
      * This writes data bytes to the specified register of the device associated with the handle and reads a
      * device specified number of bytes of data in return.
-     *
+     * <p>
      * The SMBus 2.0 documentation states that a minimum of 1 byte may be sent and a minimum of 1 byte may be received.
      * The total number of bytes sent/received must be 32 or less.
      *
@@ -688,7 +688,7 @@ public interface PiGpio_I2C {
     /**
      * This writes data bytes to the specified register of the device associated with the handle and reads a
      * device specified number of bytes of data in return.
-     *
+     * <p>
      * The SMBus 2.0 documentation states that a minimum of 1 byte may be sent and a minimum of 1 byte may be received.
      * The total number of bytes sent/received must be 32 or less.
      *
@@ -711,7 +711,7 @@ public interface PiGpio_I2C {
     /**
      * This writes data bytes to the specified register of the device associated with the handle and reads a
      * device specified number of bytes of data in return.
-     *
+     * <p>
      * The SMBus 2.0 documentation states that a minimum of 1 byte may be sent and a minimum of 1 byte may be received.
      * The total number of bytes sent/received must be 32 or less.
      *
@@ -733,7 +733,7 @@ public interface PiGpio_I2C {
     /**
      * This writes data bytes to the specified register of the device associated with the handle and reads a
      * device specified number of bytes of data in return.
-     *
+     * <p>
      * The SMBus 2.0 documentation states that a minimum of 1 byte may be sent and a minimum of 1 byte may be received.
      * The total number of bytes sent/received must be 32 or less.
      *
@@ -754,7 +754,7 @@ public interface PiGpio_I2C {
     /**
      * This writes data bytes to the specified register of the device associated with the handle and reads a
      * device specified number of bytes of data in return.
-     *
+     * <p>
      * The SMBus 2.0 documentation states that a minimum of 1 byte may be sent and a minimum of 1 byte may be received.
      * The total number of bytes sent/received must be 32 or less.
      *
@@ -774,7 +774,7 @@ public interface PiGpio_I2C {
     /**
      * This writes data bytes to the specified register of the device associated with the handle and reads a
      * device specified number of bytes of data in return.
-     *
+     * <p>
      * The SMBus 2.0 documentation states that a minimum of 1 byte may be sent and a minimum of 1 byte may be received.
      * The total number of bytes sent/received must be 32 or less.
      *
@@ -795,7 +795,7 @@ public interface PiGpio_I2C {
     /**
      * This writes data bytes to the specified register of the device associated with the handle and reads a
      * device specified number of bytes of data in return.
-     *
+     * <p>
      * The SMBus 2.0 documentation states that a minimum of 1 byte may be sent and a minimum of 1 byte may be received.
      * The total number of bytes sent/received must be 32 or less.
      *
@@ -815,7 +815,7 @@ public interface PiGpio_I2C {
     /**
      * This writes data bytes to the specified register of the device associated with the handle and reads a
      * device specified number of bytes of data in return.
-     *
+     * <p>
      * The SMBus 2.0 documentation states that a minimum of 1 byte may be sent and a minimum of 1 byte may be received.
      * The total number of bytes sent/received must be 32 or less.
      *
@@ -880,7 +880,7 @@ public interface PiGpio_I2C {
      * This reads a block of up to 32 bytes from the specified register of the device associated with the handle
      * into the provided byte buffer at the given offset and up to the specified data length (number of bytes).
      * (The amount of returned data is set by the device.)
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is not
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -926,7 +926,7 @@ public interface PiGpio_I2C {
      * This reads a block of up to 32 bytes from the specified register of the device associated with the handle
      * and copies the data bytes into the provided byte buffer starting with the current buffer position.
      * (The amount of returned data is set by the device.)
-     *
+     * <p>
      * NOTE:  The data bytes read from the serial device are copied/
      *        inserted into the byte buffer starting at the current
      *        position index up to the length requested or up to the
@@ -959,7 +959,7 @@ public interface PiGpio_I2C {
      * This reads a block of up to 32 bytes from the specified register of the device associated with the handle
      * and copies the data bytes into the provided byte buffer starting with the current buffer position up to
      * the available space remaining in the buffer.  (The amount of returned data is set by the device.)
-     *
+     * <p>
      * NOTE:  The data bytes read from the serial device are copied/
      *        inserted into the byte buffer starting at the current
      *        position index up to the buffer's remaining limit. If
@@ -1029,7 +1029,7 @@ public interface PiGpio_I2C {
     /**
      * This writes up to 32 bytes to the specified I2C register of the device
      * associated with the handle from the given offset index to the specified length.
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is not
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -1057,7 +1057,7 @@ public interface PiGpio_I2C {
     /**
      * This writes up to 32 bytes to the specified I2C register of the device
      * associated with the handle from the current position to the specified length.
-     *
+     * <p>
      * NOTE:  The contents from the byte buffer is read
      *        from the current position index up to the length
      *        requested or up to the buffer's remaining limit;
@@ -1089,7 +1089,7 @@ public interface PiGpio_I2C {
      * This writes up to 32 bytes to the specified I2C register of the device
      * associated with the handle.  The contents of the byte buffer are written from
      * the buffer's current position to the buffer's limit.
-     *
+     * <p>
      * NOTE:  The contents from the byte buffer is read
      *        from the current position index up to the buffer's
      *        remaining limit.  If the buffer's current position
@@ -1246,7 +1246,7 @@ public interface PiGpio_I2C {
     /**
      * This reads multiple bytes from the raw I2C device associated with the handle into the provided
      * byte buffer at the given offset and up to the specified data length (number of bytes).
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is not
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -1289,7 +1289,7 @@ public interface PiGpio_I2C {
     /**
      * This reads multiple bytes from the raw I2C device associated with the handle and copies
      * the data bytes into the provided byte buffer starting with the current buffer position.
-     *
+     * <p>
      * NOTE:  The data bytes read from the serial device are copied/
      *        inserted into the byte buffer starting at the current
      *        position index up to the length requested or up to the
@@ -1321,7 +1321,7 @@ public interface PiGpio_I2C {
      * This reads multiple bytes from the raw I2C associated with the handle and copies the
      * data bytes into the provided byte buffer starting with the current buffer position up to
      * the available space remaining in the buffer.
-     *
+     * <p>
      * NOTE:  The data bytes read from the serial device are copied/
      *        inserted into the byte buffer starting at the current
      *        position index up to the buffer's remaining limit. If
@@ -1387,7 +1387,7 @@ public interface PiGpio_I2C {
     /**
      * This writes multiple bytes from the provided byte buffer to the raw I2C device
      * associated with the handle from the given offset index to the specified length.
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is not
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -1414,7 +1414,7 @@ public interface PiGpio_I2C {
     /**
      * This writes multiple bytes from the provided byte buffer to the raw I2C device
      * associated with the handle from the current position to the specified length.
-     *
+     * <p>
      * NOTE:  The contents from the byte buffer is read
      *        from the current position index up to the length
      *        requested or up to the buffer's remaining limit;
@@ -1445,7 +1445,7 @@ public interface PiGpio_I2C {
      * This writes multiple bytes from the provided byte buffer to the raw I2C device
      * associated with the handle.  The contents of the byte buffer are written from
      * the buffer's current position to the buffer's limit.
-     *
+     * <p>
      * NOTE:  The contents from the byte buffer is read
      *        from the current position index up to the buffer's
      *        remaining limit.  If the buffer's current position

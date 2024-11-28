@@ -33,6 +33,7 @@ import com.pi4j.io.gpio.GpioConfig;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <CONFIG_TYPE>
  */
 public interface AnalogConfig<CONFIG_TYPE extends Config> extends GpioConfig<CONFIG_TYPE> {
     /** Constant <code>RANGE_MIN_KEY="min"</code> */

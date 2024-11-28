@@ -56,7 +56,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      *  the percentage of the ON vs OFF time of the PWM signal for each period.
      *  The duty-cycle range is valid from 0 to 100 including factional values.
      *  (Values above 50% mean the signal will remain HIGH more time than LOW.)
-     *
+     * <p>
      *  Example: A value of 50 represents a duty-cycle where half of
      *  the time period the signal is LOW and the other half is HIGH.
      *
@@ -69,7 +69,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      *  the percentage of the ON vs OFF time of the PWM signal for each period.
      *  The duty-cycle range is valid from 0 to 100 including factional values.
      *  (Values above 50% mean the signal will remain HIGH more time than LOW.)
-     *
+     * <p>
      *  Example: A value of 50 represents a duty-cycle where half of
      *  the time period the signal is LOW and the other half is HIGH.
      *
@@ -146,7 +146,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
     /**
      * Get configured PWM duty-cycle value that is automatically applied
      * to the PWM instance when the Pi4J context is shutdown.
-     *
+     * <p>
      * This option can be helpful if you wish to do something like stop a PWM
      * signal (by configuring this 'shutdown' value to zero) when your application
      * is terminated an Pi4J is shutdown.
@@ -159,7 +159,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
     /**
      * Get configured PWM duty-cycle value that is automatically applied
      * to the PWM instance when the Pi4J context is shutdown.
-     *
+     * <p>
      * This option can be helpful if you wish to do something like stop a PWM
      * signal (by configuring this 'shutdown' value to zero) when your application
      * is terminated an Pi4J is shutdown.
@@ -199,7 +199,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
     /**
      * Get configured PWM duty-cycle value that is automatically applied to
      * the PWM instance when this PWM instance is created and initialized.
-     *
+     * <p>
      * This option can be helpful if you wish to do something like set a default PWM
      * signal (by configuring this 'initial' value to 50%) when your application
      * creates the PWM instance.  This just helps eliminate a second line of code
@@ -213,7 +213,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
     /**
      * Get configured PWM duty-cycle value that is automatically applied to
      * the PWM instance when this PWM instance is created and initialized.
-     *
+     * <p>
      * This option can be helpful if you wish to do something like set a default PWM
      * signal (by configuring this 'initial' value to 50%) when your application
      * creates the PWM instance.  This just helps eliminate a second line of code

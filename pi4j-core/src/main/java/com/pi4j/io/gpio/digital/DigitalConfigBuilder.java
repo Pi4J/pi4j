@@ -32,6 +32,8 @@ import com.pi4j.io.gpio.GpioConfigBuilder;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <BUILDER_TYPE>
+ * @param <CONFIG_TYPE>
  */
 public interface DigitalConfigBuilder<BUILDER_TYPE extends DigitalConfigBuilder, CONFIG_TYPE extends DigitalConfig>
         extends GpioConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {

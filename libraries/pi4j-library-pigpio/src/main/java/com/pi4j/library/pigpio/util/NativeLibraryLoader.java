@@ -215,7 +215,7 @@ public class NativeLibraryLoader {
 
 	/**
 	 * Loads library from classpath
-	 *
+	 * <p>
 	 * The file from classpath is copied into system temporary directory and then loaded. The temporary file is
      * deleted after exiting. Method uses String as filename because the pathname is
 	 * "abstract", not system-dependent.

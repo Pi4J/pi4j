@@ -12,7 +12,7 @@
 
     <!-- MAVEN ARTIFACT INFORMATION -->
     <artifactId>pi4j-plugin</artifactId>
-    <name>Pi4J :: PLUGIN   :: Plugins Parent POM</name>
+    <name>Pi4J :: PLUGIN :: Plugins Parent POM</name>
     <description>Pi4J Plugin Parent Maven POM</description>
     <packaging>pom</packaging>
 

@@ -282,11 +282,14 @@ public class DefaultRuntime implements Runtime {
                         plugin.initialize(DefaultPluginService.newInstance(this.context(), store));
 
                         // if auto-detect providers is enabled,
+                        //    OR
+                        // Detecting Mocks is enabled and this is a mock plugin
                         // then add any detected providers to the collection to load
-                        if (config.autoDetectProviders()) {
+                        if (config.autoDetectProviders() ||  (config.autoDetectMockPlugins() && plugin.isMock())) {
                             store.providers.forEach(provider -> addProvider(provider, providers));
                         }
 
+                   
                         // if auto-detect platforms is enabled,
                         // then add any detected platforms to the collection to load
                         if (config.autoDetectPlatforms()) {
