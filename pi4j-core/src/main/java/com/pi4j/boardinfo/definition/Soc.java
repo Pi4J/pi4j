@@ -44,6 +44,12 @@ public enum Soc {
     BCM2711(InstructionSet.ARM_V8),
 
     /**
+     * BCM2712:
+     * SoC based on the ARMv8 instruction set architecture.
+     */
+    BCM2712(InstructionSet.ARM_V8),
+
+    /**
      * BCM2711C0:
      * Revision C0 of the BCM2711 SoC, based on the ARMv8 instruction set architecture.
      */
