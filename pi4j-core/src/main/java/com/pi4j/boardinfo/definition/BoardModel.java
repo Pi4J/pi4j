@@ -202,7 +202,7 @@ public enum BoardModel {
         LocalDate.of(2020, 10, 1),
         Soc.BCM2711,
         Cpu.CORTEX_A72, 4,
-        List.of(2400),
+        List.of(1500),
         List.of(1024 * 1024, 2048 * 1024, 4096 * 1024, 8192 * 1024)),
     // https://www-cnx--software-com.cdn.ampproject.org/c/s/www.cnx-software.com/2024/11/27/raspberry-pi-cm5-broadcom-bcm2712-soc-16gb-lpddr4-ecc-memory/?amp=1
     COMPUTE_5("Compute Module 5", STACK_ON_COMPUTER,
@@ -212,7 +212,7 @@ public enum BoardModel {
         LocalDate.of(2024, 11, 27),
         Soc.BCM2712,
         Cpu.CORTEX_A76, 4,
-        List.of(1500),
+        List.of(2400),
         List.of(2048 * 1024, 4096 * 1024, 8192 * 1024, 16384 * 1024)),
     ZERO_PCB_1_2("Raspberry Pi Zero PCB V1.2", SINGLE_BOARD_COMPUTER,
         List.of("900092", "920092"),
