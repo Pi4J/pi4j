@@ -206,7 +206,7 @@ public enum BoardModel {
         List.of(1024 * 1024, 2048 * 1024, 4096 * 1024, 8192 * 1024)),
     // https://www-cnx--software-com.cdn.ampproject.org/c/s/www.cnx-software.com/2024/11/27/raspberry-pi-cm5-broadcom-bcm2712-soc-16gb-lpddr4-ecc-memory/?amp=1
     COMPUTE_5("Compute Module 5", STACK_ON_COMPUTER,
-        List.of(""),
+        List.of("TODO"),
         PiModel.COMPUTE,
         HeaderVersion.COMPUTE,
         LocalDate.of(2024, 11, 27),
