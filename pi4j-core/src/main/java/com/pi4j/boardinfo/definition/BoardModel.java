@@ -206,7 +206,10 @@ public enum BoardModel {
         List.of(1024 * 1024, 2048 * 1024, 4096 * 1024, 8192 * 1024)),
     // https://www-cnx--software-com.cdn.ampproject.org/c/s/www.cnx-software.com/2024/11/27/raspberry-pi-cm5-broadcom-bcm2712-soc-16gb-lpddr4-ecc-memory/?amp=1
     COMPUTE_5("Compute Module 5", STACK_ON_COMPUTER,
-        List.of("TODO"),
+        // 20241129: Confirmed by Jeff Geerling: c04180 for the 4Gb version
+        // When compared with Compute 4 the other ones could be a, b, d.
+        // But still to be confirmed...
+        List.of("a04180", "b04180", "c04180", "d04180"),
         PiModel.COMPUTE,
         HeaderVersion.COMPUTE,
         LocalDate.of(2024, 11, 27),
