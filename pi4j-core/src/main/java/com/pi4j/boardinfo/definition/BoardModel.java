@@ -204,6 +204,22 @@ public enum BoardModel {
         Cpu.CORTEX_A72, 4,
         List.of(1500),
         List.of(1024 * 1024, 2048 * 1024, 4096 * 1024, 8192 * 1024)),
+    // https://www-cnx--software-com.cdn.ampproject.org/c/s/www.cnx-software.com/2024/11/27/raspberry-pi-cm5-broadcom-bcm2712-soc-16gb-lpddr4-ecc-memory/?amp=1
+    COMPUTE_5("Compute Module 5", STACK_ON_COMPUTER,
+        List.of("a04180", "b04180", "c04180", "d04180"),
+        PiModel.COMPUTE,
+        HeaderVersion.COMPUTE,
+        LocalDate.of(2024, 11, 27),
+        Soc.BCM2712,
+        Cpu.CORTEX_A76, 4,
+        List.of(2400),
+        List.of(2048 * 1024, 4096 * 1024, 8192 * 1024, 16384 * 1024),
+        List.of(
+            "20241127: The board codes are not documented yet with the Compute 5 announcement.",
+            "20241129: Confirmed by Jeff Geerling who has evaluation version: c04180 for the 4Gb version.",
+            "When compared with Compute 4, we can assume the other boards should have be a, b, d.",
+            "Will be further completed or modified when more info is available."
+        )),
     ZERO_PCB_1_2("Raspberry Pi Zero PCB V1.2", SINGLE_BOARD_COMPUTER,
         List.of("900092", "920092"),
         PiModel.ZERO,
@@ -305,17 +321,17 @@ public enum BoardModel {
     /**
      * Constructor for creating a {@code BoardModel} without remarks.
      *
-     * @param label the descriptive name of the board
-     * @param boardType the type of the board
-     * @param boardCodes a list of unique codes identifying this board
-     * @param model the Pi model of the board
-     * @param headerVersion the header version
-     * @param releaseDate the release date of the board
-     * @param soc the system-on-chip used
-     * @param cpu the CPU type
-     * @param numberOfCpu the number of CPU cores
+     * @param label                       the descriptive name of the board
+     * @param boardType                   the type of the board
+     * @param boardCodes                  a list of unique codes identifying this board
+     * @param model                       the Pi model of the board
+     * @param headerVersion               the header version
+     * @param releaseDate                 the release date of the board
+     * @param soc                         the system-on-chip used
+     * @param cpu                         the CPU type
+     * @param numberOfCpu                 the number of CPU cores
      * @param versionsProcessorSpeedInMhz list of processor speeds in MHz
-     * @param versionsMemoryInKb list of memory sizes in KB
+     * @param versionsMemoryInKb          list of memory sizes in KB
      */
     BoardModel(String label, BoardType boardType, List<String> boardCodes,
                PiModel model, HeaderVersion headerVersion, LocalDate releaseDate,
@@ -328,18 +344,18 @@ public enum BoardModel {
     /**
      * Constructor for creating a {@code BoardModel}.
      *
-     * @param label the descriptive name of the board
-     * @param boardType the type of the board
-     * @param boardCodes a list of unique codes identifying this board
-     * @param model the Pi model of the board
-     * @param headerVersion the header version
-     * @param releaseDate the release date of the board
-     * @param soc the system-on-chip used
-     * @param cpu the CPU type
-     * @param numberOfCpu the number of CPU cores
+     * @param label                       the descriptive name of the board
+     * @param boardType                   the type of the board
+     * @param boardCodes                  a list of unique codes identifying this board
+     * @param model                       the Pi model of the board
+     * @param headerVersion               the header version
+     * @param releaseDate                 the release date of the board
+     * @param soc                         the system-on-chip used
+     * @param cpu                         the CPU type
+     * @param numberOfCpu                 the number of CPU cores
      * @param versionsProcessorSpeedInMhz list of processor speeds in MHz
-     * @param versionsMemoryInKb list of memory sizes in KB
-     * @param remarks any remarks or notes about the board
+     * @param versionsMemoryInKb          list of memory sizes in KB
+     * @param remarks                     any remarks or notes about the board
      */
     BoardModel(String label, BoardType boardType, List<String> boardCodes,
                PiModel model, HeaderVersion headerVersion, LocalDate releaseDate,
