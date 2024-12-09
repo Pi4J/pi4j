@@ -158,6 +158,18 @@ public enum BoardModel {
         Cpu.CORTEX_A76, 4,
         List.of(2400),
         List.of(2048 * 1024, 4096 * 1024, 8192 * 1024)),
+    MODEL_500("Raspberry Pi 500", ALL_IN_ONE_COMPUTER,
+        List.of("d04190"),
+        PiModel.MODEL_B,
+        HeaderVersion.TYPE_3,
+        LocalDate.of(2024, 12, 9),
+        Soc.BCM2712,
+        Cpu.CORTEX_A76, 4,
+        List.of(2400),
+        List.of(8192 * 1024),
+        List.of(
+            "20241209: Confirmed by Jeff Geerling who has evaluation version: d04190."
+        )),
     COMPUTE_1("Compute Module 1", STACK_ON_COMPUTER,
         List.of("0011", "0014", "900061"),
         PiModel.COMPUTE,
