@@ -49,7 +49,7 @@ public interface SpiConfig extends AddressConfig<SpiConfig>, IOConfig<SpiConfig>
      * <p>newBuilder.</p>
      *
      * @param context {@link Context}
-     * @return a {@link com.pi4j.io.i2c.I2CConfigBuilder} object.
+     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
      */
     static SpiConfigBuilder newBuilder(Context context)  {
         return SpiConfigBuilder.newInstance(context);
