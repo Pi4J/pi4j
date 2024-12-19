@@ -32,6 +32,10 @@ import com.pi4j.io.gpio.digital.*;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CConfigBuilder;
 import com.pi4j.io.i2c.I2CProvider;
+import com.pi4j.io.onewire.OneWire;
+import com.pi4j.io.onewire.OneWireConfig;
+import com.pi4j.io.onewire.OneWireConfigBuilder;
+import com.pi4j.io.onewire.OneWireProvider;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.pwm.PwmConfigBuilder;
@@ -61,7 +65,8 @@ public enum IOType {
     PWM(PwmProvider.class, Pwm.class, PwmConfig.class, PwmConfigBuilder.class),
     I2C(I2CProvider.class, com.pi4j.io.i2c.I2C.class, I2CConfig.class, I2CConfigBuilder.class),
     SPI(SpiProvider.class, Spi.class, I2CConfig.class, I2CConfigBuilder.class),
-    SERIAL(SerialProvider.class, Serial.class, SerialConfig.class, SerialConfigBuilder.class);
+    SERIAL(SerialProvider.class, Serial.class, SerialConfig.class, SerialConfigBuilder.class),
+    ONE_WIRE(OneWireProvider.class, OneWire.class, OneWireConfig.class, OneWireConfigBuilder.class);
 
     private Class<? extends Provider> providerClass;
     private Class<? extends IO> ioClass;

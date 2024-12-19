@@ -34,6 +34,8 @@ import com.pi4j.io.gpio.digital.*;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CConfigBuilder;
+import com.pi4j.io.onewire.OneWire;
+import com.pi4j.io.onewire.OneWireConfig;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.pwm.PwmConfigBuilder;
@@ -144,6 +146,16 @@ public interface IOCreator {
      */
     default Serial create(SerialConfig config) {
         return create(config, Serial.class);
+    }
+
+    /**
+     * Creates a new {@link OneWire} instance using the specified configuration.
+     *
+     * @param config the {@link com.pi4j.io.onewire.OneWireConfig} object containing the configuration settings.
+     * @return a new {@link OneWire} object configured as specified.
+     */
+    default OneWire create(OneWireConfig config) {
+        return create(config, OneWire.class);
     }
 
     /**

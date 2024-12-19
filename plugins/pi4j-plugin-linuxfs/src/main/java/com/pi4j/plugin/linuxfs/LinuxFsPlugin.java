@@ -156,6 +156,7 @@ public class LinuxFsPlugin implements Plugin {
             LinuxFsDigitalOutputProvider.newInstance(gpioFileSystemPath),
             LinuxFsPwmProvider.newInstance(pwmFileSystemPath, pwmChip),
             LinuxFsI2CProvider.newInstance()
+            //TODO add 1-Wire provider
         };
 
         // register the LinuxFS I/O Providers with the plugin service

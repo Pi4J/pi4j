@@ -34,6 +34,7 @@ import com.pi4j.io.gpio.analog.AnalogOutputProvider;
 import com.pi4j.io.gpio.digital.DigitalInputProvider;
 import com.pi4j.io.gpio.digital.DigitalOutputProvider;
 import com.pi4j.io.i2c.I2CProvider;
+import com.pi4j.io.onewire.OneWireProvider;
 import com.pi4j.io.pwm.PwmProvider;
 import com.pi4j.io.serial.SerialProvider;
 import com.pi4j.io.spi.SpiProvider;
@@ -76,6 +77,7 @@ public class DefaultRuntimeProviders implements RuntimeProviders {
     private ProviderGroup<SpiProvider> _spi = new ProviderGroup<>(this, IOType.SPI);
     private ProviderGroup<I2CProvider> _i2c = new ProviderGroup<>(this, IOType.I2C);
     private ProviderGroup<SerialProvider> _serial = new ProviderGroup<>(this, IOType.SERIAL);
+    private ProviderGroup<OneWireProvider> _oneWire = new ProviderGroup<>(this, IOType.ONE_WIRE);
 
     /** {@inheritDoc} */
     @Override
@@ -108,6 +110,10 @@ public class DefaultRuntimeProviders implements RuntimeProviders {
     /** {@inheritDoc} */
     @Override
     public ProviderGroup<SerialProvider> serial() { return _serial; }
+
+    /** {@inheritDoc} */
+    @Override
+    public ProviderGroup<OneWireProvider> oneWire() { return _oneWire; }
 
     // static singleton instance
     /**
