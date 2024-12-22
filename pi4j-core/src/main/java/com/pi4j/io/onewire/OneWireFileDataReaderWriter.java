@@ -27,6 +27,8 @@ package com.pi4j.io.onewire;
 
 import com.pi4j.io.exception.IOException;
 
+import java.util.Collection;
+
 public interface OneWireFileDataReaderWriter {
     /**
      * Read the entire content of a file on the device.
@@ -35,7 +37,7 @@ public interface OneWireFileDataReaderWriter {
      * @return The file content as array.
      * @throws IOException if the file does not exist, is not readable, or another I/O error occurs.
      */
-    String[] readFile(String fileName) throws IOException;
+    Collection<String> readFile(String fileName) throws IOException;
 
     /**
      * Read a single line from a file on the device.

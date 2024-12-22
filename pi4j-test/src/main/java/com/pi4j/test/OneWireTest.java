@@ -47,7 +47,8 @@ public class OneWireTest {
             .build();
 
         // Read and set temperature resolution for DS18B20
-        try (var ds18b20 = pi4j.create(ds18b20Config)) {
+        try {
+            var ds18b20 = pi4j.create(ds18b20Config);
             // Set resolution
             ds18b20.writeFile("resolution", DS18B20_RESOLUTION);
             logger.info("Set DS18B20 resolution to {} bits", DS18B20_RESOLUTION);
@@ -76,7 +77,9 @@ public class OneWireTest {
             .build();
 
         // Read and set state for DS2413
-        try (var ds2413 = pi4j.create(ds2413Config)) {
+        try {
+            var ds2413 = pi4j.create(ds2413Config);
+
             // Read current state before setting new value
             String stateBefore = ds2413.readFileLine("state");
             logger.info("Current state before update: {}", stateBefore);

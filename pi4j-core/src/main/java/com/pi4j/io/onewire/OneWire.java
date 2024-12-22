@@ -40,17 +40,7 @@ import com.pi4j.io.IODataWriter;
  * </p>
  */
 public interface OneWire
-    extends IO<OneWire, OneWireConfig, OneWireProvider>, IODataWriter, IODataReader, OneWireFileDataReaderWriter, AutoCloseable {
-
-    /**
-     * Closes the 1-Wire I/O interface, releasing any associated resources.
-     * <p>
-     * This method overrides the {@link AutoCloseable#close()} method to remove
-     * the checked exception declaration.
-     * </p>
-     */
-    @Override
-    void close();
+    extends IO<OneWire, OneWireConfig, OneWireProvider>, OneWireFileDataReaderWriter {
 
     /**
      * Creates a new configuration builder for a 1-Wire interface.
@@ -78,17 +68,6 @@ public interface OneWire
     default String device() {
         return config().device();
     }
-
-    /**
-     * Checks if the 1-Wire device communication state is currently open.
-     * <p>
-     * This method indicates whether the 1-Wire interface is available
-     * for communication.
-     * </p>
-     *
-     * @return {@code true} if the communication state is open; {@code false} otherwise.
-     */
-    boolean isOpen();
 
     /**
      * Retrieves the 1-Wire device address for this interface instance.

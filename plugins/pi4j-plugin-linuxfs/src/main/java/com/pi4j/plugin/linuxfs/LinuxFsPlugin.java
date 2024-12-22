@@ -32,6 +32,7 @@ import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.extension.Plugin;
 import com.pi4j.extension.PluginService;
 import com.pi4j.plugin.linuxfs.internal.LinuxGpio;
+import com.pi4j.plugin.linuxfs.internal.LinuxOneWire;
 import com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CProvider;
 import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalInputProvider;
 import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalOutputProvider;
@@ -100,6 +101,10 @@ public class LinuxFsPlugin implements Plugin {
     public static final String I2C_PROVIDER_NAME = NAME + " I2C Provider";
     public static final String I2C_PROVIDER_ID = ID + "-i2c";
 
+    // 1-Wire Provider name and unique ID
+    public static final String ONE_WIRE_PROVIDER_NAME = NAME + " 1-Wire Provider";
+    public static final String ONE_WIRE_PROVIDER_ID = ID + "-one-wire";
+
 //    // SPI Provider name and unique ID
 //    public static final String SPI_PROVIDER_NAME = NAME + " SPI Provider";
 //    public static final String SPI_PROVIDER_ID = ID + "-spi";
@@ -110,6 +115,7 @@ public class LinuxFsPlugin implements Plugin {
 
     public static String DEFAULT_GPIO_FILESYSTEM_PATH = LinuxGpio.DEFAULT_SYSTEM_PATH;
     public static String DEFAULT_PWM_FILESYSTEM_PATH = LinuxPwm.DEFAULT_SYSTEM_PATH;
+    public static String DEFAULT_ONE_WIRE_FILESYSTEM_PATH = LinuxOneWire.DEFAULT_SYSTEM_PATH;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -121,7 +127,7 @@ public class LinuxFsPlugin implements Plugin {
 
         // get Linux file system path for GPIO & PWM
         String gpioFileSystemPath = DEFAULT_GPIO_FILESYSTEM_PATH;
-        String pwmFileSystemPath = DEFAULT_PWM_FILESYSTEM_PATH;
+        String pwmFileSystemPath = DEFAULT_PWM_FILESYSTEM_PATH; //TODO add new one
 
         int pwmChip;
         if(BoardInfoHelper.usesRP1()) {
