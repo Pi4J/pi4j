@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import static com.pi4j.boardinfo.util.Command.CORE_VOLTAGE_COMMAND;
 import static com.pi4j.boardinfo.util.Command.TEMPERATURE_COMMAND;
+import static com.pi4j.boardinfo.util.Command.THROTTLED_STATE_COMMAND;
 import static com.pi4j.boardinfo.util.Command.UPTIME_COMMAND;
 import static com.pi4j.boardinfo.util.SystemProperties.ARCHITECTURE_DATA_MODEL;
 import static com.pi4j.boardinfo.util.SystemProperties.JAVA_RUNTIME_VERSION;
@@ -242,7 +243,8 @@ public class BoardInfoHelper {
             getTemperature(),
             getUptime(),
             getCoreVoltage(),
-            getMemTotal()
+            getMemTotal(),
+            getThrottledState()
         );
     }
 
@@ -280,6 +282,19 @@ public class BoardInfoHelper {
      */
     private static String getTemperature() {
         return execute(TEMPERATURE_COMMAND).getOutputMessage();
+    }
+
+    /**
+     * Retrieves the throttled state of the system.
+     * <p>
+     * This command uses the `vcgencmd get_throttled` utility to check for under-voltage,
+     * throttling, or frequency capping conditions on the board.
+     * </p>
+     *
+     * @return a string representing the throttled state of the system
+     */
+    public static String getThrottledState() {
+        return execute(THROTTLED_STATE_COMMAND).getOutputMessage();
     }
 }
 
