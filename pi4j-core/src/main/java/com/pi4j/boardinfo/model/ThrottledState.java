@@ -28,6 +28,11 @@ package com.pi4j.boardinfo.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Enum representing the different throttling and under-voltage states of the Raspberry Pi board.
+ * Each enum value represents a specific condition that might be detected on the board, such as
+ * undervoltage, frequency capping, throttling, or temperature limits.
+ */
 public enum ThrottledState {
     UNDERVOLTAGE_DETECTED(0x1, "Undervoltage detected"),
     ARM_FREQUENCY_CAPPED(0x2, "ARM frequency capped"),
@@ -41,15 +46,31 @@ public enum ThrottledState {
     private final int value;
     private final String description;
 
+    /**
+     * Constructor for the ThrottledState enum.
+     *
+     * @param value The integer value representing the state.
+     * @param description A human-readable description of the state.
+     */
     ThrottledState(int value, String description) {
         this.value = value;
         this.description = description;
     }
 
+    /**
+     * Returns the integer value representing this throttled state.
+     *
+     * @return the integer value associated with the state.
+     */
     public int getValue() {
         return value;
     }
 
+    /**
+     * Returns a human-readable description of this throttled state.
+     *
+     * @return the description of the throttled state.
+     */
     public String getDescription() {
         return description;
     }
@@ -57,7 +78,7 @@ public enum ThrottledState {
     /**
      * Decodes a raw throttled state (as an integer) and returns a list of active {@link ThrottledState} enums.
      *
-     * @param rawState the raw throttled state (as an integer value, e.g., 0x50005).
+     * @param rawState the raw throttled state as an integer (e.g., 0x50005).
      * @return a list of active throttled states.
      */
     public static List<ThrottledState> decode(int rawState) {
@@ -71,9 +92,9 @@ public enum ThrottledState {
     }
 
     /**
-     * Returns a human-readable description of the active throttled states.
+     * Returns a human-readable description of the active throttled states based on the raw throttled state value.
      *
-     * @param rawState the raw throttled state (as an integer value, e.g., 0x50005).
+     * @param rawState the raw throttled state as an integer (e.g., 0x50005).
      * @return a description of the active throttled states.
      */
     public static String getActiveStatesDescription(int rawState) {
