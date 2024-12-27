@@ -20,6 +20,22 @@ import java.util.concurrent.Callable;
  */
 public class LinuxFsI2CBus extends I2CBusBase {
 
+    /**
+     * Base path for sysfs I2C device directories.
+     * <p>
+     * Sysfs is used to provide information about I2C devices on the system.
+     * The full path is constructed by appending the bus number, e.g., "/sys/bus/i2c/devices/i2c-1".
+     */
+    private static final String SYSFS_BASE_PATH = "/sys/bus/i2c/devices/i2c-";
+
+    /**
+     * Base path for devfs I2C device files.
+     * <p>
+     * Devfs is used to access I2C devices for read/write operations.
+     * The full path is constructed by appending the bus number, e.g., "/dev/i2c-1".
+     */
+    private static final String DEVFS_BASE_PATH = "/dev/i2c-";
+
     /** Logger for the class */
     protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -55,12 +71,13 @@ public class LinuxFsI2CBus extends I2CBusBase {
      * @throws Pi4JException if the sysfs directory does not exist or is not a directory
      */
     private void validateSysFs() {
-        final File sysfs = new File("/sys/bus/i2c/devices/i2c-" + this.bus);
+        final String sysfsPath = SYSFS_BASE_PATH + this.bus;
+        final File sysfs = new File(sysfsPath);
         if (!sysfs.exists()) {
-            throw new Pi4JException("I2C bus " + this.bus + " does not exist: sysfs path '" + sysfs.getPath() + "' does not exist.");
+            throw new Pi4JException("Sysfs validation failed for I2C bus " + this.bus + ": path '" + sysfsPath + "' does not exist.");
         }
         if (!sysfs.isDirectory()) {
-            throw new Pi4JException("I2C bus " + this.bus + " does not exist: sysfs path '" + sysfs.getPath() + "' is not a directory.");
+            throw new Pi4JException("Sysfs validation failed for I2C bus " + this.bus + ": path '" + sysfsPath + "' is not a directory.");
         }
     }
 
@@ -71,15 +88,16 @@ public class LinuxFsI2CBus extends I2CBusBase {
      * @throws Pi4JException if the devfs file does not exist or lacks read/write permissions
      */
     private File validateAndGetDevFs() {
-        final File devfs = new File("/dev/i2c-" + this.bus);
+        final String devfsPath = DEVFS_BASE_PATH + this.bus;
+        final File devfs = new File(devfsPath);
         if (!devfs.exists()) {
-            throw new Pi4JException("I2C bus " + this.bus + " does not exist: devfs path '" + devfs.getPath() + "' does not exist.");
+            throw new Pi4JException("Devfs validation failed for I2C bus " + this.bus + ": path '" + devfsPath + "' does not exist.");
         }
         if (!devfs.canRead()) {
-            throw new Pi4JException("I2C bus " + this.bus + " does not exist: devfs path '" + devfs.getPath() + "' is not readable.");
+            throw new Pi4JException("Devfs validation failed for I2C bus " + this.bus + ": path '" + devfsPath + "' is not readable.");
         }
         if (!devfs.canWrite()) {
-            throw new Pi4JException("I2C bus " + this.bus + " does not exist: devfs path '" + devfs.getPath() + "' is not writable.");
+            throw new Pi4JException("Devfs validation failed for I2C bus " + this.bus + ": path '" + devfsPath + "' is not writable.");
         }
         return devfs;
     }
