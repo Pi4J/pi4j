@@ -86,7 +86,7 @@ public class DefaultSpiConfig
         if(properties.containsKey(FLAGS_KEY)){
             this.flags = StringUtil.parseLong(properties.get(FLAGS_KEY), null);
         } else {
-            this.flags = 0L; // default flags (0)
+            this.flags = null; // set null, same as parseLong would
         }
 
         // define default property values if any are missing (based on the required address value)
