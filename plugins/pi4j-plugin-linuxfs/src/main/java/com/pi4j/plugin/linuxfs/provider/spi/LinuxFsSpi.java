@@ -166,6 +166,8 @@ public class LinuxFsSpi extends SpiBase implements Spi {
             libc.close(fd);
             throw new RuntimeException("Could not read SPI mode.");
         }
+
+        // TODO we can't use the flags as it only allows two SPI
         // if 'flags' were provided error
         if(config().flags() != null){
             throw new IOException("Unsupported SPI Pi5 parameter flags" );
@@ -228,7 +230,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
             libc.close(fd);
             throw new RuntimeException("Could not write the SPI SHIFT read.");
         }
-        intPtr.setValue(0);  // was in 'flags' add to config ???
+        intPtr.setValue(0);  // TODO   was in 'flags' add to config ???
         ret = libc.ioctl(fd, SPI_IOC_WR_LSB_FIRST, intPtr);
         if(ret != 0) {
             libc.close(fd);
