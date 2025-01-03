@@ -36,6 +36,7 @@ import com.pi4j.plugin.linuxfs.internal.LinuxOneWire;
 import com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CProvider;
 import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalInputProvider;
 import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalOutputProvider;
+import com.pi4j.plugin.linuxfs.provider.onewire.LinuxFsOneWireProvider;
 import com.pi4j.plugin.linuxfs.provider.pwm.LinuxFsPwmProvider;
 import com.pi4j.plugin.linuxfs.internal.LinuxPwm;
 import com.pi4j.provider.Provider;
@@ -127,7 +128,8 @@ public class LinuxFsPlugin implements Plugin {
 
         // get Linux file system path for GPIO & PWM
         String gpioFileSystemPath = DEFAULT_GPIO_FILESYSTEM_PATH;
-        String pwmFileSystemPath = DEFAULT_PWM_FILESYSTEM_PATH; //TODO add new one
+        String pwmFileSystemPath = DEFAULT_PWM_FILESYSTEM_PATH;
+        String oneWireFileSystemPath = DEFAULT_ONE_WIRE_FILESYSTEM_PATH;
 
         int pwmChip;
         if(BoardInfoHelper.usesRP1()) {
@@ -161,8 +163,8 @@ public class LinuxFsPlugin implements Plugin {
             LinuxFsDigitalInputProvider.newInstance(gpioFileSystemPath),
             LinuxFsDigitalOutputProvider.newInstance(gpioFileSystemPath),
             LinuxFsPwmProvider.newInstance(pwmFileSystemPath, pwmChip),
-            LinuxFsI2CProvider.newInstance()
-            //TODO add 1-Wire provider
+            LinuxFsI2CProvider.newInstance(),
+            LinuxFsOneWireProvider.newInstance(oneWireFileSystemPath)
         };
 
         // register the LinuxFS I/O Providers with the plugin service
