@@ -81,7 +81,7 @@ public class LinuxFsOneWireProviderImpl extends OneWireProviderBase implements L
      */
     @Override
     public OneWire create(OneWireConfig config) {
-        LinuxOneWire oneWire = new LinuxOneWire(this.oneWireFileSystemPath);
+        LinuxOneWire oneWire = new LinuxOneWire(this.oneWireFileSystemPath, config.device());
         LinuxFsOneWire fsOneWire = new LinuxFsOneWire(oneWire, this, config);
         this.context.registry().add(fsOneWire);
         return fsOneWire;

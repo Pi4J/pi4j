@@ -39,6 +39,7 @@ module com.pi4j.plugin.linuxfs {
     exports com.pi4j.plugin.linuxfs.provider.gpio.digital;
     exports com.pi4j.plugin.linuxfs.provider.pwm;
     exports com.pi4j.plugin.linuxfs.provider.i2c;
+    exports com.pi4j.plugin.linuxfs.provider.onewire;
 
     provides com.pi4j.extension.Plugin
             with LinuxFsPlugin;
