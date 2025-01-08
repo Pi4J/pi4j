@@ -15,35 +15,102 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 
+/**
+ * Implementation of an I2C bus using Linux file system access.
+ */
 public class LinuxFsI2CBus extends I2CBusBase {
 
-    protected Logger logger = LoggerFactory.getLogger(this.getClass());
+    /**
+     * Base path for sysfs I2C device directories.
+     * <p>
+     * Sysfs is used to provide information about I2C devices on the system.
+     * The full path is constructed by appending the bus number, e.g., "/sys/bus/i2c/devices/i2c-1".
+     */
+    private static final String SYSFS_BASE_PATH = "/sys/bus/i2c/devices/i2c-";
 
     /**
-     * File handle for this i2c bus
+     * Base path for devfs I2C device files.
+     * <p>
+     * Devfs is used to access I2C devices for read/write operations.
+     * The full path is constructed by appending the bus number, e.g., "/dev/i2c-1".
      */
+    private static final String DEVFS_BASE_PATH = "/dev/i2c-";
+
+    /** Logger for the class */
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    /** File handle for this I2C bus */
     protected LinuxFile file;
+
+    /** Stores the last accessed slave address on this I2C bus */
     private int lastAddress;
 
+    /**
+     * Constructs a new {@link LinuxFsI2CBus}.
+     *
+     * @param config the I2C configuration
+     * @throws Pi4JException if the bus cannot be initialized due to missing sysfs or devfs paths
+     */
     public LinuxFsI2CBus(I2CConfig config) {
         super(config);
 
-        final File sysfs = new File("/sys/bus/i2c/devices/i2c-" + this.bus);
-        if (!sysfs.exists() || !sysfs.isDirectory())
-            throw new Pi4JException("I2C bus " + this.bus + " does not exist.");
-
-        final File devfs = new File("/dev/i2c-" + this.bus);
-        if (!devfs.exists() || !devfs.canRead() || !devfs.canWrite())
-            throw new Pi4JException("I2C bus " + this.bus + " does not exist.");
+        validateSysFs();
+        final File devFs = validateAndGetDevFs();
 
         try {
-            String fileName = devfs.getCanonicalPath();
+            String fileName = devFs.getCanonicalPath();
             this.file = new LinuxFile(fileName, "rw");
         } catch (IOException e) {
-            throw new Pi4JException(e);
+            throw new Pi4JException("Failed to initialize I2C bus " + this.bus, e);
         }
     }
 
+    /**
+     * Validates the existence and type of the sysfs directory for the I2C bus.
+     *
+     * @throws Pi4JException if the sysfs directory does not exist or is not a directory
+     */
+    private void validateSysFs() {
+        final String sysfsPath = SYSFS_BASE_PATH + this.bus;
+        final File sysfs = new File(sysfsPath);
+        if (!sysfs.exists()) {
+            throw new Pi4JException("Sysfs validation failed for I2C bus " + this.bus + ": path '" + sysfsPath + "' does not exist.");
+        }
+        if (!sysfs.isDirectory()) {
+            throw new Pi4JException("Sysfs validation failed for I2C bus " + this.bus + ": path '" + sysfsPath + "' is not a directory.");
+        }
+    }
+
+    /**
+     * Validates the devfs file for the I2C bus and checks read/write access.
+     *
+     * @return the devfs file
+     * @throws Pi4JException if the devfs file does not exist or lacks read/write permissions
+     */
+    private File validateAndGetDevFs() {
+        final String devfsPath = DEVFS_BASE_PATH + this.bus;
+        final File devfs = new File(devfsPath);
+        if (!devfs.exists()) {
+            throw new Pi4JException("Devfs validation failed for I2C bus " + this.bus + ": path '" + devfsPath + "' does not exist.");
+        }
+        if (!devfs.canRead()) {
+            throw new Pi4JException("Devfs validation failed for I2C bus " + this.bus + ": path '" + devfsPath + "' is not readable.");
+        }
+        if (!devfs.canWrite()) {
+            throw new Pi4JException("Devfs validation failed for I2C bus " + this.bus + ": path '" + devfsPath + "' is not writable.");
+        }
+        return devfs;
+    }
+
+    /**
+     * Executes a callable action with the specified I2C device.
+     *
+     * @param i2c the I2C device
+     * @param action the action to perform
+     * @param <R> the result type of the action
+     * @return the result of the action
+     * @throws Pi4JException if the action fails
+     */
     @Override
     public <R> R execute(I2C i2c, Callable<R> action) {
         return _execute(i2c, () -> {
@@ -59,6 +126,15 @@ public class LinuxFsI2CBus extends I2CBusBase {
         });
     }
 
+    /**
+     * Executes an action that interacts with the underlying file handle.
+     *
+     * @param i2c the I2C device
+     * @param action the action to perform
+     * @param <R> the result type of the action
+     * @return the result of the action
+     * @throws Pi4JException if the action fails
+     */
     public <R> R execute(final I2C i2c, final CheckedFunction<LinuxFile, R> action) {
         return _execute(i2c, () -> {
             try {
@@ -74,11 +150,13 @@ public class LinuxFsI2CBus extends I2CBusBase {
     }
 
     /**
-     * @param i2c     the device to select before performing the ioctl command
-     * @param command From I2CConstants
-     * @param data    values in bytes for all structures, with 4 or 8 byte alignment enforced by filling holes before
-     *                pointers
-     * @param offsets ByteBuffer: offsets of pointer/ byte offset of pointedToData
+     * Executes an ioctl command on the I2C device.
+     *
+     * @param i2c the I2C device
+     * @param command the ioctl command
+     * @param data the data buffer for the command
+     * @param offsets the offsets buffer
+     * @throws Pi4JException if the ioctl command fails
      */
     public void executeIOCTL(final I2C i2c, long command, ByteBuffer data, IntBuffer offsets) {
         _execute(i2c, () -> {
@@ -88,17 +166,17 @@ public class LinuxFsI2CBus extends I2CBusBase {
             } catch (RuntimeException e) {
                 throw e;
             } catch (Exception e) {
-                throw new Pi4JException("Failed to execute ioctl for device " + i2c.device() + " on bus " + this.bus,
-                    e);
+                throw new Pi4JException("Failed to execute ioctl for device " + i2c.device() + " on bus " + this.bus, e);
             }
             return null;
         });
     }
 
     /**
-     * Selects the slave device if not already selected on this bus. Runs the required ioctl's via JNI.
+     * Selects the slave device on the I2C bus, if not already selected.
      *
-     * @param i2c Device to select
+     * @param i2c the I2C device to select
+     * @throws IOException if selecting the device fails
      */
     protected void selectBusSlave(I2C i2c) throws IOException {
         if (this.lastAddress == i2c.device())
@@ -108,6 +186,9 @@ public class LinuxFsI2CBus extends I2CBusBase {
         this.file.ioctl(I2CConstants.I2C_SLAVE, i2c.device() & 0xFF);
     }
 
+    /**
+     * Closes the file handle for the I2C bus.
+     */
     public void close() {
         if (this.file != null) {
             try {
