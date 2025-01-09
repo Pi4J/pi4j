@@ -183,14 +183,16 @@ public class LinuxFsOneWire extends OneWireBase implements OneWire {
      * Validates that a file exists and is writable.
      *
      * @param filePath the path of the file to validate.
-     * @throws IOException if the file does not exist or is not writable.
+     * @throws IOException if the file does not exist or is not writable due to permissions or other restrictions.
+     *                     On Linux, consider using 'sudo' if this issue persists.
      */
     private void validateFileForWrite(Path filePath) throws IOException {
         if (!Files.exists(filePath)) {
             throw new IOException("File " + filePath + " does not exist.");
         }
         if (!Files.isWritable(filePath)) {
-            throw new IOException("File " + filePath + " is not writable.");
+            throw new IOException("File " + filePath + " is not writable. This may be due to permissions or access restrictions. "
+                    + "On Linux, consider using 'sudo' to resolve this issue.");
         }
     }
 }
