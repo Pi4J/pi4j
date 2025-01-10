@@ -27,17 +27,17 @@ package com.pi4j.io.onewire;
 
 import com.pi4j.io.exception.IOException;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface OneWireFileDataReaderWriter {
     /**
      * Read the entire content of a file on the device.
      *
      * @param fileName The name of the file to read.
-     * @return The file content as array.
+     * @return The file content as List.
      * @throws IOException if the file does not exist, is not readable, or another I/O error occurs.
      */
-    Collection<String> readFile(String fileName) throws IOException;
+    List<String> readFile(String fileName) throws IOException;
 
     /**
      * Read a single line from a file on the device.
@@ -46,7 +46,16 @@ public interface OneWireFileDataReaderWriter {
      * @return The first line of the file content as a string.
      * @throws IOException if the file does not exist, is not readable, or another I/O error occurs.
      */
-    String readFileLine(String fileName) throws IOException;
+    String readFirstLine(String fileName) throws IOException;
+
+    /**
+     * Read the entire content of a file on the device.
+     *
+     * @param fileName The name of the file to read.
+     * @return The file content as array of bytes.
+     * @throws IOException if the file does not exist, is not readable, or another I/O error occurs.
+     */
+    byte[] readFileAsBytes(String fileName) throws IOException;
 
     /**
      * Write a single byte to a file on the device.

@@ -99,12 +99,31 @@ public class LinuxFsOneWire extends OneWireBase implements OneWire {
      * @return the first line of the file as a string, or {@code null} if the file is empty.
      * @throws IOException if the file does not exist, is not readable, or another I/O error occurs.
      */
-    public String readFileLine(String fileName) throws IOException {
+    public String readFirstLine(String fileName) throws IOException {
         Path filePath = Paths.get(oneWire.getDevicePath(), fileName);
         validateFileForRead(filePath);
 
         try (BufferedReader reader = Files.newBufferedReader(filePath)) {
             return reader.readLine();
+        } catch (java.io.IOException e) {
+            throw new IOException(e);
+        }
+    }
+
+    /**
+     * Reads the entire content of a file as a byte array.
+     *
+     * @param fileName the name of the file to read.
+     * @return a byte array containing the file's content.
+     * @throws IOException if the file does not exist, is not readable, or another I/O error occurs.
+     */
+    @Override
+    public byte[] readFileAsBytes(String fileName) throws IOException {
+        Path filePath = Paths.get(oneWire.getDevicePath(), fileName);
+        validateFileForRead(filePath);
+
+        try {
+            return Files.readAllBytes(filePath);
         } catch (java.io.IOException e) {
             throw new IOException(e);
         }

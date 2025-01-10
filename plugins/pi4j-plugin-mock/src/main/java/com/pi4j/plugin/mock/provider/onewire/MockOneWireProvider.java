@@ -1,14 +1,16 @@
+package com.pi4j.plugin.mock.provider.onewire;
+
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: PLUGIN   :: Mock Platform & Providers
- * FILENAME      :  module-info.java
+ * FILENAME      :  MockSerialProvider.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
  * **********************************************************************
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the
@@ -24,22 +26,21 @@
  * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
-module com.pi4j.plugin.mock {
-    requires com.pi4j;
-    requires org.slf4j;
 
-    uses com.pi4j.extension.Plugin;
+import com.pi4j.io.onewire.OneWireProvider;
+import com.pi4j.plugin.mock.Mock;
 
-    exports com.pi4j.plugin.mock;
-    exports com.pi4j.plugin.mock.platform;
-    exports com.pi4j.plugin.mock.provider.gpio.digital;
-    exports com.pi4j.plugin.mock.provider.gpio.analog;
-    exports com.pi4j.plugin.mock.provider.pwm;
-    exports com.pi4j.plugin.mock.provider.serial;
-    exports com.pi4j.plugin.mock.provider.spi;
-    exports com.pi4j.plugin.mock.provider.i2c;
-    exports com.pi4j.plugin.mock.provider.onewire;
-
-    provides com.pi4j.extension.Plugin
-            with com.pi4j.plugin.mock.MockPlugin;
+public interface MockOneWireProvider extends OneWireProvider {
+    /** Constant <code>NAME="Mock.ONE_WIRE_PROVIDER_NAME"</code> */
+    String NAME = Mock.ONE_WIRE_PROVIDER_NAME;
+    /** Constant <code>ID="Mock.ONE_WIRE_PROVIDER_ID"</code> */
+    String ID = Mock.ONE_WIRE_PROVIDER_ID;
+    /**
+     * <p>newInstance.</p>
+     *
+     * @return a {@link MockOneWireProvider} object.
+     */
+    static MockOneWireProvider newInstance() {
+        return new MockOneWireProviderImpl();
+    }
 }

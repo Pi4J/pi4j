@@ -31,6 +31,7 @@ import com.pi4j.io.gpio.analog.AnalogOutputProvider;
 import com.pi4j.io.gpio.digital.DigitalInputProvider;
 import com.pi4j.io.gpio.digital.DigitalOutputProvider;
 import com.pi4j.io.i2c.I2CProvider;
+import com.pi4j.io.onewire.OneWireProvider;
 import com.pi4j.io.pwm.PwmProvider;
 import com.pi4j.io.serial.SerialProvider;
 import com.pi4j.io.spi.SpiProvider;
@@ -281,5 +282,16 @@ public interface ProviderAliases {
      */
     default <T extends SerialProvider> T getSerialProvider() throws ProviderException{
         return this.serial();
+    }
+
+    /**
+     * <p>1-Wire</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends OneWireProvider> T oneWire() throws ProviderException {
+        return this.provider(IOType.ONE_WIRE);
     }
 }

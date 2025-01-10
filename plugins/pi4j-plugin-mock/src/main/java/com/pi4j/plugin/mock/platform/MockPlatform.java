@@ -36,6 +36,7 @@ import com.pi4j.plugin.mock.provider.gpio.analog.MockAnalogOutputProvider;
 import com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalInputProvider;
 import com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalOutputProvider;
 import com.pi4j.plugin.mock.provider.i2c.MockI2CProvider;
+import com.pi4j.plugin.mock.provider.onewire.MockOneWireProvider;
 import com.pi4j.plugin.mock.provider.pwm.MockPwmProvider;
 import com.pi4j.plugin.mock.provider.serial.MockSerialProvider;
 import com.pi4j.plugin.mock.provider.spi.MockSpiProvider;
@@ -87,6 +88,8 @@ public class MockPlatform extends PlatformBase<MockPlatform> implements Platform
             MockPwmProvider.ID,
             MockSpiProvider.ID,
             MockI2CProvider.ID,
-            MockSerialProvider.ID };
+            MockSerialProvider.ID,
+            MockOneWireProvider.ID
+        };
     }
 }

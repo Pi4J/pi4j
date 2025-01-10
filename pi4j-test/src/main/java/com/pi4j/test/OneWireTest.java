@@ -54,7 +54,7 @@ public class OneWireTest {
             logger.info("Set DS18B20 resolution to {} bits", DS18B20_RESOLUTION);
 
             // Read temperature
-            String temperature = ds18b20.readFileLine("temperature");
+            String temperature = ds18b20.readFirstLine("temperature");
 
             // Parse and log temperature
             try {
@@ -81,7 +81,7 @@ public class OneWireTest {
             var ds2413 = pi4j.create(ds2413Config);
 
             // Read current state before setting new value
-            String stateBefore = ds2413.readFileLine("state");
+            String stateBefore = ds2413.readFirstLine("state");
             logger.info("Current state before update: {}", stateBefore);
 
             // Set new state to 0xf2 (State 1 ON, State 2 OFF)
@@ -89,7 +89,7 @@ public class OneWireTest {
             logger.info("Set DS2413 state to 0xf2 (State 1 ON, State 2 OFF)");
 
             // Read current state after setting new value
-            String stateAfter = ds2413.readFileLine("state");
+            String stateAfter = ds2413.readFirstLine("state");
             logger.info("Current state after update: {}", stateAfter);
         } catch (Exception e) {
             logger.error("Failed to interact with DS2413 sensor: {}", e.getMessage());

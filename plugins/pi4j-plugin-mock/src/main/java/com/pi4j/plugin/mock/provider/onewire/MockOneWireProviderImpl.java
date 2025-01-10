@@ -1,14 +1,16 @@
+package com.pi4j.plugin.mock.provider.onewire;
+
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: PLUGIN   :: Mock Platform & Providers
- * FILENAME      :  module-info.java
+ * FILENAME      :  MockOneWireProviderImpl.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
  * **********************************************************************
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the
@@ -24,22 +26,35 @@
  * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
-module com.pi4j.plugin.mock {
-    requires com.pi4j;
-    requires org.slf4j;
 
-    uses com.pi4j.extension.Plugin;
+import com.pi4j.io.onewire.OneWire;
+import com.pi4j.io.onewire.OneWireConfig;
+import com.pi4j.io.onewire.OneWireProviderBase;
+import com.pi4j.io.serial.Serial;
+import com.pi4j.io.serial.SerialConfig;
+import com.pi4j.io.serial.SerialProviderBase;
+import com.pi4j.plugin.mock.provider.i2c.MockI2C;
 
-    exports com.pi4j.plugin.mock;
-    exports com.pi4j.plugin.mock.platform;
-    exports com.pi4j.plugin.mock.provider.gpio.digital;
-    exports com.pi4j.plugin.mock.provider.gpio.analog;
-    exports com.pi4j.plugin.mock.provider.pwm;
-    exports com.pi4j.plugin.mock.provider.serial;
-    exports com.pi4j.plugin.mock.provider.spi;
-    exports com.pi4j.plugin.mock.provider.i2c;
-    exports com.pi4j.plugin.mock.provider.onewire;
+public class MockOneWireProviderImpl extends OneWireProviderBase implements MockOneWireProvider {
 
-    provides com.pi4j.extension.Plugin
-            with com.pi4j.plugin.mock.MockPlugin;
+    /**
+     * <p>Constructor for MockSerialProviderImpl.</p>
+     */
+    public MockOneWireProviderImpl() {
+        this.id = ID;
+        this.name = NAME;
+    }
+
+    @Override
+    public OneWire create(OneWireConfig config) {
+        MockOneWire oneWire = new MockOneWire(this, config);
+        this.context.registry().add(oneWire);
+        return oneWire;
+    }
+
+    @Override
+    public int getPriority() {
+        // if the mock is loaded, then we most probably want to use it for testing
+        return 1000;
+    }
 }
