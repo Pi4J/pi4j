@@ -30,10 +30,6 @@ package com.pi4j.plugin.mock.provider.onewire;
 import com.pi4j.io.onewire.OneWire;
 import com.pi4j.io.onewire.OneWireConfig;
 import com.pi4j.io.onewire.OneWireProviderBase;
-import com.pi4j.io.serial.Serial;
-import com.pi4j.io.serial.SerialConfig;
-import com.pi4j.io.serial.SerialProviderBase;
-import com.pi4j.plugin.mock.provider.i2c.MockI2C;
 
 public class MockOneWireProviderImpl extends OneWireProviderBase implements MockOneWireProvider {
 
