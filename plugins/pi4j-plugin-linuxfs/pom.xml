@@ -22,6 +22,11 @@
             <version>${jsch.version}</version>
         </dependency>
         <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>${jna.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.pi4j</groupId>
             <artifactId>pi4j-library-linuxfs</artifactId>
             <version>${project.version}</version>

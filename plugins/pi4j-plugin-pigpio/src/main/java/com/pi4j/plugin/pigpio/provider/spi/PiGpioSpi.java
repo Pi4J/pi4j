@@ -46,6 +46,8 @@ public class PiGpioSpi extends SpiBase implements Spi {
     protected final int handle;
     protected static int SPI_BUS_MASK = 0x0100;
     protected static int SPI_MODE_MASK = 0x0003;
+    protected static int SPI_WRITE_LSB_FIRST_MASK = 0x4000;
+    protected static int SPI_READ_LSB_FIRST_MASK = 0x8000;
 
     /**
      * <p>Constructor for PiGpioSpi.</p>
@@ -119,6 +121,21 @@ public class PiGpioSpi extends SpiBase implements Spi {
             throw new IOException("Unsupported SPI mode on AUX SPI BUS_1: mode=" + mode.toString());
         }
 
+        if(config.writeLsbFirstUserProvided()) {  // user provided, overwrite flags
+         if (config().getWriteLsbFirst() == 0) {
+                flags = (flags | (0xFFFFFFFF ^ SPI_WRITE_LSB_FIRST_MASK)); // clear bit
+            }else {
+                flags = (flags | (0xFFFFFFFF ^ SPI_WRITE_LSB_FIRST_MASK)) |SPI_WRITE_LSB_FIRST_MASK; // clear AUX bit
+            }
+        }
+
+        if(config.readLsbFirstUserProvided()) {  // user provided, overwrite flags
+            if (config().getReadLsbFirst() == 0) {
+                flags = (flags | (0xFFFFFFFF ^ SPI_READ_LSB_FIRST_MASK)); // clear bit
+            }else {
+                flags = (flags | (0xFFFFFFFF ^ SPI_READ_LSB_FIRST_MASK)) |SPI_READ_LSB_FIRST_MASK; // clear AUX bit
+            }
+        }
 
         if(config.busUserProvided()) {  // user provided, overwrite flags
             // update flags value with BUS bit ('A' 0x0000=BUS0; 0x0100=BUS1)

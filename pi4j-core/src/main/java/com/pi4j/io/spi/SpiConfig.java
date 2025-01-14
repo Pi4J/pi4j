@@ -44,6 +44,12 @@ public interface SpiConfig extends AddressConfig<SpiConfig>, IOConfig<SpiConfig>
     String MODE_KEY = "mode";
     /** Constant <code>FLAGS_KEY="flags"</code> */
     String FLAGS_KEY = "flags";
+    /** Constant <code>WRITE_LSB_KEY="baud"</code> */
+    String WRITE_LSB_KEY = "write_lsb";
+    /** Constant <code>READ_LSB_KEY="baud"</code> */
+    String READ_LSB_KEY = "read_lsb";
+
+
 
     /**
      * <p>newBuilder.</p>
@@ -67,6 +73,42 @@ public interface SpiConfig extends AddressConfig<SpiConfig>, IOConfig<SpiConfig>
      * @return a {@link java.lang.Integer} object.
      */
     default Integer getBaud() { return baud(); }
+
+    /**
+     * <p>ReadLsbFirst.</p>
+     * In accordance with the flags parm, Read operations
+     * 0 is  LSB bit shifted first, 1 MSB bit shifted first
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
+    Integer readLsbFirst();
+
+    /**
+     * <p>getreadLsbfISRT.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
+    default Integer getReadLsbFirst() { return readLsbFirst(); }
+
+
+
+    /**
+     * <p>WriteLsbFirst.</p>
+     * In accordance with the flags parm, Write operations
+     * 0 is  LSB bit shifted first, 1 MSB bit shifted first
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
+    Integer writeLsbFirst();
+
+    /**
+     * <p>getreadLsbfISRT.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
+    default Integer getWriteLsbFirst() { return writeLsbFirst(); }
+
+
 
     /**
      * <p>bus.</p>
@@ -99,6 +141,36 @@ public interface SpiConfig extends AddressConfig<SpiConfig>, IOConfig<SpiConfig>
     default boolean getBusUserProvided(){
         return busUserProvided();
     }
+
+    /**
+     * <p>writeLsbFirstserProvided.</p>
+     * @return  a boolean.
+     */
+    boolean writeLsbFirstUserProvided();
+
+    /**
+     * <p>getWriteLsbFirstUserProvided.</p>
+     * @return  a {@link java.lang.Boolean} object.
+     */
+    default boolean getWriteLsbFIrstUserProvided(){
+        return writeLsbFirstUserProvided();
+    }
+
+    /**
+     * <p>writeLsbFirstserProvided.</p>
+     * @return  a boolean.
+     */
+    boolean readLsbFirstUserProvided();
+
+    /**
+     * <p>getReadLsbFirstUserProvided.</p>
+     * @return  a {@link java.lang.Boolean} object.
+     */
+    default boolean getReadLsbFIrstUserProvided(){
+        return readLsbFirstUserProvided();
+    }
+
+
 
 
     /**
