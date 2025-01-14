@@ -40,10 +40,6 @@ import com.sun.jna.Native;
  */
 public interface LinuxLibC extends Library {
 
-    // This class could extend c.s.j.platform.linux.LibC, but we're not using any
-    // of that functionality right now so we can avoid the jna-platform dependency
-    // until we need it.
-
     LinuxLibC INSTANCE = LinuxLibC.LibLoader.load();
 
     class LibLoader {
