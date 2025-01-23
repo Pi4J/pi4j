@@ -50,7 +50,8 @@ public class GpioDContext implements Closeable {
             Long chipPtr;
             while ((chipPtr = GpioD.chipIterNextNoClose(chipIterPtr)) != null) {
                 GpioChip chip = new GpioChip(chipPtr);
-                if (!chip.getLabel().contains("pinctrl")) {
+                //if (!chip.getLabel().contains("pinctrl")){
+                if (!chip.getName().equals("gpiochip2")) {
                     GpioD.chipClose(chip.getCPointer());
                     continue;
                 }
