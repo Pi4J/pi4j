@@ -1,20 +1,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.pi4j</groupId>
-	<artifactId>pi4j-parent</artifactId>
-	<version>3.0.0-SNAPSHOT</version>
-	<name>Pi4J :: Parent POM</name>
-	<description>Parent Maven POM for the Pi4J Project</description>
-	<url>https://pi4j.com</url>
-	<inceptionYear>2012</inceptionYear>
-	<packaging>pom</packaging>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.pi4j</groupId>
+    <artifactId>pi4j-parent</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+    <name>Pi4J :: Parent POM</name>
+    <description>Parent Maven POM for the Pi4J Project</description>
+    <url>https://pi4j.com</url>
+    <inceptionYear>2012</inceptionYear>
+    <packaging>pom</packaging>
 
-	<!-- ORGANIZATION -->
-	<organization>
-		<name>Pi4J</name>
-		<url>https://pi4j.com</url>
-	</organization>
+    <!-- ORGANIZATION -->
+    <organization>
+        <name>Pi4J</name>
+        <url>https://pi4j.com</url>
+    </organization>
 
     <!-- LICENSE -->
     <licenses>
@@ -109,18 +109,18 @@
         </contributor>
     </contributors>
 
-	<!-- SOURCE CONTROL -->
-	<scm>
-		<developerConnection>scm:git:ssh://git@github.com/Pi4J/pi4j.git</developerConnection>
-		<connection>scm:git:ssh://git@github.com/Pi4J/pi4j.git</connection>
-		<url>https://github.com/Pi4J/pi4j.git</url>
-	</scm>
+    <!-- SOURCE CONTROL -->
+    <scm>
+        <developerConnection>scm:git:ssh://git@github.com/Pi4J/pi4j.git</developerConnection>
+        <connection>scm:git:ssh://git@github.com/Pi4J/pi4j.git</connection>
+        <url>https://github.com/Pi4J/pi4j.git</url>
+    </scm>
 
-	<!-- ISSUE MANAGEMENT -->
-	<issueManagement>
-		<url>https://github.com/Pi4J/pi4j/issues</url>
-		<system>github</system>
-	</issueManagement>
+    <!-- ISSUE MANAGEMENT -->
+    <issueManagement>
+        <url>https://github.com/Pi4J/pi4j/issues</url>
+        <system>github</system>
+    </issueManagement>
 
     <!-- DISTRIBUTION REPOSITORIES -->
     <distributionManagement>
@@ -707,7 +707,7 @@
         </pluginManagement>
 
         <!-- GLOBAL BUILD PLUGINS (used when building all modules) -->
-		<plugins>
+        <plugins>
             <!-- SPECIFY MINIMAL MAVEN VERSION -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -724,20 +724,23 @@
                                 <requireMavenVersion>
                                     <version>[3.9,)</version>
                                 </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>${java.version}</version>
+                                </requireJavaVersion>
                             </rules>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
-			<!-- USE LATEST SCM PLUGIN TO SUPPORT GIT -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-scm-plugin</artifactId>
-				<configuration>
-					<goals>install</goals>
-				</configuration>
-			</plugin>
+            <!-- USE LATEST SCM PLUGIN TO SUPPORT GIT -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <configuration>
+                    <goals>install</goals>
+                </configuration>
+            </plugin>
 
             <!-- ATTACH LICENSE AS ARTIFACT -->
             <plugin>
@@ -773,25 +776,7 @@
                 </executions>
                 <inherited>false</inherited>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>enforce-java</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireJavaVersion>
-                                    <version>${java.version}</version>
-                                </requireJavaVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
