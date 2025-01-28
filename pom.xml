@@ -255,7 +255,7 @@
 
         <!-- DEPENDENCY VERSIONS -->
         <!--
-        Seems we are stuck at this version of ant-contrib. Bumping it leads to:
+        It seems we are stuck at this version of ant-contrib. Bumping it leads to:
         Error executing Ant tasks: 'org.apache.tools.ant.util.FileUtils
         org.apache.tools.ant.util.FileUtils.getFileUtils()
         -->
