@@ -37,6 +37,7 @@ import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalInputProvider
 import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalOutputProvider;
 import com.pi4j.plugin.linuxfs.provider.pwm.LinuxFsPwmProvider;
 import com.pi4j.plugin.linuxfs.internal.LinuxPwm;
+import com.pi4j.plugin.linuxfs.provider.spi.LinuxFsSpiProvider;
 import com.pi4j.provider.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,13 +101,14 @@ public class LinuxFsPlugin implements Plugin {
     public static final String I2C_PROVIDER_NAME = NAME + " I2C Provider";
     public static final String I2C_PROVIDER_ID = ID + "-i2c";
 
-//    // SPI Provider name and unique ID
-//    public static final String SPI_PROVIDER_NAME = NAME + " SPI Provider";
-//    public static final String SPI_PROVIDER_ID = ID + "-spi";
-//
+
 //    // Serial Provider name and unique ID
 //    public static final String SERIAL_PROVIDER_NAME = NAME + " Serial Provider";
 //    public static final String SERIAL_PROVIDER_ID = ID + "-serial";
+
+    // SPI Provider name and unique ID
+    public static final String SPI_PROVIDER_NAME = NAME + " SPI Provider";
+    public static final String SPI_PROVIDER_ID = ID + "-spi";
 
     public static String DEFAULT_GPIO_FILESYSTEM_PATH = LinuxGpio.DEFAULT_SYSTEM_PATH;
     public static String DEFAULT_PWM_FILESYSTEM_PATH = LinuxPwm.DEFAULT_SYSTEM_PATH;
@@ -155,7 +157,8 @@ public class LinuxFsPlugin implements Plugin {
             LinuxFsDigitalInputProvider.newInstance(gpioFileSystemPath),
             LinuxFsDigitalOutputProvider.newInstance(gpioFileSystemPath),
             LinuxFsPwmProvider.newInstance(pwmFileSystemPath, pwmChip),
-            LinuxFsI2CProvider.newInstance()
+            LinuxFsI2CProvider.newInstance(),
+            LinuxFsSpiProvider.newInstance()
         };
 
         // register the LinuxFS I/O Providers with the plugin service

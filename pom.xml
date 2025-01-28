@@ -265,6 +265,7 @@
         <junit.jupiter.version>5.11.3</junit.jupiter.version>
         <slf4j.version>2.0.12</slf4j.version>
         <jserialcomm.version>2.11.0</jserialcomm.version>
+        <jna.version>5.15.0</jna.version>
 
         <!-- PLUGIN VERSIONS -->
         <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>

@@ -2,6 +2,8 @@ package com.pi4j.boardinfo.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -23,19 +25,30 @@ class ModelTest {
     void testBoardReadingParsing() {
         var boardReading = new BoardReading(
             "Raspberry Pi 4 Model B Rev 1.1",
-        "c03111",
+            "c03111",
             "temp=42.8'C",
             "08:06:15 up 85 days, 9:43, 0 users, load average: 0.00, 0.00, 0.00",
-        "volt=0.8563V",
-            "MemTotal: 3885396 kB"
-            );
+            "volt=0.8563V",
+            "MemTotal: 3885396 kB",
+            "throttled=0x3"
+        );
 
         assertAll(
             () -> assertEquals(42.8, boardReading.getTemperatureInCelsius(), "Temperature in Celsius"),
-            () -> assertEquals(109.03999999999999, boardReading.getTemperatureInFahrenheit(), "Temperature in Fahrenheit"),
-            () -> assertEquals(0.8563, boardReading.getVoltValue(), "Volt")
+            () -> assertEquals(109.04, boardReading.getTemperatureInFahrenheit(), 0.01, "Temperature in Fahrenheit"),
+            () -> assertEquals(0.8563, boardReading.getVoltValue(), "Volt"),
+            () -> assertEquals(3, boardReading.getThrottledStateAsInt(), "Throttled state as integer"), // Hex 0x3 to int
+            () -> assertEquals(List.of(ThrottledState.UNDERVOLTAGE_DETECTED, ThrottledState.ARM_FREQUENCY_CAPPED),
+                boardReading.getThrottledStates(),
+                "Throttled states as list of active ThrottledState enums"),
+            () -> assertEquals(
+                "Undervoltage detected, ARM frequency capped",
+                boardReading.getThrottledStatesDescription(),
+                "Throttled states description for active states"
+            )
         );
     }
+
 
     @Test
     void testMemoryParsing() {

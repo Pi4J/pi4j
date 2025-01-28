@@ -48,12 +48,31 @@ public interface SpiConfigBuilder extends
     }
 
     /**
+     * <p>readLsbFirst.</p>
+     *
+     * @param shift  a {@link java.lang.Integer} object.
+     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
+     */
+    SpiConfigBuilder readLsbFirst(Integer shift);
+
+    /**
+     * <p>writeLsbFirst.</p>
+     *
+     * @param shift  a {@link java.lang.Integer} object.
+     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
+     */
+    SpiConfigBuilder writeLsbFirst(Integer shift);
+
+
+
+    /**
      * <p>baud.</p>
      *
      * @param rate a {@link java.lang.Integer} object.
      * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
      */
     SpiConfigBuilder baud(Integer rate);
+
 
     /**
      * <p>bus.</p>

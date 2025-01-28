@@ -61,4 +61,19 @@ public interface Command {
      * </p>
      */
     String TEMPERATURE_COMMAND = "vcgencmd measure_temp";
+
+    /**
+     * Command to retrieve throttled state information.
+     * <p>
+     * This command uses the `vcgencmd` tool to query the throttled state of the system. The output provides
+     * details about under-voltage, throttling, and frequency capping conditions. It is useful for diagnosing
+     * power and thermal management issues.
+     * </p>
+     * <p>
+     * For more details on the bit interpretation of the output, see the
+     * <a href="https://www.raspberrypi.com/documentation/computers/os.html#get_throttled">
+     * Raspberry Pi documentation</a>.
+     * </p>
+     */
+    String THROTTLED_STATE_COMMAND = "vcgencmd get_throttled";
 }
