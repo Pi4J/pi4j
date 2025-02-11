@@ -154,7 +154,7 @@
 
     <!-- PROJECT MODULES -->
     <modules>
-        <!-- THE FOLLOWING MODULES ARE V2 -->
+        <!-- THE FOLLOWING ARE THE Pi4J MODULES -->
         <module>libraries/pi4j-library</module>
         <module>pi4j-core</module>
         <module>plugins/pi4j-plugin</module>
