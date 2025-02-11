@@ -107,7 +107,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      * Submits the given task for async execution
      *
      * @param task the task to execute asynchronously
-     *
      * @return the task to cancel later
      */
     Future<?> submitTask(Runnable task);
@@ -121,13 +120,11 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     Context shutdown() throws ShutdownException;
 
     /**
-     *
      * @return {@link Future} of {@link Context}
      */
     Future<Context> asyncShutdown();
 
     /**
-     *
      * @return Flag indicating if the context has been shutdown
      */
     boolean isShutdown();
@@ -215,7 +212,7 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      * <p>platform.</p>
      *
      * @param platformClass a P object.
-     * @param <P> the platform type
+     * @param <P>           the platform type
      * @return a P object.
      * @throws PlatformNotFoundException if platform specified by {@code platformClass} is not found.
      */
@@ -227,7 +224,7 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      * <p>platform.</p>
      *
      * @param platformClass a P object.
-     * @param <P> the platform type
+     * @param <P>           the platform type
      * @return a P object.
      * @throws PlatformNotFoundException if platform specified by {@code platformClass} is not found.
      */
@@ -239,7 +236,7 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      * <p>Has platforms.</p>
      *
      * @param platformClass a P object.
-     * @return {@link boolean}
+     * @return boolean
      * @throws PlatformNotFoundException if platform specified by {@code platformClass} is not found.
      */
     default boolean hasPlatform(Class<? extends Platform> platformClass) throws PlatformNotFoundException {
@@ -250,18 +247,24 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     // PROVIDER ACCESSOR METHODS
     // ------------------------------------------------------------------------
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     default <T extends Provider> T provider(String providerId) throws ProviderNotFoundException {
         return (T) providers().get(providerId);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     default <T extends Provider> T provider(String providerId, Class<T> providerClass)
         throws ProviderNotFoundException {
         return (T) providers().get(providerId);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     default boolean hasProvider(String providerId) {
         try {
             return providers().exists(providerId);
@@ -270,17 +273,23 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     default <T extends Provider> boolean hasProvider(IOType ioType) {
         return providers().exists(ioType);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     default <T extends Provider> boolean hasProvider(Class<T> providerClass) {
         return providers().exists(providerClass);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     default <T extends Provider> T provider(Class<T> providerClass)
         throws ProviderNotFoundException, ProviderInterfaceException {
         // return the default provider for this type from the default platform
@@ -295,7 +304,9 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         throw new ProviderNotFoundException(providerClass);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     default <T extends Provider> T provider(IOType ioType) throws ProviderNotFoundException {
         // return the default provider for this type from the default platform
         if (platform() != null && platform().hasProvider(ioType))
@@ -389,7 +400,7 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         if (provider == null) {
             // unable to resolve the IO type and thus unable to create I/O instance
             throw new IOException("This IO instance [" + id +
-                    "] could not be created because it does not define one of the following: 'PLATFORM', 'PROVIDER', or 'I/O TYPE'.");
+                "] could not be created because it does not define one of the following: 'PLATFORM', 'PROVIDER', or 'I/O TYPE'.");
         }
 
         // create IO instance using the provided ID and resolved inherited properties
@@ -423,8 +434,8 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
             // validate IO type from resolved provider
             if (!ioType.isType(provider.type())) {
                 throw new IOException("This IO instance [" + id +
-                        "] could not be created because the resolved provider [" + providerId +
-                        "] does not match the required I/O TYPE [" + ioType.name() + "]");
+                    "] could not be created because the resolved provider [" + providerId +
+                    "] does not match the required I/O TYPE [" + ioType.name() + "]");
             }
         }
 
