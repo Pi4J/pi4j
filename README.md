@@ -36,6 +36,8 @@ Builds are available from:
 
 ## Using Pi4J
 
+You need the **Java 11 runtime when you use Pi4J V2, and Java 21 for V3**.
+
 When you want to use Pi4J in your project, you should definitely check out [the Pi4J website](https://pi4j.com) where
 you can find a lot of information and many examples!
 
