@@ -14,7 +14,11 @@ public class GpioDContext implements Closeable {
 
     private static final Logger logger = LoggerFactory.getLogger(GpioDContext.class);
 
-    private static final GpioDContext instance = new GpioDContext();
+    private static final GpioDContext instance;
+
+    static {
+        instance = new GpioDContext();
+    }
 
     public static GpioDContext getInstance() {
         return instance;
