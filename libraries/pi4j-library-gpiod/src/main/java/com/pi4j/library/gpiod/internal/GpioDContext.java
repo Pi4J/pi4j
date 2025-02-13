@@ -23,7 +23,7 @@ public class GpioDContext implements Closeable {
     private GpioChip gpioChip;
     private final Map<Integer, GpioLine> openLines;
     private final Set<Long> openLineEvents;
-    private String desiredChipName = null; // ユーザーが指定したチップ名を保持
+    private String desiredChipName = null; // Holds the chip name specified by the user
 
     public GpioDContext() {
         this.openLines = new HashMap<>();
@@ -31,10 +31,10 @@ public class GpioDContext implements Closeable {
     }
 
     /**
-     * 使用する GPIO チップ名を設定します。
+     * Sets the name of the GPIO chip to use.
      *
-     * @param chipName 使用する GPIO チップの名前 (例: "gpiochip0", "gpiochip2")。
-     *                 null または空文字列が指定された場合、デフォルトのチップが選択されます。
+     * @param chipName The name of the GPIO chip to use (e.g., "gpiochip0", "gpiochip2").
+     *                 If null or an empty string is specified, the default chip will be selected.
      */
     public synchronized void setChip(String chipName) {
         if (this.gpioChip != null) {
@@ -46,10 +46,10 @@ public class GpioDContext implements Closeable {
     }
 
     /**
-     * 使用する GPIO チップ番号を設定します。
+     * Sets the number of the GPIO chip to use.
      *
-     * @param chipNumber 使用する GPIO チップの番号 (例: 0, 2)。
-     *                   負の値が指定された場合、デフォルトのチップが選択されます。
+     * @param chipNumber The number of the GPIO chip to use (e.g., 0, 2).
+     *                   If a negative value is specified, the default chip will be selected.
      */
     public synchronized void setChip(int chipNumber) {
         if (chipNumber < 0) {
@@ -60,8 +60,8 @@ public class GpioDContext implements Closeable {
     }
 
     /**
-     * GpioDContext を初期化します。
-     * setChip() でチップが指定されていない場合は、デフォルトのチップが選択されます。
+     * Initializes the GpioDContext.
+     * If no chip is specified with setChip(), the default chip will be selected.
      */
     public synchronized void initialize() {
         if (!BoardInfoHelper.runningOnRaspberryPi()) {
@@ -84,12 +84,12 @@ public class GpioDContext implements Closeable {
                 boolean useThisChip = false;
 
                 if (this.desiredChipName != null && !this.desiredChipName.isEmpty()) {
-                    // ユーザーがチップ名を指定している場合
+                    // If the user has specified a chip name
                     if (chip.getName().equals(this.desiredChipName)) {
                         useThisChip = true;
                     }
                 } else {
-                    // ユーザーがチップ名を指定していない場合、"pinctrl" を含むラベルを持つ最初のチップをデフォルトとして使用
+                    // If the user has not specified a chip name, use the first chip with a label containing "pinctrl" as the default
                     if (chip.getLabel().contains("pinctrl")) {
                         useThisChip = true;
                     }
@@ -125,7 +125,7 @@ public class GpioDContext implements Closeable {
 
     public synchronized GpioLine getOrOpenLine(int offset) {
         if (this.gpioChip == null) {
-            initialize(); // チップがまだ初期化されていない場合は、デフォルトのチップで初期化を試みる
+            initialize(); // If the chip has not been initialized yet, try to initialize with the default chip
         }
         if (this.gpioChip == null)
             throw new IllegalStateException("No gpio chip yet initialized!");
