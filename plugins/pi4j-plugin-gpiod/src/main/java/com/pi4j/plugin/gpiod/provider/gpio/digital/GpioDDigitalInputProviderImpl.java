@@ -46,6 +46,11 @@ public class GpioDDigitalInputProviderImpl extends DigitalInputProviderBase impl
     @Override
     public DigitalInputProvider initialize(Context context) throws InitializeException {
         DigitalInputProvider provider = super.initialize(context);
+        // Retrieve the chip name from the context properties
+        String chipName = context.properties().get("gpio.chip.name");
+        if (chipName != null) {
+            GpioDContext.getInstance().setChip(chipName);
+        }
         GpioDContext.getInstance().initialize();
         return provider;
     }
