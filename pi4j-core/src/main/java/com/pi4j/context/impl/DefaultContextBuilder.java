@@ -253,6 +253,7 @@ public class DefaultContextBuilder implements ContextBuilder {
     @Override
     public ContextBuilder setGpioChipName(String chipName) {
         this.gpioChipName = chipName;
+        this.properties.put("gpio.chip.name", chipName);
         return this;
     }
 
