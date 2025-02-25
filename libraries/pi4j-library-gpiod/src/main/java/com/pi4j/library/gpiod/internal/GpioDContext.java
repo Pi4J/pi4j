@@ -126,6 +126,72 @@ public class GpioDContext implements Closeable {
         logger.info("Using chip {} {}", this.gpioChip.getName(), this.gpioChip.getLabel());
     }
 
+    /**
+     * Initializes the GpioDContext with properties.
+     * If no chip is specified with setChip(), the default chip will be selected.
+     */
+    public synchronized void initialize(Map<String, String> properties) {
+        if (!BoardInfoHelper.runningOnRaspberryPi()) {
+            logger.warn("Can't initialize GpioD context, board model is unknown");
+            return;
+        }
+
+        // already initialized
+        if (this.gpioChip != null) {
+            logger.info("GpioD context already initialized with chip: {}", this.gpioChip.getName());
+            return;
+        }
+
+        // Set chip name from properties if available
+        String chipName = properties.get("gpio.chip.name");
+        if (chipName != null) {
+            setChip(chipName);
+        }
+
+        long chipIterPtr = GpioD.chipIterNew();
+        GpioChip found = null;
+        try {
+            Long chipPtr;
+            while ((chipPtr = GpioD.chipIterNextNoClose(chipIterPtr)) != null) {
+                GpioChip chip = new GpioChip(chipPtr);
+                boolean useThisChip = false;
+                if (this.desiredChipName != null && !this.desiredChipName.isEmpty()) {
+                    if (chip.getName().equals(this.desiredChipName)) {
+                        useThisChip = true;
+                    }
+                } else {
+                    if (chip.getLabel().contains("pinctrl")) {
+                        useThisChip = true;
+                    }
+                }
+
+                if (useThisChip) {
+                    found = chip;
+                    break;
+                } else {
+                    GpioD.chipClose(chip.getCPointer());
+                }
+            }
+        } finally {
+            if (found != null) {
+                GpioD.chipIterFreeNoClose(chipIterPtr);
+            } else {
+                GpioD.chipIterFree(chipIterPtr);
+            }
+        }
+
+        if (found == null) {
+            if (this.desiredChipName != null && !this.desiredChipName.isEmpty()) {
+                throw new IllegalStateException("Couldn't find gpiochip with name: " + this.desiredChipName);
+            } else {
+                throw new IllegalStateException("Couldn't identify suitable gpiochip (no chip name specified and no 'pinctrl' chip found)!");
+            }
+        }
+
+        this.gpioChip = found;
+        logger.info("Using chip {} {}", this.gpioChip.getName(), this.gpioChip.getLabel());
+    }
+
 
     public synchronized GpioLine getOrOpenLine(int offset) {
         if (this.gpioChip == null) {
