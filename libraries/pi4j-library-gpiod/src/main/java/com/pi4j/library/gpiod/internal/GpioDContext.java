@@ -1,6 +1,7 @@
 package com.pi4j.library.gpiod.internal;
 
 import com.pi4j.boardinfo.util.BoardInfoHelper;
+import com.pi4j.context.ContextProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,7 +131,7 @@ public class GpioDContext implements Closeable {
      * Initializes the GpioDContext with properties.
      * If no chip is specified with setChip(), the default chip will be selected.
      */
-    public synchronized void initialize(Map<String, String> properties) {
+    public synchronized void initialize(ContextProperties properties) {
         if (!BoardInfoHelper.runningOnRaspberryPi()) {
             logger.warn("Can't initialize GpioD context, board model is unknown");
             return;
