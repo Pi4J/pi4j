@@ -67,6 +67,9 @@ public class DefaultContextBuilder implements ContextBuilder {
     // properties
     protected Map<String,String> properties = Collections.synchronizedMap(new HashMap<>());
 
+    // Add a field to store the GPIO chip name
+    protected String gpioChipName;
+
     /**
      * Private Constructor
      */
@@ -246,6 +249,13 @@ public class DefaultContextBuilder implements ContextBuilder {
         return properties(prop, prefixFilter);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public ContextBuilder setGpioChipName(String chipName) {
+        this.gpioChipName = chipName;
+        this.properties.put("gpio.chip.name", chipName);
+        return this;
+    }
 
     /** {@inheritDoc} */
     @Override

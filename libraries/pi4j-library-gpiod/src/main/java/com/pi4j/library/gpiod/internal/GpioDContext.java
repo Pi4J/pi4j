@@ -1,6 +1,7 @@
 package com.pi4j.library.gpiod.internal;
 
 import com.pi4j.boardinfo.util.BoardInfoHelper;
+import com.pi4j.context.ContextProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,23 +27,73 @@ public class GpioDContext implements Closeable {
 
     private GpioChip gpioChip;
     private final Map<Integer, GpioLine> openLines;
-
     private final Set<Long> openLineEvents;
+    private String desiredChipName = null; // Holds the chip name specified by the user
 
     public GpioDContext() {
         this.openLines = new HashMap<>();
         this.openLineEvents = new HashSet<>();
     }
 
+    /**
+     * Sets the name of the GPIO chip to use.
+     *
+     * @param chipName The name of the GPIO chip to use (e.g., "gpiochip0", "gpiochip2").
+     *                 If null or an empty string is specified, the default chip will be selected.
+     */
+    public synchronized void setChip(String chipName) {
+        if (this.gpioChip != null) {
+            logger.warn("GpioD context already initialized with chip: {}.  Ignoring new chip request.", this.gpioChip.getName());
+            return;
+        }
+        this.desiredChipName = chipName;
+        logger.debug("GpioD chip name set to: {}", (chipName == null || chipName.isEmpty()) ? "[default]" : chipName);
+    }
+
+    /**
+     * Sets the number of the GPIO chip to use.
+     *
+     * @param chipNumber The number of the GPIO chip to use (e.g., 0, 2).
+     *                   If a negative value is specified, the default chip will be selected.
+     */
+    public synchronized void setChip(int chipNumber) {
+        if (chipNumber < 0) {
+            setChip(null);
+        } else {
+            setChip("gpiochip" + chipNumber);
+        }
+    }
+
+    /**
+     * Initializes the GpioDContext.
+     */
     public synchronized void initialize() {
+        initialize(null);
+    }
+
+    /**
+     * Initializes the GpioDContext with properties.
+     * If no chip is specified with setChip(), the default chip will be selected.
+     */
+    public synchronized void initialize(ContextProperties properties) {
         if (!BoardInfoHelper.runningOnRaspberryPi()) {
             logger.warn("Can't initialize GpioD context, board model is unknown");
             return;
         }
 
         // already initialized
-        if (this.gpioChip != null)
+        if (this.gpioChip != null) {
+            logger.info("GpioD context already initialized with chip: {}", this.gpioChip.getName());
             return;
+        }
+
+        // Set chip name from properties if available
+        if (properties != null) {
+            String chipName = properties.get("gpio.chip.name");
+            if (chipName != null) {
+                setChip(chipName);
+            }
+        }
 
         long chipIterPtr = GpioD.chipIterNew();
         GpioChip found = null;
@@ -50,13 +101,23 @@ public class GpioDContext implements Closeable {
             Long chipPtr;
             while ((chipPtr = GpioD.chipIterNextNoClose(chipIterPtr)) != null) {
                 GpioChip chip = new GpioChip(chipPtr);
-                if (!chip.getLabel().contains("pinctrl")) {
-                    GpioD.chipClose(chip.getCPointer());
-                    continue;
+                boolean useThisChip = false;
+                if (this.desiredChipName != null && !this.desiredChipName.isEmpty()) {
+                    if (chip.getName().equals(this.desiredChipName)) {
+                        useThisChip = true;
+                    }
+                } else {
+                    if (chip.getLabel().contains("pinctrl")) {
+                        useThisChip = true;
+                    }
                 }
 
-                found = chip;
-                break;
+                if (useThisChip) {
+                    found = chip;
+                    break;
+                } else {
+                    GpioD.chipClose(chip.getCPointer());
+                }
             }
         } finally {
             if (found != null) {
@@ -66,14 +127,23 @@ public class GpioDContext implements Closeable {
             }
         }
 
-        if (found == null)
-            throw new IllegalStateException("Couldn't identify gpiochip!");
+        if (found == null) {
+            if (this.desiredChipName != null && !this.desiredChipName.isEmpty()) {
+                throw new IllegalStateException("Couldn't find gpiochip with name: " + this.desiredChipName);
+            } else {
+                throw new IllegalStateException("Couldn't identify suitable gpiochip (no chip name specified and no 'pinctrl' chip found)!");
+            }
+        }
 
         this.gpioChip = found;
         logger.info("Using chip {} {}", this.gpioChip.getName(), this.gpioChip.getLabel());
     }
 
+
     public synchronized GpioLine getOrOpenLine(int offset) {
+        if (this.gpioChip == null) {
+            initialize(); // If the chip has not been initialized yet, try to initialize with the default chip
+        }
         if (this.gpioChip == null)
             throw new IllegalStateException("No gpio chip yet initialized!");
         return this.openLines.computeIfAbsent(offset, o -> {

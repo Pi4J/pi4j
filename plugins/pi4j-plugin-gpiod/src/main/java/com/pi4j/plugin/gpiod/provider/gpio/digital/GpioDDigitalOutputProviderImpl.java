@@ -74,7 +74,7 @@ public class GpioDDigitalOutputProviderImpl extends DigitalOutputProviderBase im
     @Override
     public DigitalOutputProvider initialize(Context context) throws InitializeException {
         DigitalOutputProvider provider = super.initialize(context);
-        GpioDContext.getInstance().initialize();
+        GpioDContext.getInstance().initialize(context.properties());
         return provider;
     }
 
