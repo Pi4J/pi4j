@@ -80,10 +80,16 @@ public class RegistryTest {
                 .name("DIN-3")
                 .address(3);
 
+        // create a new input, then shutdown
         var input = pi4j.create(inputConfig);
 
         input.shutdown(pi4j);
+        pi4j.shutdown(input.id());
 
+        // shouldn't fail when recreating
         input = pi4j.create(inputConfig);
+
+        // or shutting down
+        pi4j.shutdown(input.id());
     }
 }
