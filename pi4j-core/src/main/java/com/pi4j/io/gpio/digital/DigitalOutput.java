@@ -304,7 +304,7 @@ public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfi
      * @return a {@link java.util.concurrent.Future} object.
      */
     default Future<?> pulseAsync(int interval, TimeUnit unit, DigitalState state){
-        return pulseAsync(interval, unit, DigitalState.HIGH, null);
+        return pulseAsync(interval, unit, state, null);
     }
 
     /**
