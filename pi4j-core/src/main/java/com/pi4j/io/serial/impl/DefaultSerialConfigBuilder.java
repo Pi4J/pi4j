@@ -10,7 +10,7 @@ package com.pi4j.io.serial.impl;
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
  * **********************************************************************
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,14 +35,15 @@ import com.pi4j.io.serial.*;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
+@Deprecated(forRemoval = true)
 public class DefaultSerialConfigBuilder
-        extends IODeviceConfigBuilderBase<SerialConfigBuilder, SerialConfig>
-        implements SerialConfigBuilder {
+    extends IODeviceConfigBuilderBase<SerialConfigBuilder, SerialConfig>
+    implements SerialConfigBuilder {
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DefaultSerialConfigBuilder(Context context){
+    protected DefaultSerialConfigBuilder(Context context) {
         super(context);
     }
 
@@ -56,42 +57,54 @@ public class DefaultSerialConfigBuilder
         return new DefaultSerialConfigBuilder(context);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SerialConfigBuilder baud(Integer rate) {
         this.properties.put(SerialConfig.BAUD_KEY, rate.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SerialConfigBuilder dataBits(DataBits bits) {
         this.properties.put(SerialConfig.DATA_BITS_KEY, Integer.toString(bits.value()));
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SerialConfigBuilder parity(Parity parity) {
         this.properties.put(SerialConfig.PARITY_KEY, parity.name());
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SerialConfigBuilder stopBits(StopBits bits) {
         this.properties.put(SerialConfig.STOP_BITS_KEY, Integer.toString(bits.value()));
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SerialConfigBuilder flowControl(FlowControl control) {
         this.properties.put(SerialConfig.FLOW_CONTROL_KEY, control.name());
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SerialConfig build() {
         SerialConfig config = new DefaultSerialConfig(getResolvedProperties());
