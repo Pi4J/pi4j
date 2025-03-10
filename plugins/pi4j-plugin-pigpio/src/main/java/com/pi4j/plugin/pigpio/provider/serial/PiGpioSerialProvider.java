@@ -37,11 +37,17 @@ import com.pi4j.plugin.pigpio.PiGpioPlugin;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
+@Deprecated(forRemoval = true)
 public interface PiGpioSerialProvider extends SerialProvider {
-    /** Constant <code>NAME="PiGpioPlugin.SERIAL_PROVIDER_NAME"</code> */
+    /**
+     * Constant <code>NAME="PiGpioPlugin.SERIAL_PROVIDER_NAME"</code>
+     */
     String NAME = PiGpioPlugin.SERIAL_PROVIDER_NAME;
-    /** Constant <code>ID="PiGpioPlugin.SERIAL_PROVIDER_ID"</code> */
+    /**
+     * Constant <code>ID="PiGpioPlugin.SERIAL_PROVIDER_ID"</code>
+     */
     String ID = PiGpioPlugin.SERIAL_PROVIDER_ID;
+
     /**
      * <p>newInstance.</p>
      *
