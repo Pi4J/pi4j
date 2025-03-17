@@ -161,8 +161,10 @@ public class LinuxFsPwm extends PwmBase implements Pwm {
         try {
             // disable PWM
             logger.trace("disable PWM [{}]; {}", this.config.address(), pwm.getPwmPath());
-            if (pwm.enabled()) pwm.disable();
-
+            if (pwm.enabled()) {
+                pwm.disable();
+            }
+            
             // update tracking state
             this.onState = false;
         } catch (Exception e) {
