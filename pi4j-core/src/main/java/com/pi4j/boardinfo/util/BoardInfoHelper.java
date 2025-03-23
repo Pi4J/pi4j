@@ -173,9 +173,7 @@ public class BoardInfoHelper {
      * @return {@code true} if the board is a Raspberry Pi Model 5B, otherwise {@code false}.
      */
     public static boolean usesRP1() {
-        return current().getBoardModel() == BoardModel.MODEL_5_B
-            || current().getBoardModel() == BoardModel.MODEL_500
-            || current().getBoardModel() == BoardModel.GENERIC_RP1;
+        return current().getBoardModel().usesRP1();
     }
 
     /**

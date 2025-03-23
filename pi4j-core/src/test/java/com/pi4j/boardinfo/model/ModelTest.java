@@ -63,6 +63,18 @@ class ModelTest {
     }
 
     @Test
+    void testRP1() {
+        assertAll(
+            () -> assertFalse(BoardModel.MODEL_1_B.usesRP1(), "MODEL_1_B"),
+            () -> assertTrue(BoardModel.MODEL_5_B.usesRP1(), "MODEL_5_B"),
+            () -> assertTrue(BoardModel.MODEL_500.usesRP1(), "MODEL_500"),
+            () -> assertTrue(BoardModel.COMPUTE_5.usesRP1(), "COMPUTE_5"),
+            () -> assertFalse(BoardModel.GENERIC.usesRP1(), "GENERIC"),
+            () -> assertTrue(BoardModel.GENERIC_RP1.usesRP1(), "GENERIC_RP1")
+        );
+    }
+
+    @Test
     void testBoardModelOverwrite() {
         var boardInfo = BoardInfoHelper.current();
 
