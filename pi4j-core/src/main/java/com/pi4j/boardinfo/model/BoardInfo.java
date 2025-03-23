@@ -33,7 +33,7 @@ import com.pi4j.boardinfo.definition.BoardModel;
  */
 public class BoardInfo {
 
-    private final BoardModel boardModel;
+    private BoardModel boardModel;
     private final OperatingSystem operatingSystem;
     private final JavaInfo javaInfo;
 
@@ -49,6 +49,16 @@ public class BoardInfo {
         this.boardModel = boardModel;
         this.operatingSystem = operatingSystem;
         this.javaInfo = javaInfo;
+    }
+
+    /**
+     * Sets the model of the board. To be used when the detected board is not correct,
+     * or to force a specific model e.g. on Orange Pi, or during testing.
+     *
+     * @param boardModel
+     */
+    public void setBoardModel(BoardModel boardModel) {
+        this.boardModel = boardModel;
     }
 
     /**
