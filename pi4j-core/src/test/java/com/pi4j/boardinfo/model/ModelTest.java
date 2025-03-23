@@ -1,11 +1,12 @@
 package com.pi4j.boardinfo.model;
 
+import com.pi4j.boardinfo.definition.BoardModel;
+import com.pi4j.boardinfo.util.BoardInfoHelper;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ModelTest {
 
@@ -49,7 +50,6 @@ class ModelTest {
         );
     }
 
-
     @Test
     void testMemoryParsing() {
         var memory = new JvmMemory(Runtime.getRuntime());
@@ -60,5 +60,25 @@ class ModelTest {
             () -> assertEquals(memory.getUsed() / 1024.0 / 1024.0, memory.getUsedInMb(), "Used memory in MB"),
             () -> assertEquals(memory.getTotal() / 1024.0 / 1024.0, memory.getTotalInMb(), "Total memory in MB")
         );
+    }
+
+    @Test
+    void testBoardModelOverwrite() {
+        var boardInfo = BoardInfoHelper.current();
+
+        boardInfo.setBoardModel(BoardModel.MODEL_500);
+        assertEquals(BoardModel.MODEL_500, boardInfo.getBoardModel());
+        assertTrue(BoardInfoHelper.runningOnRaspberryPi());
+        assertTrue(BoardInfoHelper.usesRP1());
+
+        boardInfo.setBoardModel(BoardModel.GENERIC);
+        assertEquals(BoardModel.GENERIC, boardInfo.getBoardModel());
+        assertTrue(BoardInfoHelper.runningOnRaspberryPi());
+        assertFalse(BoardInfoHelper.usesRP1());
+
+        boardInfo.setBoardModel(BoardModel.GENERIC_RP1);
+        assertEquals(BoardModel.GENERIC_RP1, boardInfo.getBoardModel());
+        assertTrue(BoardInfoHelper.runningOnRaspberryPi());
+        assertTrue(BoardInfoHelper.usesRP1());
     }
 }
