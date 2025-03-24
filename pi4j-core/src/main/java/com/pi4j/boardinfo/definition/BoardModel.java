@@ -66,7 +66,8 @@ public enum BoardModel {
         Cpu.ARM1176JZF_S, 1,
         List.of(700),
         List.of(256 * 1024, 512 * 1024),
-        List.of("Amount of memory changed to 512Mb on 20160810")),
+        List.of("Amount of memory changed to 512Mb on 20160810"),
+        false),
     MODEL_3_A_PLUS("Raspberry Pi 3 Model A+", SINGLE_BOARD_COMPUTER,
         List.of("9020e0", "9020e1"),
         PiModel.MODEL_A,
@@ -75,7 +76,9 @@ public enum BoardModel {
         Soc.BCM2837B0,
         Cpu.CORTEX_A53, 4,
         List.of(1400),
-        List.of(512 * 1024)),
+        List.of(512 * 1024),
+        new ArrayList<>(),
+        false),
     MODEL_1_B("Raspberry Pi 1 Model B", SINGLE_BOARD_COMPUTER,
         List.of("0002", "0003", "0004", "0005", "0006", "000d", "000e", "000f"),
         PiModel.MODEL_B,
@@ -85,7 +88,8 @@ public enum BoardModel {
         Cpu.ARM1176JZF_S, 1,
         List.of(700),
         List.of(256 * 1024, 512 * 1024),
-        List.of("Amount of memory changed to 512Mb on 20121015")),
+        List.of("Amount of memory changed to 512Mb on 20121015"),
+        false),
     MODEL_1_B_PLUS("Raspberry Pi 1 Model B+", SINGLE_BOARD_COMPUTER,
         List.of("0010", "0013", "900032"),
         PiModel.MODEL_B,
@@ -157,7 +161,9 @@ public enum BoardModel {
         Soc.BCM2712,
         Cpu.CORTEX_A76, 4,
         List.of(2400),
-        List.of(2048 * 1024, 4096 * 1024, 8192 * 1024, 16384 * 1024)),
+        List.of(2048 * 1024, 4096 * 1024, 8192 * 1024, 16384 * 1024),
+        new ArrayList<>(),
+        true),
     MODEL_500("Raspberry Pi 500", ALL_IN_ONE_COMPUTER,
         List.of("d04190"),
         PiModel.MODEL_B,
@@ -169,7 +175,8 @@ public enum BoardModel {
         List.of(8192 * 1024),
         List.of(
             "20241209: Confirmed by Jeff Geerling who has evaluation version: d04190."
-        )),
+        ),
+        true),
     COMPUTE_1("Compute Module 1", STACK_ON_COMPUTER,
         List.of("0011", "0014", "900061"),
         PiModel.COMPUTE,
@@ -231,7 +238,8 @@ public enum BoardModel {
             "20241129: Confirmed by Jeff Geerling who has evaluation version: c04180 for the 4Gb version.",
             "When compared with Compute 4, we can assume the other boards should have be a, b, d.",
             "Will be further completed or modified when more info is available."
-        )),
+        ),
+        true),
     ZERO_PCB_1_2("Raspberry Pi Zero PCB V1.2", SINGLE_BOARD_COMPUTER,
         List.of("900092", "920092"),
         PiModel.ZERO,
@@ -286,7 +294,8 @@ public enum BoardModel {
         Cpu.CORTEX_MO_PLUS, 1,
         List.of(133),
         List.of(264 + 2048),
-        List.of("Same form factor as PICO but with Wi-Fi")),
+        List.of("Same form factor as PICO but with Wi-Fi"),
+        false),
     PICO_2("Raspberry Pi Pico 2", MICROCONTROLLER,
         new ArrayList<>(),
         PiModel.PICO,
@@ -305,6 +314,29 @@ public enum BoardModel {
         Cpu.CORTEX_M33, 1,
         List.of(150),
         List.of(520 + 4096)),
+    // Generic model, this can be used to force the library
+    // to load Raspberry Pi plugins on other board types
+    GENERIC("Generic board compatible with Raspberry Pi 4", SINGLE_BOARD_COMPUTER,
+        new ArrayList<>(),
+        PiModel.MODEL_B,
+        HeaderVersion.TYPE_3,
+        LocalDate.now(),
+        Soc.UNKNOWN,
+        Cpu.UNKNOWN, 4,
+        new ArrayList<>(),
+        new ArrayList<>()),
+    GENERIC_RP1("Generic board compatible with Raspberry Pi 5", SINGLE_BOARD_COMPUTER,
+        new ArrayList<>(),
+        PiModel.MODEL_B,
+        HeaderVersion.TYPE_3,
+        LocalDate.now(),
+        Soc.UNKNOWN,
+        Cpu.UNKNOWN, 4,
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        true),
+    // Unknown model
     UNKNOWN("Unknown", BoardType.UNKNOWN,
         new ArrayList<>(),
         PiModel.UNKNOWN,
@@ -329,6 +361,7 @@ public enum BoardModel {
     private final List<Integer> versionsProcessorSpeedInMhz;
     private final List<Integer> versionsMemoryInKb;
     private final List<String> remarks;
+    private final Boolean usesRP1;
 
     /**
      * Constructor for creating a {@code BoardModel} without remarks.
@@ -350,7 +383,7 @@ public enum BoardModel {
                Soc soc, Cpu cpu, Integer numberOfCpu,
                List<Integer> versionsProcessorSpeedInMhz, List<Integer> versionsMemoryInKb) {
         this(label, boardType, boardCodes, model, headerVersion, releaseDate, soc, cpu, numberOfCpu,
-            versionsProcessorSpeedInMhz, versionsMemoryInKb, new ArrayList<>());
+            versionsProcessorSpeedInMhz, versionsMemoryInKb, new ArrayList<>(), false);
     }
 
     /**
@@ -368,12 +401,14 @@ public enum BoardModel {
      * @param versionsProcessorSpeedInMhz list of processor speeds in MHz
      * @param versionsMemoryInKb          list of memory sizes in KB
      * @param remarks                     any remarks or notes about the board
+     * @param usesRP1                     board contains the RP1 chip to control GPIOs
      */
     BoardModel(String label, BoardType boardType, List<String> boardCodes,
                PiModel model, HeaderVersion headerVersion, LocalDate releaseDate,
                Soc soc, Cpu cpu, Integer numberOfCpu,
                List<Integer> versionsProcessorSpeedInMhz, List<Integer> versionsMemoryInKb,
-               List<String> remarks) {
+               List<String> remarks,
+               Boolean usesRP1) {
         this.label = label;
         this.boardType = boardType;
         this.boardCodes = boardCodes;
@@ -386,6 +421,7 @@ public enum BoardModel {
         this.versionsProcessorSpeedInMhz = versionsProcessorSpeedInMhz;
         this.versionsMemoryInKb = versionsMemoryInKb;
         this.remarks = remarks;
+        this.usesRP1 = usesRP1;
     }
 
     /**
@@ -539,5 +575,12 @@ public enum BoardModel {
      */
     public List<String> getRemarks() {
         return remarks;
+    }
+
+    /**
+     * @return board contains the RP1 chip to control GPIOs
+     */
+    public boolean usesRP1() {
+        return usesRP1;
     }
 }
