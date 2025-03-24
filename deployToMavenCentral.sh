@@ -60,7 +60,7 @@ trap cleanup EXIT
 # Build and deploy
 echo -e "\nINFO: Building and deploying to Maven Central..."
 export MAVEN_OPTS="--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED"
-if ! mvn clean package deploy -DskipTests "${MVN_PROFILES}" -Pdeploy "-Dgpg.keyname=${gpgKeyName}" ; then
+if ! mvn clean deploy -DskipTests "${MVN_PROFILES}" -Pdeploy "-Dgpg.keyname=${gpgKeyName}" ; then
   echo -e "ERROR: Failed to build and deploy to Maven Central!"
   exit 1
 fi
