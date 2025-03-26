@@ -25,8 +25,6 @@ package com.pi4j.test.registry;
  * #L%
  */
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
@@ -39,6 +37,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class RegistryTest {
@@ -83,7 +83,6 @@ public class RegistryTest {
         // create a new input, then shutdown
         var input = pi4j.create(inputConfig);
 
-        input.shutdown(pi4j);
         pi4j.shutdown(input.id());
 
         // shouldn't fail when recreating
