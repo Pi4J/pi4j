@@ -8,7 +8,9 @@ import com.pi4j.library.gpiod.internal.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>PiGpioDigitalOutput class.</p>
@@ -21,8 +23,7 @@ public class GpioDDigitalInput extends DigitalInputBase implements DigitalInput 
     private static final long inputMaxWaitNs = 10 * 1000 * 1000; // 10 ms
     private final GpioLine line;
     private final long debounceNs;
-    private volatile boolean inputListenerRun;
-    private volatile boolean inputListenerActive;
+    private CountDownLatch inputListenerRunning;
     private Future<?> inputListener;
 
     /**
@@ -65,7 +66,7 @@ public class GpioDDigitalInput extends DigitalInputBase implements DigitalInput 
         }
         super.initialize(context);
 
-        this.inputListenerRun = true;
+        inputListenerRunning = new CountDownLatch(1);
         this.inputListener = context.submitTask(this::monitorLineEvents);
         return this;
     }
@@ -79,8 +80,7 @@ public class GpioDDigitalInput extends DigitalInputBase implements DigitalInput 
     }
 
     private void shutdownInputListener() {
-        this.inputListenerRun = true;
-        if (!this.inputListenerActive)
+        if (inputListenerRunning == null || inputListenerRunning.getCount() == 0)
             return;
         if (this.inputListener.isDone())
             return;
@@ -88,15 +88,12 @@ public class GpioDDigitalInput extends DigitalInputBase implements DigitalInput 
         if (!this.inputListener.cancel(true))
             logger.error("Failed to cancel input listener!");
 
-        long start = System.currentTimeMillis();
-        while (this.inputListenerActive) {
-            if (System.currentTimeMillis() - start > 5000L)
+        try {
+            if (!inputListenerRunning.await(5, TimeUnit.SECONDS)) {
                 throw new IllegalArgumentException("Input listener didn't stop in 5s");
-            try {
-                Thread.sleep(0L, 500);
-            } catch (InterruptedException e) {
-                logger.warn("Interrupted, while waiting for input listener to stop");
             }
+        } catch (InterruptedException e) {
+            logger.warn("Interrupted, while waiting for input listener to stop");
         }
 
         logger.info("Shutdown input listener for {}", this.id);
@@ -108,18 +105,17 @@ public class GpioDDigitalInput extends DigitalInputBase implements DigitalInput 
     }
 
     private void monitorLineEvents() {
-        this.inputListenerActive = true;
         GpioDContext gpioDContext = GpioDContext.getInstance();
         DigitalState lastState = null;
         GpioLineEvent lineEvent = GpioDContext.getInstance().openLineEvent();
 
         try {
-            while (this.inputListenerRun && this.inputListener != null && !this.inputListener.isCancelled()) {
+            while (!this.inputListener.isCancelled()) {
                 long debounceNs = this.debounceNs;
                 // We have to use this function before calling eventRead() directly, since native methods can't be interrupted.
                 // eventRead() is blocking and prevents thread interrupt while running
                 while (!this.line.eventWait(inputMaxWaitNs)) {
-                    if (!this.inputListenerRun || this.inputListener == null || this.inputListener.isCancelled())
+                    if (this.inputListener.isCancelled())
                         return;
                 }
 
@@ -129,7 +125,7 @@ public class GpioDDigitalInput extends DigitalInputBase implements DigitalInput 
                 // Perform debouncing
                 // If the event is too new to be sure that it is debounced then ...
                 while (lineEvent.getTimeNs() + debounceNs >= currentTime) {
-                    if (!this.inputListenerRun || this.inputListener == null || this.inputListener.isCancelled())
+                    if (this.inputListener.isCancelled())
                         return;
 
                     // ... wait for remaining debounce time and watch out for new event(s)
@@ -152,7 +148,8 @@ public class GpioDDigitalInput extends DigitalInputBase implements DigitalInput 
         } finally {
             if (lineEvent != null)
                 gpioDContext.closeLineEvent(lineEvent);
-            this.inputListenerActive = false;
+            // plain read is safe, guaranteed to see the initialised value because submitting an executor task is a memory barrier
+            inputListenerRunning.countDown();
         }
     }
 }
