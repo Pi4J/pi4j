@@ -259,7 +259,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- JAVA COMPILER VERSIONS -->
-        <java.version>21</java.version>
+        <java.version>24</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
@@ -273,7 +273,7 @@
         <ant-jsch.version>1.10.15</ant-jsch.version>
         <jna.version>5.16.0</jna.version>
         <jsch.version>0.1.55</jsch.version>
-        <junit.jupiter.version>5.11.3</junit.jupiter.version>
+        <junit.jupiter.version>5.12.1</junit.jupiter.version>
         <slf4j.version>2.0.12</slf4j.version>
         <jserialcomm.version>2.11.0</jserialcomm.version>
         <jna.version>5.15.0</jna.version>
@@ -463,6 +463,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
+                        <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
                         <excludes>
                             <exclude>**/*UsingTestHarness.java</exclude>
                         </excludes>
