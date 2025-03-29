@@ -1,13 +1,9 @@
 package com.pi4j.plugin.ffm.providers.i2c;
 
-import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CProvider;
 import com.pi4j.io.i2c.I2CProviderBase;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class FFMI2CProviderImpl extends I2CProviderBase implements I2CProvider {
 

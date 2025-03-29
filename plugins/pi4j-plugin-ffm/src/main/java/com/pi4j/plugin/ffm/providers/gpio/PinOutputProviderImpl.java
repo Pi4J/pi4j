@@ -8,36 +8,29 @@ import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputProvider;
 import com.pi4j.io.gpio.digital.DigitalOutputProviderBase;
 
-public class FFMDigitalOutputProviderImpl  extends DigitalOutputProviderBase implements DigitalOutputProvider {
-    /**
-     * <p>Constructor for PiGpioDigitalOutputProviderImpl.</p>
-     */
-    public FFMDigitalOutputProviderImpl() {
-        this.id = "";
-        this.name = "";
+public class PinOutputProviderImpl extends DigitalOutputProviderBase implements DigitalOutputProvider {
+
+    public PinOutputProviderImpl() {
+        this.id = "PinOutputProviderFFM";
+        this.name = "Digital Pin Output (FFM API)";
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public DigitalOutput create(DigitalOutputConfig config) {
-        // create new I/O instance based on I/O config
-        var digitalOutput = new FFMDigitalOutput(this, config);
+        var digitalOutput = new PinOutput(this, config);
         this.context.registry().add(digitalOutput);
         return digitalOutput;
     }
 
     @Override
     public int getPriority() {
-        // the gpioD driver should be higher priority always
-        return 150;
+        return 1;
     }
 
     @Override
     public DigitalOutputProvider initialize(Context context) throws InitializeException {
-        DigitalOutputProvider provider = super.initialize(context);
-        return provider;
+        return super.initialize(context);
     }
 
     @Override

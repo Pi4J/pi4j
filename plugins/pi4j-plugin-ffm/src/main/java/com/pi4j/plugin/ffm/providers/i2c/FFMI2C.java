@@ -7,8 +7,6 @@ import com.pi4j.io.i2c.I2CBase;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CProvider;
 
-import java.util.Objects;
-
 public class FFMI2C extends I2CBase<FFMI2CBus> implements I2C {
 
     public FFMI2C(FFMI2CBus i2CBus, I2CProvider provider, I2CConfig config) {

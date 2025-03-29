@@ -6,9 +6,9 @@ import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.gpio.digital.*;
 
-public class FFMDigitalOutput  extends DigitalOutputBase implements DigitalOutput {
+public class PinOutput extends DigitalOutputBase implements DigitalOutput {
 
-    public FFMDigitalOutput(DigitalOutputProvider provider, DigitalOutputConfig config) {
+    public PinOutput(DigitalOutputProvider provider, DigitalOutputConfig config) {
         super(provider, config);
     }
 
