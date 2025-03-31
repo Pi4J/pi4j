@@ -4,8 +4,8 @@ import com.pi4j.context.Context;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.extension.Plugin;
 import com.pi4j.extension.PluginService;
-import com.pi4j.plugin.ffm.providers.gpio.PinInputProviderImpl;
-import com.pi4j.plugin.ffm.providers.gpio.PinOutputProviderImpl;
+import com.pi4j.plugin.ffm.providers.gpio.DigitalInputFFMProviderImpl;
+import com.pi4j.plugin.ffm.providers.gpio.DigitalOutputFFMProviderImpl;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
 import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
 import com.pi4j.plugin.ffm.providers.spi.FFMSpiProviderImpl;
@@ -19,8 +19,8 @@ public class FFMPlugin implements Plugin {
     @Override
     public void initialize(PluginService service) {
         this.providers = new Provider[]{
-          new PinInputProviderImpl(),
-          new PinOutputProviderImpl(),
+          new DigitalInputFFMProviderImpl(),
+          new DigitalOutputFFMProviderImpl(),
           new FFMI2CProviderImpl(),
           new FFMSpiProviderImpl(),
           new FFMPwmProviderImpl()

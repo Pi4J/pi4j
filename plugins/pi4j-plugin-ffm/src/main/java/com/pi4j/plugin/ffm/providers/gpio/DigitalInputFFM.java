@@ -37,8 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class PinInput extends DigitalInputBase implements DigitalInput {
-    private static final Logger logger = LoggerFactory.getLogger(PinInput.class);
+public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
+    private static final Logger logger = LoggerFactory.getLogger(DigitalInputFFM.class);
     private static final Ioctl ioctl = new IoctlNative();
     private static final FileDescriptor file = new FileDescriptorNative();
     private static final Poll poll = new PollNative();
@@ -47,7 +47,7 @@ public class PinInput extends DigitalInputBase implements DigitalInput {
     private final int pin;
     private final long debounce;
     private final PullResistance pull;
-    private int fd;
+    private int chipFileDescriptor;
 
     private static final ThreadFactory factory = Thread.ofVirtual().name("pin-input-event-detection-", 0).factory();
     // executor services for event watcher
@@ -55,7 +55,7 @@ public class PinInput extends DigitalInputBase implements DigitalInput {
 
     private boolean closed = false;
 
-    public PinInput(String chipName, DigitalInputProvider provider, DigitalInputConfig config) {
+    public DigitalInputFFM(String chipName, DigitalInputProvider provider, DigitalInputConfig config) {
         super(provider, config);
         this.pin = config.address();
         this.chipName = "/dev/" + chipName;
@@ -75,7 +75,7 @@ public class PinInput extends DigitalInputBase implements DigitalInput {
                 logger.error("Please, read the documentation <link> to setup right permissions.");
                 throw new InitializeException("Device '" + chipName + "' cannot be accessed with current user.");
             }
-            logger.info("{}-{} - setting up GPIO Pin...", chipName, pin);
+            logger.info("{}-{} - setting up DigitalInput Pin...", chipName, pin);
             logger.trace("{}-{} - opening device file.", chipName, pin);
             var fd = file.open(chipName, FileFlag.O_RDONLY | FileFlag.O_CLOEXEC);
             var lineInfo = new LineInfo(new byte[]{}, new byte[]{}, pin, 0, 0, new LineAttribute[]{}, new int[]{});
@@ -85,7 +85,7 @@ public class PinInput extends DigitalInputBase implements DigitalInput {
                 shutdown(context());
                 throw new InitializeException("Pin " + pin + " is in use");
             }
-            logger.trace("{}-{} - GPIO Pin line info: {}", chipName, pin, lineInfo);
+            logger.trace("{}-{} - DigitalInput Pin line info: {}", chipName, pin, lineInfo);
             var flags = PinFlag.INPUT.getValue() | PinFlag.EDGE_RISING.getValue() | PinFlag.EDGE_FALLING.getValue();
             var attributes = new ArrayList<LineConfigAttribute>();
             if (debounce > 0) {
@@ -98,9 +98,9 @@ public class PinInput extends DigitalInputBase implements DigitalInput {
                 case PULL_UP -> PinFlag.BIAS_PULL_UP.getValue();
             };
             var lineConfig = new LineConfig(flags, attributes.size(), new int[]{}, attributes.toArray(new LineConfigAttribute[0]));
-            var lineRequest = new LineRequest(new int[]{pin}, "pi4j FFM".getBytes(), lineConfig, 1, 0, new int[]{}, 0);
+            var lineRequest = new LineRequest(new int[]{pin}, ("pi4j." + getClass().getSimpleName()).getBytes(), lineConfig, 1, 0, new int[]{}, 0);
             var result = ioctl.call(fd, Command.getGpioV2GetLineIoctl(), lineRequest);
-            this.fd = result.fd();
+            this.chipFileDescriptor = result.fd();
 
             var watcher = new EventWatcher(fd, PinEvent.BOTH, events -> {
                 for (DetectedEvent detectedEvent : events) {
@@ -109,9 +109,10 @@ public class PinInput extends DigitalInputBase implements DigitalInput {
             }, 16);
             eventTaskProcessor.submit(watcher);
 
-            logger.info("{}-{} - GPIO Pin configured: {}", chipName, pin, result);
+            file.close(fd);
+            logger.info("{}-{} - DigitalInput Pin configured: {}", chipName, pin, result);
         } catch (NativeMemoryException | IOException e) {
-            logger.error("{}-{} - GPIO Pin Initialization error: {}", chipName, pin, e.getMessage());
+            logger.error("{}-{} - DigitalInput Pin Initialization error: {}", chipName, pin, e.getMessage());
             throw new InitializeException(e);
         }
         return this;
@@ -122,8 +123,8 @@ public class PinInput extends DigitalInputBase implements DigitalInput {
         super.shutdown(context);
         logger.info("{}-{} - closing GPIO Pin.", chipName, pin);
         try {
-            if (fd > 0) {
-                file.close(fd);
+            if (chipFileDescriptor > 0) {
+                file.close(chipFileDescriptor);
             }
             eventTaskProcessor.awaitTermination(1, TimeUnit.MILLISECONDS);
         } catch (NativeMemoryException | InterruptedException e) {
@@ -142,12 +143,12 @@ public class PinInput extends DigitalInputBase implements DigitalInput {
         var lineValues = new LineValues(0, 1);
         LineValues result;
         try {
-            result = ioctl.call(fd, Command.getGpioV2GetValuesIoctl(), lineValues);
+            result = ioctl.call(chipFileDescriptor, Command.getGpioV2GetValuesIoctl(), lineValues);
         } catch (NativeMemoryException e) {
             throw new RuntimeException(e);
         }
         var state = DigitalState.getState(result.bits());
-        logger.trace("{}-{} - new GPIO Pin state is {}.", chipName, pin, state);
+        logger.trace("{}-{} - GPIO Pin state is {}.", chipName, pin, state);
         return state;
     }
 

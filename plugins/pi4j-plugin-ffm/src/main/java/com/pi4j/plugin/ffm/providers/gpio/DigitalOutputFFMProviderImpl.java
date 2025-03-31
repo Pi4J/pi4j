@@ -8,17 +8,18 @@ import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputProvider;
 import com.pi4j.io.gpio.digital.DigitalOutputProviderBase;
 
-public class PinOutputProviderImpl extends DigitalOutputProviderBase implements DigitalOutputProvider {
+public class DigitalOutputFFMProviderImpl extends DigitalOutputProviderBase implements DigitalOutputProvider {
 
-    public PinOutputProviderImpl() {
-        this.id = "PinOutputProviderFFM";
+    public DigitalOutputFFMProviderImpl() {
+        this.id = getClass().getSimpleName();
         this.name = "Digital Pin Output (FFM API)";
     }
 
 
     @Override
     public DigitalOutput create(DigitalOutputConfig config) {
-        var digitalOutput = new PinOutput(this, config);
+        var chipName =  context.config().properties().get("gpio.chip.name");
+        var digitalOutput = new DigitalOutputFFM(chipName, this, config);
         this.context.registry().add(digitalOutput);
         return digitalOutput;
     }
