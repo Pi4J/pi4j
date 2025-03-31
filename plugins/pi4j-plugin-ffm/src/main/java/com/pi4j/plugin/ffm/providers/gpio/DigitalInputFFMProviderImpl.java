@@ -8,19 +8,17 @@ import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalInputProvider;
 import com.pi4j.io.gpio.digital.DigitalInputProviderBase;
 
-public class PinInputProviderImpl extends DigitalInputProviderBase implements DigitalInputProvider {
+public class DigitalInputFFMProviderImpl extends DigitalInputProviderBase implements DigitalInputProvider {
 
-    public PinInputProviderImpl() {
-        this.id = "PinOutputProviderFFM";
+    public DigitalInputFFMProviderImpl() {
+        this.id = getClass().getSimpleName();
         this.name = "Digital Pin Input (FFM API)";
     }
 
     @Override
     public DigitalInput create(DigitalInputConfig config) {
-        // create new I/O instance based on I/O config
-        // GpioLine line = GpioDContext.getInstance().getOrOpenLine(config.address());
         var chipName =  context.config().properties().get("gpio.chip.name");
-        var digitalInput = new PinInput(chipName, this, config);
+        var digitalInput = new DigitalInputFFM(chipName, this, config);
         this.context.registry().add(digitalInput);
         return digitalInput;
     }
