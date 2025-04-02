@@ -9,7 +9,6 @@ Pi4J :: Java I/O Library for Raspberry Pi
 [![Chat on Slack](https://img.shields.io/badge/Chat-on%20Slack-blue)](https://join.slack.com/t/pi4j/shared_invite/zt-1ttqt8wgj-E6t69qaLrNuCMPLiYnBCsg)
 [![Pi4J on Mastodon](https://img.shields.io/badge/Mastodon-white?logo=mastodon&logoColor=black)](https://foojay.social/@pi4j)
 [![Pi4J on LinkedIn](https://img.shields.io/badge/LinkedIn-white?logo=linkedin&logoColor=black)](https://be.linkedin.com/company/pi4j)
-[![Pi4J on Twitter](https://img.shields.io/badge/Twitter-white?logo=twitter&logoColor=black)](https://twitter.com/pi4j)
 
 ---
 
@@ -81,12 +80,12 @@ Starting with the Pi4J 2.0 builds, the Pi4J project is prioritizing focus
 on providing Java programs access, control and communication with the core
 I/O capabilities of the Raspberry Pi platform.
 
-Read all about it on [pi4j.com: "What’s New in 2.0?"](https://pi4j.com/about/new-in/).
+Read all about it on [pi4j.com: "What's New in V2"](https://www.pi4j.com/about/info-v2/).
 
 ### Build Instructions
 
 The Pi4J codebase can be built using [Apache Maven 3.8+](https://maven.apache.org/).
-and [Java JDK 11](https://openjdk.java.net/).
+and [Java JDK 21 (since V3)](https://openjdk.java.net/).
 The following command can be used to build the Pi4J JARs:
 
 ```
