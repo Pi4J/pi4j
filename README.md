@@ -10,7 +10,7 @@ Pi4J :: Java I/O Library for Raspberry Pi
 [![Pi4J on Mastodon](https://img.shields.io/badge/Mastodon-white?logo=mastodon&logoColor=black)](https://foojay.social/@pi4j)
 [![Pi4J on LinkedIn](https://img.shields.io/badge/LinkedIn-white?logo=linkedin&logoColor=black)](https://be.linkedin.com/company/pi4j)
 
-API documentation on APIdia: [![APIdia](https://apidia.net/mvn/com.pi4j/pi4j/badge.svg)](https://apidia.net/mvn/com.pi4j/pi4j)
+API documentation: [![APIdia](https://apidia.net/mvn/com.pi4j/pi4j/badge.svg)](https://apidia.net/mvn/com.pi4j/pi4j)
 
 ---
 
