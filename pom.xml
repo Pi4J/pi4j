@@ -58,13 +58,15 @@
             <url>https://webtechie.be</url>
             <properties>
                 <blog>https://webtechie.be</blog>
-                <linikedin>https://www.linkedin.com/in/frankdelporte/</linikedin>
-                <twitter>https://twitter.com/FrankDelporte</twitter>
+                <linkedin>https://www.linkedin.com/in/frankdelporte/</linkedin>
+                <mastodon>https://foojay.social/@frankdelporte</mastodon>
+                <bluesky>https://bsky.app/profile/frankdelporte.be</bluesky>
             </properties>
             <roles>
                 <role>facilitator</role>
                 <role>developer</role>
             </roles>
+            <timezone>+1</timezone>
         </developer>
         <developer>
             <id>eitch</id>
@@ -85,7 +87,15 @@
             </roles>
             <timezone>+1</timezone>
         </developer>
+        <developer>
+            <id>taartspi</id>
+            <name>Tom Aarts</name>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
+
     <contributors>
         <contributor>
             <name>Marcus Hirt</name>
