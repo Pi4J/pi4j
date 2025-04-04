@@ -51,21 +51,14 @@ var pi4j = Pi4J.newAutoContext();
 
 var led = pi4j.digitalOutput().create(PIN_LED);
 
-while(true){
-  if(led.
-
-state() ==DigitalState.HIGH){
-  led.
-
-low();
-  }else{
-    led.
-
-high();
+while (true){
+  if (led.state() == DigitalState.HIGH) {
+     led.low();
+  } else {
+     led.high();
   }
-    Thread.
 
-sleep(500);
+  Thread.sleep(500);
 }
 ```
 
