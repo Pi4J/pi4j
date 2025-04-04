@@ -51,7 +51,7 @@ var pi4j = Pi4J.newAutoContext();
 
 var led = pi4j.digitalOutput().create(PIN_LED);
 
-while (true){
+while (true) {
   if (led.state() == DigitalState.HIGH) {
      led.low();
   } else {
