@@ -31,8 +31,9 @@ package com.pi4j.io.spi;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
+@Deprecated
 public enum SpiChipSelect {
-    CS_0(0), CS_1(1), CS_2(2);
+    CS_0(0), CS_1(1), CS_2(2), CS_3(3), CS_4(4), CS_5(5), CS_6(6), CS_7(7), CS_8(8), CS_9(9), CS_10(10);
 
     private final int address;
 
@@ -84,6 +85,14 @@ public enum SpiChipSelect {
         if(bus.equalsIgnoreCase("0")) return SpiChipSelect.CS_0;
         if(bus.equalsIgnoreCase("1")) return SpiChipSelect.CS_1;
         if(bus.equalsIgnoreCase("2")) return SpiChipSelect.CS_2;
+        if(bus.equalsIgnoreCase("3")) return SpiChipSelect.CS_3;
+        if(bus.equalsIgnoreCase("4")) return SpiChipSelect.CS_4;
+        if(bus.equalsIgnoreCase("5")) return SpiChipSelect.CS_5;
+        if(bus.equalsIgnoreCase("6")) return SpiChipSelect.CS_6;
+        if(bus.equalsIgnoreCase("7")) return SpiChipSelect.CS_7;
+        if(bus.equalsIgnoreCase("8")) return SpiChipSelect.CS_8;
+        if(bus.equalsIgnoreCase("9")) return SpiChipSelect.CS_9;
+        if(bus.equalsIgnoreCase("10")) return SpiChipSelect.CS_10;
         return Spi.DEFAULT_CHIP_SELECT;
     }
 }
