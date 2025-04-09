@@ -92,10 +92,11 @@ public enum SpiChipSelect {
                     return item;
                 }
             } catch (NumberFormatException e) {
-                log.warn("Unable to parse chip select bus as number: {}", bus);
+                log.warn("Unable to parse chip select bus as number: {}. Returning default {}.", bus, Spi.DEFAULT_CHIP_SELECT);
                 return Spi.DEFAULT_CHIP_SELECT;
             }
         }
+        log.warn("Didn't find matching chip select bus for: {}. Returning default {}.", bus, Spi.DEFAULT_CHIP_SELECT);
         return Spi.DEFAULT_CHIP_SELECT;
     }
 }
