@@ -68,7 +68,6 @@ public class LinuxFsSpi extends SpiBase implements Spi {
     private final static byte SIZE_OF_INT = 4;
 
     private static int SPI_IOC_MESSAGE(int n) {
-
         // Even though we will pass the structure to ioctl as a pointer, the command needs to know
         // the actual size of the structure (i.e. sizeof). Therefore, we use the ByValue interface
         // when getting the struct size.
@@ -155,6 +154,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         //    character special device, major number 153 with a dynamically chosen minor device number.
         //    This is the node that userspace programs will open, created by “udev” or “mdev”.
         String spiDev = SPI_DEVICE_BASE + config().bus().getBus() + "." + config().address();
+        LOG.info("Opening SPI bus {}, address {}", config().bus().getBus(), config().address());
         fd = libc.open(spiDev, LinuxLibC.O_RDWR);
         if (fd < 0) {
             throw new RuntimeException("Failed to open SPI device " + spiDev);
@@ -234,8 +234,6 @@ public class LinuxFsSpi extends SpiBase implements Spi {
             libc.close(fd);
             throw new RuntimeException("Could not write the SPI SHIFT write.");
         }
-
-
    }
 
     @Override
