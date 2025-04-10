@@ -1,5 +1,6 @@
 package com.pi4j.plugin.ffm.common.i2c;
 
+import com.pi4j.plugin.ffm.common.Pi4JArchitectureGuess;
 import com.pi4j.plugin.ffm.common.Pi4JNative;
 
 import java.lang.foreign.*;
@@ -7,10 +8,18 @@ import java.lang.invoke.MethodHandle;
 import java.nio.file.Path;
 
 class SMBusContext extends Pi4JNative {
-
-    // TODO: we need to provide the link for libi2c.so file as no hardcode
-    // TODO: check installed libi2c-dev package, provide installation script
-    private static final SymbolLookup LIBI2C = SymbolLookup.libraryLookup(Path.of("/usr/lib/x86_64-linux-gnu/libi2c.so"), ARENA);
+    private static final SymbolLookup LIBI2C;
+    static  {
+        var path = Path.of(Pi4JArchitectureGuess.getLibraryPath("libi2c"));
+        if (!path.toFile().exists()) {
+            throw new RuntimeException("Could not find libi2c library: " + path);
+        }
+        try {
+            LIBI2C = SymbolLookup.libraryLookup(path, ARENA);
+        } catch (Exception e) {
+            throw new RuntimeException("Probably libi2c-dev package is missing. Try to install with `sudo apt-get install libi2c-dev`", e);
+        }
+    }
 
     static final MethodHandle WRITE_BYTE = Linker.nativeLinker().downcallHandle(
             LIBI2C.find("i2c_smbus_write_byte").orElseThrow(),
