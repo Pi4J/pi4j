@@ -31,7 +31,6 @@ module com.pi4j.plugin.ffm {
     // depends on SLF4J
     requires org.slf4j;
     requires com.pi4j;
-    requires io.github.digitalsmile.annotation;
 
     provides com.pi4j.extension.Plugin with FFMPlugin;
 }

@@ -1,0 +1,83 @@
+package com.pi4j.plugin.ffm.common.i2c;
+
+import java.lang.foreign.ValueLayout;
+
+import static com.pi4j.plugin.ffm.common.Pi4JNative.processError;
+import static com.pi4j.plugin.ffm.common.i2c.SMBusContext.*;
+
+public class SMBusNative implements AutoCloseable {
+    private final SMBusContext context = new SMBusContext();
+
+    public int writeByte(int fd, byte data) {
+        try {
+            var capturedState = context.allocateCapturedState();
+            var callResult = (int) WRITE_BYTE.invoke(capturedState, fd, data);
+            processError(callResult, capturedState, "writeByte", fd, data);
+            return callResult;
+        } catch (Throwable e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public byte readByte(int fd) {
+        try {
+            var capturedState = context.allocateCapturedState();
+            var callResult = (byte) READ_BYTE.invoke(capturedState, fd);
+            processError(callResult, capturedState, "readByte", fd);
+            return callResult;
+        } catch (Throwable e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public int writeByteData(int fd, byte register, byte data) {
+        try {
+            var capturedState = context.allocateCapturedState();
+            var callResult = (int) WRITE_BYTE_DATA.invoke(capturedState, fd, register, data);
+            processError(callResult, capturedState, "writeByteData", fd, register, data);
+            return callResult;
+        } catch (Throwable e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public byte readByteData(int fd, byte register) {
+        try {
+            var capturedState = context.allocateCapturedState();
+            var callResult = (byte) READ_BYTE_DATA.invoke(capturedState, fd, register);
+            processError(Byte.toUnsignedInt(callResult), capturedState, "readByteData", fd, register);
+            return callResult;
+        } catch (Throwable e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public int writeBlockData(int fd, byte register, byte[] data) {
+        try {
+            var capturedState = context.allocateCapturedState();
+            var memoryBuffer = context.allocateFrom(ValueLayout.JAVA_BYTE, data);
+            var callResult = (int) WRITE_BLOCK_DATA.invoke(capturedState, fd, register, data.length, memoryBuffer);
+            processError(callResult, capturedState, "writeBlockData", fd, register, data.length, memoryBuffer);
+            return callResult;
+        } catch (Throwable e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public byte[] readBlockData(int fd, byte register, byte[] data) {
+        try {
+            var capturedState = context.allocateCapturedState();
+            var memoryBuffer = context.allocateFrom(ValueLayout.JAVA_BYTE, data);
+            var callResult = (int) READ_BLOCK_DATA.invoke(capturedState, fd, register, memoryBuffer);
+            processError(callResult, capturedState, "readBlockData", fd, register, memoryBuffer);
+            return memoryBuffer.toArray(ValueLayout.JAVA_BYTE);
+        } catch (Throwable e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void close() {
+        context.close();
+    }
+}

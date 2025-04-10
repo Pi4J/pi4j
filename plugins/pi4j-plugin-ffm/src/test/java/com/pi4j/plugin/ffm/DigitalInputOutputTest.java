@@ -32,7 +32,9 @@ public class DigitalInputOutputTest {
         var result = setupScript.waitFor();
         if (result != 0) {
             var username = System.getProperty("user.name");
-            fail("Failed to setup GPIO Test. Probably you need to add the GPIO Simulator bash script to sudoers file " +
+            var errorOutput =  new String(setupScript.getErrorStream().readAllBytes());
+            fail("Failed to setup GPIO Test:\n" + errorOutput + "\n" +
+                "Probably you need to add the GPIO Simulator bash script to sudoers file " +
                 "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
         }
         pi4j0 = Pi4J.newContextBuilder()
@@ -60,7 +62,9 @@ public class DigitalInputOutputTest {
         var result = setupScript.waitFor();
         if (result != 0) {
             var username = System.getProperty("user.name");
-            fail("Failed to cleanup GPIO Test. Probably you need to add the GPIO Simulator bash script to sudoers file " +
+            var errorOutput =  new String(setupScript.getErrorStream().readAllBytes());
+            fail("Failed to setup GPIO Test:\n" + errorOutput + "\n" +
+                "Probably you need to add the GPIO Simulator bash script to sudoers file " +
                 "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
         }
     }
