@@ -19,8 +19,6 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
         run: |
           # Create target directory with proper permissions before running Docker
-          mkdir -p $(pwd)/target
-          chmod 777 $(pwd)/target
           docker run \
             --env MAVEN_USERNAME=$MAVEN_USERNAME \
             --env MAVEN_PASSWORD=$MAVEN_PASSWORD \
