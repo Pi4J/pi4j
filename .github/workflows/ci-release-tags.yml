@@ -18,7 +18,7 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-        run: docker run --env MAVEN_USERNAME=$MAVEN_USERNAME --env MAVEN_PASSWORD=$MAVEN_PASSWORD --user "pi4j-builder:pi4j-builder" --rm --volume $(pwd):/build pi4j/pi4j-builder:2.0 clean install -Pnative,cross-compile --batch-mode
+        run: docker run --env MAVEN_USERNAME=$MAVEN_USERNAME --env MAVEN_PASSWORD=$MAVEN_PASSWORD --user "$(id -u):$(id -g)" --rm --volume $(pwd):/build pi4j/pi4j-builder:2.0 clean install -Pnative,cross-compile --batch-mode
       - name: Make staging directory
         run: mkdir staging
       - name: Copy distribution files to staging
