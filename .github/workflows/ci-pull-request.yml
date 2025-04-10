@@ -25,7 +25,7 @@ jobs:
             --user "pi4j-builder:pi4j-builder" \
             --rm \
             --volume $(pwd):/build \
-            pi4j/pi4j-builder:2.0 \
+            mkdir -p target && pi4j/pi4j-builder:2.0 \
             clean install -Pnative,cross-compile --batch-mode
       - name: Make staging directory
         run: mkdir staging
