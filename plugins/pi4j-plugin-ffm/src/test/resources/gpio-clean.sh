@@ -13,3 +13,6 @@ find $SIMDIR -type d -name hog -exec rmdir '{}' '+'
 find $SIMDIR -type d -name "line*" -exec rmdir '{}' '+'
 find $SIMDIR -type d -name "bank*" -exec rmdir '{}' '+'
 rmdir $SIMDIR/*
+
+modprobe -f configfs
+modprobe -f gpio-sim

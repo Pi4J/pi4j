@@ -4,7 +4,6 @@ import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.gpio.digital.*;
-import com.pi4j.plugin.ffm.common.file.FileDescriptor;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.gpio.DetectedEvent;
@@ -14,13 +13,10 @@ import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.enums.LineAttributeId;
 import com.pi4j.plugin.ffm.common.gpio.structs.*;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
-import com.pi4j.plugin.ffm.common.ioctl.Ioctl;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
-import com.pi4j.plugin.ffm.common.poll.Poll;
 import com.pi4j.plugin.ffm.common.poll.PollFlag;
 import com.pi4j.plugin.ffm.common.poll.PollNative;
 import com.pi4j.plugin.ffm.common.poll.structs.PollingData;
-import io.github.digitalsmile.annotation.NativeMemoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,9 +35,9 @@ import java.util.concurrent.*;
 
 public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
     private static final Logger logger = LoggerFactory.getLogger(DigitalInputFFM.class);
-    private static final Ioctl ioctl = new IoctlNative();
-    private static final FileDescriptor file = new FileDescriptorNative();
-    private static final Poll poll = new PollNative();
+    private static final IoctlNative ioctl = new IoctlNative();
+    private static final FileDescriptorNative file = new FileDescriptorNative();
+    private static final PollNative poll = new PollNative();
 
     private final String chipName;
     private final int pin;
@@ -111,7 +107,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
 
             file.close(fd);
             logger.info("{}-{} - DigitalInput Pin configured: {}", chipName, pin, result);
-        } catch (NativeMemoryException | IOException e) {
+        } catch (IOException e) {
             logger.error("{}-{} - DigitalInput Pin Initialization error: {}", chipName, pin, e.getMessage());
             throw new InitializeException(e);
         }
@@ -126,8 +122,8 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
             if (chipFileDescriptor > 0) {
                 file.close(chipFileDescriptor);
             }
-            eventTaskProcessor.awaitTermination(1, TimeUnit.MILLISECONDS);
-        } catch (NativeMemoryException | InterruptedException e) {
+            //eventTaskProcessor.awaitTermination(1, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
             this.closed = true;
             throw new ShutdownException(e);
         }
@@ -144,7 +140,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
         LineValues result;
         try {
             result = ioctl.call(chipFileDescriptor, Command.getGpioV2GetValuesIoctl(), lineValues);
-        } catch (NativeMemoryException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         var state = DigitalState.getState(result.bits());
@@ -243,7 +239,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
                             }
                             System.arraycopy(buf, i, holder, 0, eventSize);
                             var memoryBuffer = MemorySegment.ofArray(holder);
-                            var event = LineEvent.createEmpty().fromBytes(memoryBuffer);
+                            var event = LineEvent.createEmpty().from(memoryBuffer);
                             // process only interested events
                             if ((event.id() & this.pinEvent.getValue()) != 0) {
                                 eventList.add(new DetectedEvent(event.timestampNs(), PinEvent.getByValue(event.id()), event.lineSeqno()));

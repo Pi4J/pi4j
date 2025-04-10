@@ -1,0 +1,55 @@
+package com.pi4j.plugin.ffm.common.file;
+
+import java.lang.foreign.ValueLayout;
+
+import static com.pi4j.plugin.ffm.common.Pi4JNative.processError;
+
+public class FileDescriptorNative {
+    private final FileDescriptorContext context = new FileDescriptorContext();
+
+	public int open(String path, int openFlag) {
+		try {
+			var pathMemorySegment = context.allocateFrom(path);
+			var capturedState = context.allocateCapturedState();
+			var callResult = (int) FileDescriptorContext.OPEN64.invoke(capturedState, pathMemorySegment, openFlag);
+			processError(callResult, capturedState, "open", pathMemorySegment, openFlag);
+			return callResult;
+		} catch (Throwable e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
+
+	public void close(int fd)  {
+		try {
+			var capturedState = context.allocateCapturedState();
+			var callResult = (int) FileDescriptorContext.CLOSE.invoke(capturedState, fd);
+			processError(callResult, capturedState, "close", fd);
+		} catch (Throwable e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
+
+	public byte[] read(int fd, byte[] buffer, int size) {
+		try {
+			var bufferMemorySegment = context.allocateFrom(ValueLayout.JAVA_BYTE, buffer);
+			var capturedState = context.allocateCapturedState();
+			var callResult = (int) FileDescriptorContext.READ.invoke(capturedState, fd, bufferMemorySegment, size);
+			processError(callResult, capturedState, "read", fd, bufferMemorySegment, size);
+			return bufferMemorySegment.toArray(ValueLayout.JAVA_BYTE);
+		} catch (Throwable e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
+
+	public int write(int fd, byte[] data) {
+		try {
+			var dataMemorySegment = context.allocateFrom(ValueLayout.JAVA_BYTE, data);
+			var capturedState = context.allocateCapturedState();
+			var callResult = (int) FileDescriptorContext.WRITE.invoke(capturedState, fd, dataMemorySegment);
+			processError(callResult, capturedState, "write", fd, dataMemorySegment);
+			return callResult;
+		} catch (Throwable e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+	}
+}

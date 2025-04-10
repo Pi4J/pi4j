@@ -5,15 +5,12 @@ import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.gpio.digital.*;
-import com.pi4j.plugin.ffm.common.file.FileDescriptor;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.structs.*;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
-import com.pi4j.plugin.ffm.common.ioctl.Ioctl;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
-import io.github.digitalsmile.annotation.NativeMemoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +22,8 @@ import java.nio.file.attribute.PosixFilePermissions;
 
 public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput {
     private static final Logger logger = LoggerFactory.getLogger(DigitalOutputFFM.class);
-    private static final Ioctl ioctl = new IoctlNative();
-    private static final FileDescriptor file = new FileDescriptorNative();
+    private static final IoctlNative ioctl = new IoctlNative();
+    private static final FileDescriptorNative file = new FileDescriptorNative();
 
     private final String chipName;
     private final int pin;
@@ -71,7 +68,7 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
 
             file.close(fd);
             logger.info("{}-{} - DigitalOutput Pin configured: {}", chipName, pin, result);
-        } catch (NativeMemoryException | java.io.IOException e) {
+        } catch (java.io.IOException e) {
             logger.error("{}-{} - DigitalOutput Pin Initialization error: {}", chipName, pin, e.getMessage());
             throw new InitializeException(e);
         }
@@ -86,7 +83,7 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
             if (chipFileDescriptor > 0) {
                 file.close(chipFileDescriptor);
             }
-        } catch (NativeMemoryException e) {
+        } catch (Exception e) {
             this.closed = true;
             throw new ShutdownException(e);
         }
@@ -102,7 +99,7 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
         var lineValues = new LineValues(state.getValue().intValue(), 1);
         try {
             ioctl.call(chipFileDescriptor, Command.getGpioV2SetValuesIoctl(), lineValues);
-        } catch (NativeMemoryException e) {
+        } catch (Exception e) {
             throw new IOException(e);
         }
         return super.state(state);
