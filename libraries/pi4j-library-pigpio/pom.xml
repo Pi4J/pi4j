@@ -6,9 +6,9 @@
 
     <!-- MAVEN PARENT POM -->
     <parent>
-        <groupId>com.pi4j</groupId>
         <artifactId>pi4j-library</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <groupId>com.pi4j</groupId>
+        <version>3.0.0-SNAPSHOT</version>
         <relativePath>../pi4j-library/pom.xml</relativePath>
     </parent>
 
