@@ -42,6 +42,7 @@ import static com.pi4j.boardinfo.definition.BoardType.*;
  * <p>This class is partially based on resources such as Raspberry Pi documentation, GitHub, and other online references.</p>
  *
  * @see <a href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#new-style-revision-codes-in-use">Board Codes</a>
+ * @see <a href="https://community.volumio.com/t/guide-identifying-your-raspberry-pi-board-on-volumio-a-comprehensive-guide-to-revision-codes/71350">Identifying Your Raspberry Pi Board</a>
  * @see <a href="https://github.com/raspberrypi/documentation/blob/develop/documentation/asciidoc/computers/raspberry-pi/revision-codes.adoc">Old-style Revision Codes</a>
  * @see <a href="https://en.wikipedia.org/wiki/Raspberry_Pi#Specifications">Raspberry Pi Specifications</a>
  * @see <a href="https://oastic.com/posts/how-to-know-which-raspberry-do-you-have/">How to Identify Your Raspberry Pi</a>
@@ -225,7 +226,7 @@ public enum BoardModel {
         List.of(1024 * 1024, 2048 * 1024, 4096 * 1024, 8192 * 1024)),
     // https://www-cnx--software-com.cdn.ampproject.org/c/s/www.cnx-software.com/2024/11/27/raspberry-pi-cm5-broadcom-bcm2712-soc-16gb-lpddr4-ecc-memory/?amp=1
     COMPUTE_5("Compute Module 5", STACK_ON_COMPUTER,
-        List.of("a04180", "b04180", "c04180", "d04180"),
+        List.of("a04180", "b04180", "c04180", "d04180", "a041a0", "b041a0", "c041a0", "c041a0"),
         PiModel.COMPUTE,
         HeaderVersion.COMPUTE,
         LocalDate.of(2024, 11, 27),
