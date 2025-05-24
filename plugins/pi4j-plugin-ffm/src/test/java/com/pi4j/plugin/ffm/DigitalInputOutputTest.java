@@ -21,21 +21,25 @@ import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
 public class DigitalInputOutputTest {
+    private static final String IN_CONTAINER = System.getenv("IN_CONTAINER");
+
     private static Context pi4j0;
     private static Context pi4j1;
     private static Context pi4jNonExistent;
 
     @BeforeAll
     public static void setup() throws IOException, InterruptedException {
-        var scriptPath = Paths.get("src/test/resources/gpio-setup.sh");
-        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.toFile().getAbsolutePath()).start();
-        var result = setupScript.waitFor();
-        if (result != 0) {
-            var username = System.getProperty("user.name");
-            var errorOutput =  new String(setupScript.getErrorStream().readAllBytes());
-            fail("Failed to setup GPIO Test:\n" + errorOutput + "\n" +
-                "Probably you need to add the GPIO Simulator bash script to sudoers file " +
-                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
+        if (IN_CONTAINER == null || !IN_CONTAINER.equals("true")) {
+            var scriptPath = Paths.get("src/test/resources/gpio-setup.sh");
+            var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.toFile().getAbsolutePath()).start();
+            var result = setupScript.waitFor();
+            if (result != 0) {
+                var username = System.getProperty("user.name");
+                var errorOutput = new String(setupScript.getErrorStream().readAllBytes());
+                fail("Failed to setup GPIO Test:\n" + errorOutput + "\n" +
+                    "Probably you need to add the GPIO Simulator bash script to sudoers file " +
+                    "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
+            }
         }
         pi4j0 = Pi4J.newContextBuilder()
             .add(new DigitalInputFFMProviderImpl(), new DigitalOutputFFMProviderImpl())
@@ -56,22 +60,23 @@ public class DigitalInputOutputTest {
         pi4j0.shutdown();
         pi4j1.shutdown();
         pi4jNonExistent.shutdown();
-
-        var scriptPath = Paths.get("src/test/resources/gpio-clean.sh");
-        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.toFile().getAbsolutePath()).start();
-        var result = setupScript.waitFor();
-        if (result != 0) {
-            var username = System.getProperty("user.name");
-            var errorOutput =  new String(setupScript.getErrorStream().readAllBytes());
-            fail("Failed to setup GPIO Test:\n" + errorOutput + "\n" +
-                "Probably you need to add the GPIO Simulator bash script to sudoers file " +
-                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
+        if (IN_CONTAINER == null || !IN_CONTAINER.equals("true")) {
+            var scriptPath = Paths.get("src/test/resources/gpio-clean.sh");
+            var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.toFile().getAbsolutePath()).start();
+            var result = setupScript.waitFor();
+            if (result != 0) {
+                var username = System.getProperty("user.name");
+                var errorOutput = new String(setupScript.getErrorStream().readAllBytes());
+                fail("Failed to setup GPIO Test:\n" + errorOutput + "\n" +
+                    "Probably you need to add the GPIO Simulator bash script to sudoers file " +
+                    "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
+            }
         }
     }
 
     @Test
     public void testInputUnavailable() {
-        assertThrows(IllegalStateException.class, () -> pi4j1.digitalInput().create(0));
+        assertThrows(IllegalStateException.class, () -> pi4j1.digitalInput().create(99));
     }
 
     @Test

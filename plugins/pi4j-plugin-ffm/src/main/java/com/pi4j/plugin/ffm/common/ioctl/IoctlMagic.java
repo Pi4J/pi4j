@@ -89,7 +89,7 @@ final class IoctlMagic {
 
     static int SPI_IOC_TRANSFER_SIZE() {
         if (_SPI_IOC_TRANSFER_SIZE == -1) {
-            _SPI_IOC_TRANSFER_SIZE = 44;
+            _SPI_IOC_TRANSFER_SIZE = 32;
         }
         return _SPI_IOC_TRANSFER_SIZE;
     }

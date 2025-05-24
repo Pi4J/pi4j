@@ -127,7 +127,6 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
 
     @Override
     public int writeRegister(byte[] register, byte[] data, int offset, int length) {
-        //TODO: how to implement? That is not a part of standard.
         Objects.checkFromIndexSize(offset, length, data.length);
         // Prepare the data for multibyte register
         // Sequence:
@@ -144,6 +143,5 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
     public void close() {
         super.close();
         i2CBus.close();
-        SMBUS.close();
     }
 }

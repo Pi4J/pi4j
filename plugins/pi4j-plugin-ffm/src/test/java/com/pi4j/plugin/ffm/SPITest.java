@@ -2,8 +2,10 @@ package com.pi4j.plugin.ffm;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
-import com.pi4j.io.i2c.I2C;
-import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
+import com.pi4j.io.spi.Spi;
+import com.pi4j.io.spi.SpiBus;
+import com.pi4j.io.spi.SpiConfigBuilder;
+import com.pi4j.plugin.ffm.providers.spi.SpiFFMProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,93 +18,67 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
-public class I2CTest {
+public class SPITest {
     private static final String IN_CONTAINER = System.getenv("IN_CONTAINER");
     private static Context pi4j;
-    private static I2C i2c;
+    private static Spi spi;
 
     @BeforeAll
     public static void setup() throws InterruptedException, IOException {
         if (IN_CONTAINER == null || !IN_CONTAINER.equals("true")) {
-            var scriptPath = Paths.get("src/test/resources/i2c-setup.sh");
+            var scriptPath = Paths.get("src/test/resources/spi-setup.sh");
             var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.toFile().getAbsolutePath()).start();
             var result = setupScript.waitFor();
             if (result != 0) {
                 var username = System.getProperty("user.name");
                 var errorOutput = new String(setupScript.getErrorStream().readAllBytes());
-                fail("Failed to setup I2C Test: \n" + errorOutput + "\n" +
-                    "Probably you need to add the I2C bash script to sudoers file " +
+                fail("Failed to setup SPI Test: \n" + errorOutput + "\n" +
+                    "Probably you need to add the SPI bash script to sudoers file " +
                     "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
             }
         }
 
         pi4j = Pi4J.newContextBuilder()
-            .add(new I2CFFMProviderImpl())
+            .add(new SpiFFMProviderImpl())
             .build();
-        i2c = pi4j.i2c().create(1, 0x1C);
-
+        var config = SpiConfigBuilder.newInstance(pi4j).bus(SpiBus.BUS_0).address(0).mode(0).baud(50_000).build();
+        spi = pi4j.spi().create(config);
     }
 
     @AfterAll
     public static void shutdown() throws InterruptedException, IOException {
         pi4j.shutdown();
+
         if (IN_CONTAINER == null || !IN_CONTAINER.equals("true")) {
-            var scriptPath = Paths.get("src/test/resources/i2c-clean.sh");
+            var scriptPath = Paths.get("src/test/resources/spi-clean.sh");
             var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.toFile().getAbsolutePath()).start();
             var result = setupScript.waitFor();
             if (result != 0) {
                 var username = System.getProperty("user.name");
                 var errorOutput = new String(setupScript.getErrorStream().readAllBytes());
-                fail("Failed to cleanup I2C Test: \n" + errorOutput + "\n" +
-                    "Probably you need to add the I2C bash script to sudoers file " +
+                fail("Failed to cleanup SPI Test: \n" + errorOutput + "\n" +
+                    "Probably you need to add the SPI bash script to sudoers file " +
                     "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
             }
         }
     }
 
     @Test
-    public void testI2CCreation() {
-        assertEquals(1, i2c.bus());
+    public void testSPITransfer() {
+        var buffer = new byte[4];
+        spi.transfer("Test".getBytes(), 0, buffer, 0, 4 );
+        assertEquals("Test", new String(buffer));
     }
 
     @Test
-    public void testI2CWriteByte() throws InterruptedException {
-        var write = i2c.write(0xEE);
-        assertEquals(0, write);
+    public void testSPIWrite() {
+        spi.write("Test".getBytes());
     }
 
     @Test
-    public void testI2CReadByte() throws InterruptedException {
-        var read = i2c.read();
-        assertEquals(0, read);
-    }
-
-    @Test
-    public void testI2CWriteReadBlockData() throws InterruptedException {
-        var writeBuffer = new byte[] {0x01, 0x02, 0x03};
-        var write = i2c.writeRegister(0xFF, writeBuffer);
-        assertEquals(0, write);
-        var readBuffer = new byte[3];
-        var read = i2c.readRegister(0xFF, readBuffer);
-        assertEquals(3, read);
-        assertArrayEquals(writeBuffer, readBuffer);
-    }
-
-    //@Test
-    public void testI2CWriteRead16BitAddress() throws InterruptedException {
-        var writeBuffer = new byte[] {0x01};
-        var writeRegister = new byte[] {0x00, 0x00};
-        var write = i2c.writeRegister(writeRegister, writeBuffer, 0, 1);
-        assertEquals(0, write);
-        var read = i2c.read();
-        assertEquals(0x01, read);
-    }
-
-    @Test
-    public void testI2CWriteReadRegister() throws InterruptedException {
-       var write = i2c.writeRegister(0x324, 0xFF);
-       assertEquals(0, write);
-       var read = i2c.readRegister(0x324);
-       assertEquals(0xFF, read);
+    public void testSPIRead() {
+        var buffer = new byte[4];
+        spi.read(buffer);
+        assertArrayEquals(new byte[] {1, 1, 1, 1}, buffer);
     }
 }

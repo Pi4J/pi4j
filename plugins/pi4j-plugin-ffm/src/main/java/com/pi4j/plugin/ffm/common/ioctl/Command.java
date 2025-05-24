@@ -15,6 +15,9 @@ public final class Command {
         return IoctlMagic.GPIO_GET_CHIPINFO_IOCTL;
     }
 
+    public static long getSpiIocMessage(int n) {
+        return IoctlMagic.SPI_IOC_MESSAGE(n);
+    }
 
     public static long getSpiIocRdMode() {
         return IoctlMagic.SPI_IOC_RD_MODE;
