@@ -2,7 +2,6 @@ package com.pi4j.plugin.ffm.common.spi;
 
 import com.pi4j.plugin.ffm.common.Pi4JLayout;
 
-import java.lang.foreign.Arena;
 import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
@@ -14,13 +13,9 @@ import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 /**
  * Source: /usr/src/linux-headers-6.8.0-52-generic/include/linux/spi/spidev.h:70:0
  */
-public record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, short delayUsecs, byte bitsPerWord,
-                             byte csChange, byte txNbits, byte rxNbits, byte wordDelayUsecs,
-                             byte pad) implements Pi4JLayout {
-
-    public SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length) {
-        this(txBuf, rxBuf, length, 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0);
-    }
+record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, short delayUsecs, byte bitsPerWord,
+                      byte csChange, byte txNbits, byte rxNbits, byte wordDelayUsecs,
+                      byte pad) implements Pi4JLayout {
 
     public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
         ValueLayout.JAVA_LONG.withName("tx_buf"),
@@ -50,18 +45,6 @@ public record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz
     private static final VarHandle VH_PAD = LAYOUT.varHandle(groupElement("pad"));
 
 
-    public static SpiIocTransfer create(MemorySegment memorySegment) throws Throwable {
-        var spiIocTransferInstance = SpiIocTransfer.createEmpty();
-        if (!memorySegment.equals(MemorySegment.NULL)) {
-            spiIocTransferInstance = spiIocTransferInstance.from(memorySegment);
-        }
-        return spiIocTransferInstance;
-    }
-
-    public static SpiIocTransfer createEmpty() {
-        return new SpiIocTransfer(new byte[]{}, new byte[]{}, 0, 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0);
-    }
-
     @Override
     public MemoryLayout getMemoryLayout() {
         return LAYOUT;
@@ -70,9 +53,13 @@ public record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz
     @Override
     @SuppressWarnings("unchecked")
     public SpiIocTransfer from(MemorySegment buffer) throws Throwable {
+        return from(buffer, null, null);
+    }
+
+    public SpiIocTransfer from(MemorySegment buffer, MemorySegment txBuf, MemorySegment rxBuf) throws Throwable {
         return new SpiIocTransfer(
-            txBuf1 != null ? txBuf1.toArray(ValueLayout.JAVA_BYTE) : new byte[]{},
-            rxBuf1 != null ? rxBuf1.toArray(ValueLayout.JAVA_BYTE) : new byte[]{},
+            txBuf != null ? txBuf.toArray(ValueLayout.JAVA_BYTE) : new byte[]{},
+            rxBuf != null ? rxBuf.toArray(ValueLayout.JAVA_BYTE) : new byte[]{},
             (int) VH_LEN.get(buffer, 0L),
             (int) VH_SPEED_HZ.get(buffer, 0L),
             (short) VH_DELAY_USECS.get(buffer, 0L),
@@ -84,19 +71,8 @@ public record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz
             (byte) VH_PAD.get(buffer, 0L));
     }
 
-    public static MemorySegment txBuf1;
-    public static MemorySegment rxBuf1;
-
     @Override
     public void to(MemorySegment buffer) throws Throwable {
-        if (txBuf != null) {
-            txBuf1 = Arena.global().allocateFrom(ValueLayout.JAVA_BYTE, txBuf);
-            VH_TX_BUF.set(buffer, 0L, txBuf1.address());
-        }
-        if (rxBuf != null) {
-            rxBuf1 = Arena.global().allocateFrom(ValueLayout.JAVA_BYTE, rxBuf);
-            VH_RX_BUF.set(buffer, 0L, rxBuf1.address());
-        }
         VH_LEN.set(buffer, 0L, length);
         VH_SPEED_HZ.set(buffer, 0L, speedHz);
         VH_DELAY_USECS.set(buffer, 0L, delayUsecs);
@@ -106,6 +82,16 @@ public record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz
         VH_RX_NBITS.set(buffer, 0L, rxNbits);
         VH_WORD_DELAY_USECS.set(buffer, 0L, wordDelayUsecs);
         VH_PAD.set(buffer, 0L, pad);
+    }
+
+    public void to(MemorySegment buffer, long txAddress, long rxAddress) throws Throwable {
+        if (txBuf != null) {
+            VH_TX_BUF.set(buffer, 0L, txAddress);
+        }
+        if (rxBuf != null) {
+            VH_RX_BUF.set(buffer, 0L, rxAddress);
+        }
+        to(buffer);
     }
 
 

@@ -10,7 +10,7 @@ import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
-import com.pi4j.plugin.ffm.common.spi.SpiIocTransfer;
+import com.pi4j.plugin.ffm.common.spi.SpiTransferBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,22 +59,23 @@ public class SpiFFM extends SpiBase implements Spi {
         IOCTL.call(spiFileDescriptor, Command.getSpiIocRdLsbFirst(), config.getReadLsbFirst());
 
         this.isOpen = true;
+        logger.info("{} - SPI Bus configured.", path);
         return this;
     }
 
     @Override
-    public void close() {
-        super.close();
-    }
-
-    @Override
     public int transfer(byte[] write, int writeOffset, byte[] read, int readOffset, int numberOfBytes) {
-        var spiTransfer = new SpiIocTransfer(write, read, numberOfBytes);
+        checkClosed();
+        logger.trace("{} - Transferring data (length '{}')", path, numberOfBytes);
+        logger.trace("{} - Write buffer: {}", path, write);
+        logger.trace("{} - Read buffer: {}", path, read);
+        var spiTransfer = new SpiTransferBuffer(write, read, numberOfBytes);
         spiTransfer = IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(1), spiTransfer);
+        var readBytes = spiTransfer.getRxBuffer();
         if (read != null) {
-            ByteBuffer.wrap(read).put(spiTransfer.rxBuf());
+            ByteBuffer.wrap(read).put(readBytes);
         }
-        return spiTransfer.rxBuf().length;
+        return readBytes.length;
     }
 
     @Override
@@ -84,8 +85,6 @@ public class SpiFFM extends SpiBase implements Spi {
 
     @Override
     public int write(byte[] data, int offset, int length) {
-        checkClosed();
-        logger.trace("{} - writing data {}.", path, data);
         return transfer(data, offset, null, 0, length);
     }
 
@@ -96,8 +95,6 @@ public class SpiFFM extends SpiBase implements Spi {
 
     @Override
     public int read(byte[] buffer, int offset, int length) {
-        checkClosed();
-        logger.trace("{} - reading data {}.", path, buffer);
         return transfer(null, 0, buffer, offset, length);
     }
 
@@ -106,7 +103,7 @@ public class SpiFFM extends SpiBase implements Spi {
      */
     private void checkClosed() {
         if (!isOpen) {
-            throw new RuntimeException("SPI bus  " + path + " is closed");
+            throw new RuntimeException("SPI bus  '" + path + "' is closed");
         }
     }
 }

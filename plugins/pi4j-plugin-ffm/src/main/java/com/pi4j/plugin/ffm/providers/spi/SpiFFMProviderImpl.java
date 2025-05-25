@@ -8,8 +8,8 @@ import com.pi4j.io.spi.SpiProviderBase;
 public class SpiFFMProviderImpl extends SpiProviderBase implements SpiProvider {
 
     public SpiFFMProviderImpl() {
-        this.id = "FFMSpiProviderImpl";
-        this.name = "FFMSpiProviderImpl";
+        this.id = "SpiFFMProviderImpl";
+        this.name = "SpiFFMProviderImpl";
     }
 
     @Override
