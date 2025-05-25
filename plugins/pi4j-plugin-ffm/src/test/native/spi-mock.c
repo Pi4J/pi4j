@@ -9,7 +9,7 @@
     
     #include <linux/platform_device.h>
     
-    static struct spi_master *master;
+    static struct spi_controller *master;
     static struct spi_device *spi_dev;
     
     static int myspi_transfer_one(struct spi_controller *ctlr, struct spi_device *spi,
@@ -48,7 +48,7 @@
     
         pr_info("%s()\n", __func__);
     
-        master = spi_alloc_master(&pdev->dev, 0);
+        master = spi_alloc_host(&pdev->dev, 0);
     
         if (master == NULL) {
             pr_err("spi_alloc_master failed\n");
@@ -59,11 +59,11 @@
     
         master->transfer_one = myspi_transfer_one;
     
-        err = spi_register_master(master);
+        err = spi_register_controller(master);
     
         if (err) {
             pr_err("spi_register_master failed\n");
-            spi_master_put(master);
+            //spi_dev_put(master);
             return err;
         }
     
@@ -81,13 +81,12 @@
         return err;
     }
     
-    static int plat_remove(struct platform_device *pdev)
+    static void plat_remove(struct platform_device *pdev)
     {
         pr_info("%s()\n", __func__);
     
-        spi_unregister_master(master);
+        spi_unregister_controller(master);
     
-        return 0;
     }
     
     static struct platform_device * plat_device;
