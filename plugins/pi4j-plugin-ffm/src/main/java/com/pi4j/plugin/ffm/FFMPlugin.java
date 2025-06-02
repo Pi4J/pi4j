@@ -7,7 +7,7 @@ import com.pi4j.extension.PluginService;
 import com.pi4j.plugin.ffm.providers.gpio.DigitalInputFFMProviderImpl;
 import com.pi4j.plugin.ffm.providers.gpio.DigitalOutputFFMProviderImpl;
 import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
+import com.pi4j.plugin.ffm.providers.pwm.PwmFFMProviderImpl;
 import com.pi4j.plugin.ffm.providers.spi.SpiFFMProviderImpl;
 import com.pi4j.provider.Provider;
 
@@ -23,7 +23,7 @@ public class FFMPlugin implements Plugin {
           new DigitalOutputFFMProviderImpl(),
           new I2CFFMProviderImpl(),
           new SpiFFMProviderImpl(),
-          new FFMPwmProviderImpl()
+          new PwmFFMProviderImpl()
         };
         service.register(providers);
     }

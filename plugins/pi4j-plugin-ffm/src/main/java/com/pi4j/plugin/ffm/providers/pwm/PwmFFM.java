@@ -10,11 +10,11 @@ import com.pi4j.io.pwm.PwmProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FFMPWM extends PwmBase implements Pwm {
+public class PwmFFM extends PwmBase implements Pwm {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
-    public FFMPWM(PwmProvider provider, PwmConfig config, int range){
+    public PwmFFM(PwmProvider provider, PwmConfig config, int range){
         super(provider, config);
     }
 

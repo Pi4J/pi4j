@@ -45,9 +45,9 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
     private final PullResistance pull;
     private int chipFileDescriptor;
 
-    private static final ThreadFactory factory = Thread.ofVirtual().name("pin-input-event-detection-", 0).factory();
+    private final ThreadFactory factory;
     // executor services for event watcher
-    private static final ExecutorService eventTaskProcessor = Executors.newSingleThreadExecutor(factory);
+    private final ExecutorService eventTaskProcessor;
 
     private boolean closed = false;
 
@@ -57,6 +57,8 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
         this.chipName = "/dev/" + chipName;
         this.debounce = config.debounce();
         this.pull = config.pull();
+        this.factory =  Thread.ofVirtual().name("ffm-input-event-detection-pin-", pin).factory();
+        this.eventTaskProcessor = Executors.newSingleThreadExecutor(factory);
     }
 
     @Override
@@ -237,6 +239,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
                             if (buf[i] == 0) {
                                 continue;
                             }
+                            // convert byte array of events to java object with heap memory segment
                             System.arraycopy(buf, i, holder, 0, eventSize);
                             var memoryBuffer = MemorySegment.ofArray(holder);
                             var event = LineEvent.createEmpty().from(memoryBuffer);

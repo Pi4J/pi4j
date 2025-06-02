@@ -5,9 +5,9 @@ import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.pwm.PwmProvider;
 import com.pi4j.io.pwm.PwmProviderBase;
 
-public class FFMPwmProviderImpl extends PwmProviderBase implements PwmProvider {
+public class PwmFFMProviderImpl extends PwmProviderBase implements PwmProvider {
 
-    public FFMPwmProviderImpl() {
+    public PwmFFMProviderImpl() {
         this.id = "FFMPwmProviderImpl";
         this.name = "FFMPwmProviderImpl";
     }

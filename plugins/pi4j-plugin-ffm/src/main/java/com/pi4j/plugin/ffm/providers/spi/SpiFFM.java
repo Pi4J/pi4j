@@ -24,17 +24,17 @@ public class SpiFFM extends SpiBase implements Spi {
 
 
     private int spiFileDescriptor;
-    private String path;
+    private final String path;
 
     public SpiFFM(SpiProvider provider, SpiConfig config) {
         super(provider, config);
+        this.path = SPI_BUS + config.bus().getBus() + "." + config.address();
     }
 
     @Override
     public Spi initialize(Context context) throws InitializeException {
         super.initialize(context);
 
-        path = SPI_BUS + config.bus().getBus() + "." + config.address();
         logger.info("{} - setting up SPIBus...", path);
         logger.debug("{} - opening device file.", path);
         this.spiFileDescriptor = FILE.open(path, FileFlag.O_RDWR);
