@@ -1,9 +1,6 @@
 package com.pi4j.plugin.ffm.providers.pwm;
 
-import com.pi4j.io.pwm.Pwm;
-import com.pi4j.io.pwm.PwmConfig;
-import com.pi4j.io.pwm.PwmProvider;
-import com.pi4j.io.pwm.PwmProviderBase;
+import com.pi4j.io.pwm.*;
 
 public class PwmFFMProviderImpl extends PwmProviderBase implements PwmProvider {
 
@@ -14,7 +11,7 @@ public class PwmFFMProviderImpl extends PwmProviderBase implements PwmProvider {
 
     @Override
     public int getPriority() {
-        return 15000;
+        return 0;
     }
 
     /**
@@ -23,12 +20,7 @@ public class PwmFFMProviderImpl extends PwmProviderBase implements PwmProvider {
     @Override
     public Pwm create(PwmConfig config) {
         // create new I/O instance based on I/O config
-        Pwm pwm = null;
-//            if (config.pwmType() == PwmType.HARDWARE) {
-//                pwm = new PiGpioPwmHardware(piGpio, this, config);
-//            } else {
-//                pwm = new PiGpioPwmSoftware(piGpio, this, config);
-//            }
+        var pwm = config.pwmType().equals(PwmType.HARDWARE) ? new PwmFFMHardware(this, config) : null;
         this.context.registry().add(pwm);
         return pwm;
     }

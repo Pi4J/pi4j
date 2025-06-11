@@ -48,6 +48,8 @@ public class DefaultPwmConfig
         extends IOAddressConfigBase<PwmConfig>
         implements PwmConfig {
 
+    protected Integer busNumber = null;
+
     // private configuration properties
     protected Float dutyCycle = null;
     protected Integer frequency = null;
@@ -91,6 +93,10 @@ public class DefaultPwmConfig
         this.name = StringUtil.setIfNullOrEmpty(this.name, "PWM-" + this.address, true);
         this.description = StringUtil.setIfNullOrEmpty(this.description, "PWM-" + this.address, true);
 
+        if (properties.containsKey(PWM_BUS_NUMBER)) {
+            this.busNumber = Integer.valueOf(properties.get(PWM_BUS_NUMBER));
+        }
+
         // load optional pwm duty-cycle from properties
         if(properties.containsKey(DUTY_CYCLE_KEY)){
             this.dutyCycle = Float.parseFloat(properties.get(DUTY_CYCLE_KEY));
@@ -128,6 +134,11 @@ public class DefaultPwmConfig
         // bounds checking
         if(this.dutyCycle != null && this.dutyCycle < 0)
             this.dutyCycle = 0f;
+    }
+
+    @Override
+    public Integer busNumber() {
+        return this.busNumber;
     }
 
     /** {@inheritDoc} */

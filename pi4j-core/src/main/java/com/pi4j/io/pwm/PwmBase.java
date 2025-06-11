@@ -34,6 +34,7 @@ import com.pi4j.io.exception.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Abstract PwmBase class.</p>
@@ -45,6 +46,7 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
 
     protected int frequency = 100;
     protected float dutyCycle = 50;
+    protected long period = TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / frequency;
     protected boolean onState = false;
     protected PwmPolarity polarity = PwmPolarity.NORMAL;
     protected Map<String, PwmPreset> presets = Collections.synchronizedMap(new HashMap<>());
