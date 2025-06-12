@@ -48,19 +48,19 @@ public class I2CBusFFM extends I2CBusBase {
                 logger.trace("{} - functionality {}({}) is {}.", busName, i2CFunctionality.name(), StringUtil.toHexString(i2CFunctionality.getValue()), supported ? "supported" : "not supported");
             }
             if (functionalityMap.get(I2CFunctionality.I2C_FUNC_I2C)) {
-                logger.debug("{} - I2CBus supports direct file mode for read/write operations.", bus);
+                logger.debug("{} - I2CBus supports direct file mode for read/write operations.", busName);
             } else if (functionalityMap.get(I2CFunctionality.I2C_FUNC_SMBUS_BYTE_DATA) ||
                 functionalityMap.get(I2CFunctionality.I2C_FUNC_SMBUS_WORD_DATA) ||
                 functionalityMap.get(I2CFunctionality.I2C_FUNC_SMBUS_I2C_BLOCK)) {
-                logger.debug("{} - I2CBus will be using ioctl with SMBus mode for read/write operations.", bus);
+                logger.debug("{} - I2CBus will be using ioctl with SMBus mode for read/write operations.", busName);
             } else {
-                logger.error("{} - Cannot configure I2CBus!", bus);
+                logger.error("{} - Cannot configure I2CBus!", busName);
                 for (Map.Entry<I2CFunctionality, Boolean> functionality : functionalityMap.entrySet()) {
-                    logger.error("{} - functionality {}({}) is {}.", bus, functionality.getKey().name(),
+                    logger.error("{} - functionality {}({}) is {}.", busName, functionality.getKey().name(),
                         StringUtil.toHexString(functionality.getKey().getValue()),
                         functionality.getValue() ? "supported" : "not supported");
                 }
-                throw new RuntimeException(bus + " does not support any of read/write operations!");
+                throw new RuntimeException(busName + " does not support any of read/write operations!");
             }
         } catch (RuntimeException e) {
             logger.error(e.getMessage());
@@ -128,7 +128,7 @@ public class I2CBusFFM extends I2CBusBase {
             } catch (RuntimeException e) {
                 throw e;
             } catch (Exception e) {
-                throw new Pi4JException("Failed to execute action for device " + i2c.device() + " on bus " + this.bus,
+                throw new Pi4JException("Failed to execute action for device " + i2c.device() + " on bus " + this.busName,
                     e);
             }
         });

@@ -39,17 +39,17 @@ public abstract class I2CBusBase implements I2CBus {
         if (action == null)
             throw new NullPointerException("Parameter 'action' is mandatory!");
         try {
-            if (this.lock.tryLock() || this.lock.tryLock(this.lockAquireTimeout, this.lockAquireTimeoutUnit)) {
-                try {
+//            if (this.lock.tryLock() || this.lock.tryLock(this.lockAquireTimeout, this.lockAquireTimeoutUnit)) {
+//                try {
                     return action.call();
-                } finally {
-                    this.lock.unlock();
-                }
-            } else {
-                throw new Pi4JException(
-                    format("Failed to get I2C lock on bus {0} after {1} {2}", this.bus, this.lockAquireTimeout,
-                        this.lockAquireTimeoutUnit));
-            }
+//                } finally {
+//                    this.lock.unlock();
+//                }
+//            } else {
+//                throw new Pi4JException(
+//                    format("Failed to get I2C lock on bus {0} after {1} {2}", this.bus, this.lockAquireTimeout,
+//                        this.lockAquireTimeoutUnit));
+//            }
         } catch (InterruptedException e) {
             logger.error("Failed locking {}-{}", getClass().getSimpleName(), this.bus, e);
             throw new RuntimeException("Could not obtain an access-lock!", e);
