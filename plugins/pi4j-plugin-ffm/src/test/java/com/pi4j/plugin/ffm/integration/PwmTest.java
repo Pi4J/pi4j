@@ -1,11 +1,9 @@
-package com.pi4j.plugin.ffm;
+package com.pi4j.plugin.ffm.integration;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
-import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfigBuilder;
-import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
 import com.pi4j.plugin.ffm.providers.pwm.PwmFFMProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
