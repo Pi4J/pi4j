@@ -4,6 +4,7 @@ import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfigBuilder;
+import com.pi4j.io.pwm.PwmType;
 import com.pi4j.plugin.ffm.providers.pwm.PwmFFMProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -22,7 +23,11 @@ public class PwmTest {
         pi4j = Pi4J.newContextBuilder()
             .add(new PwmFFMProviderImpl())
             .build();
-        pwm = pi4j.pwm().create(PwmConfigBuilder.newInstance(pi4j).busNumber(1).address(0));
+        pwm = pi4j.pwm().create(PwmConfigBuilder.newInstance(pi4j)
+            .busNumber(1)
+            .address(0)
+            .pwmType(PwmType.HARDWARE)
+            .build());
     }
 
     @AfterAll

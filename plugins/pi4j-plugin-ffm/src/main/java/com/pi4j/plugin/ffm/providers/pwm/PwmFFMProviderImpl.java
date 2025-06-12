@@ -5,8 +5,8 @@ import com.pi4j.io.pwm.*;
 public class PwmFFMProviderImpl extends PwmProviderBase implements PwmProvider {
 
     public PwmFFMProviderImpl() {
-        this.id = "FFMPwmProviderImpl";
-        this.name = "FFMPwmProviderImpl";
+        this.id = "PwmFFMProviderImpl";
+        this.name = "PwmFFMProviderImpl";
     }
 
     @Override
