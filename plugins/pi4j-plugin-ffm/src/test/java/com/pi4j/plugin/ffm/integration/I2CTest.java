@@ -91,14 +91,12 @@ public class I2CTest {
         assertArrayEquals(writeBuffer, readBuffer);
     }
 
-    //@Test
-    public void testI2CWriteRead16BitAddress() throws InterruptedException {
-        var writeBuffer = new byte[] {0x01};
-        var writeRegister = new byte[] {0x00, 0x00};
-        var write = i2c.writeRegister(writeRegister, writeBuffer, 0, 1);
+    @Test
+    public void testI2CWriteReadWordData() throws InterruptedException {
+        var write = i2c.writeRegisterWord(0xFF, 1);
         assertEquals(0, write);
-        var read = i2c.read();
-        assertEquals(0x01, read);
+        var read = i2c.readRegisterWord(0xFF);
+        assertEquals(1, read);
     }
 
     @Test
@@ -133,7 +131,7 @@ public class I2CTest {
                     var value = i;
                     service.submit(() -> {
                         try {
-                            // synchronize with a latch, should work the same if you remove it
+                            // synchronize with a latch, should work the same if you remove it with real driver
                             synchronized (latch) {
                                 // add value to the linked list
                                 list.add(value);

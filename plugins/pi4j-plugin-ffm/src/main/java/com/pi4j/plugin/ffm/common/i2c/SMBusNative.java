@@ -76,6 +76,28 @@ public class SMBusNative implements AutoCloseable {
         }
     }
 
+    public int writeWordData(int fd, byte register, int data) {
+        try {
+            var capturedState = context.allocateCapturedState();
+            var callResult = (int) WRITE_WORD_DATA.invoke(capturedState, fd, register, data);
+            processError(callResult, capturedState, "writeWordData", fd, register, data);
+            return callResult;
+        } catch (Throwable e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public int readWordData(int fd, byte register) {
+        try {
+            var capturedState = context.allocateCapturedState();
+            var callResult = (int) READ_WORD_DATA.invoke(capturedState, fd, register);
+            processError(callResult, capturedState, "readWordData", fd, register);
+            return callResult;
+        } catch (Throwable e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
     @Override
     public void close() {
         context.close();

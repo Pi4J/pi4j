@@ -1,6 +1,9 @@
 package com.pi4j.plugin.ffm.providers.i2c;
 
+import com.pi4j.context.Context;
+import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CBase;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CProvider;
@@ -26,6 +29,11 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
         super(provider, config, i2CBus);
     }
 
+    @Override
+    public I2C initialize(Context context) throws InitializeException {
+        i2CBus.selectDevice(config.device());
+        return super.initialize(context);
+    }
 
     /**
      * Internal method.
@@ -34,13 +42,15 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
      * @param data data array to be written
      */
     private int writeInternal(int register, byte[] data) {
-        i2CBus.selectDevice(config.device());
         return i2CBus.execute(this, (i2cFileDescriptor) -> {
-            if (data.length == 1) {
+            if (i2CBus.hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_QUICK) && data.length == 1) {
                 return SMBUS.writeByteData(i2cFileDescriptor, (byte) register, data[0]);
             } else if (i2CBus.hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_WRITE_BLOCK_DATA)) {
                 return SMBUS.writeBlockData(i2cFileDescriptor, (byte) register, data);
-            } else {
+            } else if (i2CBus.hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_WRITE_WORD_DATA)) {
+                return SMBUS.writeWordData(i2cFileDescriptor, (byte) register, data[0]);
+            }
+            else {
                 throw new Pi4JException("No support any of I2C device write mode.");
             }
         });
@@ -54,22 +64,26 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
      * @return data byte read from register
      */
     private byte[] readInternal(int register, int size) {
-        i2CBus.selectDevice(config.device());
         return i2CBus.execute(this, (i2cFileDescriptor) -> {
-            if (size == 1) {
+            if (i2CBus.hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_QUICK) && size == 1) {
                 return new byte[] {SMBUS.readByteData(i2cFileDescriptor, (byte) register)};
             } else if (i2CBus.hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_READ_BLOCK_DATA)) {
                 return SMBUS.readBlockData(i2cFileDescriptor, (byte) register, new byte[size]);
+            }  else if (i2CBus.hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_READ_WORD_DATA)) {
+                return new byte[] {(byte) SMBUS.readWordData(i2cFileDescriptor, (byte) register)};
             } else {
                 throw new Pi4JException("No support any of I2C device read mode.");
             }
         });
     }
 
+    @Override
+    public byte readByte() {
+        return i2CBus.execute(this, SMBUS::readByte);
+    }
 
     @Override
     public int read() {
-        i2CBus.selectDevice(config.device());
         // this is needed, because we are receiving raw bytes, which we have to convert to proper int
         return Byte.toUnsignedInt(i2CBus.execute(this, SMBUS::readByte));
     }
@@ -83,7 +97,6 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
 
     @Override
     public int write(byte b) {
-        i2CBus.selectDevice(config.device());
         return i2CBus.execute(this, (i2cFileDescriptor) -> SMBUS.writeByte(i2cFileDescriptor, b));
     }
 
@@ -96,7 +109,6 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
 
     @Override
     public int readRegister(int register) {
-        i2CBus.selectDevice(config.device());
         // this is needed, because we are receiving raw bytes, which we have to convert to proper int
         return Byte.toUnsignedInt(readInternal(register, 1)[0]);
     }
@@ -118,8 +130,7 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
     @Override
     public int readRegister(int register, byte[] buffer, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, buffer.length);
-        i2CBus.selectDevice(config.device());
-        var result = i2CBus.execute(this, (i2cFileDescriptor) -> SMBUS.readBlockData(i2cFileDescriptor, (byte) register, buffer));
+        var result = readInternal(register, buffer.length);
         System.arraycopy(result, 0, buffer, offset, length);
         return result.length;
     }
@@ -133,8 +144,7 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
     public int writeRegister(int register, byte[] data, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, data.length);
         var writeData = Arrays.copyOfRange(data, offset, offset + length);
-        i2CBus.selectDevice(config.device());
-        return i2CBus.execute(this, (i2cFileDescriptor) -> SMBUS.writeBlockData(i2cFileDescriptor, (byte) register, writeData));
+        return writeInternal(register, writeData);
     }
 
     @Override

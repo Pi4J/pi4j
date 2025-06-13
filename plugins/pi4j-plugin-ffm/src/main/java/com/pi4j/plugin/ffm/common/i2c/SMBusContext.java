@@ -10,11 +10,11 @@ import java.nio.file.Path;
 class SMBusContext extends Pi4JNative {
     private static final SymbolLookup LIBI2C;
     static  {
-        var path = Path.of(Pi4JArchitectureGuess.getLibraryPath("libi2c"));
-        if (!path.toFile().exists()) {
-            throw new RuntimeException("Could not find libi2c library: " + path);
-        }
         try {
+            var path = Path.of(Pi4JArchitectureGuess.getLibraryPath("libi2c"));
+            if (!path.toFile().exists()) {
+                throw new RuntimeException("Could not find libi2c library: " + path);
+            }
             LIBI2C = SymbolLookup.libraryLookup(path, ARENA);
         } catch (Exception e) {
             throw new RuntimeException("Probably libi2c-dev package is missing. Try to install with `sudo apt-get install libi2c-dev`", e);
@@ -49,6 +49,16 @@ class SMBusContext extends Pi4JNative {
     static final MethodHandle WRITE_BLOCK_DATA = Linker.nativeLinker().downcallHandle(
         LIBI2C.find("i2c_smbus_write_block_data").orElseThrow(),
         FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.JAVA_INT, ValueLayout.JAVA_BYTE, ValueLayout.JAVA_INT, ValueLayout.ADDRESS),
+        Linker.Option.captureCallState("errno"));
+
+    static final MethodHandle READ_WORD_DATA = Linker.nativeLinker().downcallHandle(
+        LIBI2C.find("i2c_smbus_read_word_data").orElseThrow(),
+        FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.JAVA_INT, ValueLayout.JAVA_BYTE),
+        Linker.Option.captureCallState("errno"));
+
+    static final MethodHandle WRITE_WORD_DATA = Linker.nativeLinker().downcallHandle(
+        LIBI2C.find("i2c_smbus_write_word_data").orElseThrow(),
+        FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.JAVA_INT, ValueLayout.JAVA_BYTE, ValueLayout.JAVA_INT),
         Linker.Option.captureCallState("errno"));
 
 }

@@ -10,7 +10,6 @@ import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
-import com.pi4j.plugin.ffm.common.poll.PollNative;
 import com.pi4j.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +22,6 @@ public class I2CBusFFM extends I2CBusBase {
     private static final Logger logger = LoggerFactory.getLogger(I2CBusFFM.class);
     private static final IoctlNative IOCTL = new IoctlNative();
     private static final FileDescriptorNative FILE = new FileDescriptorNative();
-    private static final PollNative POLL = new PollNative();
     private static final String I2C_BUS = "/dev/i2c-";
 
     private final String busName;
