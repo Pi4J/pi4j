@@ -1,8 +1,7 @@
-package com.pi4j.plugin.ffm.common.i2c;
+package com.pi4j.plugin.ffm.common.i2c.smbus;
 
 
 import com.pi4j.plugin.ffm.common.Pi4JLayout;
-import com.pi4j.plugin.ffm.common.i2c.unions.SMBusData;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemoryLayout;

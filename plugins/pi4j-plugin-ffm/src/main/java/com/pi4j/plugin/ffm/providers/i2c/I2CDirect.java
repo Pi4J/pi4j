@@ -6,17 +6,15 @@ import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CBase;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CProvider;
-import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
+import com.pi4j.plugin.ffm.common.i2c.rdwr.I2CMessage;
+import com.pi4j.plugin.ffm.common.i2c.I2cConstants;
+import com.pi4j.plugin.ffm.common.i2c.rdwr.RDWRData;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Objects;
-
 public class I2CDirect extends I2CBase<I2CBusFFM> {
     private static final Logger logger = LoggerFactory.getLogger(I2CDirect.class);
-    private static final FileDescriptorNative FILE = new FileDescriptorNative();
     private static final IoctlNative IOCTL = new IoctlNative();
 
     public I2CDirect(I2CProvider provider, I2CConfig config, I2CBusFFM i2CBus) {
@@ -25,8 +23,7 @@ public class I2CDirect extends I2CBase<I2CBusFFM> {
 
     @Override
     public I2C initialize(Context context) throws InitializeException {
-        super.initialize(context);
-        return this;
+        return super.initialize(context);
     }
 
     @Override
@@ -35,99 +32,70 @@ public class I2CDirect extends I2CBase<I2CBusFFM> {
         i2CBus.close();
     }
 
-    /**
-     * Internal method.
-     * Writes the data array into the register address of device selected previously.
-     *
-     * @param data data array to be written
-     */
-    private int writeInternal(int register, byte[] data) {
-            i2CBus.selectDevice(config.device());
-            return i2CBus.execute(this, (i2cFileDescriptor) -> {
-                var buffer = new byte[data.length + 1];
-                buffer[0] = (byte) register;
-                System.arraycopy(data, 0, buffer, 1, data.length);
-                return FILE.write(i2cFileDescriptor, buffer);
-            });
-    }
-
-    @Override
-    public int write(byte b) {
-        return writeInternal(this.config.device(), new byte[]{b});
-    }
-
-    @Override
-    public int write(byte[] data, int offset, int length) {
-        Objects.checkFromIndexSize(offset, length, data.length);
-        var writeData = Arrays.copyOfRange(data, offset, offset + length);
-        return writeInternal(this.config.device(), writeData);
-    }
-
-    @Override
-    public int writeRegister(int register, byte b) {
-        return writeInternal(register, new byte[]{b});
-    }
-
-    @Override
-    public int writeRegister(int register, byte[] data, int offset, int length) {
-        Objects.checkFromIndexSize(offset, length, data.length);
-        var writeData = Arrays.copyOfRange(data, offset, offset + length);
-        return writeInternal(register, writeData);
-    }
-
-    @Override
-    public int writeRegister(byte[] register, byte[] data, int offset, int length) {
-        Objects.checkFromIndexSize(offset, length, data.length);
-        var byteRegister = register[0];
-        var writeData = new byte[data.length + register.length - 1];
-        System.arraycopy(Arrays.copyOfRange(register, 1, register.length), 0, writeData, 0, register.length - 1);
-        System.arraycopy(data, 0, writeData, register.length - 1, data.length);
-        return writeInternal(byteRegister, writeData);
-    }
-
-
-    /**
-     * Internal method.
-     * Reads the data byte from the register address of device selected previously.
-     *
-     * @param register register address of selected device
-     * @return data byte read from register
-     */
-    private byte[] readInternal(int register, int size) {
-            i2CBus.selectDevice(config.device());
-            return i2CBus.execute(this, (i2cFileDescriptor) -> FILE.read(i2cFileDescriptor, new byte[size], size));
-    }
-
     @Override
     public int read() {
-        var dataRead = readInternal(this.config.device(), 1);
-        return dataRead[0];
+        return 0;
     }
 
     @Override
     public int read(byte[] buffer, int offset, int length) {
-        Objects.checkFromIndexSize(offset, length, buffer.length);
-        System.arraycopy(readInternal(this.config.device(), buffer.length), 0, buffer, offset, length);
-        return length;
+        return 0;
+    }
+
+    @Override
+    public int write(byte b) {
+        return 0;
+    }
+
+    @Override
+    public int write(byte[] data, int offset, int length) {
+        return 0;
     }
 
     @Override
     public int readRegister(int register) {
-        var dataRead = readInternal(register, 1);
-        return dataRead[0];
+        var messages = new I2CMessage[] {
+            new I2CMessage(config.device(), 0,1, new byte[] {(byte) register}),
+            new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(),0, new byte[0]),
+        };
+        var packets = new RDWRData(messages, 2);
+        return i2CBus.execute(this, (i2cFileDescriptor) -> {
+            var result = IOCTL.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
+            return (int) result.msgs()[1].buf()[0];
+        });
     }
 
     @Override
     public int readRegister(byte[] register, byte[] buffer, int offset, int length) {
-        // TODO: how to implement?
-        return length;
+        return 0;
     }
 
     @Override
     public int readRegister(int register, byte[] buffer, int offset, int length) {
-        Objects.checkFromIndexSize(offset, length, buffer.length);
-        System.arraycopy(readInternal(register, length), 0, buffer, offset, length);
-        return length;
+        return 0;
+    }
+
+    @Override
+    public int writeRegister(int register, byte b) {
+        return 0;
+    }
+
+    @Override
+    public int writeRegister(int register, byte[] data, int offset, int length) {
+        var buffer = new byte[data.length + 1];
+        buffer[0] = (byte) register;
+        System.arraycopy(data, 0, buffer, 1, data.length);
+        var messages = new I2CMessage[] {new I2CMessage(config.device(), 0, data.length, buffer)};
+        var packets = new RDWRData(messages, 1);
+        return i2CBus.execute(this, (i2cFileDescriptor) -> {
+            IOCTL.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
+            return 0;
+        });
+    }
+
+    @Override
+    public int writeRegister(byte[] register, byte[] data, int offset, int length) {
+        return 0;
     }
 
 }

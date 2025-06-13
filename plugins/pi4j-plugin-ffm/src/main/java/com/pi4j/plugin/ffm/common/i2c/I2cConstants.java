@@ -11,6 +11,9 @@ import java.util.Arrays;
  * Source: NO_POSITION
  */
 public enum I2cConstants implements Pi4JLayout {
+
+    I2C_RDWR(0x0707),
+
 	/**
 	 * Source: /usr/src/linux-headers-6.8.0-52-generic/include/uapi/linux/i2c.h:76:9
 	 */

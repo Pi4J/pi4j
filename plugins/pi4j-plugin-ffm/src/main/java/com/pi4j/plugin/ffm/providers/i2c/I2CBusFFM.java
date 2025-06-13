@@ -80,6 +80,9 @@ public class I2CBusFFM extends I2CBusBase {
         return functionalityMap.get(functionality) != null && functionalityMap.get(functionality);
     }
 
+    public Map<I2CFunctionality, Boolean> getFunctionalityMap() {
+        return functionalityMap;
+    }
 
     /**
      * Selects the device address for communication.

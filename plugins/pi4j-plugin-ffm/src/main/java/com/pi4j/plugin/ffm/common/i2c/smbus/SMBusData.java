@@ -1,4 +1,4 @@
-package com.pi4j.plugin.ffm.common.i2c.unions;
+package com.pi4j.plugin.ffm.common.i2c.smbus;
 
 import com.pi4j.plugin.ffm.common.Pi4JLayout;
 
