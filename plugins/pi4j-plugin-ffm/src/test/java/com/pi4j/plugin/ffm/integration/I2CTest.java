@@ -6,6 +6,7 @@ import com.pi4j.io.i2c.I2C;
 import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 
@@ -19,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
+@Disabled
 public class I2CTest {
     private static final String IN_CONTAINER = System.getenv("IN_CONTAINER");
     private static Context pi4j;

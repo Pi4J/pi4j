@@ -53,9 +53,12 @@ public record ChipInfo(byte[] name, byte[] label, int lines) implements Pi4JLayo
 	@Override
 	@SuppressWarnings("unchecked")
 	public ChipInfo from(MemorySegment buffer) throws Throwable {
+        // we know that this two fields are strings, so when converting from byte array we trim the zeroes left in byte array for padding
+        var name = new String(invokeExact(MH_NAME, buffer).toArray(ValueLayout.JAVA_BYTE)).trim();
+        var label = new String(invokeExact(MH_LABEL, buffer).toArray(ValueLayout.JAVA_BYTE)).trim();
 		return new ChipInfo(
-			invokeExact(MH_NAME, buffer).toArray(ValueLayout.JAVA_BYTE),
-			invokeExact(MH_LABEL, buffer).toArray(ValueLayout.JAVA_BYTE),
+            name.getBytes(),
+            label.getBytes(),
 			(int) VH_LINES.get(buffer, 0L));
 	}
 

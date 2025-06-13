@@ -52,7 +52,7 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
             logger.info("{}-{} - setting up DigitalOutput Pin...", chipName, pin);
             logger.trace("{}-{} - opening device file.", chipName, pin);
             var fd = file.open(chipName, FileFlag.O_RDONLY | FileFlag.O_CLOEXEC);
-            var lineInfo = new LineInfo(new byte[]{}, new byte[]{}, pin, 0, 0, new LineAttribute[]{}, new int[]{});
+            var lineInfo = new LineInfo(new byte[]{}, new byte[]{}, pin, 0, 0, new LineAttribute[]{});
             logger.trace("{}-{} - getting line info.", chipName, pin);
             lineInfo = ioctl.call(fd, Command.getGpioV2GetLineInfoIoctl(), lineInfo);
             if ((lineInfo.flags() & PinFlag.USED.getValue()) > 0) {
@@ -61,8 +61,8 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
             }
             logger.trace("{}-{} - DigitalOutput Pin line info: {}", chipName, pin, lineInfo);
             var flags = PinFlag.OUTPUT.getValue();
-            var lineConfig = new LineConfig(flags, 0, new int[]{}, new LineConfigAttribute[]{});
-            var lineRequest = new LineRequest(new int[]{pin}, ("pi4j." + getClass().getSimpleName()).getBytes(), lineConfig, 1, 0, new int[]{}, 0);
+            var lineConfig = new LineConfig(flags, 0, new LineConfigAttribute[]{});
+            var lineRequest = new LineRequest(new int[]{pin}, ("pi4j." + getClass().getSimpleName()).getBytes(), lineConfig, 1, 0, 0);
             var result = ioctl.call(fd, Command.getGpioV2GetLineIoctl(), lineRequest);
             this.chipFileDescriptor = result.fd();
 

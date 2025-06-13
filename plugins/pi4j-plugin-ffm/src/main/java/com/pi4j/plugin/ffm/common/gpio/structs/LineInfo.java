@@ -31,7 +31,7 @@ import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
  * @padding: reserved for future use
  */
 public record LineInfo(byte[] name, byte[] consumer, int offset, int numAttrs, long flags,
-                       LineAttribute[] attrs, int[] padding) implements Pi4JLayout {
+                       LineAttribute[] attrs) implements Pi4JLayout {
 	public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
 		MemoryLayout.sequenceLayout(32, ValueLayout.JAVA_BYTE).withName("name"),
 		MemoryLayout.sequenceLayout(32, ValueLayout.JAVA_BYTE).withName("consumer"),
@@ -54,7 +54,7 @@ public record LineInfo(byte[] name, byte[] consumer, int offset, int numAttrs, l
 
 	private static final MethodHandle MH_ATTRS = LAYOUT.sliceHandle(groupElement("attrs"));
 
-	private static final MethodHandle MH_PADDING = LAYOUT.sliceHandle(groupElement("padding"));
+	//private static final MethodHandle MH_PADDING = LAYOUT.sliceHandle(groupElement("padding"));
 
 	public static LineInfo create(MemorySegment memorySegment) throws Throwable {
 		var lineinfoInstance = LineInfo.createEmpty();
@@ -65,7 +65,7 @@ public record LineInfo(byte[] name, byte[] consumer, int offset, int numAttrs, l
 	}
 
 	public static LineInfo createEmpty() {
-		return new LineInfo(new byte[]{}, new byte[]{}, 0, 0, 0, new LineAttribute[]{}, new int[]{});
+		return new LineInfo(new byte[]{}, new byte[]{}, 0, 0, 0, new LineAttribute[]{});
 	}
 
 	@Override
@@ -77,19 +77,20 @@ public record LineInfo(byte[] name, byte[] consumer, int offset, int numAttrs, l
 	@SuppressWarnings("unchecked")
 	public LineInfo from(MemorySegment buffer) throws Throwable {
 		var attrsMemorySegment = invokeExact(MH_ATTRS, buffer);
-		var attrs = new LineAttribute[10];
-		for(int i = 0; i < 10; i++) {
-			var tmp = LineAttribute.createEmpty();
-			attrs[i] = tmp.from(attrsMemorySegment.asSlice(LineAttribute.LAYOUT.byteSize() * i, LineAttribute.LAYOUT.byteSize()));
+		var attrs = new LineAttribute[attrs().length];
+		for(int i = 0; i < attrs.length; i++) {
+			attrs[i] = attrs()[i].from(attrsMemorySegment.asSlice(LineAttribute.LAYOUT.byteSize() * i, LineAttribute.LAYOUT.byteSize()));
 		}
+        var name = new String(invokeExact(MH_NAME, buffer).toArray(ValueLayout.JAVA_BYTE)).trim();
+        var consumer = new String(invokeExact(MH_CONSUMER, buffer).toArray(ValueLayout.JAVA_BYTE)).trim();
 		return new LineInfo(
-			invokeExact(MH_NAME, buffer).toArray(ValueLayout.JAVA_BYTE),
-			invokeExact(MH_CONSUMER, buffer).toArray(ValueLayout.JAVA_BYTE),
+            name.getBytes(),
+            consumer.getBytes(),
 			(int) VH_OFFSET.get(buffer, 0L),
 			(int) VH_NUM_ATTRS.get(buffer, 0L),
 			(long) VH_FLAGS.get(buffer, 0L),
-			attrs,
-			invokeExact(MH_PADDING, buffer).toArray(ValueLayout.JAVA_INT));
+			attrs);
+			//invokeExact(MH_PADDING, buffer).toArray(ValueLayout.JAVA_INT));
 	}
 
 	@Override
@@ -109,10 +110,10 @@ public record LineInfo(byte[] name, byte[] consumer, int offset, int numAttrs, l
 		for (int i = 0; i < attrs.length; i++) {
 			attrs[i].to(attrsTmp.asSlice(LineAttribute.LAYOUT.byteSize() * i, LineAttribute.LAYOUT.byteSize()));
 		}
-		var paddingTmp = invokeExact(MH_PADDING, buffer);
-		for (int i = 0; i < padding.length; i++) {
-			paddingTmp.setAtIndex(ValueLayout.JAVA_INT, i, padding[i]);
-		}
+//		var paddingTmp = invokeExact(MH_PADDING, buffer);
+//		for (int i = 0; i < padding.length; i++) {
+//			paddingTmp.setAtIndex(ValueLayout.JAVA_INT, i, padding[i]);
+//		}
 	}
 
     @Override
@@ -124,7 +125,7 @@ public record LineInfo(byte[] name, byte[] consumer, int offset, int numAttrs, l
             ", numAttrs=" + numAttrs +
             ", flags=" + flags +
             ", attrs=" + Arrays.toString(attrs) +
-            ", padding=" + Arrays.toString(padding) +
+            //", padding=" + Arrays.toString(padding) +
             '}';
     }
 }

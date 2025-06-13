@@ -35,7 +35,7 @@ import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
  * error
  */
 public record LineRequest(int[] offsets, byte[] consumer, LineConfig config, int numLines,
-                          int eventBufferSize, int[] padding, int fd) implements Pi4JLayout {
+                          int eventBufferSize, int fd) implements Pi4JLayout {
 	public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
 		MemoryLayout.sequenceLayout(64, ValueLayout.JAVA_INT).withName("offsets"),
 		MemoryLayout.sequenceLayout(32, ValueLayout.JAVA_BYTE).withName("consumer"),
@@ -56,7 +56,7 @@ public record LineRequest(int[] offsets, byte[] consumer, LineConfig config, int
 
 	private static final VarHandle VH_EVENT_BUFFER_SIZE = LAYOUT.varHandle(groupElement("event_buffer_size"));
 
-	private static final MethodHandle MH_PADDING = LAYOUT.sliceHandle(groupElement("padding"));
+	//private static final MethodHandle MH_PADDING = LAYOUT.sliceHandle(groupElement("padding"));
 
 	private static final VarHandle VH_FD = LAYOUT.varHandle(groupElement("fd"));
 
@@ -69,7 +69,7 @@ public record LineRequest(int[] offsets, byte[] consumer, LineConfig config, int
 	}
 
 	public static LineRequest createEmpty() {
-		return new LineRequest(new int[]{}, new byte[]{}, LineConfig.createEmpty(), 0, 0, new int[]{}, 0);
+		return new LineRequest(new int[]{}, new byte[]{}, LineConfig.createEmpty(), 0, 0, 0);
 	}
 
 	@Override
@@ -81,14 +81,21 @@ public record LineRequest(int[] offsets, byte[] consumer, LineConfig config, int
 	@SuppressWarnings("unchecked")
 	public LineRequest from(MemorySegment buffer) throws Throwable {
 		var configMemorySegment = invokeExact(MH_CONFIG, buffer);
-		var config = LineConfig.createEmpty().from(configMemorySegment);
+		var config = config().from(configMemorySegment);
+        var consumer = new String(invokeExact(MH_CONSUMER, buffer).toArray(ValueLayout.JAVA_BYTE)).trim();
+
+        var offsetsMemorySegment = invokeExact(MH_OFFSETS, buffer);
+        var offsets = new int[offsets().length];
+        for (int i = 0; i < offsets().length; i++) {
+            offsets[i] = offsetsMemorySegment.getAtIndex(ValueLayout.JAVA_INT, i);
+        }
 		return new LineRequest(
-			invokeExact(MH_OFFSETS, buffer).toArray(ValueLayout.JAVA_INT),
-			invokeExact(MH_CONSUMER, buffer).toArray(ValueLayout.JAVA_BYTE),
+            offsets,
+			consumer.getBytes(),
 			config,
 			(int) VH_NUM_LINES.get(buffer, 0L),
 			(int) VH_EVENT_BUFFER_SIZE.get(buffer, 0L),
-			invokeExact(MH_PADDING, buffer).toArray(ValueLayout.JAVA_INT),
+//			invokeExact(MH_PADDING, buffer).toArray(ValueLayout.JAVA_INT),
 			(int) VH_FD.get(buffer, 0L));
 	}
 
@@ -106,10 +113,10 @@ public record LineRequest(int[] offsets, byte[] consumer, LineConfig config, int
 		config.to(configTmp);
 		VH_NUM_LINES.set(buffer, 0L, numLines);
 		VH_EVENT_BUFFER_SIZE.set(buffer, 0L, eventBufferSize);
-		var paddingTmp = invokeExact(MH_PADDING, buffer);
-		for (int i = 0; i < padding.length; i++) {
-			paddingTmp.setAtIndex(ValueLayout.JAVA_INT, i, padding[i]);
-		}
+//		var paddingTmp = invokeExact(MH_PADDING, buffer);
+//		for (int i = 0; i < padding.length; i++) {
+//			paddingTmp.setAtIndex(ValueLayout.JAVA_INT, i, padding[i]);
+//		}
 		VH_FD.set(buffer, 0L, fd);
 	}
 
@@ -121,7 +128,7 @@ public record LineRequest(int[] offsets, byte[] consumer, LineConfig config, int
             ", config=" + config +
             ", numLines=" + numLines +
             ", eventBufferSize=" + eventBufferSize +
-            ", padding=" + Arrays.toString(padding) +
+            //", padding=" + Arrays.toString(padding) +
             ", fd=" + fd +
             '}';
     }

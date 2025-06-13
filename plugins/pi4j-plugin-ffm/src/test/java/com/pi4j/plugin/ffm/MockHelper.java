@@ -34,11 +34,11 @@ class MockHelper {
                 return new LineInfo("Test".getBytes(), "FFM-Test".getBytes(),
                     lineInfo.offset(), 0,
                     lineInfo.offset() == 2 ? PinFlag.USED.getValue() : PinFlag.OUTPUT.getValue(),
-                    new LineAttribute[0], new int[0]);
+                    new LineAttribute[0]);
             });
             when(mock.call(anyInt(), anyLong(), isA(LineRequest.class))).thenAnswer((answer) -> {
                 LineRequest lineRequest = answer.getArgument(2);
-                return new LineRequest(lineRequest.offsets(), lineRequest.consumer(), lineRequest.config(), lineRequest.numLines(), lineRequest.eventBufferSize(), lineRequest.padding(), 42);
+                return new LineRequest(lineRequest.offsets(), lineRequest.consumer(), lineRequest.config(), lineRequest.numLines(), lineRequest.eventBufferSize(), 42);
             });
             when(mock.call(anyInt(), anyLong(), isA(LineValues.class))).thenAnswer((answer) -> answer.<LineValues>getArgument(2));
         });

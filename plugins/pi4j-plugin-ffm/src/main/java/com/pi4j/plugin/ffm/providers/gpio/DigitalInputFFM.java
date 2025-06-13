@@ -76,7 +76,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
             logger.info("{}-{} - setting up DigitalInput Pin...", chipName, pin);
             logger.trace("{}-{} - opening device file.", chipName, pin);
             var fd = file.open(chipName, FileFlag.O_RDONLY | FileFlag.O_CLOEXEC);
-            var lineInfo = new LineInfo(new byte[]{}, new byte[]{}, pin, 0, 0, new LineAttribute[]{}, new int[]{});
+            var lineInfo = new LineInfo(new byte[]{}, new byte[]{}, pin, 0, 0, new LineAttribute[]{});
             logger.trace("{}-{} - getting line info.", chipName, pin);
             lineInfo = ioctl.call(fd, Command.getGpioV2GetLineInfoIoctl(), lineInfo);
             if ((lineInfo.flags() & PinFlag.USED.getValue()) > 0) {
@@ -87,7 +87,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
             var flags = PinFlag.INPUT.getValue() | PinFlag.EDGE_RISING.getValue() | PinFlag.EDGE_FALLING.getValue();
             var attributes = new ArrayList<LineConfigAttribute>();
             if (debounce > 0) {
-                var debounceAttribute = new LineAttribute(LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(), 0, 0, 0, (int) debounce);
+                var debounceAttribute = new LineAttribute(LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(), 0, 0, (int) debounce);
                 attributes.add(new LineConfigAttribute(debounceAttribute, pin));
             }
             flags |= switch (pull) {
@@ -95,8 +95,8 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
                 case PULL_DOWN -> PinFlag.BIAS_PULL_DOWN.getValue();
                 case PULL_UP -> PinFlag.BIAS_PULL_UP.getValue();
             };
-            var lineConfig = new LineConfig(flags, attributes.size(), new int[]{}, attributes.toArray(new LineConfigAttribute[0]));
-            var lineRequest = new LineRequest(new int[]{pin}, ("pi4j." + getClass().getSimpleName()).getBytes(), lineConfig, 1, 0, new int[]{}, 0);
+            var lineConfig = new LineConfig(flags, attributes.size(), attributes.toArray(new LineConfigAttribute[0]));
+            var lineRequest = new LineRequest(new int[]{pin}, ("pi4j." + getClass().getSimpleName()).getBytes(), lineConfig, 1, 0, 0);
             var result = ioctl.call(fd, Command.getGpioV2GetLineIoctl(), lineRequest);
             this.chipFileDescriptor = result.fd();
 

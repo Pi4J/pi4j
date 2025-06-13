@@ -27,7 +27,7 @@ import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
  * once.  If an attribute is associated with a line multiple times then the
  * first occurrence (i.e. lowest index) has precedence.
  */
-public record LineConfig(long flags, int numAttrs, int[] padding,
+public record LineConfig(long flags, int numAttrs,
 		LineConfigAttribute[] attrs) implements Pi4JLayout {
 	public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
 		ValueLayout.JAVA_LONG.withName("flags"),
@@ -40,7 +40,7 @@ public record LineConfig(long flags, int numAttrs, int[] padding,
 
 	private static final VarHandle VH_NUM_ATTRS = LAYOUT.varHandle(groupElement("num_attrs"));
 
-	private static final MethodHandle MH_PADDING = LAYOUT.sliceHandle(groupElement("padding"));
+	//private static final MethodHandle MH_PADDING = LAYOUT.sliceHandle(groupElement("padding"));
 
 	private static final MethodHandle MH_ATTRS = LAYOUT.sliceHandle(groupElement("attrs"));
 
@@ -53,7 +53,7 @@ public record LineConfig(long flags, int numAttrs, int[] padding,
 	}
 
 	public static LineConfig createEmpty() {
-		return new LineConfig(0, 0, new int[]{}, new LineConfigAttribute[]{});
+		return new LineConfig(0, 0, new LineConfigAttribute[]{});
 	}
 
 	@Override
@@ -65,15 +65,14 @@ public record LineConfig(long flags, int numAttrs, int[] padding,
 	@SuppressWarnings("unchecked")
 	public LineConfig from(MemorySegment buffer) throws Throwable {
 		var attrsMemorySegment = invokeExact(MH_ATTRS, buffer);
-		var attrs = new LineConfigAttribute[10];
-		for(int i = 0; i < 10; i++) {
-			var tmp = LineConfigAttribute.createEmpty();
-			attrs[i] = tmp.from(attrsMemorySegment.asSlice(LineConfigAttribute.LAYOUT.byteSize() * i, LineConfigAttribute.LAYOUT.byteSize()));
+		var attrs = new LineConfigAttribute[attrs().length];
+		for(int i = 0; i < attrs.length; i++) {
+			attrs[i] = attrs()[i].from(attrsMemorySegment.asSlice(LineConfigAttribute.LAYOUT.byteSize() * i, LineConfigAttribute.LAYOUT.byteSize()));
 		}
 		return new LineConfig(
 			(long) VH_FLAGS.get(buffer, 0L),
 			(int) VH_NUM_ATTRS.get(buffer, 0L),
-			invokeExact(MH_PADDING, buffer).toArray(ValueLayout.JAVA_INT),
+			//invokeExact(MH_PADDING, buffer).toArray(ValueLayout.JAVA_INT),
 			attrs);
 	}
 
@@ -81,10 +80,10 @@ public record LineConfig(long flags, int numAttrs, int[] padding,
 	public void to(MemorySegment buffer) throws Throwable {
 		VH_FLAGS.set(buffer, 0L, flags);
 		VH_NUM_ATTRS.set(buffer, 0L, numAttrs);
-		var paddingTmp = invokeExact(MH_PADDING, buffer);
-		for (int i = 0; i < padding.length; i++) {
-			paddingTmp.setAtIndex(ValueLayout.JAVA_INT, i, padding[i]);
-		}
+//		var paddingTmp = invokeExact(MH_PADDING, buffer);
+//		for (int i = 0; i < padding.length; i++) {
+//			paddingTmp.setAtIndex(ValueLayout.JAVA_INT, i, padding[i]);
+//		}
 		var attrsTmp = invokeExact(MH_ATTRS, buffer);
 		for (int i = 0; i < attrs.length; i++) {
 			attrs[i].to(attrsTmp.asSlice(LineConfigAttribute.LAYOUT.byteSize() * i, LineConfigAttribute.LAYOUT.byteSize()));
@@ -96,7 +95,7 @@ public record LineConfig(long flags, int numAttrs, int[] padding,
         return "LineConfig{" +
             "flags=" + flags +
             ", numAttrs=" + numAttrs +
-            ", padding=" + Arrays.toString(padding) +
+           // ", padding=" + Arrays.toString(padding) +
             ", attrs=" + Arrays.toString(attrs) +
             '}';
     }

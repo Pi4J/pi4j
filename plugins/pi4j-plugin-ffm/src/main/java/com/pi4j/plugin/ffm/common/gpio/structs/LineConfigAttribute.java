@@ -51,7 +51,7 @@ public record LineConfigAttribute(LineAttribute attr, long mask) implements Pi4J
 	@SuppressWarnings("unchecked")
 	public LineConfigAttribute from(MemorySegment buffer) throws Throwable {
 		var attrMemorySegment = invokeExact(MH_ATTR, buffer);
-		var attr = LineAttribute.createEmpty().from(attrMemorySegment);
+		var attr = attr().from(attrMemorySegment);
 		return new LineConfigAttribute(
 			attr,
 			(long) VH_MASK.get(buffer, 0L));

@@ -6,13 +6,6 @@ import com.pi4j.context.Context;
 import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.digital.PullResistance;
-import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
-import com.pi4j.plugin.ffm.common.gpio.PinFlag;
-import com.pi4j.plugin.ffm.common.gpio.structs.LineAttribute;
-import com.pi4j.plugin.ffm.common.gpio.structs.LineInfo;
-import com.pi4j.plugin.ffm.common.gpio.structs.LineRequest;
-import com.pi4j.plugin.ffm.common.gpio.structs.LineValues;
-import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
 import com.pi4j.plugin.ffm.providers.gpio.DigitalInputFFMProviderImpl;
 import com.pi4j.plugin.ffm.providers.gpio.DigitalOutputFFMProviderImpl;
 import org.junit.jupiter.api.AfterAll;
@@ -23,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 
 import static com.pi4j.plugin.ffm.MockHelper.createFileMock;
 import static com.pi4j.plugin.ffm.MockHelper.createIoctlMock;
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class GPIOTest {
     private static Context pi4j0;

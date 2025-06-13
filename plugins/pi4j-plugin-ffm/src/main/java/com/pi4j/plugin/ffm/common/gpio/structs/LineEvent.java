@@ -5,9 +5,7 @@ import com.pi4j.plugin.ffm.common.Pi4JLayout;
 import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
-import java.util.Arrays;
 
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
@@ -31,8 +29,7 @@ import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
  * If the %GPIO_V2_LINE_FLAG_EVENT_CLOCK_REALTIME flag is set then the
  * @timestamp_ns is read from %CLOCK_REALTIME.
  */
-public record LineEvent(long timestampNs, int id, int offset, int seqno, int lineSeqno,
-		int[] padding) implements Pi4JLayout {
+public record LineEvent(long timestampNs, int id, int offset, int seqno, int lineSeqno) implements Pi4JLayout {
 	public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
 		ValueLayout.JAVA_LONG.withName("timestamp_ns"),
 		ValueLayout.JAVA_INT.withName("id"),
@@ -52,7 +49,7 @@ public record LineEvent(long timestampNs, int id, int offset, int seqno, int lin
 
 	private static final VarHandle VH_LINE_SEQNO = LAYOUT.varHandle(groupElement("line_seqno"));
 
-	private static final MethodHandle MH_PADDING = LAYOUT.sliceHandle(groupElement("padding"));
+	//private static final MethodHandle MH_PADDING = LAYOUT.sliceHandle(groupElement("padding"));
 
 	public static LineEvent create(MemorySegment memorySegment) throws Throwable {
 		var lineeventInstance = LineEvent.createEmpty();
@@ -63,7 +60,7 @@ public record LineEvent(long timestampNs, int id, int offset, int seqno, int lin
 	}
 
 	public static LineEvent createEmpty() {
-		return new LineEvent(0, 0, 0, 0, 0, new int[]{});
+		return new LineEvent(0, 0, 0, 0, 0);
 	}
 
 	@Override
@@ -79,8 +76,8 @@ public record LineEvent(long timestampNs, int id, int offset, int seqno, int lin
 			(int) VH_ID.get(buffer, 0L),
 			(int) VH_OFFSET.get(buffer, 0L),
 			(int) VH_SEQNO.get(buffer, 0L),
-			(int) VH_LINE_SEQNO.get(buffer, 0L),
-			invokeExact(MH_PADDING, buffer).toArray(ValueLayout.JAVA_INT));
+			(int) VH_LINE_SEQNO.get(buffer, 0L));
+			//invokeExact(MH_PADDING, buffer).toArray(ValueLayout.JAVA_INT));
 	}
 
 	@Override
@@ -90,10 +87,10 @@ public record LineEvent(long timestampNs, int id, int offset, int seqno, int lin
 		VH_OFFSET.set(buffer, 0L, offset);
 		VH_SEQNO.set(buffer, 0L, seqno);
 		VH_LINE_SEQNO.set(buffer, 0L, lineSeqno);
-		var paddingTmp = invokeExact(MH_PADDING, buffer);
-		for (int i = 0; i < padding.length; i++) {
-			paddingTmp.setAtIndex(ValueLayout.JAVA_INT, i, padding[i]);
-		}
+//		var paddingTmp = invokeExact(MH_PADDING, buffer);
+//		for (int i = 0; i < padding.length; i++) {
+//			paddingTmp.setAtIndex(ValueLayout.JAVA_INT, i, padding[i]);
+//		}
 	}
 
     @Override
@@ -104,7 +101,7 @@ public record LineEvent(long timestampNs, int id, int offset, int seqno, int lin
             ", offset=" + offset +
             ", seqno=" + seqno +
             ", lineSeqno=" + lineSeqno +
-            ", padding=" + Arrays.toString(padding) +
+            //", padding=" + Arrays.toString(padding) +
             '}';
     }
 }
