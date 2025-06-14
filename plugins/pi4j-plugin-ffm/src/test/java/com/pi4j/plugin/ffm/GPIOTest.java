@@ -12,12 +12,12 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.pi4j.plugin.ffm.MockHelper.createFileMock;
-import static com.pi4j.plugin.ffm.MockHelper.createIoctlMock;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static com.pi4j.plugin.ffm.MockHelper.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GPIOTest {
     private static Context pi4j0;
@@ -28,10 +28,12 @@ public class GPIOTest {
     public static void setup() {
         pi4j0 = Pi4J.newContextBuilder()
             .add(new DigitalInputFFMProviderImpl(), new DigitalOutputFFMProviderImpl())
+            // set gpio chip name to null for testing purpose (we need any available device in the system)
             .setGpioChipName("null")
             .build();
         pi4j1 = Pi4J.newContextBuilder()
             .add(new DigitalInputFFMProviderImpl())
+            // set gpio chip name to null for testing purpose (we need any available device in the system)
             .setGpioChipName("null")
             .build();
         pi4jNonExistent = Pi4J.newContextBuilder()
@@ -77,6 +79,24 @@ public class GPIOTest {
             assertEquals(DigitalState.LOW, pin.state());
         }
     }
+
+
+    @Test
+    public void testInputEventProcessing() throws InterruptedException {
+        var latch = new CountDownLatch(1);
+        try (var _ = createDigitalInputFileMock(); var _ = createIoctlMock(); var _ = createPollMock()) {
+            var pin = pi4j0.digitalInput().create(7);
+            assertEquals(DigitalState.LOW, pin.state());
+            var passed = new AtomicBoolean(false);
+            pin.addListener(event -> {
+                passed.set(event.state() == DigitalState.HIGH);
+                latch.countDown();
+            });
+            assertTrue(latch.await(5, TimeUnit.SECONDS));
+            assertTrue(passed.get());
+        }
+    }
+
 
     @Test
     public void testInputIsOccupied() {

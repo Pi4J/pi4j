@@ -2,6 +2,7 @@ package com.pi4j.plugin.ffm.providers.spi;
 
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
+import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBase;
 import com.pi4j.io.spi.SpiConfig;
@@ -19,8 +20,8 @@ import java.nio.ByteBuffer;
 public class SpiFFM extends SpiBase implements Spi {
     private static final Logger logger = LoggerFactory.getLogger(SpiFFM.class);
     private static final String SPI_BUS = "/dev/spidev";
-    private static final FileDescriptorNative FILE = new FileDescriptorNative();
-    private static final IoctlNative IOCTL = new IoctlNative();
+    private final FileDescriptorNative FILE = new FileDescriptorNative();
+    private final IoctlNative IOCTL = new IoctlNative();
 
 
     private int spiFileDescriptor;
@@ -61,6 +62,12 @@ public class SpiFFM extends SpiBase implements Spi {
         this.isOpen = true;
         logger.info("{} - SPI Bus configured.", path);
         return this;
+    }
+
+    @Override
+    public Spi shutdown(Context context) throws ShutdownException {
+        FILE.close(spiFileDescriptor);
+        return super.shutdown(context);
     }
 
     @Override

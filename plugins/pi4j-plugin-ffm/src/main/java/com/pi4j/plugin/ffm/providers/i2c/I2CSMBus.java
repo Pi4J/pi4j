@@ -16,7 +16,7 @@ import java.util.Objects;
 
 public class I2CSMBus extends I2CBase<I2CBusFFM> {
     private static final Logger logger = LoggerFactory.getLogger(I2CSMBus.class);
-    private static final SMBusNative SMBUS = new SMBusNative();
+    private final SMBusNative SMBUS = new SMBusNative();
 
     /**
      * <p>Constructor for I2CBase.</p>

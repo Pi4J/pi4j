@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.foreign.MemorySegment;
+import java.lang.foreign.Arena;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFileAttributes;
@@ -31,13 +31,20 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
     private static final Logger logger = LoggerFactory.getLogger(DigitalInputFFM.class);
-    private static final IoctlNative ioctl = new IoctlNative();
-    private static final FileDescriptorNative file = new FileDescriptorNative();
-    private static final PollNative poll = new PollNative();
+
+    // Graceful period for event watcher to shut down
+    // NOTE: this value is used for poll operation inside watcher thread and should be always half of the timeout
+    private static final int EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS = 200;
+
+    private final IoctlNative ioctl = new IoctlNative();
+    private final FileDescriptorNative file = new FileDescriptorNative();
+    private final PollNative poll = new PollNative();
 
     private final String chipName;
     private final int pin;
@@ -45,9 +52,9 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
     private final PullResistance pull;
     private int chipFileDescriptor;
 
-    private final ThreadFactory factory;
     // executor services for event watcher
-    private final ExecutorService eventTaskProcessor;
+    private ExecutorService eventTaskProcessor;
+    private EventWatcher watcher;
 
     private boolean closed = false;
 
@@ -57,8 +64,6 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
         this.chipName = "/dev/" + chipName;
         this.debounce = config.debounce();
         this.pull = config.pull();
-        this.factory =  Thread.ofVirtual().name("ffm-input-event-detection-pin-", pin).factory();
-        this.eventTaskProcessor = Executors.newSingleThreadExecutor(factory);
     }
 
     @Override
@@ -100,13 +105,6 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
             var result = ioctl.call(fd, Command.getGpioV2GetLineIoctl(), lineRequest);
             this.chipFileDescriptor = result.fd();
 
-            var watcher = new EventWatcher(fd, PinEvent.BOTH, events -> {
-                for (DetectedEvent detectedEvent : events) {
-                    this.dispatch(new DigitalStateChangeEvent<DigitalInput>(this, DigitalState.getState(detectedEvent.pinEvent().getValue())));
-                }
-            }, 16);
-            eventTaskProcessor.submit(watcher);
-
             file.close(fd);
             logger.info("{}-{} - DigitalInput Pin configured: {}", chipName, pin, result);
         } catch (IOException e) {
@@ -117,6 +115,21 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
     }
 
     @Override
+    public DigitalInput addListener(DigitalStateChangeListener... listener) {
+        var factory =  Thread.ofVirtual().name(chipName + "-event-detection-pin-", pin)
+            .uncaughtExceptionHandler(((_, e) -> logger.error(e.getMessage(), e)))
+            .factory();
+        this.eventTaskProcessor = Executors.newSingleThreadExecutor(factory);
+        this.watcher = new EventWatcher(chipFileDescriptor, PinEvent.BOTH, events -> {
+            for (DetectedEvent detectedEvent : events) {
+                this.dispatch(new DigitalStateChangeEvent<DigitalInput>(this, DigitalState.getState(detectedEvent.pinEvent().getValue())));
+            }
+        }, 16);
+        eventTaskProcessor.submit(watcher);
+        return super.addListener(listener);
+    }
+
+    @Override
     public DigitalInput shutdown(Context context) throws ShutdownException {
         super.shutdown(context);
         logger.info("{}-{} - closing GPIO Pin.", chipName, pin);
@@ -124,7 +137,13 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
             if (chipFileDescriptor > 0) {
                 file.close(chipFileDescriptor);
             }
-            //eventTaskProcessor.awaitTermination(1, TimeUnit.MILLISECONDS);
+            if (watcher != null) {
+                watcher.stopWatching();
+                eventTaskProcessor.shutdown();
+                if (!eventTaskProcessor.awaitTermination(EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
+                    eventTaskProcessor.shutdownNow();
+                }
+            }
         } catch (Exception e) {
             this.closed = true;
             throw new ShutdownException(e);
@@ -170,7 +189,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
     /**
      * Internal class for watching the event on GPIO Pin.
      */
-    private static class EventWatcher implements Runnable {
+    private class EventWatcher implements Runnable {
         private static final Logger logger = LoggerFactory.getLogger(EventWatcher.class);
 
         private final int fd;
@@ -221,7 +240,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
                 try {
                     // number of file descriptors is set to 1, since we are polling only one pin
                     // timeout is set to 25s for default
-                    var retPollFd = poll.poll(pollFd, 1, updatePeriod.equals(Duration.ZERO) ? 25_000 : (int) updatePeriod.toMillis());
+                    var retPollFd = poll.poll(pollFd, 1, updatePeriod.equals(Duration.ZERO) ? EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS / 2 : (int) updatePeriod.toMillis());
                     if (retPollFd == null) {
                         // timeout happened, process all left events, update timestamp
                         eventProcessor.process(eventList);
@@ -239,9 +258,10 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
                             if (buf[i] == 0) {
                                 continue;
                             }
-                            // convert byte array of events to java object with heap memory segment
+                            // convert byte array of events to java object with memory segment
                             System.arraycopy(buf, i, holder, 0, eventSize);
-                            var memoryBuffer = MemorySegment.ofArray(holder);
+                            var memoryBuffer = Arena.ofAuto().allocate(LineEvent.LAYOUT);
+                            memoryBuffer.asByteBuffer().put(holder);
                             var event = LineEvent.createEmpty().from(memoryBuffer);
                             // process only interested events
                             if ((event.id() & this.pinEvent.getValue()) != 0) {
@@ -265,7 +285,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
                         stopWatching();
                     }
                 } catch (Throwable e) {
-                    throw new RuntimeException(e);
+                    throw new IllegalStateException(e);
                 }
             }
         }

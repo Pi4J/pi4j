@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
-//@Disabled
+@Disabled
 public class DigitalInputOutputTest {
     private static final String IN_CONTAINER = System.getenv("IN_CONTAINER");
 

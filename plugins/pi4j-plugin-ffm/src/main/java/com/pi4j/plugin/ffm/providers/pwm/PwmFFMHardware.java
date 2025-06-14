@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class PwmFFMHardware extends PwmBase implements Pwm {
     private Logger logger = LoggerFactory.getLogger(PwmFFMHardware.class);
 
-    private static final FileDescriptorNative FILE = new FileDescriptorNative();
+    private final FileDescriptorNative FILE = new FileDescriptorNative();
 
     private static final String CHIP_PATH = "/sys/class/pwm/pwmchip";
     private static final String CHIP_EXPORT_PATH = "/export";

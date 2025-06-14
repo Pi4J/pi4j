@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 public class I2CDirect extends I2CBase<I2CBusFFM> {
     private static final Logger logger = LoggerFactory.getLogger(I2CDirect.class);
-    private static final IoctlNative IOCTL = new IoctlNative();
+    private final IoctlNative IOCTL = new IoctlNative();
 
     public I2CDirect(I2CProvider provider, I2CConfig config, I2CBusFFM i2CBus) {
         super(provider, config, i2CBus);

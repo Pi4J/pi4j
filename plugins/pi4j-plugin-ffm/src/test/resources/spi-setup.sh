@@ -1,5 +1,7 @@
 #!/bin/sh
 
+
+/bin/bash  "$(pwd)"/src/test/native/build.sh
 modprobe spidev
 insmod "$(pwd)"/src/test/resources/spi-mock.ko
 #insmod spi-mock.ko

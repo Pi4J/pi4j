@@ -20,8 +20,8 @@ import java.util.concurrent.Callable;
 
 public class I2CBusFFM extends I2CBusBase {
     private static final Logger logger = LoggerFactory.getLogger(I2CBusFFM.class);
-    private static final IoctlNative IOCTL = new IoctlNative();
-    private static final FileDescriptorNative FILE = new FileDescriptorNative();
+    private final IoctlNative IOCTL = new IoctlNative();
+    private final FileDescriptorNative FILE = new FileDescriptorNative();
     private static final String I2C_BUS = "/dev/i2c-";
 
     private final String busName;

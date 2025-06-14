@@ -22,8 +22,8 @@ import java.nio.file.attribute.PosixFilePermissions;
 
 public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput {
     private static final Logger logger = LoggerFactory.getLogger(DigitalOutputFFM.class);
-    private static final IoctlNative ioctl = new IoctlNative();
-    private static final FileDescriptorNative file = new FileDescriptorNative();
+    private final IoctlNative ioctl = new IoctlNative();
+    private final FileDescriptorNative file = new FileDescriptorNative();
 
     private final String chipName;
     private final int pin;
