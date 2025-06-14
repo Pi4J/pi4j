@@ -6,7 +6,7 @@ import java.lang.invoke.VarHandle;
 import java.util.Arrays;
 
 public class Pi4JNative implements SegmentAllocator {
-    protected static final Arena ARENA = Arena.global();
+    protected static final Arena ARENA = Arena.ofAuto();
     protected static final SymbolLookup LIBC_LIB = Linker.nativeLinker().defaultLookup();
 
     // Captured state for errno

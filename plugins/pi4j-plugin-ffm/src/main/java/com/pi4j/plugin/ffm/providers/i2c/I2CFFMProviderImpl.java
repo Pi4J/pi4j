@@ -1,6 +1,9 @@
 package com.pi4j.plugin.ffm.providers.i2c;
 
 import com.pi4j.io.i2c.*;
+import com.pi4j.plugin.ffm.providers.i2c.impl.I2CDirect;
+import com.pi4j.plugin.ffm.providers.i2c.impl.I2CFile;
+import com.pi4j.plugin.ffm.providers.i2c.impl.I2CSMBus;
 
 public class I2CFFMProviderImpl extends I2CProviderBase implements I2CProvider {
 
@@ -27,7 +30,7 @@ public class I2CFFMProviderImpl extends I2CProviderBase implements I2CProvider {
         } else if (bus.supportsDirect()) {
             i2c = new I2CDirect(this, config, bus);
         } else {
-            throw new IllegalArgumentException("Unsupported I2C bus type: none of SMBus or Direct write/read is supported.");
+            i2c = new I2CFile(this, config, bus);
         }
 
         this.context.registry().add(i2c);

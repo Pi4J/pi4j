@@ -1,4 +1,4 @@
-package com.pi4j.plugin.ffm.providers.i2c;
+package com.pi4j.plugin.ffm.providers.i2c.impl;
 
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
@@ -10,6 +10,7 @@ import com.pi4j.plugin.ffm.common.i2c.rdwr.I2CMessage;
 import com.pi4j.plugin.ffm.common.i2c.I2cConstants;
 import com.pi4j.plugin.ffm.common.i2c.rdwr.RDWRData;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
+import com.pi4j.plugin.ffm.providers.i2c.I2CBusFFM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
