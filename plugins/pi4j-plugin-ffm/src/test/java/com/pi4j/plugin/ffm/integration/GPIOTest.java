@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
 @Disabled
-public class DigitalInputOutputTest {
+public class GPIOTest {
     private static final String IN_CONTAINER = System.getenv("IN_CONTAINER");
 
     private static Context pi4j0;

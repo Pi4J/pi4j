@@ -2,6 +2,7 @@ package com.pi4j.plugin.ffm.providers.gpio;
 
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
+import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.gpio.digital.*;
@@ -100,7 +101,7 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
         try {
             ioctl.call(chipFileDescriptor, Command.getGpioV2SetValuesIoctl(), lineValues);
         } catch (Exception e) {
-            throw new IOException(e);
+            throw new Pi4JException(e);
         }
         return super.state(state);
     }
@@ -110,7 +111,7 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
      */
     private void checkClosed() {
         if (closed) {
-            throw new RuntimeException("Pin " + pin + " is closed");
+            throw new Pi4JException("Pin " + pin + " is closed");
         }
     }
 

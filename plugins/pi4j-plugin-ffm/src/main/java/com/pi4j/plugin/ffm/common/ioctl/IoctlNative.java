@@ -1,5 +1,6 @@
 package com.pi4j.plugin.ffm.common.ioctl;
 
+import com.pi4j.exception.Pi4JException;
 import com.pi4j.plugin.ffm.common.Pi4JLayout;
 
 import java.lang.foreign.ValueLayout;
@@ -16,7 +17,7 @@ public class IoctlNative {
 			processError(callResult, capturedState, "callByValue", fd, command, data);
 			return callResult;
 		} catch (Throwable e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new Pi4JException(e.getMessage(), e);
 		}
 	}
 
@@ -26,10 +27,10 @@ public class IoctlNative {
 			dataMemorySegment.set(ValueLayout.JAVA_LONG, 0, data);
 			var capturedState = context.allocateCapturedState();
 			var callResult = (int) IoctlContext.IOCTL_0.invoke(capturedState, fd, command, dataMemorySegment);
-			processError(callResult, capturedState, "call", fd, command, dataMemorySegment);
+			processError(callResult, capturedState, "call", fd, command, data);
 			return dataMemorySegment.get(ValueLayout.JAVA_LONG, 0);
 		} catch (Throwable e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new Pi4JException(e.getMessage(), e);
 		}
 	}
 
@@ -39,10 +40,10 @@ public class IoctlNative {
 			dataMemorySegment.set(ValueLayout.JAVA_INT, 0, data);
 			var capturedState = context.allocateCapturedState();
 			var callResult = (int) IoctlContext.IOCTL_1.invoke(capturedState, fd, command, dataMemorySegment);
-			processError(callResult, capturedState, "call", fd, command, dataMemorySegment);
+			processError(callResult, capturedState, "call", fd, command, data);
 			return dataMemorySegment.get(ValueLayout.JAVA_INT, 0);
 		} catch (Throwable e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new Pi4JException(e.getMessage(), e);
 		}
 	}
 
@@ -52,10 +53,10 @@ public class IoctlNative {
 			data.to(dataMemorySegment);
 			var capturedState = context.allocateCapturedState();
 			var callResult = (int) IoctlContext.IOCTL_2.invoke(capturedState, fd, command, dataMemorySegment);
-			processError(callResult, capturedState, "call", fd, command, dataMemorySegment);
+			processError(callResult, capturedState, "call", fd, command, data);
 			return data.from(dataMemorySegment);
 		} catch (Throwable e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new Pi4JException(e.getMessage(), e);
 		}
 	}
 }

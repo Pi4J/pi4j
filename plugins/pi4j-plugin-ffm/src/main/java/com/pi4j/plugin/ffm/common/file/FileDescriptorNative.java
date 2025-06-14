@@ -1,5 +1,7 @@
 package com.pi4j.plugin.ffm.common.file;
 
+import com.pi4j.exception.Pi4JException;
+
 import java.lang.foreign.ValueLayout;
 
 import static com.pi4j.plugin.ffm.common.Pi4JNative.processError;
@@ -12,10 +14,10 @@ public class FileDescriptorNative {
 			var pathMemorySegment = context.allocateFrom(path);
 			var capturedState = context.allocateCapturedState();
 			var callResult = (int) FileDescriptorContext.OPEN64.invoke(capturedState, pathMemorySegment, openFlag);
-			processError(callResult, capturedState, "open", pathMemorySegment, openFlag);
+			processError(callResult, capturedState, "open", path, openFlag);
 			return callResult;
 		} catch (Throwable e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new Pi4JException(e.getMessage(), e);
 		}
 	}
 
@@ -25,7 +27,7 @@ public class FileDescriptorNative {
 			var callResult = (int) FileDescriptorContext.CLOSE.invoke(capturedState, fd);
 			processError(callResult, capturedState, "close", fd);
 		} catch (Throwable e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new Pi4JException(e.getMessage(), e);
 		}
 	}
 
@@ -34,10 +36,10 @@ public class FileDescriptorNative {
 			var bufferMemorySegment = context.allocateFrom(ValueLayout.JAVA_BYTE, buffer);
 			var capturedState = context.allocateCapturedState();
 			var callResult = (int) FileDescriptorContext.READ.invoke(capturedState, fd, bufferMemorySegment, size);
-			processError(callResult, capturedState, "read", fd, bufferMemorySegment, size);
+			processError(callResult, capturedState, "read", fd, buffer, size);
 			return bufferMemorySegment.toArray(ValueLayout.JAVA_BYTE);
 		} catch (Throwable e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new Pi4JException(e.getMessage(), e);
 		}
 	}
 
@@ -49,7 +51,7 @@ public class FileDescriptorNative {
 			processError(callResult, capturedState, "write", fd, dataMemorySegment);
 			return callResult;
 		} catch (Throwable e) {
-			throw new RuntimeException(e.getMessage(), e);
+			throw new Pi4JException(e.getMessage(), e);
 		}
 	}
 }

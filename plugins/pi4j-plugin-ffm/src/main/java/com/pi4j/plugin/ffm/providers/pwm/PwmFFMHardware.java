@@ -2,6 +2,7 @@ package com.pi4j.plugin.ffm.providers.pwm;
 
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
+import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.pwm.*;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
@@ -106,11 +107,11 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
     public Pwm on() throws IOException {
         if (onState) {
             logger.warn("{} - PWM Bus is already enabled.", pwmPath);
-            throw new IllegalStateException("PWM Bus is already enabled.");
+            throw new Pi4JException("PWM Bus is already enabled.");
         }
         if (frequency < 0) {
             logger.error("{} - cannot set frequency '{}', required more then 0.", pwmPath, frequency);
-            throw new IllegalArgumentException("cannot set frequency '" + frequency + "', required more then 0.");
+            throw new Pi4JException("cannot set frequency '" + frequency + "', required more then 0.");
         }
         var period = (NANOS_IN_SECOND / frequency);
         logger.debug("{} - period is '{}', dutyCycle is '{}' and polarity '{}'.", pwmPath, period, dutyCycle, polarity);

@@ -34,6 +34,7 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
     @Override
     public I2C initialize(Context context) throws InitializeException {
         i2CBus.selectDevice(config.device());
+        logger.debug("{} - selected device '{}'", i2CBus.getBusName(), Integer.toHexString(config.device()));
         return super.initialize(context);
     }
 
@@ -45,6 +46,7 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
      */
     private int writeInternal(int register, byte[] data) {
         return i2CBus.execute(this, (i2cFileDescriptor) -> {
+            logger.trace("{} - writing into register '{}' data '{}'", i2CBus.getBusName(), Integer.toHexString(register), Arrays.toString(data));
             if (i2CBus.hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_QUICK) && data.length == 1) {
                 return SMBUS.writeByteData(i2cFileDescriptor, (byte) register, data[0]);
             } else if (i2CBus.hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_WRITE_BLOCK_DATA)) {
@@ -67,6 +69,7 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
      */
     private byte[] readInternal(int register, int size) {
         return i2CBus.execute(this, (i2cFileDescriptor) -> {
+            logger.trace("{} - reading from register '{}' data size '{}'", i2CBus.getBusName(), Integer.toHexString(register), size);
             if (i2CBus.hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_QUICK) && size == 1) {
                 return new byte[] {SMBUS.readByteData(i2cFileDescriptor, (byte) register)};
             } else if (i2CBus.hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_READ_BLOCK_DATA)) {

@@ -1,5 +1,6 @@
 package com.pi4j.plugin.ffm.common.i2c;
 
+import com.pi4j.exception.Pi4JException;
 import com.pi4j.plugin.ffm.common.Pi4JArchitectureGuess;
 import com.pi4j.plugin.ffm.common.Pi4JNative;
 
@@ -13,11 +14,11 @@ class SMBusContext extends Pi4JNative {
         try {
             var path = Path.of(Pi4JArchitectureGuess.getLibraryPath("libi2c"));
             if (!path.toFile().exists()) {
-                throw new RuntimeException("Could not find libi2c library: " + path);
+                throw new Pi4JException("Could not find libi2c library: " + path);
             }
             LIBI2C = SymbolLookup.libraryLookup(path, ARENA);
         } catch (Exception e) {
-            throw new RuntimeException("Probably libi2c-dev package is missing. Try to install with `sudo apt-get install libi2c-dev`", e);
+            throw new Pi4JException("Probably libi2c-dev package is missing. Try to install with `sudo apt-get install libi2c-dev`", e);
         }
     }
 

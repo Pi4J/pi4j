@@ -58,9 +58,9 @@ public class I2CBusFFM extends I2CBusBase {
                         StringUtil.toHexString(functionality.getKey().getValue()),
                         functionality.getValue() ? "supported" : "not supported");
                 }
-                throw new RuntimeException(busName + " does not support any of read/write operations!");
+                throw new Pi4JException(busName + " does not support any of read/write operations!");
             }
-        } catch (RuntimeException e) {
+        } catch (Pi4JException e) {
             logger.error(e.getMessage());
             throw new InitializeException(e);
         }
@@ -84,6 +84,10 @@ public class I2CBusFFM extends I2CBusBase {
         return functionalityMap;
     }
 
+    public String getBusName() {
+        return busName;
+    }
+
     /**
      * Selects the device address for communication.
      *
@@ -104,7 +108,7 @@ public class I2CBusFFM extends I2CBusBase {
         if (tenBitsAddress && functionalityMap.get(I2CFunctionality.I2C_FUNC_10BIT_ADDR)) {
             IOCTL.callByValue(i2cFileDescriptor, Command.getI2CTenBit(), 1);
         } else {
-            throw new RuntimeException("Cannot set 10bit address, because device '" + busName + "' does not support 10bit addressing extension.");
+            throw new Pi4JException("Cannot set 10bit address, because device '" + busName + "' does not support 10bit addressing extension.");
         }
         selectDevice(device);
     }
@@ -126,8 +130,6 @@ public class I2CBusFFM extends I2CBusBase {
         return _execute(i2c, () -> {
             try {
                 return action.apply(this.i2cFileDescriptor);
-            } catch (RuntimeException e) {
-                throw e;
             } catch (Exception e) {
                 throw new Pi4JException("Failed to execute action for device " + i2c.device() + " on bus " + this.busName,
                     e);
@@ -143,8 +145,8 @@ public class I2CBusFFM extends I2CBusBase {
     public void close() {
         try {
             FILE.close(i2cFileDescriptor);
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new Pi4JException(e);
         }
     }
 }

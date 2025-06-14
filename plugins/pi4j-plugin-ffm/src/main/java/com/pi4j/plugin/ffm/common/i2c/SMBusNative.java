@@ -1,11 +1,17 @@
 package com.pi4j.plugin.ffm.common.i2c;
 
+import com.pi4j.exception.Pi4JException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.foreign.ValueLayout;
 
 import static com.pi4j.plugin.ffm.common.Pi4JNative.processError;
 import static com.pi4j.plugin.ffm.common.i2c.SMBusContext.*;
 
 public class SMBusNative implements AutoCloseable {
+    private static final Logger logger = LoggerFactory.getLogger(SMBusNative.class);
+
     private final SMBusContext context = new SMBusContext();
 
     public int writeByte(int fd, byte data) {
@@ -15,9 +21,12 @@ public class SMBusNative implements AutoCloseable {
             processError(callResult, capturedState, "writeByte", fd, data);
             return callResult;
         } catch (Throwable e) {
-            throw new RuntimeException(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
+            throw new Pi4JException(e.getMessage(), e);
         }
     }
+
+
 
     public byte readByte(int fd) {
         try {
@@ -26,7 +35,7 @@ public class SMBusNative implements AutoCloseable {
             processError(callResult, capturedState, "readByte", fd);
             return callResult;
         } catch (Throwable e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new Pi4JException(e.getMessage(), e);
         }
     }
 
@@ -37,7 +46,7 @@ public class SMBusNative implements AutoCloseable {
             processError(callResult, capturedState, "writeByteData", fd, register, data);
             return callResult;
         } catch (Throwable e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new Pi4JException(e.getMessage(), e);
         }
     }
 
@@ -48,7 +57,7 @@ public class SMBusNative implements AutoCloseable {
             processError(Byte.toUnsignedInt(callResult), capturedState, "readByteData", fd, register);
             return callResult;
         } catch (Throwable e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new Pi4JException(e.getMessage(), e);
         }
     }
 
@@ -57,10 +66,10 @@ public class SMBusNative implements AutoCloseable {
             var capturedState = context.allocateCapturedState();
             var memoryBuffer = context.allocateFrom(ValueLayout.JAVA_BYTE, data);
             var callResult = (int) WRITE_BLOCK_DATA.invoke(capturedState, fd, register, data.length, memoryBuffer);
-            processError(callResult, capturedState, "writeBlockData", fd, register, data.length, memoryBuffer);
+            processError(callResult, capturedState, "writeBlockData", fd, register, data.length, data);
             return callResult;
         } catch (Throwable e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new Pi4JException(e.getMessage(), e);
         }
     }
 
@@ -69,10 +78,10 @@ public class SMBusNative implements AutoCloseable {
             var capturedState = context.allocateCapturedState();
             var memoryBuffer = context.allocateFrom(ValueLayout.JAVA_BYTE, data);
             var callResult = (int) READ_BLOCK_DATA.invoke(capturedState, fd, register, memoryBuffer);
-            processError(callResult, capturedState, "readBlockData", fd, register, memoryBuffer);
+            processError(callResult, capturedState, "readBlockData", fd, register, data);
             return memoryBuffer.toArray(ValueLayout.JAVA_BYTE);
         } catch (Throwable e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new Pi4JException(e.getMessage(), e);
         }
     }
 
@@ -83,7 +92,7 @@ public class SMBusNative implements AutoCloseable {
             processError(callResult, capturedState, "writeWordData", fd, register, data);
             return callResult;
         } catch (Throwable e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new Pi4JException(e.getMessage(), e);
         }
     }
 
@@ -94,7 +103,7 @@ public class SMBusNative implements AutoCloseable {
             processError(callResult, capturedState, "readWordData", fd, register);
             return callResult;
         } catch (Throwable e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new Pi4JException(e.getMessage(), e);
         }
     }
 

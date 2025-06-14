@@ -2,6 +2,7 @@ package com.pi4j.plugin.ffm.providers.spi;
 
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
+import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBase;
@@ -110,7 +111,7 @@ public class SpiFFM extends SpiBase implements Spi {
      */
     private void checkClosed() {
         if (!isOpen) {
-            throw new RuntimeException("SPI bus  '" + path + "' is closed");
+            throw new Pi4JException("SPI bus  '" + path + "' is closed");
         }
     }
 }

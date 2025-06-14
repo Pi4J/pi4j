@@ -56,7 +56,7 @@ record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, short
         return from(buffer, null, null);
     }
 
-    public SpiIocTransfer from(MemorySegment buffer, MemorySegment txBuf, MemorySegment rxBuf) throws Throwable {
+    SpiIocTransfer from(MemorySegment buffer, MemorySegment txBuf, MemorySegment rxBuf) {
         return new SpiIocTransfer(
             txBuf != null ? txBuf.toArray(ValueLayout.JAVA_BYTE) : new byte[]{},
             rxBuf != null ? rxBuf.toArray(ValueLayout.JAVA_BYTE) : new byte[]{},

@@ -1,5 +1,7 @@
 package com.pi4j.plugin.ffm.common;
 
+import com.pi4j.exception.Pi4JException;
+
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
@@ -31,22 +33,18 @@ public class Pi4JNative implements SegmentAllocator {
      * @param method        string representation of called method
      * @param args          arguments called to function
      */
-    public static void processError(int callResult, MemorySegment capturedState, String method, Object... args) {
+    public static void processError(int callResult, MemorySegment capturedState, String method, Object... args) throws Throwable {
         if (callResult < 0) {
-            try {
-                int errno = (int) ERRNO_HANDLE.get(capturedState, 0L);
-                var errnoStr = (MemorySegment) STR_ERROR.invokeExact(errno);
-                throw new RuntimeException("Error during call to method " + method + " with data '" + Arrays.toString(args) + "': " +
-                    errnoStr.getString(0) + " (" + errno + ")");
-            } catch (Throwable e) {
-                throw new RuntimeException(e.getMessage(), e);
-            }
+            int errno = (int) ERRNO_HANDLE.get(capturedState, 0L);
+            var errnoStr = (MemorySegment) STR_ERROR.invokeExact(errno);
+            throw new Pi4JException("Error during call to method '" + method + "' with data '" + Arrays.toString(args) + "': " +
+                errnoStr.getString(0) + " (" + errno + ")");
         }
     }
 
     @Override
     public MemorySegment allocate(long byteSize, long byteAlignment) {
-       return ARENA.allocate(byteSize, byteAlignment);
+        return ARENA.allocate(byteSize, byteAlignment);
     }
 
     public MemorySegment allocateCapturedState() {

@@ -1,7 +1,6 @@
 package com.pi4j.plugin.ffm;
 
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
-import com.pi4j.plugin.ffm.common.gpio.GpioConstants;
 import com.pi4j.plugin.ffm.common.gpio.PinEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.structs.*;
@@ -12,13 +11,11 @@ import com.pi4j.plugin.ffm.common.poll.structs.PollingData;
 import org.mockito.MockedConstruction;
 
 import java.lang.foreign.Arena;
-import java.lang.foreign.ValueLayout;
 import java.nio.ByteBuffer;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.mockConstruction;
 
 class MockHelper {
 

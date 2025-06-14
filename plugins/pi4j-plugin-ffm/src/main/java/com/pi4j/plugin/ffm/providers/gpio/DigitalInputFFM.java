@@ -2,6 +2,7 @@ package com.pi4j.plugin.ffm.providers.gpio;
 
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
+import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.gpio.digital.*;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
@@ -162,7 +163,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
         try {
             result = ioctl.call(chipFileDescriptor, Command.getGpioV2GetValuesIoctl(), lineValues);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new Pi4JException(e);
         }
         var state = DigitalState.getState(result.bits());
         logger.trace("{}-{} - GPIO Pin state is {}.", chipName, pin, state);
@@ -174,7 +175,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
      */
     private void checkClosed() {
         if (closed) {
-            throw new RuntimeException("Pin " + pin + " is closed");
+            throw new Pi4JException("Pin " + pin + " is closed");
         }
     }
 
@@ -285,7 +286,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
                         stopWatching();
                     }
                 } catch (Throwable e) {
-                    throw new IllegalStateException(e);
+                    throw new Pi4JException(e);
                 }
             }
         }
