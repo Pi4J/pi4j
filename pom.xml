@@ -299,7 +299,7 @@
         <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
         <native-maven-plugin.version>1.0-alpha-9</native-maven-plugin.version>
-        <nexus-staging-maven-plugin.version>1.7.0</nexus-staging-maven-plugin.version>
+        <central-publishing-maven-plugin.version>0.7.0</central-publishing-maven-plugin.version>
 
         <!-- REPORTS VERSIONS -->
         <maven-project-info-reports-plugin.version>3.5.0</maven-project-info-reports-plugin.version>
@@ -692,28 +692,6 @@
                     <version>3.5.0</version>
                 </plugin>
 
-                <!-- Deploy to Maven plugin -->
-                <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>${nexus-staging-maven-plugin.version}</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <serverId>oss.sonatype.org</serverId>
-                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>deploy-to-sonatype</id>
-                            <phase>deploy</phase>
-                            <goals>
-                                <goal>deploy</goal>
-                                <goal>release</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-
             </plugins>
         </pluginManagement>
 
@@ -1021,7 +999,7 @@
             </properties>
         </profile>
 
-        <!-- profile to deploy to sonatype nexus -->
+        <!-- profile to deploy to Maven Central -->
         <profile>
             <id>deploy</id>
             <build>
@@ -1039,8 +1017,15 @@
                         <artifactId>maven-javadoc-plugin</artifactId>
                     </plugin>
                     <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>${central-publishing-maven-plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <!--                            <autoPublish>true</autoPublish>-->
+                            <!--                            <waitUntil>published</waitUntil>-->
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
