@@ -37,7 +37,7 @@ public class Pi4JNative implements SegmentAllocator {
         if (callResult < 0) {
             int errno = (int) ERRNO_HANDLE.get(capturedState, 0L);
             var errnoStr = (MemorySegment) STR_ERROR.invokeExact(errno);
-            throw new Pi4JException("Error during call to method '" + method + "' with data '" + Arrays.toString(args) + "': " +
+            throw new Pi4JException("Error during call to method '" + method + "' with data '" + Arrays.deepToString(args) + "': " +
                 errnoStr.getString(0) + " (" + errno + ")");
         }
     }

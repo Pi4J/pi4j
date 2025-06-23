@@ -25,4 +25,7 @@ public final class FileFlag {
     public static final int O_TMPFILE = 4259840;
     public static final int O_TRUNC = 512;
     public static final int O_WRONLY = 1;
+
+    public static final int LOCK_EX = 2;
+    public static final int LOCK_UN = 8;
 }

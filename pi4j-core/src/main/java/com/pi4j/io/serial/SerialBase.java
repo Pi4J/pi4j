@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-@Deprecated(forRemoval = true)
 public abstract class SerialBase extends IOBase<Serial, SerialConfig, SerialProvider> implements Serial {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());

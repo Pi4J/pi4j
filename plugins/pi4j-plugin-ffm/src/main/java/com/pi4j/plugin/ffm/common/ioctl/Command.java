@@ -11,6 +11,10 @@ public final class Command {
     private Command() {
     }
 
+    public static long getTermiosSet() { return IoctlMagic.TCSETS2; }
+    public static long getTermiosGet() { return IoctlMagic.TCGETS2; }
+    public static long getFIONREAD() { return 0x541B; }
+
     public static long getGpioGetChipInfoIoctl() {
         return IoctlMagic.GPIO_GET_CHIPINFO_IOCTL;
     }

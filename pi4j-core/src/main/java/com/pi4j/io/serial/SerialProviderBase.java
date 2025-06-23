@@ -33,7 +33,6 @@ import com.pi4j.provider.ProviderBase;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-@Deprecated(forRemoval = true)
 public abstract class SerialProviderBase
     extends ProviderBase<SerialProvider, Serial, SerialConfig>
     implements SerialProvider {

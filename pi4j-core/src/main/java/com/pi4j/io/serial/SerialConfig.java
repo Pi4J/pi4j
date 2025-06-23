@@ -34,7 +34,6 @@ import com.pi4j.io.IOConfig;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-@Deprecated(forRemoval = true)
 public interface SerialConfig extends DeviceConfig<SerialConfig>, IOConfig<SerialConfig> {
     /**
      * Constant <code>BAUD_KEY="baud"</code>

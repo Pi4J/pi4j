@@ -47,11 +47,22 @@ public class FileDescriptorNative {
 		try {
 			var dataMemorySegment = context.allocateFrom(ValueLayout.JAVA_BYTE, data);
 			var capturedState = context.allocateCapturedState();
-			var callResult = (int) FileDescriptorContext.WRITE.invoke(capturedState, fd, dataMemorySegment);
-			processError(callResult, capturedState, "write", fd, dataMemorySegment);
+			var callResult = (int) FileDescriptorContext.WRITE.invoke(capturedState, fd, dataMemorySegment, data.length);
+			processError(callResult, capturedState, "write", fd, data);
 			return callResult;
 		} catch (Throwable e) {
 			throw new Pi4JException(e.getMessage(), e);
 		}
 	}
+
+    public int flock(int fd, int lockFlag) {
+        try {
+            var capturedState = context.allocateCapturedState();
+            var callResult = (int) FileDescriptorContext.FLOCK.invoke(capturedState, fd, lockFlag);
+            processError(callResult, capturedState, "flock", fd, lockFlag);
+            return callResult;
+        } catch (Throwable e) {
+            throw new Pi4JException(e.getMessage(), e);
+        }
+    }
 }

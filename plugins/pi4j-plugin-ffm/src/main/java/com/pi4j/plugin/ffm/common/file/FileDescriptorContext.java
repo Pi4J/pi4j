@@ -25,6 +25,11 @@ class FileDescriptorContext extends Pi4JNative {
 
 	static final MethodHandle WRITE = Linker.nativeLinker().downcallHandle(
 			LIBC_LIB.find("write").orElseThrow(),
-			FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.JAVA_INT, ValueLayout.ADDRESS),
+			FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.JAVA_INT),
 			Linker.Option.captureCallState("errno"));
+
+    static final MethodHandle FLOCK = Linker.nativeLinker().downcallHandle(
+        LIBC_LIB.find("flock").orElseThrow(),
+        FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.JAVA_INT, ValueLayout.JAVA_INT),
+        Linker.Option.captureCallState("errno"));
 }

@@ -4,11 +4,16 @@ import com.pi4j.plugin.ffm.common.gpio.structs.LineConfig;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineInfo;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineRequest;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineValues;
+import com.pi4j.plugin.ffm.common.serial.Termios2;
 
 /**
  * Internal reference file from Kernel headers to calculate ioctl commands.
  */
 final class IoctlMagic {
+
+    static final long TCGETS2;
+    static final long TCSETS2;
+
     static final long SPI_IOC_RD_MODE;
     static final long SPI_IOC_WR_MODE;
     static final long SPI_IOC_RD_BITS_PER_WORD;
@@ -172,5 +177,7 @@ final class IoctlMagic {
         GPIO_V2_LINE_GET_VALUES_IOCTL = _IOWR(0xb4, 0x0e, LineValues.LAYOUT.byteSize());
         GPIO_V2_LINE_SET_VALUES_IOCTL = _IOWR(0xb4, 0x0f, LineValues.LAYOUT.byteSize());
 
+        TCGETS2 = _IOR(0x54, 0x2A, Termios2.LAYOUT.byteSize());
+        TCSETS2 = _IOW(0x54, 0x2B, Termios2.LAYOUT.byteSize());
     }
 }
