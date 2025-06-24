@@ -76,12 +76,12 @@ public class SpiFFM extends SpiBase implements Spi {
         checkClosed();
         logger.trace("{} - Transferring data (length '{}')", path, numberOfBytes);
         logger.trace("{} - Write buffer: {}", path, write);
-        logger.trace("{} - Read buffer: {}", path, read);
         var spiTransfer = new SpiTransferBuffer(write, read, numberOfBytes);
         spiTransfer = IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(1), spiTransfer);
         var readBytes = spiTransfer.getRxBuffer();
         if (read != null) {
             ByteBuffer.wrap(read).put(readBytes);
+            logger.trace("{} - Read buffer: {}", path, read);
         }
         return readBytes.length;
     }
@@ -104,6 +104,14 @@ public class SpiFFM extends SpiBase implements Spi {
     @Override
     public int read(byte[] buffer, int offset, int length) {
         return transfer(null, 0, buffer, offset, length);
+    }
+
+
+    @Override
+    public byte readByte() {
+        var buffer = new byte[1];
+        transfer(null, 0, buffer, 0, 1);
+        return buffer[0];
     }
 
     /**
