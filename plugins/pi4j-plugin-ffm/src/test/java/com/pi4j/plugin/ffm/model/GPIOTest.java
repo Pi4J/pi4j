@@ -1,4 +1,4 @@
-package com.pi4j.plugin.ffm;
+package com.pi4j.plugin.ffm.model;
 
 import com.pi4j.plugin.ffm.common.gpio.structs.*;
 import org.junit.jupiter.api.Test;
@@ -7,8 +7,10 @@ import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 import java.lang.foreign.Arena;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ModelTest {
+public class GPIOTest {
 
     @Test
     public void testChipInfo() throws Throwable {

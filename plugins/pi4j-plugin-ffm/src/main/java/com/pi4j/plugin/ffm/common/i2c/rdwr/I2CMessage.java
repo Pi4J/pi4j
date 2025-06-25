@@ -36,7 +36,11 @@ public record I2CMessage(int address, int flags, int len, byte[] buf) implements
         var address = (int) VH_ADDRESS.get(buffer, 0L);
         var flags = (int) VH_FLAGS.get(buffer, 0L);
         var len = (int) VH_LEN.get(buffer, 0L);
-        var buf = invokeExact(MH_BUF, buffer).toArray(ValueLayout.JAVA_BYTE);
+        var bufMemorySegment = invokeExact(MH_BUF, buffer);
+        var buf = new byte[len];
+        for(int i = 0; i < buf.length; i++) {
+            buf[i] = bufMemorySegment.getAtIndex(ValueLayout.JAVA_BYTE, i);
+        }
         return new I2CMessage(address, flags, len, buf);
     }
 
@@ -47,7 +51,7 @@ public record I2CMessage(int address, int flags, int len, byte[] buf) implements
         VH_LEN.set(buffer, 0L, len);
         var bufTmp = invokeExact(MH_BUF, buffer);
         for (int i = 0; i < buf.length; i++) {
-            bufTmp.setAtIndex(ValueLayout.JAVA_INT, i, buf[i]);
+            bufTmp.setAtIndex(ValueLayout.JAVA_BYTE, i, buf[i]);
         }
     }
 

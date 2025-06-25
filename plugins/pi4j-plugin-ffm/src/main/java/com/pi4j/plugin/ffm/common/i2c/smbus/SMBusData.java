@@ -50,20 +50,35 @@ public record SMBusData(byte _byte, short word, byte[] block) implements Pi4JLay
 	@Override
 	@SuppressWarnings("unchecked")
 	public SMBusData from(MemorySegment buffer) throws Throwable {
+        byte[] buf = null;
+        if (block != null && block.length > 0) {
+            var bufMemorySegment = invokeExact(MH_BLOCK, buffer);
+            buf = new byte[block.length];
+            for (int i = 0; i < buf.length; i++) {
+                buf[i] = bufMemorySegment.getAtIndex(ValueLayout.JAVA_BYTE, i);
+            }
+        }
 		return new SMBusData(
-			(byte) VH_BYTE.get(buffer, 0L),
-			(short) VH_WORD.get(buffer, 0L),
-			invokeExact(MH_BLOCK, buffer).toArray(ValueLayout.JAVA_BYTE));
+			_byte != 0 ? (byte) VH_BYTE.get(buffer, 0L) : 0,
+			word != 0 ? (short) VH_WORD.get(buffer, 0L) : 0,
+            buf != null ? buf : new byte[]{}
+        );
 	}
 
 	@Override
 	public void to(MemorySegment buffer) throws Throwable {
-		VH_BYTE.set(buffer, 0L, _byte);
-		VH_WORD.set(buffer, 0L, word);
-		var blockTmp = invokeExact(MH_BLOCK, buffer);
-		for (int i = 0; i < block.length; i++) {
-			blockTmp.setAtIndex(ValueLayout.JAVA_BYTE, i, block[i]);
-		}
+        if (_byte != 0) {
+            VH_BYTE.set(buffer, 0L, _byte);
+        }
+        if (word != 0) {
+            VH_WORD.set(buffer, 0L, word);
+        }
+        if (block != null && block.length != 0) {
+            var blockTmp = invokeExact(MH_BLOCK, buffer);
+            for (int i = 0; i < block.length; i++) {
+                blockTmp.setAtIndex(ValueLayout.JAVA_BYTE, i, block[i]);
+            }
+        }
 	}
 
     @Override

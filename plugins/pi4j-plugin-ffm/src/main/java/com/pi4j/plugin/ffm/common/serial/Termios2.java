@@ -52,13 +52,18 @@ public record Termios2(int c_iflag, int c_oflag, int c_cflag, int c_lflag, byte 
     @Override
     @SuppressWarnings("unchecked")
     public Termios2 from(MemorySegment buffer) throws Throwable {
+        var bufMemorySegment = invokeExact(MH_CC, buffer);
+        var buf = new byte[c_cc.length];
+        for (int i = 0; i < buf.length; i++) {
+            buf[i] = bufMemorySegment.getAtIndex(ValueLayout.JAVA_BYTE, i);
+        }
         return new Termios2(
             (int) VH_IFLAG.get(buffer, 0L),
             (int) VH_OFLAG.get(buffer, 0L),
             (int) VH_CFLAG.get(buffer, 0L),
             (int) VH_LFLAG.get(buffer, 0L),
             (byte) VH_CLINE.get(buffer, 0L),
-            invokeExact(MH_CC, buffer).toArray(ValueLayout.JAVA_BYTE),
+            buf,
             (int) VH_ISPEED.get(buffer, 0L),
             (int) VH_OSPEED.get(buffer, 0L)
         );
