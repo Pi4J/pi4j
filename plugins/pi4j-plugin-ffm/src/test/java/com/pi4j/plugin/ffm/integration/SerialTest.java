@@ -1,4 +1,4 @@
-package com.pi4j.plugin.ffm;
+package com.pi4j.plugin.ffm.integration;
 
 import com.pi4j.Pi4J;
 import com.pi4j.io.serial.Baud;
@@ -6,6 +6,7 @@ import com.pi4j.io.serial.SerialConfigBuilder;
 import com.pi4j.plugin.ffm.providers.serial.SerialFFMProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.util.concurrent.Executors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+@Disabled
 public class SerialTest {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 

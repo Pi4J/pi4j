@@ -24,10 +24,14 @@ public class I2CFFMProviderImpl extends I2CProviderBase implements I2CProvider {
     public I2C create(I2CConfig config) {
         var bus = new I2CBusFFM(config);
 
+        var impl = config.i2cImplementation();
+        if (impl == null) {
+            impl = I2CImplementation.SMBUS;
+        }
         I2CBase<?> i2c;
-        if (bus.supportsSMBus()) {
+        if (impl.equals(I2CImplementation.SMBUS) && bus.supportsSMBus()) {
             i2c = new I2CSMBus(this, config, bus);
-        } else if (bus.supportsDirect()) {
+        } else if (impl.equals(I2CImplementation.DIRECT) && bus.supportsDirect()) {
             i2c = new I2CDirect(this, config, bus);
         } else {
             i2c = new I2CFile(this, config, bus);

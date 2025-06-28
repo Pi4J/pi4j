@@ -95,9 +95,8 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
 
     @Override
     public int read(byte[] data, int offset, int length) {
-        var buffer = new byte[data.length - 1];
-        System.arraycopy(data, 1, buffer, 0, length);
-        return readRegister(data[0], buffer, offset, length);
+        throw new UnsupportedOperationException("SMBus protocol does not support reading to data arrays without register. " +
+            "Please, use I2CDirect or I2CFile provider instead.");
     }
 
     @Override
@@ -107,9 +106,8 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
 
     @Override
     public int write(byte[] data, int offset, int length) {
-        var buffer = new byte[data.length - 1];
-        System.arraycopy(data, 1, buffer, 0, length);
-        return writeRegister(data[0], buffer, offset, length);
+        throw new UnsupportedOperationException("SMBus protocol does not support writing data arrays without register. " +
+            "Please, use I2CDirect or I2CFile provider instead.");
     }
 
     @Override
@@ -120,16 +118,8 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
 
     @Override
     public int readRegister(byte[] register, byte[] data, int offset, int length) {
-        Objects.checkFromIndexSize(offset, length, data.length);
-        // Prepare the data for multibyte register
-        // Sequence:
-        //      - set address to first byte, all other bytes send with data.
-        //      - read the byte without address (internal chip cursor will point to the correct address)
-        var byteRegister = register[0];
-        var readData = new byte[data.length + register.length - 1];
-        System.arraycopy(Arrays.copyOfRange(register, 1, register.length), 0, readData, 0, register.length - 1);
-        System.arraycopy(data, 0, readData, register.length - 1, data.length);
-        return readRegister(byteRegister, readData);
+        throw new UnsupportedOperationException("SMBus protocol does not support reading multiregister devices. " +
+            "Please, use I2CDirect or I2CFile provider instead.");
     }
 
     @Override

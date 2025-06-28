@@ -3,7 +3,11 @@ package com.pi4j.plugin.ffm.integration;
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.io.i2c.I2C;
+import com.pi4j.io.i2c.I2CConfigBuilder;
+import com.pi4j.io.i2c.I2CImplementation;
 import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
+import com.pi4j.plugin.ffm.providers.i2c.impl.I2CDirect;
+import com.pi4j.plugin.ffm.providers.i2c.impl.I2CSMBus;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -21,7 +25,7 @@ import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
 @Disabled
-public class I2CTest {
+public class I2CSMBusTest {
     private static final String IN_CONTAINER = System.getenv("IN_CONTAINER");
     private static Context pi4j;
     private static I2C i2c;
@@ -44,7 +48,7 @@ public class I2CTest {
         pi4j = Pi4J.newContextBuilder()
             .add(new I2CFFMProviderImpl())
             .build();
-        i2c = pi4j.i2c().create(1, 0x1C);
+        i2c = pi4j.i2c().create(I2CConfigBuilder.newInstance(pi4j).bus(1).device(0x1C).i2cImplementation(I2CImplementation.SMBUS));
 
     }
 

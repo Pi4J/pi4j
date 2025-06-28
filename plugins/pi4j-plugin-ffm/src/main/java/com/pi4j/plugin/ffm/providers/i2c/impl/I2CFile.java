@@ -43,7 +43,9 @@ public class I2CFile extends I2CBase<I2CBusFFM> {
 
     @Override
     public int read(byte[] buffer, int offset, int length) {
-        return i2CBus.execute(this, (i2cFileDescriptor) -> FILE.write(i2cFileDescriptor, buffer));
+        var data = i2CBus.execute(this, (i2cFileDescriptor) -> FILE.read(i2cFileDescriptor, buffer, buffer.length));
+        ByteBuffer.wrap(buffer).put(data);
+        return data.length;
     }
 
     @Override
