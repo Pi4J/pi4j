@@ -8,6 +8,7 @@ import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBase;
 import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.io.spi.SpiProvider;
+import com.pi4j.plugin.ffm.common.HexFormatter;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
@@ -75,13 +76,13 @@ public class SpiFFM extends SpiBase implements Spi {
     public int transfer(byte[] write, int writeOffset, byte[] read, int readOffset, int numberOfBytes) {
         checkClosed();
         logger.trace("{} - Transferring data (length '{}')", path, numberOfBytes);
-        logger.trace("{} - Write buffer: {}", path, write);
+        logger.trace("{} - Write buffer: {}", path, HexFormatter.format(write));
         var spiTransfer = new SpiTransferBuffer(write, read, numberOfBytes);
         spiTransfer = IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(1), spiTransfer);
         var readBytes = spiTransfer.getRxBuffer();
         if (read != null) {
             ByteBuffer.wrap(read).put(readBytes);
-            logger.trace("{} - Read buffer: {}", path, read);
+            logger.trace("{} - Read buffer: {}", path, HexFormatter.format(read));
         }
         return readBytes.length;
     }
