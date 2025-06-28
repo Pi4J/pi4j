@@ -27,8 +27,6 @@ package com.pi4j.io.i2c.impl;
 
 import com.pi4j.config.exception.ConfigMissingRequiredKeyException;
 import com.pi4j.io.gpio.digital.PullResistance;
-import com.pi4j.io.i2c.I2CBase;
-import com.pi4j.io.i2c.I2CBusBase;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CImplementation;
 import com.pi4j.io.impl.IOConfigBase;
@@ -83,11 +81,11 @@ public class DefaultI2CConfig
             throw new ConfigMissingRequiredKeyException(DEVICE_KEY);
         }
 
-        // load (required) BUS property
+        // i2c implementation
         if(properties.containsKey(I2C_IMPLEMENTATION)){
             this.i2cImplementation = I2CImplementation.valueOf(properties.get(I2C_IMPLEMENTATION));
         } else {
-            throw new ConfigMissingRequiredKeyException(I2C_IMPLEMENTATION);
+            this.i2cImplementation = I2CImplementation.SMBUS;
         }
 
         // define default property values if any are missing (based on the required address value)

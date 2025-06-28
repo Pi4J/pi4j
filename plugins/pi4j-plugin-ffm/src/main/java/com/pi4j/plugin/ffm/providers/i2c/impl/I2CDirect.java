@@ -6,8 +6,8 @@ import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CBase;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CProvider;
-import com.pi4j.plugin.ffm.common.i2c.rdwr.I2CMessage;
 import com.pi4j.plugin.ffm.common.i2c.I2cConstants;
+import com.pi4j.plugin.ffm.common.i2c.rdwr.I2CMessage;
 import com.pi4j.plugin.ffm.common.i2c.rdwr.RDWRData;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
 import com.pi4j.plugin.ffm.providers.i2c.I2CBusFFM;
@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 public class I2CDirect extends I2CBase<I2CBusFFM> {
     private static final Logger logger = LoggerFactory.getLogger(I2CDirect.class);
