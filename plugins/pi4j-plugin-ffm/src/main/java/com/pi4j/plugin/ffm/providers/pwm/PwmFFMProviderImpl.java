@@ -20,7 +20,7 @@ public class PwmFFMProviderImpl extends PwmProviderBase implements PwmProvider {
     @Override
     public Pwm create(PwmConfig config) {
         // create new I/O instance based on I/O config
-        var pwm = config.pwmType().equals(PwmType.HARDWARE) ? new PwmFFMHardware(this, config) : null;
+        var pwm = new PwmFFMHardware(this, config);
         this.context.registry().add(pwm);
         return pwm;
     }
