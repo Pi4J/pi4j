@@ -2,6 +2,7 @@ package com.pi4j.plugin.ffm.integration;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
+import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.digital.PullResistance;
@@ -78,12 +79,12 @@ public class GPIOTest {
 
     @Test
     public void testInputUnavailable() {
-        assertThrows(IllegalStateException.class, () -> pi4j1.digitalInput().create(99));
+        assertThrows(Pi4JException.class, () -> pi4j1.digitalInput().create(99));
     }
 
     @Test
     public void testInputNonExistent() {
-        assertThrows(IllegalStateException.class, () -> pi4jNonExistent.digitalInput().create(0));
+        assertThrows(Pi4JException.class, () -> pi4jNonExistent.digitalInput().create(0));
     }
 
     @Test

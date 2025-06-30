@@ -14,14 +14,19 @@ import com.pi4j.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.PosixFileAttributes;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
 public class I2CBusFFM extends I2CBusBase {
     private static final Logger logger = LoggerFactory.getLogger(I2CBusFFM.class);
-    private final IoctlNative IOCTL = new IoctlNative();
-    private final FileDescriptorNative FILE = new FileDescriptorNative();
+    private final IoctlNative ioctl = new IoctlNative();
+    private final FileDescriptorNative file = new FileDescriptorNative();
     private static final String I2C_BUS = "/dev/i2c-";
 
     private final String busName;
@@ -36,10 +41,19 @@ public class I2CBusFFM extends I2CBusBase {
         this.busName = I2C_BUS + bus;
         try {
             logger.debug("{} - setting up I2CBus...", busName);
+            if (!deviceExists()) {
+                throw new InitializeException("Device '" + busName + "' does not exist.");
+            }
+            if (!canAccessDevice()) {
+                var posix = Files.readAttributes(Path.of(busName), PosixFileAttributes.class);
+                logger.error("Inaccessible device: '{} {} {} {}'", PosixFilePermissions.toString(posix.permissions()), posix.owner().getName(), posix.group().getName(), busName);
+                logger.error("Please, read the documentation <link> to setup right permissions.");
+                throw new InitializeException("Device '" + busName + "' cannot be accessed with current user.");
+            }
             logger.debug("{} - opening device file.", busName);
-            this.i2cFileDescriptor = FILE.open(busName, FileFlag.O_RDONLY);
+            this.i2cFileDescriptor = file.open(busName, FileFlag.O_RDONLY);
             logger.debug("{} - loading supported functionalities.", busName);
-            var i2cFunctions = IOCTL.call(i2cFileDescriptor, Command.getI2CFuncs(), 0);
+            var i2cFunctions = ioctl.call(i2cFileDescriptor, Command.getI2CFuncs(), 0);
             for (I2CFunctionality i2CFunctionality : I2CFunctionality.values()) {
                 var supported = (i2cFunctions & i2CFunctionality.getValue()) != 0;
                 functionalityMap.put(i2CFunctionality, supported);
@@ -60,7 +74,7 @@ public class I2CBusFFM extends I2CBusBase {
                 }
                 throw new Pi4JException(busName + " does not support any of read/write operations!");
             }
-        } catch (Pi4JException e) {
+        } catch (Pi4JException | IOException e) {
             logger.error(e.getMessage());
             throw new InitializeException(e);
         }
@@ -106,7 +120,7 @@ public class I2CBusFFM extends I2CBusBase {
      */
     private void selectDevice(int device, boolean tenBitsAddress) {
         if (tenBitsAddress && functionalityMap.get(I2CFunctionality.I2C_FUNC_10BIT_ADDR)) {
-            IOCTL.callByValue(i2cFileDescriptor, Command.getI2CTenBit(), 1);
+            ioctl.callByValue(i2cFileDescriptor, Command.getI2CTenBit(), 1);
         } else {
             throw new Pi4JException("Cannot set 10bit address, because device '" + busName + "' does not support 10bit addressing extension.");
         }
@@ -122,7 +136,7 @@ public class I2CBusFFM extends I2CBusBase {
         if (device == selectedDevice) {
             return;
         }
-        IOCTL.callByValue(i2cFileDescriptor, Command.getI2CSlave(), device);
+        ioctl.callByValue(i2cFileDescriptor, Command.getI2CSlave(), device);
         this.selectedDevice = device;
     }
 
@@ -144,9 +158,17 @@ public class I2CBusFFM extends I2CBusBase {
 
     public void close() {
         try {
-            FILE.close(i2cFileDescriptor);
+            file.close(i2cFileDescriptor);
         } catch (Exception e) {
             throw new Pi4JException(e);
         }
+    }
+
+    private boolean canAccessDevice() {
+        return file.access(busName, FileFlag.R_OK) == 0;
+    }
+
+    private boolean deviceExists() {
+        return file.access(busName, FileFlag.F_OK) == 0;
     }
 }

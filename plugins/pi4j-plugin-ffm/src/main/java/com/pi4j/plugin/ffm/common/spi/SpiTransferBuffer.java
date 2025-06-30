@@ -56,4 +56,13 @@ public final class SpiTransferBuffer implements Pi4JLayout {
     public byte[] getRxBuffer() {
         return spiIocTransfer.rxBuf();
     }
+
+    @Override
+    public String toString() {
+        return "SpiTransferBuffer{" +
+            "spiIocTransfer=" + spiIocTransfer +
+            ", txBuf=" + txBuf +
+            ", rxBuf=" + rxBuf +
+            '}';
+    }
 }

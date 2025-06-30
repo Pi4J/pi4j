@@ -28,4 +28,7 @@ public final class FileFlag {
 
     public static final int LOCK_EX = 2;
     public static final int LOCK_UN = 8;
+
+    public static final int F_OK = 0;
+    public static final int R_OK = 0x04;
 }

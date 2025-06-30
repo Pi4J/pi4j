@@ -15,7 +15,6 @@ import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFileAttributes;
@@ -116,10 +115,10 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
     }
 
     private boolean canAccessDevice() {
-        return new File(chipName).canRead();
+        return file.access(chipName, FileFlag.R_OK) == 0;
     }
 
     private boolean deviceExists() {
-        return new File(chipName).exists();
+        return file.access(chipName, FileFlag.F_OK) == 0;
     }
 }

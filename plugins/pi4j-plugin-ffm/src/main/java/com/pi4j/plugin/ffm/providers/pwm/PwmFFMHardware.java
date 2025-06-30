@@ -10,13 +10,12 @@ import com.pi4j.plugin.ffm.common.file.FileFlag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
 public class PwmFFMHardware extends PwmBase implements Pwm {
     private Logger logger = LoggerFactory.getLogger(PwmFFMHardware.class);
 
-    private final FileDescriptorNative FILE = new FileDescriptorNative();
+    private final FileDescriptorNative file = new FileDescriptorNative();
 
     private static final String CHIP_PATH = "/sys/class/pwm/pwmchip";
     private static final String CHIP_EXPORT_PATH = "/export";
@@ -48,55 +47,55 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
     /** {@inheritDoc} */
     @Override
     public Pwm initialize(Context context) throws InitializeException {
-        var pwmChipFile = Path.of(CHIP_PATH + pwmChipNumber).toFile();
-        if (!pwmChipFile.exists()) {
-            throw new IllegalArgumentException("PWM Chip at path '" + pwmChipFile.getPath() + "' does not exist!");
+        var pwmChipFile = CHIP_PATH + pwmChipNumber;
+        if (!deviceExists(pwmChipFile)) {
+            throw new IllegalArgumentException("PWM Chip at path '" + pwmChipFile + "' does not exist!");
         }
-        var pwmFile = Path.of(pwmChipFile.getPath() + PWM_PATH + pwmBusNumber).toFile();
-        if (!pwmFile.exists()) {
+        var pwmFile = pwmChipFile + PWM_PATH + pwmBusNumber;
+        if (!deviceExists(pwmFile)) {
             logger.trace("{} - no PWM Bus found... will try to export PWM Bus first.", pwmFile);
-            var npwmFd = FILE.open(pwmChipFile.getPath() + CHIP_NPWM_PATH, FileFlag.O_RDONLY);
-            var maxChannel = getIntegerContent(FILE.read(npwmFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
-            FILE.close(npwmFd);
+            var npwmFd = file.open(pwmChipFile + CHIP_NPWM_PATH, FileFlag.O_RDONLY);
+            var maxChannel = getIntegerContent(file.read(npwmFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
+            file.close(npwmFd);
             if (pwmBusNumber > maxChannel - 1) {
-                throw new IllegalArgumentException("PWM Bus at path '" + pwmFile.getPath() + "' cannot be exported! Max available channel is " + maxChannel);
+                throw new IllegalArgumentException("PWM Bus at path '" + pwmFile + "' cannot be exported! Max available channel is " + maxChannel);
             }
-            var exportFd = FILE.open(pwmChipFile.getPath() + CHIP_EXPORT_PATH, FileFlag.O_WRONLY);
-            FILE.write(exportFd, getByteContent(pwmBusNumber));
-            FILE.close(exportFd);
-            if (!pwmFile.exists()) {
-                throw new IllegalArgumentException("PWM Bus at path '" + pwmFile.getPath() + "' cannot be exported!");
+            var exportFd = file.open(pwmChipFile + CHIP_EXPORT_PATH, FileFlag.O_WRONLY);
+            file.write(exportFd, getByteContent(pwmBusNumber));
+            file.close(exportFd);
+            if (!deviceExists(pwmFile)) {
+                throw new IllegalArgumentException("PWM Bus at path '" + pwmFile + "' cannot be exported!");
             }
         }
-        this.pwmPath = pwmFile.getPath();
+        this.pwmPath = pwmFile;
 
-        var stateFd = FILE.open(this.pwmPath + ENABLE_PATH, FileFlag.O_RDWR);
-        this.onState = getIntegerContent(FILE.read(stateFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE)) == 1;
-        FILE.close(stateFd);
+        var stateFd = file.open(this.pwmPath + ENABLE_PATH, FileFlag.O_RDWR);
+        this.onState = getIntegerContent(file.read(stateFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE)) == 1;
+        file.close(stateFd);
 
         if (config.dutyCycle() != null) {
             this.dutyCycle = config.dutyCycle();
         } else {
-            var dutyCycleFd = FILE.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_RDWR);
-            this.dutyCycle = getIntegerContent(FILE.read(dutyCycleFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
-            FILE.close(dutyCycleFd);
+            var dutyCycleFd = file.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_RDWR);
+            this.dutyCycle = getIntegerContent(file.read(dutyCycleFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
+            file.close(dutyCycleFd);
         }
 
         if (config.polarity() != null) {
             this.polarity = config.polarity();
         } else {
-            var polarityFd = FILE.open(this.pwmPath + POLARITY_PATH, FileFlag.O_RDWR);
-            this.polarity = PwmPolarity.parse(getStringContent(FILE.read(polarityFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE)));
-            FILE.close(polarityFd);
+            var polarityFd = file.open(this.pwmPath + POLARITY_PATH, FileFlag.O_RDWR);
+            this.polarity = PwmPolarity.parse(getStringContent(file.read(polarityFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE)));
+            file.close(polarityFd);
         }
 
         if (config.frequency() != null) {
             this.frequency = config.frequency();
             this.period = NANOS_IN_SECOND / this.frequency;
         } else {
-            var periodFd = FILE.open(this.pwmPath + PERIOD_PATH, FileFlag.O_RDWR);
-            this.period = getIntegerContent(FILE.read(periodFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
-            FILE.close(periodFd);
+            var periodFd = file.open(this.pwmPath + PERIOD_PATH, FileFlag.O_RDWR);
+            this.period = getIntegerContent(file.read(periodFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
+            file.close(periodFd);
         }
 
         logger.debug("{} - pwm setup finished. Initial state: {}", pwmPath, this);
@@ -113,24 +112,24 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
             logger.error("{} - cannot set frequency '{}', required more then 0.", pwmPath, frequency);
             throw new Pi4JException("cannot set frequency '" + frequency + "', required more then 0.");
         }
-        var period = (NANOS_IN_SECOND / frequency);
+        this.period = (NANOS_IN_SECOND / frequency);
         logger.debug("{} - period is '{}', dutyCycle is '{}' and polarity '{}'.", pwmPath, period, dutyCycle, polarity);
 
-        var periodFd = FILE.open(this.pwmPath + PERIOD_PATH, FileFlag.O_WRONLY);
-        var dutyCycleFd = FILE.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_WRONLY);
-        var polarityFd = FILE.open(this.pwmPath + POLARITY_PATH, FileFlag.O_WRONLY);
+        var periodFd = file.open(this.pwmPath + PERIOD_PATH, FileFlag.O_WRONLY);
+        var dutyCycleFd = file.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_WRONLY);
+        var polarityFd = file.open(this.pwmPath + POLARITY_PATH, FileFlag.O_WRONLY);
 
-        FILE.write(periodFd, String.valueOf(period).getBytes());
-        FILE.write(dutyCycleFd, String.valueOf(dutyCycle).getBytes());
-        FILE.write(polarityFd, polarity.getName().getBytes());
+        file.write(periodFd, String.valueOf(period).getBytes());
+        file.write(dutyCycleFd, String.valueOf(dutyCycle).getBytes());
+        file.write(polarityFd, polarity.getName().getBytes());
 
-        FILE.close(dutyCycleFd);
-        FILE.close(periodFd);
-        FILE.close(polarityFd);
+        file.close(dutyCycleFd);
+        file.close(periodFd);
+        file.close(polarityFd);
 
-        var enableFd = FILE.open(this.pwmPath + ENABLE_PATH, FileFlag.O_RDWR);
-        FILE.write(enableFd, String.valueOf(1).getBytes());
-        FILE.close(enableFd);
+        var enableFd = file.open(this.pwmPath + ENABLE_PATH, FileFlag.O_RDWR);
+        file.write(enableFd, String.valueOf(1).getBytes());
+        file.close(enableFd);
         this.onState = true;
         return this;
     }
@@ -141,17 +140,11 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
             logger.warn("{} - PWM Bus is already disabled.", pwmPath);
             throw new IllegalStateException("PWM Bus is already disabled.");
         }
-        var enableFd = FILE.open(this.pwmPath + ENABLE_PATH, FileFlag.O_RDWR);
-        FILE.write(enableFd, String.valueOf(0).getBytes());
-        FILE.close(enableFd);
+        var enableFd = file.open(this.pwmPath + ENABLE_PATH, FileFlag.O_RDWR);
+        file.write(enableFd, String.valueOf(0).getBytes());
+        file.close(enableFd);
         this.onState = false;
         return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int getActualFrequency() {
-        return (int) (period / NANOS_IN_SECOND);
     }
 
     /**
@@ -170,6 +163,10 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
 
     private static byte[] getByteContent(int number) {
         return String.valueOf(number).getBytes();
+    }
+
+    private boolean deviceExists(String path) {
+        return file.access(path, FileFlag.F_OK) == 0;
     }
 
 
