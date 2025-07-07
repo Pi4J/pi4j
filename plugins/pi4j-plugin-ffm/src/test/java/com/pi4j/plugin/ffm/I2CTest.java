@@ -17,8 +17,10 @@ import com.pi4j.plugin.ffm.providers.i2c.impl.I2CSMBus;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.condition.OS.LINUX;
 
 public class I2CTest {
     private static Context pi4j;
@@ -40,6 +42,7 @@ public class I2CTest {
     }
 
     @Test
+    @EnabledOnOs(LINUX)
     public void testCreation() {
         var functionalities = I2CFunctionality.I2C_FUNC_I2C.getValue() | I2CFunctionality.I2C_FUNC_SMBUS_BYTE.getValue()
             | I2CFunctionality.I2C_FUNC_SMBUS_BLOCK_DATA.getValue()
@@ -63,6 +66,7 @@ public class I2CTest {
     }
 
     @Test
+    @EnabledOnOs(LINUX)
     public void testWriteSMBus() {
         var functionalities = I2CFunctionality.I2C_FUNC_SMBUS_BYTE.getValue() | I2CFunctionality.I2C_FUNC_SMBUS_BLOCK_DATA.getValue()
             | I2CFunctionality.I2C_FUNC_SMBUS_BYTE_DATA.getValue() | I2CFunctionality.I2C_FUNC_SMBUS_QUICK.getValue()
@@ -87,6 +91,7 @@ public class I2CTest {
     }
 
     @Test
+    @EnabledOnOs(LINUX)
     public void testReadSMBus() {
         var functionalities = I2CFunctionality.I2C_FUNC_SMBUS_BYTE.getValue() | I2CFunctionality.I2C_FUNC_SMBUS_BLOCK_DATA.getValue()
             | I2CFunctionality.I2C_FUNC_SMBUS_BYTE_DATA.getValue() | I2CFunctionality.I2C_FUNC_SMBUS_QUICK.getValue()

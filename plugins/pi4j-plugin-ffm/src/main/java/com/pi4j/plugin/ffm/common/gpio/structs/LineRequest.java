@@ -12,9 +12,10 @@ import java.util.Arrays;
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
- * Source: /usr/src/linux-headers-6.8.0-52-generic/include/uapi/linux/gpio.h:196:8
- *
+ * Source: include/uapi/linux/gpio.h:196:8
+ * <p>
  * struct gpio_v2_line_request - Information about a request for GPIO lines
+ *
  * @offsets: an array of desired lines, specified by offset index for the
  * associated GPIO chip
  * @consumer: a desired consumer label for the selected GPIO lines such as
@@ -36,52 +37,62 @@ import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
  */
 public record LineRequest(int[] offsets, byte[] consumer, LineConfig config, int numLines,
                           int eventBufferSize, int fd) implements Pi4JLayout {
-	public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
-		MemoryLayout.sequenceLayout(64, ValueLayout.JAVA_INT).withName("offsets"),
-		MemoryLayout.sequenceLayout(32, ValueLayout.JAVA_BYTE).withName("consumer"),
-		LineConfig.LAYOUT.withName("config"),
-		ValueLayout.JAVA_INT.withName("num_lines"),
-		ValueLayout.JAVA_INT.withName("event_buffer_size"),
-		MemoryLayout.sequenceLayout(5, ValueLayout.JAVA_INT).withName("padding"),
-		ValueLayout.JAVA_INT.withName("fd")
-	);
+    public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
+        MemoryLayout.sequenceLayout(64, ValueLayout.JAVA_INT).withName("offsets"),
+        MemoryLayout.sequenceLayout(32, ValueLayout.JAVA_BYTE).withName("consumer"),
+        LineConfig.LAYOUT.withName("config"),
+        ValueLayout.JAVA_INT.withName("num_lines"),
+        ValueLayout.JAVA_INT.withName("event_buffer_size"),
+        MemoryLayout.sequenceLayout(5, ValueLayout.JAVA_INT).withName("padding"),
+        ValueLayout.JAVA_INT.withName("fd")
+    );
 
-	private static final MethodHandle MH_OFFSETS = LAYOUT.sliceHandle(groupElement("offsets"));
+    private static final MethodHandle MH_OFFSETS = LAYOUT.sliceHandle(groupElement("offsets"));
 
-	private static final MethodHandle MH_CONSUMER = LAYOUT.sliceHandle(groupElement("consumer"));
+    private static final MethodHandle MH_CONSUMER = LAYOUT.sliceHandle(groupElement("consumer"));
 
-	private static final MethodHandle MH_CONFIG = LAYOUT.sliceHandle(groupElement("config"));
+    private static final MethodHandle MH_CONFIG = LAYOUT.sliceHandle(groupElement("config"));
 
-	private static final VarHandle VH_NUM_LINES = LAYOUT.varHandle(groupElement("num_lines"));
+    private static final VarHandle VH_NUM_LINES = LAYOUT.varHandle(groupElement("num_lines"));
 
-	private static final VarHandle VH_EVENT_BUFFER_SIZE = LAYOUT.varHandle(groupElement("event_buffer_size"));
+    private static final VarHandle VH_EVENT_BUFFER_SIZE = LAYOUT.varHandle(groupElement("event_buffer_size"));
 
-	//private static final MethodHandle MH_PADDING = LAYOUT.sliceHandle(groupElement("padding"));
+    private static final VarHandle VH_FD = LAYOUT.varHandle(groupElement("fd"));
 
-	private static final VarHandle VH_FD = LAYOUT.varHandle(groupElement("fd"));
+    /**
+     * Creates LineRequest instance from MemorySegment provided.
+     *
+     * @param memorySegment buffer to construct LineRequest from
+     * @return LineRequest instance
+     * @throws Throwable if there is any exception while converting buffer to java object
+     */
+    public static LineRequest create(MemorySegment memorySegment) throws Throwable {
+        var linerequestInstance = LineRequest.createEmpty();
+        if (!memorySegment.equals(MemorySegment.NULL)) {
+            linerequestInstance = linerequestInstance.from(memorySegment);
+        }
+        return linerequestInstance;
+    }
 
-	public static LineRequest create(MemorySegment memorySegment) throws Throwable {
-		var linerequestInstance = LineRequest.createEmpty();
-		if (!memorySegment.equals(MemorySegment.NULL)) {
-			linerequestInstance = linerequestInstance.from(memorySegment);
-		}
-		return linerequestInstance;
-	}
+    /**
+     * Creates empty LineRequest object.
+     *
+     * @return empty LineRequest object
+     */
+    public static LineRequest createEmpty() {
+        return new LineRequest(new int[]{}, new byte[]{}, LineConfig.createEmpty(), 0, 0, 0);
+    }
 
-	public static LineRequest createEmpty() {
-		return new LineRequest(new int[]{}, new byte[]{}, LineConfig.createEmpty(), 0, 0, 0);
-	}
+    @Override
+    public MemoryLayout getMemoryLayout() {
+        return LAYOUT;
+    }
 
-	@Override
-	public MemoryLayout getMemoryLayout() {
-		return LAYOUT;
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public LineRequest from(MemorySegment buffer) throws Throwable {
-		var configMemorySegment = invokeExact(MH_CONFIG, buffer);
-		var config = config().from(configMemorySegment);
+    @Override
+    @SuppressWarnings("unchecked")
+    public LineRequest from(MemorySegment buffer) throws Throwable {
+        var configMemorySegment = invokeExact(MH_CONFIG, buffer);
+        var config = config().from(configMemorySegment);
         var consumer = new String(invokeExact(MH_CONSUMER, buffer).toArray(ValueLayout.JAVA_BYTE)).trim();
 
         var offsetsMemorySegment = invokeExact(MH_OFFSETS, buffer);
@@ -89,36 +100,31 @@ public record LineRequest(int[] offsets, byte[] consumer, LineConfig config, int
         for (int i = 0; i < offsets().length; i++) {
             offsets[i] = offsetsMemorySegment.getAtIndex(ValueLayout.JAVA_INT, i);
         }
-		return new LineRequest(
+        return new LineRequest(
             offsets,
-			consumer.getBytes(),
-			config,
-			(int) VH_NUM_LINES.get(buffer, 0L),
-			(int) VH_EVENT_BUFFER_SIZE.get(buffer, 0L),
-//			invokeExact(MH_PADDING, buffer).toArray(ValueLayout.JAVA_INT),
-			(int) VH_FD.get(buffer, 0L));
-	}
+            consumer.getBytes(),
+            config,
+            (int) VH_NUM_LINES.get(buffer, 0L),
+            (int) VH_EVENT_BUFFER_SIZE.get(buffer, 0L),
+            (int) VH_FD.get(buffer, 0L));
+    }
 
-	@Override
-	public void to(MemorySegment buffer) throws Throwable {
-		var offsetsTmp = invokeExact(MH_OFFSETS, buffer);
-		for (int i = 0; i < offsets.length; i++) {
-			offsetsTmp.setAtIndex(ValueLayout.JAVA_INT, i, offsets[i]);
-		}
-		var consumerTmp = invokeExact(MH_CONSUMER, buffer);
-		for (int i = 0; i < consumer.length; i++) {
-			consumerTmp.setAtIndex(ValueLayout.JAVA_BYTE, i, consumer[i]);
-		}
-		var configTmp = invokeExact(MH_CONFIG, buffer);
-		config.to(configTmp);
-		VH_NUM_LINES.set(buffer, 0L, numLines);
-		VH_EVENT_BUFFER_SIZE.set(buffer, 0L, eventBufferSize);
-//		var paddingTmp = invokeExact(MH_PADDING, buffer);
-//		for (int i = 0; i < padding.length; i++) {
-//			paddingTmp.setAtIndex(ValueLayout.JAVA_INT, i, padding[i]);
-//		}
-		VH_FD.set(buffer, 0L, fd);
-	}
+    @Override
+    public void to(MemorySegment buffer) throws Throwable {
+        var offsetsTmp = invokeExact(MH_OFFSETS, buffer);
+        for (int i = 0; i < offsets.length; i++) {
+            offsetsTmp.setAtIndex(ValueLayout.JAVA_INT, i, offsets[i]);
+        }
+        var consumerTmp = invokeExact(MH_CONSUMER, buffer);
+        for (int i = 0; i < consumer.length; i++) {
+            consumerTmp.setAtIndex(ValueLayout.JAVA_BYTE, i, consumer[i]);
+        }
+        var configTmp = invokeExact(MH_CONFIG, buffer);
+        config.to(configTmp);
+        VH_NUM_LINES.set(buffer, 0L, numLines);
+        VH_EVENT_BUFFER_SIZE.set(buffer, 0L, eventBufferSize);
+        VH_FD.set(buffer, 0L, fd);
+    }
 
     @Override
     public String toString() {
@@ -128,7 +134,6 @@ public record LineRequest(int[] offsets, byte[] consumer, LineConfig config, int
             ", config=" + config +
             ", numLines=" + numLines +
             ", eventBufferSize=" + eventBufferSize +
-            //", padding=" + Arrays.toString(padding) +
             ", fd=" + fd +
             '}';
     }

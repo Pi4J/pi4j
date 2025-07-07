@@ -11,14 +11,47 @@ public final class Command {
     private Command() {
     }
 
-    public static long getTermiosSet() { return IoctlMagic.TCSETS2; }
-    public static long getTermiosGet() { return IoctlMagic.TCGETS2; }
-    public static long getFIONREAD() { return 0x541B; }
+    /*
+    Serial commands
+     */
+    public static long getTermiosSet() {
+        return IoctlMagic.TCSETS2;
+    }
 
+    public static long getTermiosGet() {
+        return IoctlMagic.TCGETS2;
+    }
+
+    public static long getFIONREAD() {
+        return 0x541B;
+    }
+
+    /*
+    GPIO commands
+     */
     public static long getGpioGetChipInfoIoctl() {
         return IoctlMagic.GPIO_GET_CHIPINFO_IOCTL;
     }
 
+    public static long getGpioV2GetLineInfoIoctl() {
+        return IoctlMagic.GPIO_V2_GET_LINEINFO_IOCTL;
+    }
+
+    public static long getGpioV2GetLineIoctl() {
+        return IoctlMagic.GPIO_V2_GET_LINE_IOCTL;
+    }
+
+    public static long getGpioV2GetValuesIoctl() {
+        return IoctlMagic.GPIO_V2_LINE_GET_VALUES_IOCTL;
+    }
+
+    public static long getGpioV2SetValuesIoctl() {
+        return IoctlMagic.GPIO_V2_LINE_SET_VALUES_IOCTL;
+    }
+
+    /*
+    SPI Commands
+     */
     public static long getSpiIocMessage(int n) {
         return IoctlMagic.SPI_IOC_MESSAGE(n);
     }
@@ -63,23 +96,9 @@ public final class Command {
         return IoctlMagic.SPI_IOC_WR_LSB_FIRST;
     }
 
-
-    public static long getGpioV2GetLineInfoIoctl() {
-        return IoctlMagic.GPIO_V2_GET_LINEINFO_IOCTL;
-    }
-
-    public static long getGpioV2GetLineIoctl() {
-        return IoctlMagic.GPIO_V2_GET_LINE_IOCTL;
-    }
-
-    public static long getGpioV2GetValuesIoctl() {
-        return IoctlMagic.GPIO_V2_LINE_GET_VALUES_IOCTL;
-    }
-
-    public static long getGpioV2SetValuesIoctl() {
-        return IoctlMagic.GPIO_V2_LINE_SET_VALUES_IOCTL;
-    }
-
+    /*
+    I2C Commands
+     */
     public static long getI2CSlave() {
         return 0x0703L;
     }

@@ -1,10 +1,11 @@
 package com.pi4j.plugin.ffm.common.file;
 
 /**
- * Kernel flags for open command.
+ * GLIBC flags for open command.
  */
 public final class FileFlag {
 
+    // open64 flags
     public static final int O_APPEND = 1024;
     public static final int O_ASYNC = 8192;
     public static final int O_CLOEXEC = 524288;
@@ -26,9 +27,11 @@ public final class FileFlag {
     public static final int O_TRUNC = 512;
     public static final int O_WRONLY = 1;
 
+    // flock flags
     public static final int LOCK_EX = 2;
     public static final int LOCK_UN = 8;
 
+    // access flags
     public static final int F_OK = 0;
     public static final int R_OK = 0x04;
 }

@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.foreign.ValueLayout;
 
-import static com.pi4j.plugin.ffm.common.Pi4JNative.processError;
+import static com.pi4j.plugin.ffm.common.Pi4JNativeContext.processError;
 import static com.pi4j.plugin.ffm.common.i2c.SMBusContext.*;
 
 public class SMBusNative implements AutoCloseable {

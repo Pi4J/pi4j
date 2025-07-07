@@ -2,13 +2,13 @@ package com.pi4j.plugin.ffm.common.i2c;
 
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.plugin.ffm.common.Pi4JArchitectureGuess;
-import com.pi4j.plugin.ffm.common.Pi4JNative;
+import com.pi4j.plugin.ffm.common.Pi4JNativeContext;
 
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
 import java.nio.file.Path;
 
-class SMBusContext extends Pi4JNative {
+class SMBusContext extends Pi4JNativeContext {
     private static final SymbolLookup LIBI2C;
     static  {
         try {

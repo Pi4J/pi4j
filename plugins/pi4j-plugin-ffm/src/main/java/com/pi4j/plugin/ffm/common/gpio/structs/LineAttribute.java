@@ -10,7 +10,7 @@ import java.lang.invoke.VarHandle;
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
- * Source: /usr/src/linux-headers-6.8.0-52-generic/include/uapi/linux/gpio.h:130:8
+ * Source: include/uapi/linux/gpio.h:130:8
  * <p>
  * struct gpio_v2_line_attribute - a configurable attribute of a line
  *
@@ -42,14 +42,19 @@ public record LineAttribute(int id, long flags, long values,
 
     private static final VarHandle VH_ID = LAYOUT.varHandle(groupElement("id"));
 
-    //private static final VarHandle VH_PADDING = LAYOUT.varHandle(groupElement("padding"));
-
     private static final VarHandle VH_FLAGS = LAYOUT.select(groupElement("internal_union_0")).varHandle(groupElement("flags"));
 
     private static final VarHandle VH_VALUES = LAYOUT.select(groupElement("internal_union_0")).varHandle(groupElement("values"));
 
     private static final VarHandle VH_DEBOUNCE_PERIOD_US = LAYOUT.select(groupElement("internal_union_0")).varHandle(groupElement("debounce_period_us"));
 
+    /**
+     * Creates LineAttribute instance from MemorySegment provided.
+     *
+     * @param memorySegment buffer to construct LineAttribute from
+     * @return LineAttribute instance
+     * @throws Throwable if there is any exception while converting buffer to java object
+     */
     public static LineAttribute create(MemorySegment memorySegment) throws Throwable {
         var lineattributeInstance = LineAttribute.createEmpty();
         if (!memorySegment.equals(MemorySegment.NULL)) {
@@ -58,6 +63,11 @@ public record LineAttribute(int id, long flags, long values,
         return lineattributeInstance;
     }
 
+    /**
+     * Creates empty LineAttribute object.
+     *
+     * @return empty LineAttribute object
+     */
     public static LineAttribute createEmpty() {
         return new LineAttribute(0, 0, 0, 0);
     }
@@ -75,7 +85,6 @@ public record LineAttribute(int id, long flags, long values,
         var internalUnion0Buffer = buffer.asSlice(LAYOUT.byteSize() - internalUnion0Size, internalUnion0Size);
         return new LineAttribute(
             (int) VH_ID.get(buffer, 0L),
-            //(int) VH_PADDING.get(buffer, 0L),
             // guess the provided field by the current instance
             flags != 0 ? (long) VH_FLAGS.get(internalUnion0Buffer, 0L) : 0,
             values != 0 ? (long) VH_VALUES.get(internalUnion0Buffer, 0L) : 0,
@@ -86,7 +95,6 @@ public record LineAttribute(int id, long flags, long values,
     @Override
     public void to(MemorySegment buffer) throws Throwable {
         VH_ID.set(buffer, 0L, id);
-        //VH_PADDING.set(buffer, 0L, padding);
 
         // Unions require to work with MemorySegment as a slice
         var internalUnion0Size = LAYOUT.select(groupElement("internal_union_0")).byteSize();
@@ -106,7 +114,6 @@ public record LineAttribute(int id, long flags, long values,
     public String toString() {
         return "LineAttribute{" +
             "id=" + id +
-            //", padding=" + padding +
             ", flags=" + flags +
             ", values=" + values +
             ", debouncePeriodUs=" + debouncePeriodUs +

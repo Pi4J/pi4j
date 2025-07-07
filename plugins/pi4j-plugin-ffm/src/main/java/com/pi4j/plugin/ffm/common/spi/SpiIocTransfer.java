@@ -11,7 +11,8 @@ import java.util.Arrays;
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
- * Source: /usr/src/linux-headers-6.8.0-52-generic/include/linux/spi/spidev.h:70:0
+ * Source: include/linux/spi/spidev.h:70:0
+ * Internal class representing SPI ioctl transfer object.
  */
 record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, short delayUsecs, byte bitsPerWord,
                       byte csChange, byte txNbits, byte rxNbits, byte wordDelayUsecs,
@@ -56,6 +57,13 @@ record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, short
         return from(buffer, null, null);
     }
 
+    /**
+     * Makes the SpiIocTransfer object from memory buffer and tx/rx buffers.
+     * @param buffer main memory buffer, holding all settings data
+     * @param txBuf send memory buffer
+     * @param rxBuf receive memory buffer
+     * @return SpiIocTransfer object from memory buffers
+     */
     SpiIocTransfer from(MemorySegment buffer, MemorySegment txBuf, MemorySegment rxBuf) {
         return new SpiIocTransfer(
             txBuf != null ? txBuf.toArray(ValueLayout.JAVA_BYTE) : new byte[]{},
@@ -84,6 +92,13 @@ record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, short
         VH_PAD.set(buffer, 0L, pad);
     }
 
+    /**
+     * Makes memory buffer from provided memory buffer and tx/rx memory addresses.
+     * @param buffer memory buffer with object data
+     * @param txAddress send memory buffer address
+     * @param rxAddress receive memory buffer address
+     * @throws Throwable if any exception occurred during conversion process
+     */
     public void to(MemorySegment buffer, long txAddress, long rxAddress) throws Throwable {
         if (txBuf != null) {
             VH_TX_BUF.set(buffer, 0L, txAddress);

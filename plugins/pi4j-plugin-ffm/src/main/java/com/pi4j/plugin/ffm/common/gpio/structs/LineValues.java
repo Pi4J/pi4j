@@ -10,7 +10,7 @@ import java.lang.invoke.VarHandle;
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
- * Source: /usr/src/linux-headers-6.8.0-52-generic/include/uapi/linux/gpio.h:96:8
+ * Source: include/uapi/linux/gpio.h:96:8
  *
  * struct gpio_v2_line_values - Values of GPIO lines
  * @bits: a bitmap containing the value of the lines, set to 1 for active
@@ -29,6 +29,13 @@ public record LineValues(long bits, long mask) implements Pi4JLayout {
 
 	private static final VarHandle VH_MASK = LAYOUT.varHandle(groupElement("mask"));
 
+    /**
+     * Creates LineValues instance from MemorySegment provided.
+     *
+     * @param memorySegment buffer to construct LineValues from
+     * @return LineValues instance
+     * @throws Throwable if there is any exception while converting buffer to java object
+     */
 	public static LineValues create(MemorySegment memorySegment) throws Throwable {
 		var linevaluesInstance = LineValues.createEmpty();
 		if (!memorySegment.equals(MemorySegment.NULL)) {
@@ -37,6 +44,11 @@ public record LineValues(long bits, long mask) implements Pi4JLayout {
 		return linevaluesInstance;
 	}
 
+    /**
+     * Creates empty LineValues object.
+     *
+     * @return empty LineValues object
+     */
 	public static LineValues createEmpty() {
 		return new LineValues(0, 0);
 	}

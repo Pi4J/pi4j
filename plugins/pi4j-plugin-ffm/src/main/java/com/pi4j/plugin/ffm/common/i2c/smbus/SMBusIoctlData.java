@@ -30,6 +30,7 @@ public record SMBusIoctlData(byte readWrite, byte command, int size, SMBusData d
     private static final VarHandle VH_SIZE = LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("size"));
     private static final VarHandle MH_DATA = LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("data"));
 
+    //TODO: get rid of this hack
     private static final Arena offHeap = Arena.ofAuto();
 
     public static SMBusIoctlData createEmpty() {

@@ -4,6 +4,9 @@ import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
 import java.lang.invoke.MethodHandle;
 
+/**
+ * Main interface to translate Java object to native struct and vice versa.
+ */
 public interface Pi4JLayout {
 
     /**

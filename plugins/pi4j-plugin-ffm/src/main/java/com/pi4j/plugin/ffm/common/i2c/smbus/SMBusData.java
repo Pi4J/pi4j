@@ -12,7 +12,7 @@ import java.util.Arrays;
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
- * Source: /usr/src/linux-headers-6.8.0-52-generic/include/uapi/linux/i2c.h:141:7
+ * Source: include/uapi/linux/i2c.h:141:7
  */
 public record SMBusData(byte _byte, short word, byte[] block) implements Pi4JLayout {
 	public static final MemoryLayout LAYOUT = MemoryLayout.unionLayout(
@@ -30,6 +30,13 @@ public record SMBusData(byte _byte, short word, byte[] block) implements Pi4JLay
 
 	private static final MethodHandle MH_BLOCK = LAYOUT.sliceHandle(groupElement("block"));
 
+    /**
+     * Creates SMBusData instance from MemorySegment provided.
+     *
+     * @param memorySegment buffer to construct SMBusData from
+     * @return SMBusData instance
+     * @throws Throwable if there is any exception while converting buffer to java object
+     */
 	public static SMBusData create(MemorySegment memorySegment) throws Throwable {
 		var smbusdataInstance = SMBusData.createEmpty();
 		if (!memorySegment.equals(MemorySegment.NULL)) {
@@ -38,6 +45,11 @@ public record SMBusData(byte _byte, short word, byte[] block) implements Pi4JLay
 		return smbusdataInstance;
 	}
 
+    /**
+     * Creates empty SMBusData object.
+     *
+     * @return empty SMBusData object
+     */
 	public static SMBusData createEmpty() {
 		return new SMBusData((byte) 0, (short) 0, new byte[]{});
 	}

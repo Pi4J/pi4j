@@ -8,6 +8,7 @@ import com.pi4j.plugin.ffm.common.serial.Termios2;
 
 /**
  * Internal reference file from Kernel headers to calculate ioctl commands.
+ * These constants are special parameters and represented as is from macros and static values.
  */
 final class IoctlMagic {
 
