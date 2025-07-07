@@ -98,7 +98,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
             file.close(periodFd);
         }
 
-        logger.debug("{} - pwm setup finished. Initial state: {}", pwmPath, this);
+        logger.debug("{} - pwm setup finished. Initial state: {}", pwmPath, this.onState ? "on" : "off");
         return this;
     }
 
@@ -106,7 +106,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
     public Pwm on() throws IOException {
         if (onState) {
             logger.warn("{} - PWM Bus is already enabled.", pwmPath);
-            throw new Pi4JException("PWM Bus is already enabled.");
+            return this;
         }
         if (frequency < 0) {
             logger.error("{} - cannot set frequency '{}', required more then 0.", pwmPath, frequency);
@@ -138,7 +138,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
     public Pwm off() throws IOException {
         if (!onState) {
             logger.warn("{} - PWM Bus is already disabled.", pwmPath);
-            throw new IllegalStateException("PWM Bus is already disabled.");
+            return this;
         }
         var enableFd = file.open(this.pwmPath + ENABLE_PATH, FileFlag.O_RDWR);
         file.write(enableFd, String.valueOf(0).getBytes());

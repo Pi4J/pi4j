@@ -69,10 +69,7 @@ public class FileDescriptorNative {
     public int access(String path, int flag) {
         try {
             var pathMemorySegment = context.allocateFrom(path);
-            var capturedState = context.allocateCapturedState();
-            var callResult = (int) FileDescriptorContext.ACCESS.invoke(capturedState, pathMemorySegment, flag);
-            processError(callResult, capturedState, "access", path, flag);
-            return callResult;
+            return (int) FileDescriptorContext.ACCESS.invoke(pathMemorySegment, flag);
         } catch (Throwable e) {
             throw new Pi4JException(e.getMessage(), e);
         }
