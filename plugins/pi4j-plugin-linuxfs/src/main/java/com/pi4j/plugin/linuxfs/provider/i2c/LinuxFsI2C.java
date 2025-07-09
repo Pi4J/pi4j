@@ -311,9 +311,9 @@ public class LinuxFsI2C extends I2CBase<LinuxFsI2CBus> implements I2C {
 
        this.i2CBus.executeIOCTL(this, command, ioctlData, offsets);
 
-        // move results back into user buffer
-        for (int i = 0; i < length; i++) {   // can I assume length is safe and the readBuff data is not shorter ??   I think yes
-            buffer[i] = ioctlData.get(readBuffPosition + i);
+        // move results back into user buffer. Location determined by user supplied offset
+        for (int i = 0; i < length; i++) {
+            buffer[i + offset] = ioctlData.get(readBuffPosition + i);
         }
 
         return readLength;
