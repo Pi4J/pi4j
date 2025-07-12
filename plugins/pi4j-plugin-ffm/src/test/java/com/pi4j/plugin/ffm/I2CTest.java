@@ -49,6 +49,7 @@ public class I2CTest {
             | I2CFunctionality.I2C_FUNC_SMBUS_BYTE_DATA.getValue() | I2CFunctionality.I2C_FUNC_SMBUS_QUICK.getValue()
             | I2CFunctionality.I2C_FUNC_SMBUS_WORD_DATA.getValue();
         try (var _ = FileDescriptorNativeMock.echo(I2C_FILE); var _ = IoctlNativeMock.i2c(functionalities);
+             var _ = SMBusNativeMock.echo();
              var smbus = pi4j.i2c().create(I2CConfigBuilder.newInstance(pi4j).bus(1).device(0x1C).i2cImplementation(I2CImplementation.SMBUS));
              var direct = pi4j.i2c().create(I2CConfigBuilder.newInstance(pi4j).bus(2).device(0x1C).i2cImplementation(I2CImplementation.DIRECT));
              var file = pi4j.i2c().create(I2CConfigBuilder.newInstance(pi4j).bus(3).device(0x1C).i2cImplementation(I2CImplementation.FILE))) {

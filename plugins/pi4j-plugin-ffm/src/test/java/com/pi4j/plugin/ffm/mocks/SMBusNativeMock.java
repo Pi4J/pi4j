@@ -1,15 +1,15 @@
 package com.pi4j.plugin.ffm.mocks;
 
 import com.pi4j.plugin.ffm.common.i2c.SMBusNative;
+import org.mockito.Answers;
 import org.mockito.MockedConstruction;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class SMBusNativeMock {
     public static MockedConstruction<SMBusNative> echo() {
-        return mockConstruction(SMBusNative.class ,(mock, _) -> {
+        return mockConstruction(SMBusNative.class , withSettings().defaultAnswer(Answers.RETURNS_MOCKS),(mock, _) -> {
             when(mock.writeByte(anyInt(), anyByte())).thenReturn(1);
             when(mock.writeBlockData(anyInt(), anyByte(), any(byte[].class))).thenAnswer((answer) -> {
                 byte[] result = answer.getArgument(2);
