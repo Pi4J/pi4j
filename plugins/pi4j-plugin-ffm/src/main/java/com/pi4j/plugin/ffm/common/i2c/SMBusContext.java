@@ -13,7 +13,8 @@ import java.nio.file.Path;
  */
 class SMBusContext extends Pi4JNativeContext {
     private static final SymbolLookup LIBI2C;
-    static  {
+
+    static {
         try {
             var path = Path.of(Pi4JArchitectureGuess.getLibraryPath("libi2c"));
             LIBI2C = SymbolLookup.libraryLookup(path, ARENA);
@@ -24,9 +25,9 @@ class SMBusContext extends Pi4JNativeContext {
 
     // Native libi2c 'i2c_smbus_write_byte' method
     static final MethodHandle WRITE_BYTE = Linker.nativeLinker().downcallHandle(
-            LIBI2C.find("i2c_smbus_write_byte").orElseThrow(),
-            FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.JAVA_INT, ValueLayout.JAVA_BYTE),
-            Linker.Option.captureCallState("errno"));
+        LIBI2C.find("i2c_smbus_write_byte").orElseThrow(),
+        FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.JAVA_INT, ValueLayout.JAVA_BYTE),
+        Linker.Option.captureCallState("errno"));
 
     // Native libi2c 'i2c_smbus_read_byte' method
     static final MethodHandle READ_BYTE = Linker.nativeLinker().downcallHandle(
@@ -36,15 +37,15 @@ class SMBusContext extends Pi4JNativeContext {
 
     // Native libi2c 'i2c_smbus_write_byte_data' method
     static final MethodHandle WRITE_BYTE_DATA = Linker.nativeLinker().downcallHandle(
-            LIBI2C.find("i2c_smbus_write_byte_data").orElseThrow(),
-            FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.JAVA_INT, ValueLayout.JAVA_BYTE, ValueLayout.JAVA_BYTE),
-            Linker.Option.captureCallState("errno"));
+        LIBI2C.find("i2c_smbus_write_byte_data").orElseThrow(),
+        FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.JAVA_INT, ValueLayout.JAVA_BYTE, ValueLayout.JAVA_BYTE),
+        Linker.Option.captureCallState("errno"));
 
     // Native libi2c 'i2c_smbus_read_byte_data' method
     static final MethodHandle READ_BYTE_DATA = Linker.nativeLinker().downcallHandle(
-            LIBI2C.find("i2c_smbus_read_byte_data").orElseThrow(),
-            FunctionDescriptor.of(ValueLayout.JAVA_BYTE, ValueLayout.JAVA_INT, ValueLayout.JAVA_BYTE),
-            Linker.Option.captureCallState("errno"));
+        LIBI2C.find("i2c_smbus_read_byte_data").orElseThrow(),
+        FunctionDescriptor.of(ValueLayout.JAVA_BYTE, ValueLayout.JAVA_INT, ValueLayout.JAVA_BYTE),
+        Linker.Option.captureCallState("errno"));
 
     // Native libi2c 'i2c_smbus_read_block_data' method
     static final MethodHandle READ_BLOCK_DATA = Linker.nativeLinker().downcallHandle(

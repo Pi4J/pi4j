@@ -15,6 +15,10 @@ public class Pi4JArchitectureGuess {
      * @return absolute library path
      */
     public static String getLibraryPath(String libraryName) {
+        var os = System.getProperty("os.name");
+        if (os.startsWith("Windows") || os.startsWith("Mac")) {
+            throw new Pi4JException("Pi4j does not support Windows/MacOS hosts");
+        }
         var arch = System.getProperty("os.arch");
         return switch (arch) {
             case "amd64" -> "/usr/lib/x86_64-linux-gnu/" + libraryName + ".so";

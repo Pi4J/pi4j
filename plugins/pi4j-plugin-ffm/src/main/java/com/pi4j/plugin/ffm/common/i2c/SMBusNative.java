@@ -25,7 +25,8 @@ public class SMBusNative implements AutoCloseable {
 
     /**
      * Writes byte with SMBus protocol.
-     * @param fd file descriptor of opened SMBus device
+     *
+     * @param fd   file descriptor of opened SMBus device
      * @param data one byte of data
      * @return size of data written
      */
@@ -43,6 +44,7 @@ public class SMBusNative implements AutoCloseable {
 
     /**
      * Reads byte with SMBus protocol.
+     *
      * @param fd file descriptor of opened SMBus device
      * @return one byte from bus
      */
@@ -59,9 +61,10 @@ public class SMBusNative implements AutoCloseable {
 
     /**
      * Writes byte to the given register with SMBus protocol.
-     * @param fd file descriptor of opened SMBus device
+     *
+     * @param fd       file descriptor of opened SMBus device
      * @param register register to be written
-     * @param data one byte of data
+     * @param data     one byte of data
      * @return size of data written
      */
     public int writeByteData(int fd, byte register, byte data) {
@@ -77,7 +80,8 @@ public class SMBusNative implements AutoCloseable {
 
     /**
      * Reads byte from given register.
-     * @param fd file descriptor of opened SMBus device
+     *
+     * @param fd       file descriptor of opened SMBus device
      * @param register register where to read
      * @return one byte from bus
      */
@@ -94,9 +98,10 @@ public class SMBusNative implements AutoCloseable {
 
     /**
      * Writes byte array to the given register with SMBus protocol.
-     * @param fd  file descriptor of opened SMBus device
+     *
+     * @param fd       file descriptor of opened SMBus device
      * @param register register to be written
-     * @param data byte array of data
+     * @param data     byte array of data
      * @return size of data written
      */
     public int writeBlockData(int fd, byte register, byte[] data) {
@@ -113,9 +118,10 @@ public class SMBusNative implements AutoCloseable {
 
     /**
      * Reads byte array from provided register with SMBus protocol.
-     * @param fd file descriptor of opened SMBus device
+     *
+     * @param fd       file descriptor of opened SMBus device
      * @param register register where to read
-     * @param data byte array of data to be read
+     * @param data     byte array of data to be read
      * @return byte array of data from bus
      */
     public byte[] readBlockData(int fd, byte register, byte[] data) {
@@ -132,9 +138,10 @@ public class SMBusNative implements AutoCloseable {
 
     /**
      * Writes int data to provided register with SMBus protocol.
-     * @param fd file descriptor of opened SMBus device
+     *
+     * @param fd       file descriptor of opened SMBus device
      * @param register register to be written
-     * @param data one int data to write
+     * @param data     one int data to write
      * @return size of data written
      */
     public int writeWordData(int fd, byte register, int data) {
@@ -150,7 +157,8 @@ public class SMBusNative implements AutoCloseable {
 
     /**
      * Reads int data from provided register with SMBus protocol.
-     * @param fd file descriptor of opened SMBus device
+     *
+     * @param fd       file descriptor of opened SMBus device
      * @param register register where to read
      * @return one int data read from bus
      */
