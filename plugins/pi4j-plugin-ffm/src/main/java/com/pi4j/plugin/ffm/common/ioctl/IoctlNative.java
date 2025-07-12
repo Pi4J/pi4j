@@ -93,11 +93,11 @@ public class IoctlNative {
     public <T extends Pi4JLayout> T call(int fd, long command, T data) {
         try {
             var dataMemorySegment = context.allocate(data.getMemoryLayout());
-            data.to(dataMemorySegment);
+            data.to(dataMemorySegment, context);
             var capturedState = context.allocateCapturedState();
             var callResult = (int) IoctlContext.IOCTL_1.invoke(capturedState, fd, command, dataMemorySegment);
             processError(callResult, capturedState, "call", fd, command, data);
-            return data.from(dataMemorySegment);
+            return data.from(dataMemorySegment, context);
         } catch (Throwable e) {
             throw new Pi4JException(e.getMessage(), e);
         }

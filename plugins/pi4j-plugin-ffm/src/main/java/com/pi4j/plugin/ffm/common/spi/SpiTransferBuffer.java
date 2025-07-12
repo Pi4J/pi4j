@@ -2,10 +2,7 @@ package com.pi4j.plugin.ffm.common.spi;
 
 import com.pi4j.plugin.ffm.common.Pi4JLayout;
 
-import java.lang.foreign.Arena;
-import java.lang.foreign.MemoryLayout;
-import java.lang.foreign.MemorySegment;
-import java.lang.foreign.ValueLayout;
+import java.lang.foreign.*;
 
 /**
  * Class-helper that holds tx and rx buffers for ioctl.
@@ -13,41 +10,38 @@ import java.lang.foreign.ValueLayout;
  * Consider this helper as a simple adapter for the underlying {@link SpiIocTransfer} class.
  */
 public final class SpiTransferBuffer implements Pi4JLayout {
-    private static final Arena ARENA = Arena.ofConfined();
     private SpiIocTransfer spiIocTransfer;
-    private MemorySegment txBuf;
-    private MemorySegment rxBuf;
+    private final byte[] txBuf;
+    private final byte[] rxBuf;
 
     /**
      * Creates new transfer holder.
-     * @param txBuf send buffer
-     * @param rxBuf receive buffer
-     * @param length buffer length
-     * @param speedHz spi bus speed in Hertz
-     * @param delayUsecs custom delay in nanoseconds
-     * @param bitsPerWord bits per word setting (default is 8 bits)
-     * @param csChange byte for full duplex setting
-     * @param txNbits ?
-     * @param rxNbits ?
+     *
+     * @param txBuf          send buffer
+     * @param rxBuf          receive buffer
+     * @param length         buffer length
+     * @param speedHz        spi bus speed in Hertz
+     * @param delayUsecs     custom delay in nanoseconds
+     * @param bitsPerWord    bits per word setting (default is 8 bits)
+     * @param csChange       byte for full duplex setting
+     * @param txNbits        ?
+     * @param rxNbits        ?
      * @param wordDelayUsecs ?
-     * @param pad ?
+     * @param pad            ?
      */
     public SpiTransferBuffer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, short delayUsecs, byte bitsPerWord,
                              byte csChange, byte txNbits, byte rxNbits, byte wordDelayUsecs,
                              byte pad) {
         this.spiIocTransfer = new SpiIocTransfer(txBuf, rxBuf, length, speedHz, delayUsecs, bitsPerWord, csChange, txNbits, rxNbits, wordDelayUsecs, pad);
-        if (txBuf != null) {
-            this.txBuf = ARENA.allocateFrom(ValueLayout.JAVA_BYTE, txBuf);
-        }
-        if (rxBuf != null) {
-            this.rxBuf = ARENA.allocateFrom(ValueLayout.JAVA_BYTE, rxBuf);
-        }
+        this.txBuf = txBuf;
+        this.rxBuf = rxBuf;
     }
 
     /**
      * Creates new transfer holder.
-     * @param txBuf send buffer
-     * @param rxBuf receive buffer
+     *
+     * @param txBuf  send buffer
+     * @param rxBuf  receive buffer
      * @param length buffer length
      */
     public SpiTransferBuffer(byte[] txBuf, byte[] rxBuf, int length) {
@@ -62,19 +56,39 @@ public final class SpiTransferBuffer implements Pi4JLayout {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public SpiTransferBuffer from(MemorySegment buffer) throws Throwable {
-        // delegates all to underlying object
-        this.spiIocTransfer = spiIocTransfer.from(buffer, txBuf, rxBuf);
-        return this;
+    public <T extends Pi4JLayout> T from(MemorySegment buffer) throws Throwable {
+        throw new UnsupportedOperationException("Converting from MemorySegment without context is not supported");
     }
 
     @Override
     public void to(MemorySegment buffer) throws Throwable {
+        throw new UnsupportedOperationException("Converting to MemorySegment without context is not supported");
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public SpiTransferBuffer from(MemorySegment buffer, SegmentAllocator allocator) throws Throwable {
+        var txMemorySegment = createMemorySegment(txBuf, allocator);
+        var rxMemorySegment = createMemorySegment(rxBuf, allocator);
         // delegates all to underlying object
-        var txAddress = txBuf != null ? txBuf.address() : 0;
-        var rxAddress = rxBuf != null ? rxBuf.address() : 0;
-        spiIocTransfer.to(buffer, txAddress, rxAddress);
+        this.spiIocTransfer = spiIocTransfer.from(buffer, txMemorySegment, rxMemorySegment);
+        return this;
+    }
+
+    @Override
+    public void to(MemorySegment buffer, SegmentAllocator allocator) throws Throwable {
+        var txMemorySegment = createMemorySegment(txBuf, allocator);
+        var rxMemorySegment = createMemorySegment(rxBuf, allocator);
+        // delegates all to underlying object
+        spiIocTransfer.to(buffer, txMemorySegment.address(), rxMemorySegment.address());
+    }
+
+    private MemorySegment createMemorySegment(byte[] buffer, SegmentAllocator context) {
+        var memorySegment = MemorySegment.NULL;
+        if (buffer != null) {
+            memorySegment = context.allocateFrom(ValueLayout.JAVA_BYTE, buffer);
+        }
+        return memorySegment;
     }
 
     public byte[] getTxBuffer() {

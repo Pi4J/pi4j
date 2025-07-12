@@ -54,7 +54,7 @@ record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, short
     @Override
     @SuppressWarnings("unchecked")
     public SpiIocTransfer from(MemorySegment buffer) throws Throwable {
-        return from(buffer, null, null);
+        return from(buffer, MemorySegment.NULL, MemorySegment.NULL);
     }
 
     /**
@@ -66,8 +66,8 @@ record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, short
      */
     SpiIocTransfer from(MemorySegment buffer, MemorySegment txBuf, MemorySegment rxBuf) {
         return new SpiIocTransfer(
-            txBuf != null ? txBuf.toArray(ValueLayout.JAVA_BYTE) : new byte[]{},
-            rxBuf != null ? rxBuf.toArray(ValueLayout.JAVA_BYTE) : new byte[]{},
+            txBuf != MemorySegment.NULL ? txBuf.toArray(ValueLayout.JAVA_BYTE) : new byte[]{},
+            rxBuf != MemorySegment.NULL ? rxBuf.toArray(ValueLayout.JAVA_BYTE) : new byte[]{},
             (int) VH_LEN.get(buffer, 0L),
             (int) VH_SPEED_HZ.get(buffer, 0L),
             (short) VH_DELAY_USECS.get(buffer, 0L),

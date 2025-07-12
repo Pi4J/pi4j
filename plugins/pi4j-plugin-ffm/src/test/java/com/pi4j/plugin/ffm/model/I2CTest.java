@@ -17,7 +17,7 @@ public class I2CTest {
     public void testI2CMessage() throws Throwable {
         try (var offheap = Arena.ofConfined()) {
             var bytes = "Test".getBytes();
-            var message = new I2CMessage(1,2, bytes.length, bytes);
+            var message = new I2CMessage(1, 2, bytes.length, bytes);
             var buffer = offheap.allocate(I2CMessage.LAYOUT);
             message.to(buffer);
             var message2 = message.from(buffer);
@@ -29,8 +29,8 @@ public class I2CTest {
     public void testRDWRData() throws Throwable {
         try (var offheap = Arena.ofConfined()) {
             var bytes = "Test".getBytes();
-            var message = new I2CMessage(1,2, bytes.length, bytes);
-            var rdwrData = new RDWRData(new I2CMessage[] {message}, 1);
+            var message = new I2CMessage(1, 2, bytes.length, bytes);
+            var rdwrData = new RDWRData(new I2CMessage[]{message}, 1);
             var buffer = offheap.allocate(RDWRData.LAYOUT);
             rdwrData.to(buffer);
             var rdwrData2 = rdwrData.from(buffer);
@@ -43,7 +43,7 @@ public class I2CTest {
     public void testSMBusData() throws Throwable {
         try (var offheap = Arena.ofConfined()) {
             var bytes = "Test".getBytes();
-            var data = new SMBusData((byte) 0,(short) 0, bytes);
+            var data = new SMBusData((byte) 0, (short) 0, bytes);
             var buffer = offheap.allocate(SMBusData.LAYOUT);
             data.to(buffer);
             var data2 = data.from(buffer);
@@ -55,10 +55,10 @@ public class I2CTest {
     public void testSMBusIoctlData() throws Throwable {
         try (var offheap = Arena.ofConfined()) {
             var bytes = "Test".getBytes();
-            var data = new SMBusData((byte) 0,(short) 0, bytes);
+            var data = new SMBusData((byte) 0, (short) 0, bytes);
             var ioctlData = new SMBusIoctlData((byte) 1, (byte) 2, 1, data);
             var buffer = offheap.allocate(SMBusIoctlData.LAYOUT);
-            ioctlData.to(buffer);
+            ioctlData.to(buffer, offheap);
             var ioctlData2 = ioctlData.from(buffer);
             assertEquals(ioctlData2.readWrite(), ioctlData.readWrite());
             assertEquals(ioctlData2.command(), ioctlData.command());

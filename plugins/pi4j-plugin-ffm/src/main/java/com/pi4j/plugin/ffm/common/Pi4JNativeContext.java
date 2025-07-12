@@ -57,6 +57,7 @@ public class Pi4JNativeContext implements SegmentAllocator {
 
     /**
      * Create MemorySegment for capturing errno.
+     *
      * @return memory segment used to capture errno
      */
     public MemorySegment allocateCapturedState() {

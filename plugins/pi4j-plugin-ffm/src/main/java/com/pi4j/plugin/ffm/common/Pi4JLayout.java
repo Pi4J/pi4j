@@ -2,6 +2,7 @@ package com.pi4j.plugin.ffm.common;
 
 import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
+import java.lang.foreign.SegmentAllocator;
 import java.lang.invoke.MethodHandle;
 
 /**
@@ -38,6 +39,10 @@ public interface Pi4JLayout {
      */
     <T extends Pi4JLayout> T from(MemorySegment buffer) throws Throwable;
 
+    default <T extends Pi4JLayout> T from(MemorySegment buffer, SegmentAllocator allocator) throws Throwable {
+        return from(buffer);
+    }
+
     /**
      * Converts a class / object structure into a {@link MemorySegment} buffer.
      *
@@ -45,5 +50,9 @@ public interface Pi4JLayout {
      * @throws Throwable unchecked exception
      */
     void to(MemorySegment buffer) throws Throwable;
+
+    default void to(MemorySegment buffer, SegmentAllocator allocator) throws Throwable {
+        to(buffer);
+    }
 
 }
