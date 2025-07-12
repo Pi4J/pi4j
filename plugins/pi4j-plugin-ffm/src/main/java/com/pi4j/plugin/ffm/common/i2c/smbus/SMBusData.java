@@ -13,6 +13,8 @@ import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
  * Source: include/uapi/linux/i2c.h:141:7
+ * <p>
+ * Data for SMBus Messages
  */
 public record SMBusData(byte _byte, short word, byte[] block) implements Pi4JLayout {
 	public static final MemoryLayout LAYOUT = MemoryLayout.unionLayout(

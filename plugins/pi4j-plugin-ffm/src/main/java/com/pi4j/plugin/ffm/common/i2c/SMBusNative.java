@@ -9,11 +9,26 @@ import java.lang.foreign.ValueLayout;
 import static com.pi4j.plugin.ffm.common.Pi4JNativeContext.processError;
 import static com.pi4j.plugin.ffm.common.i2c.SMBusContext.*;
 
+/**
+ * Class for calling native SMBus native methods with libi2c-dev.
+ * The logic behind the class is follows:
+ * - allocate the needed buffers from Arena object with method parameters
+ * - optionally add 'errno' context to caller
+ * - call native function with 'invoke'
+ * - process errors if any captured by 'errno'
+ * - return call result if needed
+ */
 public class SMBusNative implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(SMBusNative.class);
 
     private final SMBusContext context = new SMBusContext();
 
+    /**
+     * Writes byte with SMBus protocol.
+     * @param fd file descriptor of opened SMBus device
+     * @param data one byte of data
+     * @return size of data written
+     */
     public int writeByte(int fd, byte data) {
         try {
             var capturedState = context.allocateCapturedState();
@@ -26,8 +41,11 @@ public class SMBusNative implements AutoCloseable {
         }
     }
 
-
-
+    /**
+     * Reads byte with SMBus protocol.
+     * @param fd file descriptor of opened SMBus device
+     * @return one byte from bus
+     */
     public byte readByte(int fd) {
         try {
             var capturedState = context.allocateCapturedState();
@@ -39,6 +57,13 @@ public class SMBusNative implements AutoCloseable {
         }
     }
 
+    /**
+     * Writes byte to the given register with SMBus protocol.
+     * @param fd file descriptor of opened SMBus device
+     * @param register register to be written
+     * @param data one byte of data
+     * @return size of data written
+     */
     public int writeByteData(int fd, byte register, byte data) {
         try {
             var capturedState = context.allocateCapturedState();
@@ -50,6 +75,12 @@ public class SMBusNative implements AutoCloseable {
         }
     }
 
+    /**
+     * Reads byte from given register.
+     * @param fd file descriptor of opened SMBus device
+     * @param register register where to read
+     * @return one byte from bus
+     */
     public byte readByteData(int fd, byte register) {
         try {
             var capturedState = context.allocateCapturedState();
@@ -61,6 +92,13 @@ public class SMBusNative implements AutoCloseable {
         }
     }
 
+    /**
+     * Writes byte array to the given register with SMBus protocol.
+     * @param fd  file descriptor of opened SMBus device
+     * @param register register to be written
+     * @param data byte array of data
+     * @return size of data written
+     */
     public int writeBlockData(int fd, byte register, byte[] data) {
         try {
             var capturedState = context.allocateCapturedState();
@@ -73,6 +111,13 @@ public class SMBusNative implements AutoCloseable {
         }
     }
 
+    /**
+     * Reads byte array from provided register with SMBus protocol.
+     * @param fd file descriptor of opened SMBus device
+     * @param register register where to read
+     * @param data byte array of data to be read
+     * @return byte array of data from bus
+     */
     public byte[] readBlockData(int fd, byte register, byte[] data) {
         try {
             var capturedState = context.allocateCapturedState();
@@ -85,6 +130,13 @@ public class SMBusNative implements AutoCloseable {
         }
     }
 
+    /**
+     * Writes int data to provided register with SMBus protocol.
+     * @param fd file descriptor of opened SMBus device
+     * @param register register to be written
+     * @param data one int data to write
+     * @return size of data written
+     */
     public int writeWordData(int fd, byte register, int data) {
         try {
             var capturedState = context.allocateCapturedState();
@@ -96,6 +148,12 @@ public class SMBusNative implements AutoCloseable {
         }
     }
 
+    /**
+     * Reads int data from provided register with SMBus protocol.
+     * @param fd file descriptor of opened SMBus device
+     * @param register register where to read
+     * @return one int data read from bus
+     */
     public int readWordData(int fd, byte register) {
         try {
             var capturedState = context.allocateCapturedState();

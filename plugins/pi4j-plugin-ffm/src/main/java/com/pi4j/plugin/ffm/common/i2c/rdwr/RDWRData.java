@@ -9,10 +9,14 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
 import java.util.Arrays;
 
+/**
+ * Source: include/uapi/linux/i2c-dev.h:50:8
+ * <p>
+ * This is the structure as used in the I2C_RDWR ioctl call
+ */
 public record RDWRData(I2CMessage[] msgs, int nmsgs) implements Pi4JLayout {
     public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
         MemoryLayout.sequenceLayout(1024, I2CMessage.LAYOUT).withName("msgs"),
-        //ValueLayout.ADDRESS.withTargetLayout(I2CMessage.LAYOUT).withName("msgs"),
         ValueLayout.JAVA_INT.withName("nmsgs")
     );
 
@@ -30,7 +34,7 @@ public record RDWRData(I2CMessage[] msgs, int nmsgs) implements Pi4JLayout {
         var nmsgs = (int) VH_NMSGS.get(buffer, 0L);
         var msgSegment = invokeExact(MH_MSGS, buffer);
         var msgs = new I2CMessage[nmsgs];
-        for(int i = 0; i < nmsgs; i++) {
+        for (int i = 0; i < nmsgs; i++) {
             var tmp = I2CMessage.createEmpty();
             msgs[i] = tmp.from(msgSegment.asSlice(I2CMessage.LAYOUT.byteSize() * i, I2CMessage.LAYOUT.byteSize()));
         }
