@@ -2,8 +2,10 @@ package com.pi4j.plugin.ffm.common.spi;
 
 import com.pi4j.plugin.ffm.common.Pi4JLayout;
 
-import java.lang.foreign.*;
-import java.util.Arrays;
+import java.lang.foreign.MemoryLayout;
+import java.lang.foreign.MemorySegment;
+import java.lang.foreign.SegmentAllocator;
+import java.lang.foreign.ValueLayout;
 
 /**
  * Class-helper that holds tx and rx buffers for ioctl.
