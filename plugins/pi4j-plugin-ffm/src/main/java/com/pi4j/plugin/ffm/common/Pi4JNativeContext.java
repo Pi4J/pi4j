@@ -12,9 +12,16 @@ import java.util.Arrays;
  * and error processing.
  * The Arena type is auto, meaning any MemorySegment that is allocated within context will be garbage collected
  * like any java object.
- * TODO: make Arena object customizable
  */
 public class Pi4JNativeContext implements SegmentAllocator {
+    //TODO: make Arena object customizable
+    /*
+    The current design is lack of flexibility - the memory allocator will keep memory segments until hte JVM is stopped.
+    We need to add parameters to the API interface, that can make Arena object customizable, e.g.
+        - make Arena sharable between different native calls (so that memory segments can be chained and passed from one native call to the other)
+        - make Arena more strict, depending on case of usage - shared, single-threaded, multi-threaded
+        - make Arena a RingBuffer to guarantee the Arena size will not be growing, while JVM and native code is working
+     */
     protected static final Arena ARENA = Arena.ofAuto();
     protected static final SymbolLookup LIBC_LIB = Linker.nativeLinker().defaultLookup();
 
@@ -68,7 +75,8 @@ public class Pi4JNativeContext implements SegmentAllocator {
      * Closes underlying Arena.
      */
     public void close() {
-        ARENA.close();
+        // do nothing :(
+        // see comments to Arena object above
     }
 
 }

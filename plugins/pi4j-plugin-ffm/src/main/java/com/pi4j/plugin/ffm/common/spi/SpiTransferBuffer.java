@@ -3,6 +3,7 @@ package com.pi4j.plugin.ffm.common.spi;
 import com.pi4j.plugin.ffm.common.Pi4JLayout;
 
 import java.lang.foreign.*;
+import java.util.Arrays;
 
 /**
  * Class-helper that holds tx and rx buffers for ioctl.
@@ -13,6 +14,9 @@ public final class SpiTransferBuffer implements Pi4JLayout {
     private SpiIocTransfer spiIocTransfer;
     private final byte[] txBuf;
     private final byte[] rxBuf;
+
+    private MemorySegment txMemorySegment;
+    private MemorySegment rxMemorySegment;
 
     /**
      * Creates new transfer holder.
@@ -68,8 +72,6 @@ public final class SpiTransferBuffer implements Pi4JLayout {
     @Override
     @SuppressWarnings("unchecked")
     public SpiTransferBuffer from(MemorySegment buffer, SegmentAllocator allocator) throws Throwable {
-        var txMemorySegment = createMemorySegment(txBuf, allocator);
-        var rxMemorySegment = createMemorySegment(rxBuf, allocator);
         // delegates all to underlying object
         this.spiIocTransfer = spiIocTransfer.from(buffer, txMemorySegment, rxMemorySegment);
         return this;
@@ -77,8 +79,8 @@ public final class SpiTransferBuffer implements Pi4JLayout {
 
     @Override
     public void to(MemorySegment buffer, SegmentAllocator allocator) throws Throwable {
-        var txMemorySegment = createMemorySegment(txBuf, allocator);
-        var rxMemorySegment = createMemorySegment(rxBuf, allocator);
+        this.txMemorySegment = createMemorySegment(txBuf, allocator);
+        this.rxMemorySegment = createMemorySegment(rxBuf, allocator);
         // delegates all to underlying object
         spiIocTransfer.to(buffer, txMemorySegment.address(), rxMemorySegment.address());
     }

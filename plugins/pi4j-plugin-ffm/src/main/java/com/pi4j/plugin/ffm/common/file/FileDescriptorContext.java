@@ -44,6 +44,5 @@ class FileDescriptorContext extends Pi4JNativeContext {
     // Native glibc 'access' method
     static final MethodHandle ACCESS = Linker.nativeLinker().downcallHandle(
         LIBC_LIB.find("access").orElseThrow(),
-        FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.JAVA_INT),
-        Linker.Option.captureCallState("errno"));
+        FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS, ValueLayout.JAVA_INT));
 }

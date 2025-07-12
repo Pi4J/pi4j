@@ -74,7 +74,8 @@ public class SPITest {
 
     @Test
     public void testSPIWrite() {
-        spi.write("Test".getBytes());
+        var written = spi.write("Test".getBytes());
+        assertEquals(4, written);
     }
 
     @Test

@@ -6,8 +6,6 @@ import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfigBuilder;
 import com.pi4j.io.i2c.I2CImplementation;
 import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.i2c.impl.I2CDirect;
-import com.pi4j.plugin.ffm.providers.i2c.impl.I2CSMBus;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;

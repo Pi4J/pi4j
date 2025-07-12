@@ -1,4 +1,4 @@
-package com.pi4j.plugin.ffm;
+package com.pi4j.plugin.ffm.unit;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
