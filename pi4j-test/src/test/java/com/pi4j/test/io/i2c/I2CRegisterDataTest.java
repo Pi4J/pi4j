@@ -44,22 +44,21 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestInstance(Lifecycle.PER_CLASS)
 public class I2CRegisterDataTest {
 
-    private static int I2C_BUS = 1;
-    private static int I2C_DEVICE = 0x04;
-    private static int NUMBER_OF_REGISTERS = 100;
+    private static final int I2C_BUS = 1;
+    private static final int I2C_DEVICE = 0x04;
+    private static final int NUMBER_OF_REGISTERS = 100;
 
     private Context pi4j;
-    private List<TestData> samples = new ArrayList<>();
-    private List<I2CRegister> registers = new ArrayList<>();
+    private final List<TestData> samples = new ArrayList<>();
+    private final List<I2CRegister> registers = new ArrayList<>();
 
-    private static byte SAMPLE_BYTE = 0x0d;
-    private static byte[] SAMPLE_BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-    private static byte[] SAMPLE_BUFFER_ARRAY = new byte[]{10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
-    private static ByteBuffer SAMPLE_BUFFER = ByteBuffer.wrap(SAMPLE_BUFFER_ARRAY);
-    private static String SAMPLE_STRING = "Hello World!";
+    private static final byte SAMPLE_BYTE = 0x0d;
+    private static final byte[] SAMPLE_BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    private static final byte[] SAMPLE_BUFFER_ARRAY = new byte[]{10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
+    private static final ByteBuffer SAMPLE_BUFFER = ByteBuffer.wrap(SAMPLE_BUFFER_ARRAY);
+    private static final String SAMPLE_STRING = "Hello World!";
 
-    private static int SIZE_BIG_ARRAY = 0x1ff;
-
+    private static final int SIZE_BIG_ARRAY = 0x1ff;
 
 
     @BeforeAll
@@ -94,7 +93,7 @@ public class I2CRegisterDataTest {
             word = rand.nextInt(65536);
             this.array = new byte[rand.nextInt(32)];
             rand.nextBytes(this.array);
-            byte bufferArray[] = new byte[rand.nextInt(32)];
+            byte[] bufferArray = new byte[rand.nextInt(32)];
             rand.nextBytes(bufferArray);
             this.buffer = ByteBuffer.wrap(bufferArray);
             this.str = UUID.randomUUID().toString();
@@ -186,12 +185,12 @@ public class I2CRegisterDataTest {
                 tbReg[0] = 0x42;
                 tbReg[1] = 0x01;
                 rc = register.readRegister(tbReg, readData, 0, 0x10);
-                if(rc != 0x10){
-                    Assertions.fail("readRegisterData: fail  RC switchNumber : "  + sample.switchNumber);
+                if (rc != 0x10) {
+                    Assertions.fail("readRegisterData: fail  RC switchNumber : " + sample.switchNumber);
                 }
                 compare = this.compareArray(sample.bigArray, readData, 0x0, 0x10);
-                if(!compare){
-                    Assertions.fail("readRegisterData: fail  switchNumber : "  + sample.switchNumber);
+                if (!compare) {
+                    Assertions.fail("readRegisterData: fail  switchNumber : " + sample.switchNumber);
                 }
                 break;
             case 1:
@@ -200,12 +199,12 @@ public class I2CRegisterDataTest {
                 readData = new byte[0x10];
                 obReg = 0x42;
                 rc = register.readRegister(obReg, readData, 0, 0x10);
-                if(rc != 0x10){
-                    Assertions.fail("readRegisterData: fail  RC switchNumber : "  + sample.switchNumber);
+                if (rc != 0x10) {
+                    Assertions.fail("readRegisterData: fail  RC switchNumber : " + sample.switchNumber);
                 }
                 compare = this.compareArray(sample.bigArray, readData, 0x0, 0x10);
-                if(!compare){
-                    Assertions.fail("readRegisterData: fail  switchNumber : "  + sample.switchNumber);
+                if (!compare) {
+                    Assertions.fail("readRegisterData: fail  switchNumber : " + sample.switchNumber);
                 }
                 break;
             case 2:
@@ -214,12 +213,12 @@ public class I2CRegisterDataTest {
                 readData = new byte[0x10];
                 obReg = 0x42;
                 rc = register.readRegister(obReg, readData, 0, 0x10);
-                if(rc != 0x10){
-                    Assertions.fail("readRegisterData: fail  RC switchNumber : "  + sample.switchNumber);
+                if (rc != 0x10) {
+                    Assertions.fail("readRegisterData: fail  RC switchNumber : " + sample.switchNumber);
                 }
                 compare = this.compareArray(sample.bigArray, readData, 0x5, 0x10);
-                if(!compare){
-                    Assertions.fail("readRegisterData: fail  switchNumber : "  + sample.switchNumber);
+                if (!compare) {
+                    Assertions.fail("readRegisterData: fail  switchNumber : " + sample.switchNumber);
                 }
                 break;
             case 3:
@@ -229,15 +228,33 @@ public class I2CRegisterDataTest {
                 tbReg[0] = 0x42;
                 tbReg[1] = 0x01;
                 rc = register.readRegister(tbReg, readData, 0, 0x10);
-                if(rc != 0x10){
-                    Assertions.fail("readRegisterData: fail  RC switchNumber : "  + sample.switchNumber);
+                if (rc != 0x10) {
+                    Assertions.fail("readRegisterData: fail  RC switchNumber : " + sample.switchNumber);
                 }
                 compare = this.compareArray(sample.bigArray, readData, 0x05, 0x10);
-                if(!compare){
-                    Assertions.fail("readRegisterData: fail  switchNumber : "  + sample.switchNumber);
+                if (!compare) {
+                    Assertions.fail("readRegisterData: fail  switchNumber : " + sample.switchNumber);
                 }
                 break;
             case 4:
+                // do the read back verification
+                // read back register contents from offset 0x0142. Compare offset 0x05 in bigArray
+                int readDataOffset = 0x05;
+                // As the read data will be written starting at offset 0x02,
+                // the requested data length must be less to not walk off the buffer end.
+                int userBufferLength = 0x10 + readDataOffset;
+                readData = new byte[userBufferLength];
+                tbReg[0] = 0x42;
+                tbReg[1] = 0x01;
+                rc = register.readRegister(tbReg, readData, readDataOffset, 0x10);
+                if (rc != 0x10) {
+                    Assertions.fail("readRegisterData: fail  RC switchNumber : " + sample.switchNumber);
+                }
+                // offset applied to first parameter, so swap parms
+                compare = this.compareArray(readData, sample.bigArray, readDataOffset, 0x10);
+                if (!compare) {
+                    Assertions.fail("readRegisterData: fail  switchNumber : " + sample.switchNumber);
+                }
                 break;
             case 5:
                 break;
@@ -252,7 +269,6 @@ public class I2CRegisterDataTest {
             case 10:
                 break;
             default:
-                ;
         }
     }
 
@@ -272,38 +288,45 @@ public class I2CRegisterDataTest {
                 // copy first 0x10 bytes of data to chip register offset 0x0142
                 tbReg[0] = 0x42;
                 tbReg[1] = 0x01;
-                rc = register.writeRegister(tbReg, sample.bigArray, 0, 0x10);;
-                if(rc != 0x10){
-                    Assertions.fail("writeRegisterData: fail RC switchNumber : "  + sample.switchNumber);
+                rc = register.writeRegister(tbReg, sample.bigArray, 0, 0x10);
+                if (rc != 0x10) {
+                    Assertions.fail("writeRegisterData: fail RC switchNumber : " + sample.switchNumber);
                 }
 
                 break;
             case 1:
                 // copy first 0x10 bytes of data to chip register offset 0x42
                 obReg = 0x42;
-                rc = register.writeRegister(obReg, sample.bigArray, 0, 0x10);;
-                if(rc != 0x10){
-                    Assertions.fail("writeRegisterData: fail RC switchNumber : "  + sample.switchNumber);
+                rc = register.writeRegister(obReg, sample.bigArray, 0, 0x10);
+                if (rc != 0x10) {
+                    Assertions.fail("writeRegisterData: fail RC switchNumber : " + sample.switchNumber);
                 }
                 break;
             case 2:
                 // copy first 0x10 bytes of data to chip register offset 0x42
                 obReg = 0x42;
-                rc = register.writeRegister(obReg, sample.bigArray, 0x05, 0x10);;
-                if(rc != 0x10){
-                    Assertions.fail("writeRegisterData: fail RC switchNumber : "  + sample.switchNumber);
+                rc = register.writeRegister(obReg, sample.bigArray, 0x05, 0x10);
+                if (rc != 0x10) {
+                    Assertions.fail("writeRegisterData: fail RC switchNumber : " + sample.switchNumber);
                 }
                 break;
             case 3:
                 // copy first 0x10 bytes of data to chip register offset 0x0142
                 tbReg[0] = 0x42;
                 tbReg[1] = 0x01;
-                rc = register.writeRegister(tbReg, sample.bigArray, 0x05, 0x10);;
-                if(rc != 0x10){
-                    Assertions.fail("writeRegisterData: fail RC switchNumber : "  + sample.switchNumber);
+                rc = register.writeRegister(tbReg, sample.bigArray, 0x05, 0x10);
+                if (rc != 0x10) {
+                    Assertions.fail("writeRegisterData: fail RC switchNumber : " + sample.switchNumber);
                 }
                 break;
             case 4:
+                // copy first 0x10 bytes of data to chip register offset 0x0142
+                tbReg[0] = 0x42;
+                tbReg[1] = 0x01;
+                rc = register.writeRegister(tbReg, sample.bigArray, 0, 0x10);
+                if (rc != 0x10) {
+                    Assertions.fail("writeRegisterData: fail RC switchNumber : " + sample.switchNumber);
+                }
                 break;
             case 5:
                 break;
@@ -318,24 +341,24 @@ public class I2CRegisterDataTest {
             case 10:
                 break;
             default:
-                ;//Assertions.fail("writeRegisterData: invalid switchNumber");
+                //Assertions.fail("writeRegisterData: invalid switchNumber");
         }
     }
 
 
     /**
-     *  Unit testing, was used for unit testing write to register 0x0142 and read from 0x0143.
-     *  Not supported using ArrayDeque, required flat multi dimension array
+     * Unit testing, was used for unit testing write to register 0x0142 and read from 0x0143.
+     * Not supported using ArrayDeque, required flat multi dimension array
      *
-     * @param a         byte array, comparison begins at aOffset
-     * @param b         byte array whose contents are compared for numBytes
-     * @param aOffset   starting compare offset within 'a'
-     * @param numBytes  How many bytes to compare
-     * @return          If comparison equal, true, else false
+     * @param a        byte array, comparison begins at aOffset
+     * @param b        byte array whose contents are compared for numBytes
+     * @param aOffset  starting compare offset within 'a'
+     * @param numBytes How many bytes to compare
+     * @return If comparison equal, true, else false
      */
-    public boolean compareArray( byte[] a, byte[]b, int aOffset, int numBytes){
+    public boolean compareArray(byte[] a, byte[] b, int aOffset, int numBytes) {
         boolean rval = true;
-        if((a.length >= (aOffset + numBytes)) && (b.length >= numBytes)) {
+        if ((a.length >= (aOffset + numBytes)) && (b.length >= numBytes)) {
             for (int c = 0; c < numBytes; c++) {
                 if (a[aOffset + c] != b[c]) {
                     rval = false;
@@ -345,8 +368,6 @@ public class I2CRegisterDataTest {
         }
         return rval;
     }
-
-
 
 
     public void writeRegister(I2CRegister register, TestData sample) {
@@ -366,8 +387,8 @@ public class I2CRegisterDataTest {
         // write a string of data to the raw I2C device (not to a register)
         register.write(sample.str);
 
-        byte reg[] = new byte[2];
-        register.writeRegister(reg, sample.array,0, sample.array.length );
+        byte[] reg = new byte[2];
+        register.writeRegister(reg, sample.array, 0, sample.array.length);
     }
 
     public void readRegister(I2CRegister register, TestData sample) {
@@ -381,7 +402,7 @@ public class I2CRegisterDataTest {
         assertEquals(sample.word, w);
 
         // read an array of data bytes from the raw I2C device (not from a register)
-        byte byteArray[] = new byte[sample.array.length];
+        byte[] byteArray = new byte[sample.array.length];
         register.read(byteArray, 0, byteArray.length);
         assertArrayEquals(sample.array, byteArray);
 
