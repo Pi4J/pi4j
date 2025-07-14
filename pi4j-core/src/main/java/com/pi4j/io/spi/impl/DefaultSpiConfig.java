@@ -48,6 +48,10 @@ public class DefaultSpiConfig
     protected final SpiBus bus;
     protected boolean busUserProvided = false;  // indicate user supplied the value
     protected final Long flags;
+    protected final int readLsbFirst;
+    protected final int writeLsbFirst;
+    protected boolean readLsbFirstUserProvided;
+    protected boolean writeLsbFirstUserProvided;
 
     /**
      * PRIVATE CONSTRUCTOR
@@ -73,6 +77,20 @@ public class DefaultSpiConfig
             this.busUserProvided = false;
         }
 
+        if(properties.containsKey(WRITE_LSB_KEY)){
+            this.writeLsbFirst = StringUtil.parseInteger(properties.get(WRITE_LSB_KEY),Spi.DEFAULT_WRITE_LSB_FIRST);
+            this.writeLsbFirstUserProvided = true;
+        }else {
+            this.writeLsbFirst = 0;
+            this.writeLsbFirstUserProvided = false;
+        }
+        if(properties.containsKey(READ_LSB_KEY)){
+            this.readLsbFirst = StringUtil.parseInteger(properties.get(READ_LSB_KEY),Spi.DEFAULT_READ_LSB_FIRST);
+            this.readLsbFirstUserProvided = true;
+        }else {
+            this.readLsbFirst = 0;
+            this.readLsbFirstUserProvided = false;
+        }
         // load optional MODE from properties
         if(properties.containsKey(MODE_KEY)){
             this.mode = SpiMode.parse(properties.get(MODE_KEY));
@@ -86,7 +104,7 @@ public class DefaultSpiConfig
         if(properties.containsKey(FLAGS_KEY)){
             this.flags = StringUtil.parseLong(properties.get(FLAGS_KEY), null);
         } else {
-            this.flags = 0L; // default flags (0)
+            this.flags = null; // set null, same as parseLong would
         }
 
         // define default property values if any are missing (based on the required address value)
@@ -101,12 +119,33 @@ public class DefaultSpiConfig
         return this.baud;
     }
 
+    @Override
+    public Integer readLsbFirst() {
+        return this.readLsbFirst;
+    }
+
+    @Override
+    public Integer writeLsbFirst() {
+        return this.writeLsbFirst;
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean busUserProvided() {
         return this.busUserProvided;
     }
 
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean writeLsbFirstUserProvided() {
+        return this.writeLsbFirstUserProvided;
+    }
+    /** {@inheritDoc} */
+    @Override
+    public boolean readLsbFirstUserProvided() {
+        return this.readLsbFirstUserProvided;
+    }
 
 
     /** {@inheritDoc} */

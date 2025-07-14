@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.registry.Registry;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -70,5 +71,25 @@ public class RegistryTest {
         logger.info("Pi4J I/O REGISTRY <acquired via factory accessor>");
         logger.info("-------------------------------------------------");
         registry.describe().print(System.out);
+    }
+
+    @Test
+    public void testShutdownAndRecreate() throws Pi4JException {
+        var inputConfig = DigitalInput.newConfigBuilder(pi4j)
+                .id("DIN-3")
+                .name("DIN-3")
+                .address(3);
+
+        // create a new input, then shutdown
+        var input = pi4j.create(inputConfig);
+
+        input.shutdown(pi4j);
+        pi4j.shutdown(input.id());
+
+        // shouldn't fail when recreating
+        input = pi4j.create(inputConfig);
+
+        // or shutting down
+        pi4j.shutdown(input.id());
     }
 }

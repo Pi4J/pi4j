@@ -32,24 +32,34 @@ import com.pi4j.exception.ShutdownException;
 /**
  * <p>Lifecycle interface.</p>
  *
+ * @param <T>
+ *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
- * @param <T>
  */
 public interface Lifecycle<T> {
+
     /**
      * <p>initialize.</p>
      *
      * @param context a {@link com.pi4j.context.Context} object.
+     *
      * @return a T object.
+     *
      * @throws com.pi4j.exception.InitializeException if an error occurs during initialization.
      */
     T initialize(Context context) throws InitializeException;
+
     /**
      * <p>shutdown.</p>
      *
+     * <p>This method is called by the registry when the registry shutting down. To shutdown an element, call
+     * {@link Context#shutdown(String)} passing the ID of the relevant element.</p>
+     *
      * @param context a {@link com.pi4j.context.Context} object.
+     *
      * @return a T object.
+     *
      * @throws com.pi4j.exception.ShutdownException if an error occurs during shutdown.
      */
     T shutdown(Context context) throws ShutdownException;

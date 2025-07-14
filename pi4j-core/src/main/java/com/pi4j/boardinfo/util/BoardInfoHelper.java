@@ -92,6 +92,16 @@ public class BoardInfoHelper {
     }
 
     /**
+     * Sets the model of the board. To be used when the detected board is not correct,
+     * or to force a specific model e.g. on Orange Pi, or during testing.
+     *
+     * @param boardModel
+     */
+    public void setBoardModel(BoardModel boardModel) {
+        this.boardInfo.setBoardModel(boardModel);
+    }
+
+    /**
      * Returns the current instance of {@code BoardInfoHelper}, which contains board information.
      *
      * @return the current {@link BoardInfo} instance
@@ -163,7 +173,7 @@ public class BoardInfoHelper {
      * @return {@code true} if the board is a Raspberry Pi Model 5B, otherwise {@code false}.
      */
     public static boolean usesRP1() {
-        return current().getBoardModel() == BoardModel.MODEL_5_B;
+        return current().getBoardModel().usesRP1();
     }
 
     /**

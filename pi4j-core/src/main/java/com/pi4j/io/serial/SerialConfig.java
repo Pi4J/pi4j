@@ -34,16 +34,27 @@ import com.pi4j.io.IOConfig;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
+@Deprecated(forRemoval = true)
 public interface SerialConfig extends DeviceConfig<SerialConfig>, IOConfig<SerialConfig> {
-    /** Constant <code>BAUD_KEY="baud"</code> */
+    /**
+     * Constant <code>BAUD_KEY="baud"</code>
+     */
     String BAUD_KEY = "baud";
-    /** Constant <code>STOP_BITS_KEY="stop-bits"</code> */
+    /**
+     * Constant <code>STOP_BITS_KEY="stop-bits"</code>
+     */
     String STOP_BITS_KEY = "stop-bits";
-    /** Constant <code>DATA_BITS_KEY="data-bits"</code> */
+    /**
+     * Constant <code>DATA_BITS_KEY="data-bits"</code>
+     */
     String DATA_BITS_KEY = "data-bits";
-    /** Constant <code>PARITY_KEY="parity"</code> */
+    /**
+     * Constant <code>PARITY_KEY="parity"</code>
+     */
     String PARITY_KEY = "parity";
-    /** Constant <code>FLOW_CONTROL_KEY="flow-control"</code> */
+    /**
+     * Constant <code>FLOW_CONTROL_KEY="flow-control"</code>
+     */
     String FLOW_CONTROL_KEY = "flow-control";
 
     /**
@@ -52,6 +63,7 @@ public interface SerialConfig extends DeviceConfig<SerialConfig>, IOConfig<Seria
      * @return a {@link java.lang.Integer} object.
      */
     Integer baud();
+
     /**
      * <p>getBaud.</p>
      *
@@ -67,6 +79,7 @@ public interface SerialConfig extends DeviceConfig<SerialConfig>, IOConfig<Seria
      * @return a {@link com.pi4j.io.serial.StopBits} object.
      */
     StopBits stopBits();
+
     /**
      * <p>getStopBits.</p>
      *
@@ -82,6 +95,7 @@ public interface SerialConfig extends DeviceConfig<SerialConfig>, IOConfig<Seria
      * @return a {@link com.pi4j.io.serial.DataBits} object.
      */
     DataBits dataBits();
+
     /**
      * <p>getDataBits.</p>
      *
@@ -97,6 +111,7 @@ public interface SerialConfig extends DeviceConfig<SerialConfig>, IOConfig<Seria
      * @return a {@link com.pi4j.io.serial.Parity} object.
      */
     Parity parity();
+
     /**
      * <p>getParity.</p>
      *
@@ -112,12 +127,13 @@ public interface SerialConfig extends DeviceConfig<SerialConfig>, IOConfig<Seria
      * @return a {@link com.pi4j.io.serial.FlowControl} object.
      */
     FlowControl flowControl();
+
     /**
      * <p>getFlowControl.</p>
      *
      * @return a {@link com.pi4j.io.serial.FlowControl} object.
      */
-    default FlowControl getFlowControl(){
+    default FlowControl getFlowControl() {
         return flowControl();
     }
 }

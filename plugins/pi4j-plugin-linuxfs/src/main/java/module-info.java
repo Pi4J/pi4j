@@ -33,6 +33,7 @@ module com.pi4j.plugin.linuxfs {
 
     requires com.pi4j;
     requires com.pi4j.library.linuxfs;
+    requires com.sun.jna;
     requires jsch;
 
     exports com.pi4j.plugin.linuxfs;
@@ -40,6 +41,7 @@ module com.pi4j.plugin.linuxfs {
     exports com.pi4j.plugin.linuxfs.provider.pwm;
     exports com.pi4j.plugin.linuxfs.provider.i2c;
     exports com.pi4j.plugin.linuxfs.provider.onewire;
+    exports com.pi4j.plugin.linuxfs.provider.spi;
 
     provides com.pi4j.extension.Plugin
             with LinuxFsPlugin;

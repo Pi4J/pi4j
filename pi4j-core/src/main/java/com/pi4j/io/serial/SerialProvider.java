@@ -34,17 +34,18 @@ import com.pi4j.provider.Provider;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
+@Deprecated(forRemoval = true)
 public interface SerialProvider extends Provider<SerialProvider, Serial, SerialConfig> {
 
     /**
      * <p>create.</p>
      *
      * @param builder a {@link com.pi4j.io.serial.SerialConfigBuilder} object.
-     * @param <T> a T object.
+     * @param <T>     a T object.
      * @return a T object.
      */
     default <T extends Serial> T create(SerialConfigBuilder builder) {
-        return (T)create(builder.build());
+        return (T) create(builder.build());
     }
 
 //    default <T extends Serial> T create(Integer address) {

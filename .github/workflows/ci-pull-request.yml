@@ -27,5 +27,5 @@ jobs:
     - name: Upload distribution files to staging
       uses: actions/upload-artifact@v4
       with:
-        name: pi4j-v2-dist
+        name: pi4j-dist
         path: staging

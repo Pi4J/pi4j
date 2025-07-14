@@ -56,6 +56,18 @@ public class DefaultSpiConfigBuilder
         return new DefaultSpiConfigBuilder(context);
     }
 
+    @Override
+    public SpiConfigBuilder readLsbFirst(Integer shift) {
+        this.properties.put(SpiConfig.READ_LSB_KEY, shift.toString());
+        return this;
+    }
+
+    @Override
+    public SpiConfigBuilder writeLsbFirst(Integer shift) {
+        this.properties.put(SpiConfig.WRITE_LSB_KEY, shift.toString());
+        return this;
+    }
+
     /** {@inheritDoc} */
     @Override
     public SpiConfigBuilder baud(Integer rate) {

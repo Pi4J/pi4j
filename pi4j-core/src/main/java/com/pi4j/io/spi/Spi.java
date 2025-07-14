@@ -48,7 +48,10 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
     SpiChipSelect DEFAULT_CHIP_SELECT = SpiChipSelect.CS_0;
     /** Constant <code>DEFAULT_BAUD=1000000</code> */
     int DEFAULT_BAUD = 1000000; // 1MHz (range is 500kHz - 32MHz)
-
+    /** Constant <code>DEFAULT_WRITE_LSB_FIRST</code> */
+    int DEFAULT_WRITE_LSB_FIRST = 0;
+    /** Constant <code>DEFAULT_READ_LSB_FIRST</code> */
+    int DEFAULT_READ_LSB_FIRST = 0;
     /**
      * <p>newConfigBuilder.</p>
      *
