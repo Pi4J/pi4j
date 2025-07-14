@@ -65,6 +65,7 @@ module com.pi4j {
     opens com.pi4j.boardinfo.datareader;
     exports com.pi4j.boardinfo.util.command;
     opens com.pi4j.boardinfo.util.command;
+    exports com.pi4j.io.onewire;
 
     // extensibility service interfaces
     uses com.pi4j.extension.Plugin;

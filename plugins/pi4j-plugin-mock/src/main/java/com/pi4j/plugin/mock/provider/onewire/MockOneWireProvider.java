@@ -1,11 +1,11 @@
-import com.pi4j.plugin.linuxfs.LinuxFsPlugin;
+package com.pi4j.plugin.mock.provider.onewire;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: PLUGIN   :: LinuxFS I/O Providers
- * FILENAME      :  module-info.java
+ * PROJECT       :  Pi4J :: PLUGIN   :: Mock Platform & Providers
+ * FILENAME      :  MockSerialProvider.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -26,23 +26,21 @@ import com.pi4j.plugin.linuxfs.LinuxFsPlugin;
  * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
-module com.pi4j.plugin.linuxfs {
 
-    // depends on SLF4J
-    requires org.slf4j;
+import com.pi4j.io.onewire.OneWireProvider;
+import com.pi4j.plugin.mock.Mock;
 
-    requires com.pi4j;
-    requires com.pi4j.library.linuxfs;
-    requires com.sun.jna;
-    requires jsch;
-
-    exports com.pi4j.plugin.linuxfs;
-    exports com.pi4j.plugin.linuxfs.provider.gpio.digital;
-    exports com.pi4j.plugin.linuxfs.provider.pwm;
-    exports com.pi4j.plugin.linuxfs.provider.i2c;
-    exports com.pi4j.plugin.linuxfs.provider.onewire;
-    exports com.pi4j.plugin.linuxfs.provider.spi;
-
-    provides com.pi4j.extension.Plugin
-            with LinuxFsPlugin;
+public interface MockOneWireProvider extends OneWireProvider {
+    /** Constant <code>NAME="Mock.ONE_WIRE_PROVIDER_NAME"</code> */
+    String NAME = Mock.ONE_WIRE_PROVIDER_NAME;
+    /** Constant <code>ID="Mock.ONE_WIRE_PROVIDER_ID"</code> */
+    String ID = Mock.ONE_WIRE_PROVIDER_ID;
+    /**
+     * <p>newInstance.</p>
+     *
+     * @return a {@link MockOneWireProvider} object.
+     */
+    static MockOneWireProvider newInstance() {
+        return new MockOneWireProviderImpl();
+    }
 }

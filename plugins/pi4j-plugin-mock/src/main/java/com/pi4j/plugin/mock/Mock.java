@@ -94,4 +94,10 @@ public class Mock {
     public static final String SERIAL_PROVIDER_NAME = NAME + " Serial Provider";
     /** Constant <code>SERIAL_PROVIDER_ID="ID + -serial"</code> */
     public static final String SERIAL_PROVIDER_ID = ID + "-serial";
+
+    // 1-Wire Provider name and unique ID
+    /** Constant <code>ONE_WIRE_PROVIDER_NAME="NAME +  Serial Provider"</code> */
+    public static final String ONE_WIRE_PROVIDER_NAME = NAME + " 1-Wire Provider";
+    /** Constant <code>ONE_WIRE_PROVIDER_ID="ID + -serial"</code> */
+    public static final String ONE_WIRE_PROVIDER_ID = ID + "-one-wire";
 }

@@ -1,11 +1,11 @@
-import com.pi4j.plugin.linuxfs.LinuxFsPlugin;
+package com.pi4j.plugin.mock.provider.onewire;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: PLUGIN   :: LinuxFS I/O Providers
- * FILENAME      :  module-info.java
+ * PROJECT       :  Pi4J :: PLUGIN   :: Mock Platform & Providers
+ * FILENAME      :  MockOneWireProviderImpl.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -26,23 +26,31 @@ import com.pi4j.plugin.linuxfs.LinuxFsPlugin;
  * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
-module com.pi4j.plugin.linuxfs {
 
-    // depends on SLF4J
-    requires org.slf4j;
+import com.pi4j.io.onewire.OneWire;
+import com.pi4j.io.onewire.OneWireConfig;
+import com.pi4j.io.onewire.OneWireProviderBase;
 
-    requires com.pi4j;
-    requires com.pi4j.library.linuxfs;
-    requires com.sun.jna;
-    requires jsch;
+public class MockOneWireProviderImpl extends OneWireProviderBase implements MockOneWireProvider {
 
-    exports com.pi4j.plugin.linuxfs;
-    exports com.pi4j.plugin.linuxfs.provider.gpio.digital;
-    exports com.pi4j.plugin.linuxfs.provider.pwm;
-    exports com.pi4j.plugin.linuxfs.provider.i2c;
-    exports com.pi4j.plugin.linuxfs.provider.onewire;
-    exports com.pi4j.plugin.linuxfs.provider.spi;
+    /**
+     * <p>Constructor for MockSerialProviderImpl.</p>
+     */
+    public MockOneWireProviderImpl() {
+        this.id = ID;
+        this.name = NAME;
+    }
 
-    provides com.pi4j.extension.Plugin
-            with LinuxFsPlugin;
+    @Override
+    public OneWire create(OneWireConfig config) {
+        MockOneWire oneWire = new MockOneWire(this, config);
+        this.context.registry().add(oneWire);
+        return oneWire;
+    }
+
+    @Override
+    public int getPriority() {
+        // if the mock is loaded, then we most probably want to use it for testing
+        return 1000;
+    }
 }

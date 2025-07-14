@@ -38,6 +38,7 @@ module com.pi4j.plugin.mock {
     exports com.pi4j.plugin.mock.provider.serial;
     exports com.pi4j.plugin.mock.provider.spi;
     exports com.pi4j.plugin.mock.provider.i2c;
+    exports com.pi4j.plugin.mock.provider.onewire;
 
     provides com.pi4j.extension.Plugin
             with com.pi4j.plugin.mock.MockPlugin;

@@ -35,6 +35,7 @@ import com.pi4j.io.gpio.analog.AnalogOutputProvider;
 import com.pi4j.io.gpio.digital.DigitalInputProvider;
 import com.pi4j.io.gpio.digital.DigitalOutputProvider;
 import com.pi4j.io.i2c.I2CProvider;
+import com.pi4j.io.onewire.OneWireProvider;
 import com.pi4j.io.pwm.PwmProvider;
 import com.pi4j.io.serial.SerialProvider;
 import com.pi4j.io.spi.SpiProvider;
@@ -105,6 +106,12 @@ public interface Providers extends Describable {
      * @return a {@link com.pi4j.provider.ProviderGroup} object.
      */
     ProviderGroup<SerialProvider> serial();
+    /**
+     * <p>1-Wire.</p>
+     *
+     * @return a {@link com.pi4j.provider.ProviderGroup} object.
+     */
+    ProviderGroup<OneWireProvider> oneWire();
 
     /**
      * Get all providers
