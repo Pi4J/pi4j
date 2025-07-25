@@ -25,6 +25,7 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
     private final IoctlNative ioctl = new IoctlNative();
     private final FileDescriptorNative file = new FileDescriptorNative();
 
+    private final String deviceName;
     private final String chipName;
     private final int pin;
     private int chipFileDescriptor;
@@ -33,33 +34,37 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
     public DigitalOutputFFM(String chipName, DigitalOutputProvider provider, DigitalOutputConfig config) {
         super(provider, config);
         this.pin = config.address();
-        this.chipName = "/dev/" + chipName;
+        this.chipName = chipName;
+        this.deviceName = "/dev/" + chipName;
     }
 
     @Override
     public DigitalOutput initialize(Context context) throws InitializeException {
         super.initialize(context);
+        if (chipName.equals("unknown")) {
+            throw new InitializeException("Please, specify a chip name with builder call 'setGpioChipName()'.");
+        }
         try {
             if (!deviceExists()) {
-                throw new InitializeException("Device '" + chipName + "' does not exist.");
+                throw new InitializeException("Device '" + deviceName + "' does not exist.");
             }
             if (!canAccessDevice()) {
-                var posix = Files.readAttributes(Path.of(chipName), PosixFileAttributes.class);
-                logger.error("Inaccessible device: '{} {} {} {}'", PosixFilePermissions.toString(posix.permissions()), posix.owner().getName(), posix.group().getName(), chipName);
+                var posix = Files.readAttributes(Path.of(deviceName), PosixFileAttributes.class);
+                logger.error("Inaccessible device: '{} {} {} {}'", PosixFilePermissions.toString(posix.permissions()), posix.owner().getName(), posix.group().getName(), deviceName);
                 logger.error("Please, read the documentation <link> to setup right permissions.");
-                throw new InitializeException("Device '" + chipName + "' cannot be accessed with current user.");
+                throw new InitializeException("Device '" + deviceName + "' cannot be accessed with current user.");
             }
-            logger.info("{}-{} - setting up DigitalOutput Pin...", chipName, pin);
-            logger.trace("{}-{} - opening device file.", chipName, pin);
-            var fd = file.open(chipName, FileFlag.O_RDONLY | FileFlag.O_CLOEXEC);
+            logger.info("{}-{} - setting up DigitalOutput Pin...", deviceName, pin);
+            logger.trace("{}-{} - opening device file.", deviceName, pin);
+            var fd = file.open(deviceName, FileFlag.O_RDONLY | FileFlag.O_CLOEXEC);
             var lineInfo = new LineInfo(new byte[]{}, new byte[]{}, pin, 0, 0, new LineAttribute[]{});
-            logger.trace("{}-{} - getting line info.", chipName, pin);
+            logger.trace("{}-{} - getting line info.", deviceName, pin);
             lineInfo = ioctl.call(fd, Command.getGpioV2GetLineInfoIoctl(), lineInfo);
             if ((lineInfo.flags() & PinFlag.USED.getValue()) > 0) {
                 shutdown(context());
                 throw new InitializeException("Pin " + pin + " is in use");
             }
-            logger.trace("{}-{} - DigitalOutput Pin line info: {}", chipName, pin, lineInfo);
+            logger.trace("{}-{} - DigitalOutput Pin line info: {}", deviceName, pin, lineInfo);
             var flags = PinFlag.OUTPUT.getValue();
             var lineConfig = new LineConfig(flags, 0, new LineConfigAttribute[]{});
             var lineRequest = new LineRequest(new int[]{pin}, ("pi4j." + getClass().getSimpleName()).getBytes(), lineConfig, 1, 0, 0);
@@ -67,9 +72,9 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
             this.chipFileDescriptor = result.fd();
 
             file.close(fd);
-            logger.info("{}-{} - DigitalOutput Pin configured: {}", chipName, pin, result);
+            logger.info("{}-{} - DigitalOutput Pin configured: {}", deviceName, pin, result);
         } catch (java.io.IOException e) {
-            logger.error("{}-{} - DigitalOutput Pin Initialization error: {}", chipName, pin, e.getMessage());
+            logger.error("{}-{} - DigitalOutput Pin Initialization error: {}", deviceName, pin, e.getMessage());
             throw new InitializeException(e);
         }
         return this;
@@ -78,7 +83,7 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
     @Override
     public DigitalOutput shutdown(Context context) throws ShutdownException {
         super.shutdown(context);
-        logger.info("{}-{} - closing GPIO Pin.", chipName, pin);
+        logger.info("{}-{} - closing GPIO Pin.", deviceName, pin);
         try {
             if (chipFileDescriptor > 0) {
                 file.close(chipFileDescriptor);
@@ -88,14 +93,14 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
             throw new ShutdownException(e);
         }
         this.closed = true;
-        logger.info("{}-{} - GPIO Pin is closed. Recreate the pin object to reuse.", chipName, pin);
+        logger.info("{}-{} - GPIO Pin is closed. Recreate the pin object to reuse.", deviceName, pin);
         return this;
     }
 
     @Override
     public DigitalOutput state(DigitalState state) throws IOException {
         checkClosed();
-        logger.trace("{}-{} - writing GPIO Pin {}.", chipName, pin, state);
+        logger.trace("{}-{} - writing GPIO Pin {}.", deviceName, pin, state);
         var lineValues = new LineValues(state.getValue().intValue(), 1);
         try {
             ioctl.call(chipFileDescriptor, Command.getGpioV2SetValuesIoctl(), lineValues);
@@ -115,10 +120,10 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
     }
 
     private boolean canAccessDevice() {
-        return file.access(chipName, FileFlag.R_OK) == 0;
+        return file.access(deviceName, FileFlag.R_OK) == 0;
     }
 
     private boolean deviceExists() {
-        return file.access(chipName, FileFlag.F_OK) == 0;
+        return file.access(deviceName, FileFlag.F_OK) == 0;
     }
 }

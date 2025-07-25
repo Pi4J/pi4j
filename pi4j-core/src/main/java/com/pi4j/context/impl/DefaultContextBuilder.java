@@ -253,7 +253,6 @@ public class DefaultContextBuilder implements ContextBuilder {
     @Override
     public ContextBuilder setGpioChipName(String chipName) {
         this.gpioChipName = chipName;
-        this.properties.put("gpio.chip.name", chipName);
         return this;
     }
 
@@ -305,6 +304,7 @@ public class DefaultContextBuilder implements ContextBuilder {
 
             @Override
             public Map<String, String> properties() {
+                builder.properties.put("gpio.chip.name", gpioChipName != null ? gpioChipName : "unknown");
                 return Collections.unmodifiableMap(builder.properties);
             }
         };

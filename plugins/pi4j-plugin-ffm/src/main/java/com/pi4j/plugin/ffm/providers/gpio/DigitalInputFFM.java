@@ -46,6 +46,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
     private final FileDescriptorNative file = new FileDescriptorNative();
     private final PollNative poll = new PollNative();
 
+    private final String deviceName;
     private final String chipName;
     private final int pin;
     private final long debounce;
@@ -61,34 +62,39 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
     public DigitalInputFFM(String chipName, DigitalInputProvider provider, DigitalInputConfig config) {
         super(provider, config);
         this.pin = config.address();
-        this.chipName = "/dev/" + chipName;
+        this.chipName = chipName;
+        this.deviceName = "/dev/" + chipName;
         this.debounce = config.debounce();
         this.pull = config.pull();
     }
 
     @Override
     public DigitalInput initialize(Context context) throws InitializeException {
+        super.initialize(context);
+        if (chipName.equals("unknown")) {
+            throw new InitializeException("Please, specify a chip name with builder call 'setGpioChipName()'.");
+        }
         try {
             if (!deviceExists()) {
-                throw new InitializeException("Device '" + chipName + "' does not exist.");
+                throw new InitializeException("Device '" + deviceName + "' does not exist.");
             }
             if (!canAccessDevice()) {
-                var posix = Files.readAttributes(Path.of(chipName), PosixFileAttributes.class);
-                logger.error("Inaccessible device: '{} {} {} {}'", PosixFilePermissions.toString(posix.permissions()), posix.owner().getName(), posix.group().getName(), chipName);
+                var posix = Files.readAttributes(Path.of(deviceName), PosixFileAttributes.class);
+                logger.error("Inaccessible device: '{} {} {} {}'", PosixFilePermissions.toString(posix.permissions()), posix.owner().getName(), posix.group().getName(), deviceName);
                 logger.error("Please, read the documentation <link> to setup right permissions.");
-                throw new InitializeException("Device '" + chipName + "' cannot be accessed with current user.");
+                throw new InitializeException("Device '" + deviceName + "' cannot be accessed with current user.");
             }
-            logger.info("{}-{} - setting up DigitalInput Pin...", chipName, pin);
-            logger.trace("{}-{} - opening device file.", chipName, pin);
-            var fd = file.open(chipName, FileFlag.O_RDONLY | FileFlag.O_CLOEXEC);
+            logger.info("{}-{} - setting up DigitalInput Pin...", deviceName, pin);
+            logger.trace("{}-{} - opening device file.", deviceName, pin);
+            var fd = file.open(deviceName, FileFlag.O_RDONLY | FileFlag.O_CLOEXEC);
             var lineInfo = new LineInfo(new byte[]{}, new byte[]{}, pin, 0, 0, new LineAttribute[]{});
-            logger.trace("{}-{} - getting line info.", chipName, pin);
+            logger.trace("{}-{} - getting line info.", deviceName, pin);
             lineInfo = ioctl.call(fd, Command.getGpioV2GetLineInfoIoctl(), lineInfo);
             if ((lineInfo.flags() & PinFlag.USED.getValue()) > 0) {
                 shutdown(context());
                 throw new InitializeException("Pin " + pin + " is in use");
             }
-            logger.trace("{}-{} - DigitalInput Pin line info: {}", chipName, pin, lineInfo);
+            logger.trace("{}-{} - DigitalInput Pin line info: {}", deviceName, pin, lineInfo);
             var flags = PinFlag.INPUT.getValue() | PinFlag.EDGE_RISING.getValue() | PinFlag.EDGE_FALLING.getValue();
             var attributes = new ArrayList<LineConfigAttribute>();
             if (debounce > 0) {
@@ -106,9 +112,9 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
             this.chipFileDescriptor = result.fd();
 
             file.close(fd);
-            logger.info("{}-{} - DigitalInput Pin configured: {}", chipName, pin, result);
+            logger.info("{}-{} - DigitalInput Pin configured: {}", deviceName, pin, result);
         } catch (IOException e) {
-            logger.error("{}-{} - DigitalInput Pin Initialization error: {}", chipName, pin, e.getMessage());
+            logger.error("{}-{} - DigitalInput Pin Initialization error: {}", deviceName, pin, e.getMessage());
             throw new InitializeException(e);
         }
         return this;
@@ -116,7 +122,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
 
     @Override
     public DigitalInput addListener(DigitalStateChangeListener... listener) {
-        var factory =  Thread.ofVirtual().name(chipName + "-event-detection-pin-", pin)
+        var factory =  Thread.ofVirtual().name(deviceName + "-event-detection-pin-", pin)
             .uncaughtExceptionHandler(((_, e) -> logger.error(e.getMessage(), e)))
             .factory();
         this.eventTaskProcessor = Executors.newSingleThreadExecutor(factory);
@@ -132,7 +138,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
     @Override
     public DigitalInput shutdown(Context context) throws ShutdownException {
         super.shutdown(context);
-        logger.info("{}-{} - closing GPIO Pin.", chipName, pin);
+        logger.info("{}-{} - closing GPIO Pin.", deviceName, pin);
         try {
             if (chipFileDescriptor > 0) {
                 file.close(chipFileDescriptor);
@@ -149,14 +155,14 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
             throw new ShutdownException(e);
         }
         this.closed = true;
-        logger.info("{}-{} - GPIO Pin is closed. Recreate the pin object to reuse.", chipName, pin);
+        logger.info("{}-{} - GPIO Pin is closed. Recreate the pin object to reuse.", deviceName, pin);
         return this;
     }
 
     @Override
     public DigitalState state() {
         checkClosed();
-        logger.trace("{}-{} - reading GPIO Pin.", chipName, pin);
+        logger.trace("{}-{} - reading GPIO Pin.", deviceName, pin);
         var lineValues = new LineValues(0, 1);
         LineValues result;
         try {
@@ -165,7 +171,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
             throw new Pi4JException(e);
         }
         var state = DigitalState.getState(result.bits());
-        logger.trace("{}-{} - GPIO Pin state is {}.", chipName, pin, state);
+        logger.trace("{}-{} - GPIO Pin state is {}.", deviceName, pin, state);
         return state;
     }
 
@@ -179,11 +185,11 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
     }
 
     private boolean canAccessDevice() {
-        return file.access(chipName, FileFlag.R_OK) == 0;
+        return file.access(deviceName, FileFlag.R_OK) == 0;
     }
 
     private boolean deviceExists() {
-        return file.access(chipName, FileFlag.F_OK) == 0;
+        return file.access(deviceName, FileFlag.F_OK) == 0;
     }
 
     /**
