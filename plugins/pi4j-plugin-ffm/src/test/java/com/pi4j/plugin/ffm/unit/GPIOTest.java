@@ -3,9 +3,7 @@ package com.pi4j.plugin.ffm.unit;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
-import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
-import com.pi4j.io.gpio.digital.DigitalState;
-import com.pi4j.io.gpio.digital.PullResistance;
+import com.pi4j.io.gpio.digital.*;
 import com.pi4j.plugin.ffm.common.gpio.PinEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineAttribute;
@@ -44,17 +42,12 @@ public class GPIOTest {
     public static void setup() {
         pi4j0 = Pi4J.newContextBuilder()
             .add(new DigitalInputFFMProviderImpl(), new DigitalOutputFFMProviderImpl())
-            // set gpio chip name to null for testing purpose (we need any available device in the system)
-            .setGpioChipName("null")
             .build();
         pi4j1 = Pi4J.newContextBuilder()
             .add(new DigitalInputFFMProviderImpl())
-            // set gpio chip name to null for testing purpose (we need any available device in the system)
-            .setGpioChipName("null")
             .build();
         pi4jNonExistent = Pi4J.newContextBuilder()
             .add(new DigitalInputFFMProviderImpl())
-            .setGpioChipName("gpiochip99")
             .build();
     }
 
@@ -72,7 +65,9 @@ public class GPIOTest {
             throw new IllegalStateException();
         });
         try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE); var _ = IoctlNativeMock.echo(lineInfoNonExistent)) {
-            assertThrows(IllegalStateException.class, () -> pi4j1.digitalInput().create(99));
+            var builder = DigitalInputConfigBuilder.newInstance(pi4j1).busNumber(-1)
+                .address(99).build();
+            assertThrows(IllegalStateException.class, () -> pi4j1.digitalInput().create(builder));
         }
     }
 
@@ -82,7 +77,9 @@ public class GPIOTest {
             throw new IllegalStateException();
         });
         try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE); var _ = IoctlNativeMock.echo(lineInfoNonExistent)) {
-            assertThrows(IllegalStateException.class, () -> pi4jNonExistent.digitalInput().create(0));
+            var builder = DigitalInputConfigBuilder.newInstance(pi4jNonExistent).busNumber(-1)
+                .address(0).build();
+            assertThrows(IllegalStateException.class, () -> pi4jNonExistent.digitalInput().create(builder));
         }
     }
 
@@ -96,7 +93,9 @@ public class GPIOTest {
                 new LineAttribute[0]);
         });
         try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE); var _ = IoctlNativeMock.echo(lineInfoTestData)) {
-            var pin = pi4j0.digitalInput().create(0);
+            var builder = DigitalInputConfigBuilder.newInstance(pi4j0).busNumber(-1)
+                .address(0).build();
+            var pin = pi4j0.digitalInput().create(builder);
             assertEquals(0, pin.address());
         }
     }
@@ -111,7 +110,9 @@ public class GPIOTest {
                 new LineAttribute[0]);
         });
         try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE); var _ = IoctlNativeMock.echo(lineInfoTestData)) {
-            var pin = pi4j0.digitalInput().create(1);
+            var builder = DigitalInputConfigBuilder.newInstance(pi4j0).busNumber(-1)
+                .address(1).build();
+            var pin = pi4j0.digitalInput().create(builder);
             assertEquals(DigitalState.LOW, pin.state());
         }
     }
@@ -150,7 +151,9 @@ public class GPIOTest {
         try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE, pollingFile);
              var _ = IoctlNativeMock.echo(lineInfoTestData);
              var _ = PollNativeMock.echo(pollingCallback)) {
-            var pin = pi4j0.digitalInput().create(7);
+            var builder = DigitalInputConfigBuilder.newInstance(pi4j0).busNumber(-1)
+                .address(7).build();
+            var pin = pi4j0.digitalInput().create(builder);
             assertEquals(DigitalState.LOW, pin.state());
             var passed = new AtomicBoolean(false);
             pin.addListener(event -> {
@@ -173,7 +176,9 @@ public class GPIOTest {
                 new LineAttribute[0]);
         });
         try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE); var _ = IoctlNativeMock.echo(lineInfoOccupied)) {
-            assertThrows(IllegalStateException.class, () -> pi4j0.digitalInput().create(2));
+            var builder = DigitalInputConfigBuilder.newInstance(pi4j0).busNumber(-1)
+                .address(2).build();
+            assertThrows(IllegalStateException.class, () -> pi4j0.digitalInput().create(builder));
         }
     }
 
@@ -188,6 +193,7 @@ public class GPIOTest {
         });
         try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE); var _ = IoctlNativeMock.echo(lineInfoTestData)) {
             var config = DigitalInputConfigBuilder.newInstance(pi4j0)
+                .busNumber(-1)
                 .address(3)
                 .debounce(99L, TimeUnit.MICROSECONDS)
                 .pull(PullResistance.PULL_DOWN)
@@ -209,7 +215,9 @@ public class GPIOTest {
                 new LineAttribute[0]);
         });
         try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE); var _ = IoctlNativeMock.echo(lineInfoTestData)) {
-            var pin = pi4j0.digitalOutput().create(4);
+            var builder = DigitalOutputConfigBuilder.newInstance(pi4j0).busNumber(-1)
+                .address(4).build();
+            var pin = pi4j0.digitalOutput().create(builder);
             assertEquals(4, pin.address());
         }
     }
@@ -224,7 +232,9 @@ public class GPIOTest {
                 new LineAttribute[0]);
         });
         try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE); var _ = IoctlNativeMock.echo(lineInfoTestData)) {
-            var pin = pi4j0.digitalOutput().create(5);
+            var builder = DigitalOutputConfigBuilder.newInstance(pi4j0).busNumber(-1)
+                .address(5).build();
+            var pin = pi4j0.digitalOutput().create(builder);
             pin.state(DigitalState.HIGH);
             assertEquals(DigitalState.HIGH, pin.state());
             pin.state(DigitalState.LOW);

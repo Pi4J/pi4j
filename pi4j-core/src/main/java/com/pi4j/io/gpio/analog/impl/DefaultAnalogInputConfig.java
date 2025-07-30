@@ -40,6 +40,8 @@ public class DefaultAnalogInputConfig
         extends AnalogConfigBase<AnalogInputConfig>
         implements AnalogInputConfig {
 
+    protected Integer busNumber = null;
+
     /**
      * PRIVATE CONSTRUCTOR
      */
@@ -59,5 +61,14 @@ public class DefaultAnalogInputConfig
         this.id = StringUtil.setIfNullOrEmpty(this.id, "AIN-" + this.address, true);
         this.name = StringUtil.setIfNullOrEmpty(this.name, "AIN-" + this.address, true);
         this.description = StringUtil.setIfNullOrEmpty(this.description, "AIN-" + this.address, true);
+
+        if(properties.containsKey(BUS_NUMBER)){
+            this.busNumber = Integer.parseInt(properties.get(BUS_NUMBER));
+        }
+    }
+
+    @Override
+    public Integer busNumber() {
+        return busNumber;
     }
 }

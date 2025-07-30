@@ -38,4 +38,6 @@ import com.pi4j.io.IOAddressConfigBuilder;
 public interface GpioConfigBuilder<BUILDER_TYPE extends GpioConfigBuilder, CONFIG_TYPE extends GpioConfig>
         extends IOAddressConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
     // MARKER INTERFACE
+
+    GpioConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> busNumber(int busNumber);
 }

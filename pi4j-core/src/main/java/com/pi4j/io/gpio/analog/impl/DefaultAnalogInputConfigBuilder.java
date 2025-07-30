@@ -26,6 +26,7 @@ package com.pi4j.io.gpio.analog.impl;
  */
 
 import com.pi4j.context.Context;
+import com.pi4j.io.gpio.GpioConfig;
 import com.pi4j.io.gpio.analog.AnalogInputConfig;
 import com.pi4j.io.gpio.analog.AnalogInputConfigBuilder;
 
@@ -54,6 +55,12 @@ public class DefaultAnalogInputConfigBuilder
      */
     public static AnalogInputConfigBuilder newInstance(Context context) {
         return new DefaultAnalogInputConfigBuilder(context);
+    }
+
+    @Override
+    public DefaultAnalogInputConfigBuilder busNumber(int busNumber) {
+        this.properties.put(GpioConfig.BUS_NUMBER, String.valueOf(busNumber));
+        return this;
     }
 
     /** {@inheritDoc} */

@@ -38,4 +38,9 @@ import com.pi4j.io.IOConfig;
  */
 public interface GpioConfig<CONFIG_TYPE extends Config>
         extends AddressConfig<CONFIG_TYPE>, IOConfig<CONFIG_TYPE> {
+
+    String BUS_NUMBER = "bus-number";
+
+    Integer busNumber();
+
 }

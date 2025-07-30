@@ -42,6 +42,7 @@ public class DefaultDigitalOutputConfig
         implements DigitalOutputConfig {
 
     // private configuration properties
+    protected Integer busNumber = null;
     protected DigitalState shutdownState = null;
     protected DigitalState initialState = null;
     protected DigitalState onState = DigitalState.HIGH;
@@ -66,6 +67,10 @@ public class DefaultDigitalOutputConfig
         this.name = StringUtil.setIfNullOrEmpty(this.name, "DOUT-" + this.address, true);
         this.description = StringUtil.setIfNullOrEmpty(this.description, "DOUT-" + this.address, true);
 
+        if(properties.containsKey(BUS_NUMBER)){
+            this.busNumber = Integer.parseInt(properties.get(BUS_NUMBER));
+        }
+
         // load initial value property
         if(properties.containsKey(INITIAL_STATE_KEY)){
             this.initialState = DigitalState.parse(properties.get(INITIAL_STATE_KEY));
@@ -80,6 +85,11 @@ public class DefaultDigitalOutputConfig
         if(properties.containsKey(ON_STATE_KEY)){
             this.onState = DigitalState.parse(properties.get(ON_STATE_KEY));
         }
+    }
+
+    @Override
+    public Integer busNumber() {
+        return busNumber;
     }
 
     /** {@inheritDoc} */

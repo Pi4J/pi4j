@@ -47,7 +47,6 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
     private final PollNative poll = new PollNative();
 
     private final String deviceName;
-    private final String chipName;
     private final int pin;
     private final long debounce;
     private final PullResistance pull;
@@ -62,8 +61,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
     public DigitalInputFFM(String chipName, DigitalInputProvider provider, DigitalInputConfig config) {
         super(provider, config);
         this.pin = config.address();
-        this.chipName = chipName;
-        this.deviceName = "/dev/" + chipName;
+        this.deviceName = "/dev/gpiochip" + config.busNumber();
         this.debounce = config.debounce();
         this.pull = config.pull();
     }
@@ -71,9 +69,9 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
     @Override
     public DigitalInput initialize(Context context) throws InitializeException {
         super.initialize(context);
-        if (chipName.equals("unknown")) {
-            throw new InitializeException("Please, specify a chip name with builder call 'setGpioChipName()'.");
-        }
+//        if (chipName.equals("unknown")) {
+//            throw new InitializeException("Please, specify a chip name with builder call 'setGpioChipName()'.");
+//        }
         try {
             if (!deviceExists()) {
                 throw new InitializeException("Device '" + deviceName + "' does not exist.");

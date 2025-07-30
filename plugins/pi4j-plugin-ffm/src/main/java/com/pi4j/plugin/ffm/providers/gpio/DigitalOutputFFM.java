@@ -26,7 +26,6 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
     private final FileDescriptorNative file = new FileDescriptorNative();
 
     private final String deviceName;
-    private final String chipName;
     private final int pin;
     private int chipFileDescriptor;
     private boolean closed = false;
@@ -34,16 +33,12 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
     public DigitalOutputFFM(String chipName, DigitalOutputProvider provider, DigitalOutputConfig config) {
         super(provider, config);
         this.pin = config.address();
-        this.chipName = chipName;
-        this.deviceName = "/dev/" + chipName;
+        this.deviceName = "/dev/gpiochip" + config.busNumber();
     }
 
     @Override
     public DigitalOutput initialize(Context context) throws InitializeException {
         super.initialize(context);
-        if (chipName.equals("unknown")) {
-            throw new InitializeException("Please, specify a chip name with builder call 'setGpioChipName()'.");
-        }
         try {
             if (!deviceExists()) {
                 throw new InitializeException("Device '" + deviceName + "' does not exist.");

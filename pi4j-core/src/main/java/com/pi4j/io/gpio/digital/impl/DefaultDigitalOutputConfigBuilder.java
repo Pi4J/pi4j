@@ -26,6 +26,7 @@ package com.pi4j.io.gpio.digital.impl;
  */
 
 import com.pi4j.context.Context;
+import com.pi4j.io.gpio.GpioConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
@@ -55,6 +56,12 @@ public class DefaultDigitalOutputConfigBuilder
      */
     public static DigitalOutputConfigBuilder newInstance(Context context) {
         return new DefaultDigitalOutputConfigBuilder(context);
+    }
+
+    @Override
+    public DigitalOutputConfigBuilder busNumber(int busNumber) {
+        this.properties.put(GpioConfig.BUS_NUMBER, String.valueOf(busNumber));
+        return this;
     }
 
     /** {@inheritDoc} */

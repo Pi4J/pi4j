@@ -26,6 +26,7 @@ package com.pi4j.io.gpio.digital.impl;
  */
 
 import com.pi4j.context.Context;
+import com.pi4j.io.gpio.GpioConfig;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
 import com.pi4j.io.gpio.digital.PullResistance;
@@ -64,6 +65,12 @@ public class DefaultDigitalInputConfigBuilder
     public DigitalInputConfig build() {
         DigitalInputConfig config = new DefaultDigitalInputConfig(getResolvedProperties());
         return config;
+    }
+
+    @Override
+    public DigitalInputConfigBuilder busNumber(int busNumber) {
+        this.properties.put(GpioConfig.BUS_NUMBER, String.valueOf(busNumber));
+        return this;
     }
 
     /** {@inheritDoc} */
