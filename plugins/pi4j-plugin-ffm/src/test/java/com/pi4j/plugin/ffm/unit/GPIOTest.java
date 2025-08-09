@@ -2,8 +2,12 @@ package com.pi4j.plugin.ffm.unit;
 
 
 import com.pi4j.Pi4J;
+import com.pi4j.boardinfo.definition.BoardModel;
+import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.context.Context;
 import com.pi4j.io.gpio.digital.*;
+import com.pi4j.plugin.ffm.api.Pi4JApi;
+import com.pi4j.plugin.ffm.api.RaspberryPi;
 import com.pi4j.plugin.ffm.common.gpio.PinEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineAttribute;
@@ -11,6 +15,7 @@ import com.pi4j.plugin.ffm.common.gpio.structs.LineEvent;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineInfo;
 import com.pi4j.plugin.ffm.common.poll.PollFlag;
 import com.pi4j.plugin.ffm.common.poll.structs.PollingData;
+import com.pi4j.plugin.ffm.mocks.BoardInfoMock;
 import com.pi4j.plugin.ffm.mocks.FileDescriptorNativeMock;
 import com.pi4j.plugin.ffm.mocks.IoctlNativeMock;
 import com.pi4j.plugin.ffm.mocks.PollNativeMock;
@@ -239,6 +244,25 @@ public class GPIOTest {
             assertEquals(DigitalState.HIGH, pin.state());
             pin.state(DigitalState.LOW);
             assertEquals(DigitalState.LOW, pin.state());
+        }
+    }
+
+    @Test
+    public void testApi() {
+        var lineInfoTestData = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
+            LineInfo lineInfo = answer.getArgument(2);
+            return new LineInfo("Test".getBytes(), "FFM-Test".getBytes(),
+                lineInfo.offset(), 0,
+                PinFlag.INPUT.getValue(),
+                new LineAttribute[0]);
+        });
+        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE);
+             var _ = IoctlNativeMock.echo(lineInfoTestData);
+             var _ = BoardInfoMock.echo(BoardModel.MODEL_4_B)) {
+            BoardInfoHelper.reinitialize();
+            var mockingBoard = Pi4JApi.board(RaspberryPi.Model4B.class);
+            var pin = mockingBoard.input(5);
+            assertEquals(5, pin.address());
         }
     }
 
