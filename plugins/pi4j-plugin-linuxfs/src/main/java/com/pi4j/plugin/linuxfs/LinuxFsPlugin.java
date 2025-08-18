@@ -29,6 +29,7 @@ package com.pi4j.plugin.linuxfs;
 
 
 import com.pi4j.boardinfo.util.BoardInfoHelper;
+import com.pi4j.boardinfo.util.command.CommandResult;
 import com.pi4j.extension.Plugin;
 import com.pi4j.extension.PluginService;
 import com.pi4j.plugin.linuxfs.internal.LinuxGpio;
@@ -41,6 +42,12 @@ import com.pi4j.plugin.linuxfs.provider.spi.LinuxFsSpiProvider;
 import com.pi4j.provider.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
+
+import static com.pi4j.boardinfo.util.command.CommandExecutor.execute;
+
+
 
 /**
  * <p>LinuxFsPlugin class.</p>
@@ -128,6 +135,30 @@ public class LinuxFsPlugin implements Plugin {
         int pwmChip;
         if(BoardInfoHelper.usesRP1()) {
             pwmChip = LinuxPwm.DEFAULT_RP1_PWM_CHIP;
+            // init to original bookworm using pwmChip2, test if different
+            String command =  "ls -l " + pwmFileSystemPath  ;
+            CommandResult rslt = execute( command);
+
+            String[] paths =  rslt.getOutputMessage().split("\n");
+            int counter = 0;
+            for(counter = 0 ; counter < paths.length; counter ++ ) {
+                String chipNum = "";
+                String ChipName = "pwmchip";
+                //Test for the RP1 chip address for the user PWM channels
+                if (paths[counter].contains("1f00098000")) {
+                     int numStart = paths[counter].indexOf(ChipName) + ChipName.length() ;
+                     while( Character.isDigit(paths[counter].substring(numStart, numStart + 1).charAt(0)) ){
+                        chipNum = new StringBuilder().append(chipNum.substring(0, chipNum.length())).append(paths[counter].substring(numStart, numStart + 1)).toString();
+                        numStart ++;
+                    }
+                    pwmChip = Integer.parseInt(chipNum);
+                    break;
+                }
+            }
+
+            logger.debug(String.valueOf(pwmChip));
+            logger.debug(Arrays.toString(paths));
+
         }else{
             pwmChip = LinuxPwm.DEFAULT_LEGACY_PWM_CHIP;
         }
