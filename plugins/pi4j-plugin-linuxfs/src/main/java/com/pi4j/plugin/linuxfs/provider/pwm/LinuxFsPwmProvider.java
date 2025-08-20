@@ -45,8 +45,8 @@ public interface LinuxFsPwmProvider extends PwmProvider {
     /**
      * <p>newInstance.</p>
      *
-     * @param pwmFileSystemPath
-     * @param pwmChip
+     * @param pwmFileSystemPath     Path to PWM device tree
+     * @param pwmChip               Number of PWM chip in device tree
      * @return a {@link LinuxFsPwmProvider} object.
      */
     static LinuxFsPwmProvider newInstance(String pwmFileSystemPath, int pwmChip) {
@@ -56,7 +56,7 @@ public interface LinuxFsPwmProvider extends PwmProvider {
     /**
      * <p>newInstance.</p>
      *
-     * @param pwmChip
+     * @param pwmChip    Number of PWM chip in device tree
      * @return a {@link LinuxFsPwmProvider} object.
      */
     static LinuxFsPwmProvider newInstance(int pwmChip) {
