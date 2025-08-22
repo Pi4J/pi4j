@@ -79,6 +79,7 @@ public class LinuxFsPwmProviderImpl extends PwmProviderBase implements LinuxFsPw
         this.name = NAME;
         this.pwmFileSystemPath = pwmFileSystemPath;
 
+
         // if a RP1,  check the device address to find the correct PWM chip
         if (BoardInfoHelper.usesRP1()) {
             this.pwmChip = getPWMChipForRP1(pwmFileSystemPath);

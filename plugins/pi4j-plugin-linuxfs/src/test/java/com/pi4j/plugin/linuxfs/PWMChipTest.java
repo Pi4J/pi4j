@@ -1,9 +1,7 @@
 package com.pi4j.plugin.linuxfs;
 
 import org.junit.jupiter.api.Test;
-
 import java.util.Optional;
-
 import static com.pi4j.plugin.linuxfs.provider.pwm.LinuxFsPwmUtil.parsePWMPaths;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

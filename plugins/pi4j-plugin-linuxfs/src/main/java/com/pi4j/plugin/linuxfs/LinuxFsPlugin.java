@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 
 import static com.pi4j.plugin.linuxfs.provider.pwm.LinuxFsPwmUtil.getPWMChipForRP1;
 
-
 /**
  * <p>LinuxFsPlugin class.</p>
  *
@@ -120,7 +119,8 @@ public class LinuxFsPlugin implements Plugin {
         String pwmFileSystemPath = DEFAULT_PWM_FILESYSTEM_PATH;
 
         int pwmChip;
-        // if using a RP1,heck the device address to find the correct PWM chip
+
+        // if using a RP1,check the device address to find the correct PWM chip
         if (BoardInfoHelper.usesRP1()) {
             pwmChip = getPWMChipForRP1(pwmFileSystemPath);
         } else {
@@ -158,6 +158,4 @@ public class LinuxFsPlugin implements Plugin {
         // register the LinuxFS I/O Providers with the plugin service
         service.register(providers);
     }
-
-
 }
