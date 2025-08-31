@@ -166,7 +166,9 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
     }
 
     private boolean deviceExists(String path) {
-        return file.access(path, FileFlag.F_OK) == 0;
+        var access = file.access(path, FileFlag.F_OK);
+        logger.trace("{} - device has access flag '{}'", pwmPath, access);
+        return access == 0;
     }
 
 
