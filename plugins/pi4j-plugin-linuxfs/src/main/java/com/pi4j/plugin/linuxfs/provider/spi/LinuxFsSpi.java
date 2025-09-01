@@ -353,7 +353,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
      * application keep the CE pin low during the duration of the call to
      * spi,write.
      *
-     * 
+     *
      * @param data data array of bytes to be written
      * @param offset offset in data buffer to start at
      * @param length number of bytes to be written
