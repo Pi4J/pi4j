@@ -42,6 +42,11 @@ import com.sun.jna.ptr.IntByReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Scanner;
+
 import static com.pi4j.plugin.linuxfs.internal.LinuxLibC.*;
 
 /**
@@ -59,13 +64,14 @@ import static com.pi4j.plugin.linuxfs.internal.LinuxLibC.*;
  */
 public class LinuxFsSpi extends SpiBase implements Spi {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LinuxFsSpi.class);
+    private static final Logger logger = LoggerFactory.getLogger(LinuxFsSpi.class);
 
     ///////////////////////////////////
     // From spidev.h
     private final static byte SPI_IOC_MAGIC = 'k';
     private final static byte SIZE_OF_BYTE = 1;
     private final static byte SIZE_OF_INT = 4;
+    private int SPI_BUFFSIZ = 4096;
 
     private static int SPI_IOC_MESSAGE(int n) {
         // Even though we will pass the structure to ioctl as a pointer, the command needs to know
@@ -141,6 +147,19 @@ public class LinuxFsSpi extends SpiBase implements Spi {
 
     public LinuxFsSpi(LinuxFsSpiProviderImpl provider, SpiConfig config) {
         super(provider, config);
+        SpiInitialise();
+    }
+
+    private void SpiInitialise() {
+        try {
+            Scanner scanner = new Scanner(new File("/sys/module/spidev/parameters/bufsiz"));
+            if (scanner.hasNextInt()) {
+                SPI_BUFFSIZ = scanner.nextInt();
+            }
+            logger.trace("[INITIALIZE] -> SPI_BUFFSIZ={}", SPI_BUFFSIZ);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 
     @Override
@@ -154,7 +173,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         //    character special device, major number 153 with a dynamically chosen minor device number.
         //    This is the node that userspace programs will open, created by “udev” or “mdev”.
         String spiDev = SPI_DEVICE_BASE + config().bus().getBus() + "." + config().address();
-        LOG.info("Opening SPI bus {}, address {}", config().bus().getBus(), config().address());
+        logger.info("Opening SPI bus {}, address {}", config().bus().getBus(), config().address());
         fd = libc.open(spiDev, LinuxLibC.O_RDWR);
         if (fd < 0) {
             throw new RuntimeException("Failed to open SPI device " + spiDev);
@@ -259,7 +278,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
 
         int ret = libc.ioctl(fd, SPI_IOC_MESSAGE(1), transfer);
         if (ret < 0) {
-            LOG.error("Could not write SPI message. ret {}, error: {}", ret, Native.getLastError());
+            logger.error("Could not write SPI message. ret {}, error: {}", ret, Native.getLastError());
             numberOfBytes = -1;
         }
         else {
@@ -296,7 +315,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
 
         int ret = libc.ioctl(fd, SPI_IOC_MESSAGE(1), transfer);
         if (ret < 0) {
-            LOG.error("Could not write SPIIOC  message. ret {}, error: {}", ret, Native.getLastError());
+            logger.error("Could not write SPIIOC  message. ret {}, error: {}", ret, Native.getLastError());
             length = -1;
         }else{
             buf.read(0, read, offset, length);
@@ -312,28 +331,71 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         return write(new byte[] {b}, 0, 1);
     }
 
+
+    /**
+     * {@inheritDoc}
+     * write
+     *
+     * This implementation can write blocks greater than 4096 byte
+     * 'however', read and understand how this is accomplished.
+     *
+     * A write of data no greater than 4096 bytes is accomplished with
+     * a single SPI write operation.
+     * So CE line low, write bytes, CE line high
+     *
+     * A write greater than 4096 bytes will be segmented to multiple writes
+     * each 4096  bytes in length, the last write is the MOD value.
+     * So, CE line low, write first 4096 bytes CE line high.  This
+     * pattern will repeat until the last bytes length MOD 4096 are written.
+     * This means multiple SPI transaction with you SPI device. If CE line
+     * toggling creates problerms with your SPI device your application
+     * an use a vacant GPIO configured as an Output pin and your
+     * application keep the CE pin low during the duration of the call to
+     * spi,write.
+     *
+     * 
+     * @param data data array of bytes to be written
+     * @param offset offset in data buffer to start at
+     * @param length number of bytes to be written
+     * @return
+     */
     @Override
     public int write(byte[] data, int offset, int length) {
-        // We could reuse this buffer for all requests as long as it is large enough.
-        // For now we'll alloc/free a new one on each request.
-        PeerAccessibleMemory buf = new PeerAccessibleMemory(length);
-        buf.write(0, data, offset, length);
+        Objects.checkFromIndexSize(offset, length, data.length);
 
-        spi_ioc_transfer transfer = new spi_ioc_transfer();
-        transfer.tx_buf = buf.getPeer();
-        transfer.rx_buf = 0;
-        transfer.bits_per_word = BITS8;
-        transfer.speed_hz = config.baud();
-        transfer.delay_usecs = 0;
-        transfer.len = length;
+        int fullEntries = (length < SPI_BUFFSIZ) ? 1 : length/SPI_BUFFSIZ ;
+        int partialEntries = ( ( (fullEntries * SPI_BUFFSIZ) < length) ? 1 : 0 ) ;
 
-        int ret = libc.ioctl(fd, SPI_IOC_MESSAGE(1), transfer);
-        if (ret < 0) {
-            LOG.error("Could not write SPI message. ret {}, error: {}", ret, Native.getLastError());
-            length = 0;
+        int numberXferEntries = fullEntries + partialEntries ;
+
+        byte[] someData = Arrays.copyOfRange(data, offset, length);
+
+        int start = 0;
+        int entryNum = 0 ;
+        while (start < someData.length) {
+            PeerAccessibleMemory buf = new PeerAccessibleMemory(SPI_BUFFSIZ);
+            spi_ioc_transfer txEntry = new spi_ioc_transfer() ;
+            int end = Math.min(someData.length, start + SPI_BUFFSIZ);
+            byte[] chunk = Arrays.copyOfRange(someData, start, end);
+            buf.write(0, chunk, 0 , chunk.length);
+            // set fields in transfer msg
+            txEntry.tx_buf = buf.getPeer();
+            txEntry.rx_buf = 0;
+            txEntry.bits_per_word = BITS8;
+            txEntry.speed_hz = config.baud();
+            txEntry.delay_usecs = 0;
+            txEntry.len = chunk.length ;
+            txEntry.cs_change = 1 ;
+            int ret = libc.ioctl(fd, SPI_IOC_MESSAGE(1), txEntry);
+            logger.trace("[SPI::WRITE] <- Number bytes {} ", ret);
+            if (ret < 0) {
+                logger.error("Could not write SPI message. ret {}, error: {}", ret, Native.getLastError());
+                length = 0;
+            }
+
+            entryNum++ ;
+            start += SPI_BUFFSIZ;
         }
-
-        buf.close();
 
         return length;
     }
