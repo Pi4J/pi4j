@@ -348,7 +348,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
      * So, CE line low, write first 4096 bytes CE line high.  This
      * pattern will repeat until the last bytes length MOD 4096 are written.
      * This means multiple SPI transaction with you SPI device. If CE line
-     * toggling creates problerms with your SPI device your application
+     * toggling creates problems with your SPI device your application
      * an use a vacant GPIO configured as an Output pin and your
      * application keep the CE pin low during the duration of the call to
      * spi,write.
@@ -362,11 +362,6 @@ public class LinuxFsSpi extends SpiBase implements Spi {
     @Override
     public int write(byte[] data, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, data.length);
-
-        int fullEntries = (length < SPI_BUFFSIZ) ? 1 : length/SPI_BUFFSIZ ;
-        int partialEntries = ( ( (fullEntries * SPI_BUFFSIZ) < length) ? 1 : 0 ) ;
-
-        int numberXferEntries = fullEntries + partialEntries ;
 
         byte[] someData = Arrays.copyOfRange(data, offset, length);
 
