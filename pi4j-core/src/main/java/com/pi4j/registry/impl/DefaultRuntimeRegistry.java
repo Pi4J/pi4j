@@ -145,6 +145,7 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
             throw new IONotFoundException(_id);
 
         IO shutdownInstance = instances.get(_id);
+        remove(shutdownInstance);
 
         // return the shutdown I/O provider instances
         return (T) shutdownInstance;
