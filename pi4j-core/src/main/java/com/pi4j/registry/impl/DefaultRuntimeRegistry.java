@@ -29,6 +29,7 @@ import com.pi4j.config.AddressConfig;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.LifecycleException;
 import com.pi4j.io.IO;
+import com.pi4j.io.IOType;
 import com.pi4j.io.exception.*;
 import com.pi4j.runtime.Runtime;
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
     private static final Logger logger = LoggerFactory.getLogger(DefaultRuntimeRegistry.class);
     private Runtime runtime;
     private final Map<String, IO> instances;
-    private final Set<Integer> usedAddresses;
+    private final Map<IOType, Set<Integer>> usedAddressesByIoType;
 
     // static singleton instance
 
@@ -69,7 +70,7 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
     private DefaultRuntimeRegistry(Runtime runtime) {
         // set local runtime reference
         this.instances = new HashMap<>();
-        this.usedAddresses = new HashSet<>();
+        this.usedAddressesByIoType = new HashMap<>();
         this.runtime = runtime;
     }
 
@@ -82,22 +83,27 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
         // first test to make sure this id does not already exist in the registry
         if (instances.containsKey(_id))
             throw new IOAlreadyExistsException(_id);
-        if (instance.config() instanceof AddressConfig<?>) {
-            AddressConfig<?> addressConfig = (AddressConfig<?>) instance.config();
-            if (exists(addressConfig.address())) {
+        if (instance.config() instanceof AddressConfig<?> addressConfig) {
+            if (exists(instance.type(), addressConfig.address())) {
                 throw new IOAlreadyExistsException(addressConfig.address());
             }
-            this.usedAddresses.add(addressConfig.address());
+            Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
+                k -> new HashSet<>());
+            usedAddresses.add(addressConfig.address());
         }
 
-        // add instance to collection
+        // add the instance to the collection
         try {
             instance.initialize(this.runtime.context());
             instances.put(_id, instance);
         } catch (InitializeException e) {
-            if (instance.config() instanceof AddressConfig<?>) {
-                AddressConfig<?> addressConfig = (AddressConfig<?>) instance.config();
-                this.usedAddresses.remove(addressConfig.address());
+            if (instance.config() instanceof AddressConfig<?> addressConfig) {
+                Set<Integer> usedAddresses = this.usedAddressesByIoType.get(instance.type());
+                if (usedAddresses != null) {
+                    usedAddresses.remove(addressConfig.address());
+                    if (usedAddresses.isEmpty())
+                        this.usedAddressesByIoType.remove(instance.type());
+                }
             }
             throw new IllegalStateException("Failed to initialize IO " + instance.getId(), e);
         }
@@ -160,9 +166,13 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
         }
 
         // remove the shutdown instance from the registry
-        if (shutdownInstance.config() instanceof AddressConfig<?>) {
-            AddressConfig<?> addressConfig = (AddressConfig<?>) shutdownInstance.config();
-            this.usedAddresses.remove(addressConfig.address());
+        if (shutdownInstance.config() instanceof AddressConfig<?> addressConfig) {
+            Set<Integer> usedAddresses = this.usedAddressesByIoType.get(shutdownInstance.type());
+            if (usedAddresses != null) {
+                usedAddresses.remove(addressConfig.address());
+                if (usedAddresses.isEmpty())
+                    this.usedAddressesByIoType.remove(shutdownInstance.type());
+            }
         }
         this.instances.remove(_id);
 
@@ -187,8 +197,9 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
     }
 
     @Override
-    public synchronized boolean exists(int address) {
-        return usedAddresses.contains(address);
+    public synchronized boolean exists(IOType ioType, int address) {
+        Set<Integer> usedAddresses = this.usedAddressesByIoType.get(ioType);
+        return usedAddresses != null && usedAddresses.contains(address);
     }
 
     /**

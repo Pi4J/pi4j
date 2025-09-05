@@ -58,10 +58,12 @@ public interface Registry extends Describable {
     /**
      * <p>exists.</p>
      *
+     * @param ioType  a {@link com.pi4j.io.IOType} object.
      * @param address an int.
+     *
      * @return a boolean.
      */
-    boolean exists(int address);
+    boolean exists(IOType ioType, int address);
 
     /**
      * <p>all.</p>
