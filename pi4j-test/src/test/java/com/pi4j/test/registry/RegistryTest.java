@@ -25,12 +25,13 @@ package com.pi4j.test.registry;
  * #L%
  */
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.io.IOType;
 import com.pi4j.io.gpio.digital.DigitalInput;
+import com.pi4j.io.gpio.digital.DigitalOutput;
+import com.pi4j.io.pwm.Pwm;
 import com.pi4j.registry.Registry;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -39,6 +40,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class RegistryTest {
@@ -75,15 +78,11 @@ public class RegistryTest {
 
     @Test
     public void testShutdownAndRecreate() throws Pi4JException {
-        var inputConfig = DigitalInput.newConfigBuilder(pi4j)
-                .id("DIN-3")
-                .name("DIN-3")
-                .address(3);
+        var inputConfig = DigitalInput.newConfigBuilder(pi4j).id("DIN-3").name("DIN-3").address(3);
 
         // create a new input, then shutdown
         var input = pi4j.create(inputConfig);
 
-        input.shutdown(pi4j);
         pi4j.shutdown(input.id());
 
         // shouldn't fail when recreating
@@ -91,5 +90,46 @@ public class RegistryTest {
 
         // or shutting down
         pi4j.shutdown(input.id());
+    }
+
+    @Test
+    public void testCreateMultipleSameAddress() throws Pi4JException {
+        var inputConfig = DigitalInput.newConfigBuilder(pi4j).id("DIN-3").name("DIN-3").address(3);
+        var outputConfig = DigitalOutput.newConfigBuilder(pi4j).id("DOUT-3").name("DOUT-3").address(3);
+        var pwmConfig = Pwm.newConfigBuilder(pi4j).id("PWM-3").name("PWM-3").address(3);
+
+        // create I/O instances
+        var input = pi4j.create(inputConfig);
+        var output = pi4j.create(outputConfig);
+        var pwm = pi4j.create(pwmConfig);
+
+        // test that we can find them by address
+        Registry registry = pi4j.registry();
+        assertTrue(registry.exists(IOType.PWM, pwm.address()));
+        assertTrue(registry.exists(IOType.DIGITAL_INPUT, input.address()));
+        assertTrue(registry.exists(IOType.DIGITAL_OUTPUT, output.address()));
+
+        // and also by ID
+        assertTrue(registry.exists(pwm.id()));
+        assertTrue(registry.exists(input.id()));
+        assertTrue(registry.exists(output.id()));
+
+        // but we shouldn't find them by other types
+        assertFalse(registry.exists(IOType.ANALOG_INPUT, output.address()));
+        assertFalse(registry.exists(IOType.ANALOG_OUTPUT, output.address()));
+
+        // now shutdown all I/O instances
+        pi4j.shutdown(input);
+        pi4j.shutdown(output);
+        pi4j.shutdown(pwm);
+
+        // and now we shouldn't find them by address or ID
+        assertFalse(registry.exists(IOType.PWM, 3));
+        assertFalse(registry.exists(IOType.DIGITAL_INPUT, 3));
+        assertFalse(registry.exists(IOType.DIGITAL_OUTPUT, 3));
+
+        assertFalse(registry.exists(pwm.id()));
+        assertFalse(registry.exists(input.id()));
+        assertFalse(registry.exists(output.id()));
     }
 }

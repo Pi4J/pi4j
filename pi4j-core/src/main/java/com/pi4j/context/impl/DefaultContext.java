@@ -156,6 +156,10 @@ public class DefaultContext implements Context {
 	}
 
 	@Override
+	public <T extends IO> void shutdown(T instance) {
+		runtime.registry().remove(instance);
+	}
+	@Override
 	public <T extends IO> T shutdown(String id) {
 		return runtime.registry().remove(id);
 	}
