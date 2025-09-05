@@ -33,10 +33,7 @@ import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.registry.Registry;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +47,7 @@ public class RegistryTest {
 
     private Context pi4j;
 
-    @BeforeAll
+    @BeforeEach
     public void beforeTest() throws Pi4JException {
         // initialize Pi4J with an auto context
         // An auto context includes AUTO-DETECT BINDINGS enabled
@@ -59,7 +56,7 @@ public class RegistryTest {
         pi4j = Pi4J.newContextBuilder().autoDetectMockPlugins().autoDetectPlatforms().build();
     }
 
-    @AfterAll
+    @AfterEach
     public void afterTest() {
         try {
             pi4j.shutdown();
