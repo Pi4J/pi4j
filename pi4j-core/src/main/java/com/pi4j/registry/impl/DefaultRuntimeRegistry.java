@@ -97,14 +97,7 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
             instance.initialize(this.runtime.context());
             instances.put(_id, instance);
         } catch (InitializeException e) {
-            if (instance.config() instanceof AddressConfig<?> addressConfig) {
-                Set<Integer> usedAddresses = this.usedAddressesByIoType.get(instance.type());
-                if (usedAddresses != null) {
-                    usedAddresses.remove(addressConfig.address());
-                    if (usedAddresses.isEmpty())
-                        this.usedAddressesByIoType.remove(instance.type());
-                }
-            }
+            removeFromMap(instance);
             throw new IllegalStateException("Failed to initialize IO " + instance.getId(), e);
         }
 
@@ -146,38 +139,51 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
     public synchronized <T extends IO> T remove(String id)
         throws IONotFoundException, IOInvalidIDException, IOShutdownException {
         String _id = validateId(id);
-        IO shutdownInstance = null;
 
         // first test to make sure this id is included in the registry
         if (!exists(_id))
             throw new IONotFoundException(_id);
 
-        // shutdown instance
-        try {
-            long start = System.currentTimeMillis();
-            shutdownInstance = instances.get(_id);
-            shutdownInstance.shutdown(runtime.context());
-            long took = System.currentTimeMillis() - start;
-            if (took > 10)
-                logger.info("Shutting down of IO {} took {}ms", shutdownInstance.getId(), took);
-        } catch (LifecycleException e) {
-            logger.error(e.getMessage(), e);
-            throw new IOShutdownException(shutdownInstance, e);
-        }
-
-        // remove the shutdown instance from the registry
-        if (shutdownInstance.config() instanceof AddressConfig<?> addressConfig) {
-            Set<Integer> usedAddresses = this.usedAddressesByIoType.get(shutdownInstance.type());
-            if (usedAddresses != null) {
-                usedAddresses.remove(addressConfig.address());
-                if (usedAddresses.isEmpty())
-                    this.usedAddressesByIoType.remove(shutdownInstance.type());
-            }
-        }
-        this.instances.remove(_id);
+        IO shutdownInstance = instances.get(_id);
 
         // return the shutdown I/O provider instances
         return (T) shutdownInstance;
+    }
+
+    @Override
+    public <T extends IO> void remove(T instance)
+        throws IONotFoundException, IOInvalidIDException, IOShutdownException {
+        if (instance == null)
+            throw new IllegalArgumentException("An IO instance cannot be NULL.");
+
+        // shutdown instance
+        try {
+            long start = System.currentTimeMillis();
+
+            instance.shutdown(runtime.context());
+            long took = System.currentTimeMillis() - start;
+            if (took > 10)
+                logger.info("Shutting down of IO {} took {}ms", instance.getId(), took);
+        } catch (LifecycleException e) {
+            logger.error(e.getMessage(), e);
+            throw new IOShutdownException(instance, e);
+        }
+
+        // remove the shutdown instance from the registry
+        removeFromMap(instance);
+
+        this.instances.remove(instance.id());
+    }
+
+    private <T extends IO> void removeFromMap(T instance) {
+        if (!(instance.config() instanceof AddressConfig<?> addressConfig))
+            return;
+        Set<Integer> usedAddresses = this.usedAddressesByIoType.get(instance.type());
+        if (usedAddresses == null)
+            return;
+        usedAddresses.remove(addressConfig.address());
+        if (usedAddresses.isEmpty())
+            this.usedAddressesByIoType.remove(instance.type());
     }
 
     /**
