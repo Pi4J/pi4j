@@ -38,6 +38,7 @@ import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.io.spi.SpiProvider;
 import com.pi4j.io.spi.SpiProviderBase;
 
+
 /**
  * @author mpilone
  * @since 10/3/24.
@@ -45,12 +46,13 @@ import com.pi4j.io.spi.SpiProviderBase;
 public class LinuxFsSpiProviderImpl extends SpiProviderBase
     implements LinuxFsSpiProvider {
 
+
     public LinuxFsSpiProviderImpl() {
         this.id = ID;
         this.name = NAME;
     }
 
-    @Override
+        @Override
     public int getPriority() {
         // the linux FS driver should always be higher priority
         return BoardInfoHelper.usesRP1() ? 150 : 50;
