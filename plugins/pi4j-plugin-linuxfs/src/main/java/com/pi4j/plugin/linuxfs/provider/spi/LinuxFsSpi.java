@@ -147,10 +147,10 @@ public class LinuxFsSpi extends SpiBase implements Spi {
 
     public LinuxFsSpi(LinuxFsSpiProviderImpl provider, SpiConfig config) {
         super(provider, config);
-        SpiInitialise();
+        initialize();
     }
 
-    private void SpiInitialise() {
+    private void initialize() {
         try {
             Scanner scanner = new Scanner(new File("/sys/module/spidev/parameters/bufsiz"));
             if (scanner.hasNextInt()) {
@@ -336,6 +336,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
      * {@inheritDoc}
      * write
      *
+     *   SPI_BUFFSIZ most often is set to 4096.  See initialize()
      * This implementation can write blocks greater than 4096 byte
      * 'however', read and understand how this is accomplished.
      *
@@ -348,8 +349,8 @@ public class LinuxFsSpi extends SpiBase implements Spi {
      * So, CE line low, write first 4096 bytes CE line high.  This
      * pattern will repeat until the last bytes length MOD 4096 are written.
      * This means multiple SPI transaction with you SPI device. If CE line
-     * toggling creates problerms with your SPI device your application
-     * an use a vacant GPIO configured as an Output pin and your
+     * toggling creates problems with your SPI device your application
+     * can use a vacant GPIO configured as an Output pin and your
      * application keep the CE pin low during the duration of the call to
      * spi,write.
      *
@@ -375,8 +376,8 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         while (start < someData.length) {
             PeerAccessibleMemory buf = new PeerAccessibleMemory(SPI_BUFFSIZ);
             spi_ioc_transfer txEntry = new spi_ioc_transfer() ;
-            int end = Math.min(someData.length, start + SPI_BUFFSIZ);
-            byte[] chunk = Arrays.copyOfRange(someData, start, end);
+            int end = Math.min(data.length, start + SPI_BUFFSIZ);
+            byte[] chunk = Arrays.copyOfRange(data, start, end);
             buf.write(0, chunk, 0 , chunk.length);
             // set fields in transfer msg
             txEntry.tx_buf = buf.getPeer();
@@ -392,8 +393,6 @@ public class LinuxFsSpi extends SpiBase implements Spi {
                 logger.error("Could not write SPI message. ret {}, error: {}", ret, Native.getLastError());
                 length = 0;
             }
-
-            entryNum++ ;
             start += SPI_BUFFSIZ;
         }
 
