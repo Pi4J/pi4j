@@ -3,13 +3,15 @@ package com.pi4j.library.gpiod.internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
+
 /**
  * <p>GpioLine</p>
  *
  * @author Alexander Liggesmeyer (<a href="https://alexander.liggesmeyer.net/">https://alexander.liggesmeyer.net/</a>)
  * @version $Id: $Id
  */
-public class GpioLine extends CWrapper {
+public class GpioLine extends CWrapper implements Closeable {
     private static final Logger logger = LoggerFactory.getLogger(GpioLine.class);
     private final int offset;
 
@@ -141,5 +143,10 @@ public class GpioLine extends CWrapper {
     public GpioLineEvent eventRead(GpioLineEvent lineEvent) {
         GpioD.lineEventRead(getCPointer(), lineEvent.getCPointer());
         return lineEvent;
+    }
+
+    @Override
+    public void close() {
+        GpioD.lineRelease(getCPointer());
     }
 }

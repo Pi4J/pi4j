@@ -78,6 +78,7 @@ public class GpioDDigitalInput extends DigitalInputBase implements DigitalInput 
         super.shutdown(context);
         if (this.inputListener != null)
             shutdownInputListener();
+        this.line.close();
         return this;
     }
 
