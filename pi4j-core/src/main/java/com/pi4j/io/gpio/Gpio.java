@@ -46,11 +46,11 @@ public interface Gpio<IO_TYPE extends IO<IO_TYPE,CONFIG_TYPE, PROVIDER_TYPE>,
      *
      * @return a {@link java.lang.Number} object.
      */
-    default Number address() { return config().address(); }
+    default Integer address() { return config().address(); }
     /**
      * <p>getAddress.</p>
      *
      * @return a {@link java.lang.Number} object.
      */
-    default Number getAddress() { return address(); };
+    default Integer getAddress() { return address(); };
 }
