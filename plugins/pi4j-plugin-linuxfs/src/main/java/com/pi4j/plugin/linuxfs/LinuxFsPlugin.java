@@ -29,6 +29,7 @@ package com.pi4j.plugin.linuxfs;
 
 
 import com.pi4j.boardinfo.util.BoardInfoHelper;
+import com.pi4j.boardinfo.util.command.CommandResult;
 import com.pi4j.extension.Plugin;
 import com.pi4j.extension.PluginService;
 import com.pi4j.plugin.linuxfs.internal.LinuxGpio;
@@ -45,7 +46,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static com.pi4j.plugin.linuxfs.provider.pwm.LinuxFsPwmUtil.getPWMChipForRP1;
+import static com.pi4j.boardinfo.util.command.CommandExecutor.execute;
 
 /**
  * <p>LinuxFsPlugin class.</p>
