@@ -160,9 +160,9 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * @return returns this PWM instance
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default Pwm on(Number dutyCycle) throws IOException{
-        if(dutyCycle.floatValue() > 0) {
-            setDutyCycle(dutyCycle.floatValue());
+    default Pwm on(Integer dutyCycle) throws IOException{
+        if(dutyCycle > 0) {
+            setDutyCycle(dutyCycle) ;
             return on();
         }
         else{
@@ -192,9 +192,9 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * @return returns this PWM instance
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default Pwm on(Number dutyCycle, int frequency) throws IOException{
-        if(dutyCycle.floatValue() > 0 && frequency  > 0) {
-            setDutyCycle(dutyCycle.floatValue());
+    default Pwm on(Integer dutyCycle, int frequency) throws IOException{
+        if(dutyCycle > 0 && frequency  > 0) {
+            setDutyCycle((Integer) dutyCycle);
             setFrequency(frequency);
             return on();
         }
@@ -204,19 +204,19 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     }
 
     /**
-     *  Get the duty-cycle value as a decimal value that represents the
-     *  percentage of the ON vs OFF time of the PWM signal for each
-     *  period.  The duty-cycle range is valid from 0 to 100 including
-     *  factional values. (Values above 50% mean the signal will remain
-     *  HIGH more time than LOW.)
+     * Get the duty-cycle value as a decimal value that represents the
+     * percentage of the ON vs OFF time of the PWM signal for each
+     * period.  The duty-cycle range is valid from 0 to 100 including
+     * factional values. (Values above 50% mean the signal will remain
+     * HIGH more time than LOW.)
      * <p>
-     *  Example: A value of 50 represents a duty-cycle where half of
-     *  the time period the signal is LOW and the other half is HIGH.
+     * Example: A value of 50 represents a duty-cycle where half of
+     * the time period the signal is LOW and the other half is HIGH.
      *
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      * @throws IOException if fails to communicate with the PWM pin
      */
-    float getDutyCycle() throws IOException;
+    Integer getDutyCycle() throws IOException;
 
     /**
      *  Get the duty-cycle value as a decimal value that represents the
@@ -231,7 +231,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default float dutyCycle() throws IOException { return getDutyCycle();}
+    default Integer dutyCycle() throws IOException { return getDutyCycle();}
 
     /**
      *  Set the duty-cycle value as a decimal value that represents the
@@ -249,7 +249,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      * @throws IOException if fails to communicate with the PWM pin
      */
-    void setDutyCycle(Number dutyCycle) throws IOException;
+    void setDutyCycle(Integer dutyCycle) throws IOException;
 
     /**
      *  Set the duty-cycle value as a decimal value that represents the
@@ -268,7 +268,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * @return returns this PWM instance
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default Pwm dutyCycle(Number dutyCycle) throws IOException { setDutyCycle(dutyCycle); return this; }
+    default Pwm dutyCycle(Integer dutyCycle) throws IOException { setDutyCycle(dutyCycle); return this; }
 
     /**
      *  Get the configured frequency value in Hertz (number of cycles per second)

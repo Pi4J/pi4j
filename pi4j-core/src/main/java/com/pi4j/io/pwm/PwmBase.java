@@ -44,7 +44,7 @@ import java.util.Map;
 public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implements Pwm {
 
     protected int frequency = 100;
-    protected float dutyCycle = 50;
+    protected Integer dutyCycle = 50;
     protected boolean onState = false;
     protected PwmPolarity polarity = PwmPolarity.NORMAL;
     protected Map<String, PwmPreset> presets = Collections.synchronizedMap(new HashMap<>());
@@ -62,9 +62,11 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public float getDutyCycle() throws IOException {
+    public Integer getDutyCycle() throws IOException {
         return this.dutyCycle;
     }
 
@@ -82,8 +84,8 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
 
     /** {@inheritDoc} */
     @Override
-    public void setDutyCycle(Number dutyCycle) throws IOException {
-        float dc = dutyCycle.floatValue();
+    public void setDutyCycle(Integer dutyCycle) throws IOException {
+        Integer dc = dutyCycle;
 
         // bounds check the duty-cycle value
         if(dc < 0) dc = 0;
@@ -205,7 +207,7 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
         if(presets.containsKey(key)) {
             PwmPreset preset = presets.get(key);
             if(preset.dutyCycle() != null)
-                setDutyCycle(preset.dutyCycle().floatValue());
+                setDutyCycle(preset.dutyCycle());
             if(preset.frequency() != null)
                 setFrequency(preset.frequency().intValue());
             on(); // update PWM signal now
