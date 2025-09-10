@@ -364,16 +364,8 @@ public class LinuxFsSpi extends SpiBase implements Spi {
     public int write(byte[] data, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, data.length);
 
-        int fullEntries = (length < SPI_BUFFSIZ) ? 1 : length/SPI_BUFFSIZ ;
-        int partialEntries = ( ( (fullEntries * SPI_BUFFSIZ) < length) ? 1 : 0 ) ;
-
-        int numberXferEntries = fullEntries + partialEntries ;
-
-        byte[] someData = Arrays.copyOfRange(data, offset, length);
-
-        int start = 0;
-        int entryNum = 0 ;
-        while (start < someData.length) {
+        int start = offset;
+        while (start < data.length) {
             PeerAccessibleMemory buf = new PeerAccessibleMemory(SPI_BUFFSIZ);
             spi_ioc_transfer txEntry = new spi_ioc_transfer() ;
             int end = Math.min(data.length, start + SPI_BUFFSIZ);

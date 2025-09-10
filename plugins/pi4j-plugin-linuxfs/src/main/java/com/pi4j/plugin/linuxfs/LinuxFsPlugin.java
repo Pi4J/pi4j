@@ -43,10 +43,8 @@ import com.pi4j.provider.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Optional;
 
-import static com.pi4j.boardinfo.util.command.CommandExecutor.execute;
+import static com.pi4j.plugin.linuxfs.provider.pwm.LinuxFsPwmUtil.getPWMChipForRP1;
 
 /**
  * <p>LinuxFsPlugin class.</p>
@@ -123,7 +121,7 @@ public class LinuxFsPlugin implements Plugin {
 
         int pwmChip;
 
-        // If using a RP1, check the device address to find the correct PWM chip
+        // When using an RP1,check the device address to find the correct PWM chip
         if (BoardInfoHelper.usesRP1()) {
             pwmChip = getPWMChipForRP1(pwmFileSystemPath);
         } else {
