@@ -1,9 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>com.pi4j</groupId>
     <artifactId>pi4j-parent</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>4.0.0-SNAPSHOT</version>
     <name>Pi4J :: Parent POM</name>
     <description>Parent Maven POM for the Pi4J Project</description>
     <url>https://pi4j.com</url>
@@ -274,7 +275,7 @@
         <jna.version>5.16.0</jna.version>
         <jsch.version>0.1.55</jsch.version>
         <junit.jupiter.version>5.12.1</junit.jupiter.version>
-        <slf4j.version>2.0.12</slf4j.version>
+        <slf4j.version>2.0.17</slf4j.version>
         <jserialcomm.version>2.11.0</jserialcomm.version>
         <jna.version>5.15.0</jna.version>
 
