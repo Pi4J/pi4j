@@ -69,6 +69,9 @@ public class DefaultDigitalOutputConfig
 
         if(properties.containsKey(BUS_NUMBER)){
             this.busNumber = Integer.parseInt(properties.get(BUS_NUMBER));
+        } else {
+            // this is essential for FFM Plugin if using pi4j autoContext
+            this.busNumber = 0;
         }
 
         // load initial value property
