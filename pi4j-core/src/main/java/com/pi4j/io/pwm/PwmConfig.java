@@ -62,7 +62,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      *
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      */
-    Float dutyCycle();
+     Integer dutyCycle();
 
     /**
      *  Get the configured duty-cycle value as a decimal value that represents
@@ -75,7 +75,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      *
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      */
-    default Float getDutyCycle() {
+    default Integer getDutyCycle() {
         return dutyCycle();
     }
 
@@ -154,7 +154,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      * @return optional duty-cycle value expressed as a percentage (rage: 0-100)
      *         that is applied when shutting down the Pi4J context.
      */
-    Float shutdownValue();
+    Integer shutdownValue();
 
     /**
      * Get configured PWM duty-cycle value that is automatically applied
@@ -167,7 +167,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      *         that is applied when shutting down the Pi4J context.
      */
-    default Float getShutdownValue(){
+    default Integer getShutdownValue(){
         return shutdownValue();
     }
 
@@ -181,7 +181,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      * @return this PwmConfig instance
      */
-    PwmConfig shutdownValue(Number dutyCycle);
+    PwmConfig shutdownValue(Integer dutyCycle);
 
     /**
      * Optionally configure a PWM duty-cycle value that should automatically
@@ -192,7 +192,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      *
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      */
-    default void setShutdownValue(Number dutyCycle){
+    default void setShutdownValue(Integer dutyCycle){
         this.shutdownValue(dutyCycle);
     }
 
@@ -208,7 +208,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      *         that is applied when creating and initializing the PWM instance.
      */
-    Float initialValue();
+    Integer initialValue();
 
     /**
      * Get configured PWM duty-cycle value that is automatically applied to
@@ -222,7 +222,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      *         that is applied when creating and initializing the PWM instance.
      */
-    default Float getInitialValue(){
+    default Integer getInitialValue(){
         return initialValue();
     }
 

@@ -49,12 +49,12 @@ public class DefaultPwmConfig
         implements PwmConfig {
 
     // private configuration properties
-    protected Float dutyCycle = null;
+    protected Integer dutyCycle = null;
     protected Integer frequency = null;
     protected PwmType pwmType = PwmType.SOFTWARE;
     protected PwmPolarity polarity = PwmPolarity.NORMAL;
-    protected Float shutdownValue = null;
-    protected Float initialValue = null;
+    protected Integer shutdownValue = null;
+    protected Integer initialValue = null;
     protected List<PwmPreset> presets = new ArrayList<>();
 
     /**
@@ -93,7 +93,7 @@ public class DefaultPwmConfig
 
         // load optional pwm duty-cycle from properties
         if(properties.containsKey(DUTY_CYCLE_KEY)){
-            this.dutyCycle = Float.parseFloat(properties.get(DUTY_CYCLE_KEY));
+            this.dutyCycle = Integer.parseInt(properties.get(DUTY_CYCLE_KEY));
         }
 
         // load optional pwm frequency from properties
@@ -113,26 +113,26 @@ public class DefaultPwmConfig
 
         // load initial value property
         if(properties.containsKey(INITIAL_VALUE_KEY)){
-            this.initialValue = Float.parseFloat(properties.get(INITIAL_VALUE_KEY));
+            this.initialValue = Integer.parseInt(properties.get(INITIAL_VALUE_KEY));
         }
 
         // load shutdown value property
         if(properties.containsKey(SHUTDOWN_VALUE_KEY)){
-            this.shutdownValue = Float.parseFloat(properties.get(SHUTDOWN_VALUE_KEY));
+            this.shutdownValue = Integer.parseInt(properties.get(SHUTDOWN_VALUE_KEY));
         }
 
         // bounds checking
         if(this.dutyCycle != null && this.dutyCycle > 100)
-            this.dutyCycle = 100f;
+            this.dutyCycle = 100;
 
         // bounds checking
         if(this.dutyCycle != null && this.dutyCycle < 0)
-            this.dutyCycle = 0f;
+            this.dutyCycle = (int) 0 ;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Float dutyCycle() {
+    public Integer dutyCycle() {
         return this.dutyCycle;
     }
 
@@ -156,16 +156,16 @@ public class DefaultPwmConfig
 
     /** {@inheritDoc} */
     @Override
-    public Float shutdownValue(){
+    public Integer shutdownValue(){
         return this.shutdownValue;
     }
 
     /** {@inheritDoc} */
     @Override
-    public PwmConfig shutdownValue(Number dutyCycle){
+    public PwmConfig shutdownValue(Integer dutyCycle){
 
         // bounds check the duty-cycle value
-        float dc = dutyCycle.floatValue();
+        Integer dc = dutyCycle;
         if(dc < 0) dc = 0;
         if(dc > 100) dc = 100;
 
@@ -175,7 +175,7 @@ public class DefaultPwmConfig
 
     /** {@inheritDoc} */
     @Override
-    public Float initialValue() {
+    public Integer initialValue() {
         return this.initialValue;
     }
 
