@@ -43,7 +43,7 @@ public class EventManager<SOURCE_TYPE, LISTENER_TYPE extends Listener, EVENT_TYP
         this.delegate = delegate;
     }
 
-    /** Returns true if this event manage has at least one listener. Used to skip event creation otherwise. */
+    /** Returns true if this event manager has at least one listener. Used to skip event creation otherwise. */
     public boolean hasListeners() {
         return !listeners.isEmpty();
     }
