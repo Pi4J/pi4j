@@ -79,7 +79,7 @@ public class GPIOTest {
 
     @Test
     public void testInputUnavailable() {
-        assertThrows(IllegalStateException.class, () -> pi4j1.digitalInput().create(99));
+        assertThrows(Pi4JException.class, () -> pi4j1.digitalInput().create(99));
     }
 
     @Test
