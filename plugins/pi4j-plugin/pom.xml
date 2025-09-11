@@ -34,6 +34,7 @@
         <module>../pi4j-plugin-raspberrypi</module>
         <module>../pi4j-plugin-linuxfs</module>
         <module>../pi4j-plugin-gpiod</module>
+        <module>../pi4j-plugin-ffm</module>
     </modules>
 
     <!-- BUILD INSTRUCTIONS -->
