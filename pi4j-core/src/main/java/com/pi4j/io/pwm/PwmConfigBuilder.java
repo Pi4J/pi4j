@@ -77,7 +77,7 @@ public interface PwmConfigBuilder extends GpioConfigBuilder<PwmConfigBuilder, Pw
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      * @return this builder instance
      */
-    PwmConfigBuilder dutyCycle(Number dutyCycle);
+    PwmConfigBuilder dutyCycle(Integer dutyCycle);
 
     /**
      * Set the PwmType of this PWM instance. (Hardware/Software)
@@ -111,7 +111,7 @@ public interface PwmConfigBuilder extends GpioConfigBuilder<PwmConfigBuilder, Pw
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      * @return this builder instance
      */
-    PwmConfigBuilder shutdown(Number dutyCycle);
+    PwmConfigBuilder shutdown(Integer dutyCycle);
 
     /**
      * Optionally configure a PWM duty-cycle value that should automatically
@@ -124,7 +124,7 @@ public interface PwmConfigBuilder extends GpioConfigBuilder<PwmConfigBuilder, Pw
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      * @return this builder instance
      */
-    PwmConfigBuilder initial(Number dutyCycle);
+    PwmConfigBuilder initial(Integer dutyCycle);
 
     /**
      * Add one or more PwmPresets to this PWM instance. You can create new PWM
