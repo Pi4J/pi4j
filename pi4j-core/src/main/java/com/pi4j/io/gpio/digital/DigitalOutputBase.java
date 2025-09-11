@@ -77,7 +77,9 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
 
         if(!this.state.equals(state)){
             this.state = state;
-            this.dispatch(new DigitalStateChangeEvent<>(this, this.state));
+            if (this.hasListenersOrBindings()) {
+                this.dispatch(new DigitalStateChangeEvent<>(this, this.state));
+            }
         }
         return this;
     }
