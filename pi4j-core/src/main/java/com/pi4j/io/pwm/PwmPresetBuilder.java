@@ -58,7 +58,7 @@ public interface PwmPresetBuilder extends Builder<PwmPreset> {
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      * @return this builder instance
      */
-    PwmPresetBuilder dutyCycle(Number dutyCycle);
+    PwmPresetBuilder dutyCycle(Integer dutyCycle);
 
     /**
      *  Set the configured frequency value in Hertz (number of cycles per second)
