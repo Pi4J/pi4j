@@ -53,8 +53,8 @@ public class LinuxFsPwmProviderImpl extends PwmProviderBase implements LinuxFsPw
     /**
      * <p>Constructor for LinuxFsPwmProviderImpl.</p>
      *
-     * @param pwmFileSystemPath  Path to PWM device tree
-     * @param pwmChip            Number of PWM chip to use
+     * @param pwmFileSystemPath Path to PWM device tree
+     * @param pwmChip           Number of PWM chip to use
      */
     public LinuxFsPwmProviderImpl(String pwmFileSystemPath, int pwmChip) {
         this.id = ID;
@@ -72,14 +72,15 @@ public class LinuxFsPwmProviderImpl extends PwmProviderBase implements LinuxFsPw
     /**
      * <p>Constructor for LinuxFsPwmProviderImpl.</p>
      *
-     * @param pwmFileSystemPath  Path to PWM device tree
+     * @param pwmFileSystemPath Path to PWM device tree
      */
     public LinuxFsPwmProviderImpl(String pwmFileSystemPath) {
         this.id = ID;
         this.name = NAME;
         this.pwmFileSystemPath = pwmFileSystemPath;
 
-        // When using an RP1, check the device address to find the correct PWM chip
+
+        // if a RP1,  check the device address to find the correct PWM chip
         if (BoardInfoHelper.usesRP1()) {
             this.pwmChip = getPWMChipForRP1(pwmFileSystemPath);
         } else {
