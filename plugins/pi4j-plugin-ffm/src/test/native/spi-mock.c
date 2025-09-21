@@ -23,12 +23,14 @@
     
             for (i = 0; i < transfer->len; i++)
                 rx_buf[i] = tx_buf[i];
+            //pr_info("Data In / Out: %s\n", rx_buf);
         } else if (transfer->rx_buf) {
             // if we are just reading, fill the buffer with '1'
             unsigned char * rx_buf = transfer->rx_buf;
             int i;
             for (i = 0; i < transfer->len; i++)
                 rx_buf[i] = 1;
+            //pr_info("Data Out: %s\n", rx_buf);
         }
         // if are writing, silently accept bytes
 

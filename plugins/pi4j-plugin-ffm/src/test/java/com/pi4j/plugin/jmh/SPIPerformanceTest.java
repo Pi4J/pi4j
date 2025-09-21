@@ -4,6 +4,7 @@ import com.pi4j.Pi4J;
 import com.pi4j.io.spi.SpiBus;
 import com.pi4j.io.spi.SpiConfigBuilder;
 import com.pi4j.plugin.ffm.providers.spi.SpiFFMProviderImpl;
+import com.pi4j.plugin.linuxfs.provider.spi.LinuxFsSpiProviderImpl;
 import org.openjdk.jmh.annotations.*;
 
 import java.io.IOException;
@@ -50,9 +51,24 @@ public class SPIPerformanceTest {
     }
 
     @Benchmark
-    public void testWriteReadRoundTrip() {
+    @Warmup(iterations = 3)
+    public void testFFMWriteReadRoundTrip() {
         var pi4j = Pi4J.newContextBuilder()
             .add(new SpiFFMProviderImpl())
+            .build();
+        var config = SpiConfigBuilder.newInstance(pi4j).bus(SpiBus.BUS_0).address(0).mode(0).baud(50_000).build();
+        var spi = pi4j.spi().create(config);
+        spi.write("Test".getBytes());
+        var buffer = new byte[4];
+        spi.read(buffer);
+        pi4j.shutdown();
+    }
+
+    @Benchmark
+    @Warmup(iterations = 3)
+    public void testLinuxFsWriteReadRoundTrip() {
+        var pi4j = Pi4J.newContextBuilder()
+            .add(new LinuxFsSpiProviderImpl())
             .build();
         var config = SpiConfigBuilder.newInstance(pi4j).bus(SpiBus.BUS_0).address(0).mode(0).baud(50_000).build();
         var spi = pi4j.spi().create(config);
