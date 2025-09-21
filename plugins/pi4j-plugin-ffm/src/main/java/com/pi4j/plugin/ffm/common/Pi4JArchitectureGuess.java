@@ -22,7 +22,7 @@ public class Pi4JArchitectureGuess {
         var arch = System.getProperty("os.arch");
         return switch (arch) {
             case "amd64" -> "/usr/lib/x86_64-linux-gnu/" + libraryName + ".so";
-            case "aarch64" -> "/usr/lib/" + libraryName + ".so";
+            case "aarch64" -> "/usr/lib/aarch64-linux-gnu/" + libraryName + ".so";
             default -> throw new Pi4JException("Unsupported architecture: " + arch);
         };
     }
