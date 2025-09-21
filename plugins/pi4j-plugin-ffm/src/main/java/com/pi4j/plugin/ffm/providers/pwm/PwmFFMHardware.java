@@ -3,6 +3,7 @@ package com.pi4j.plugin.ffm.providers.pwm;
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.pwm.*;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
@@ -19,6 +20,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
 
     private static final String CHIP_PATH = "/sys/class/pwm/pwmchip";
     private static final String CHIP_EXPORT_PATH = "/export";
+    private static final String CHIP_UNEXPORT_PATH = "/unexport";
     private static final String CHIP_NPWM_PATH = "/npwm";
     private static final String PWM_PATH = "/pwm";
     private static final String ENABLE_PATH = "/enable";
@@ -144,6 +146,19 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
         file.write(enableFd, String.valueOf(0).getBytes());
         file.close(enableFd);
         this.onState = false;
+        return this;
+    }
+
+    @Override
+    public Pwm shutdown(Context context) throws ShutdownException {
+        if (config.getShutdownValue() != null) {
+            return super.shutdown(context);
+        }
+
+        var exportFd = file.open(CHIP_PATH + pwmChipNumber + CHIP_UNEXPORT_PATH, FileFlag.O_WRONLY);
+        file.write(exportFd, getByteContent(pwmBusNumber));
+        file.close(exportFd);
+
         return this;
     }
 
