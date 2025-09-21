@@ -122,7 +122,10 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
         var polarityFd = file.open(this.pwmPath + POLARITY_PATH, FileFlag.O_WRONLY);
 
         file.write(periodFd, String.valueOf(period).getBytes());
-        file.write(dutyCycleFd, String.valueOf(dutyCycle).getBytes());
+
+        var dCycle = Math.round((double) (period * dutyCycle) / 100);
+        file.write(dutyCycleFd, String.valueOf(dCycle).getBytes());
+
         file.write(polarityFd, polarity.getName().getBytes());
 
         file.close(dutyCycleFd);
