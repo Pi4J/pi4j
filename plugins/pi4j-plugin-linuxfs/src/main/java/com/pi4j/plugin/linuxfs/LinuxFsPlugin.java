@@ -27,13 +27,10 @@ package com.pi4j.plugin.linuxfs;
  * #L%
  */
 
-
 import com.pi4j.boardinfo.util.BoardInfoHelper;
-import com.pi4j.boardinfo.util.command.CommandResult;
 import com.pi4j.extension.Plugin;
 import com.pi4j.extension.PluginService;
 import com.pi4j.plugin.linuxfs.internal.LinuxGpio;
-import com.pi4j.plugin.linuxfs.internal.LinuxPwm;
 import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalInputProvider;
 import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalOutputProvider;
 import com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CProvider;
@@ -43,10 +40,7 @@ import com.pi4j.provider.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Optional;
-
-import static com.pi4j.boardinfo.util.command.CommandExecutor.execute;
+import static com.pi4j.boardinfo.util.PwmChipUtil.*;
 
 /**
  * <p>LinuxFsPlugin class.</p>
@@ -107,7 +101,7 @@ public class LinuxFsPlugin implements Plugin {
     public static final String SPI_PROVIDER_ID = ID + "-spi";
 
     public static String DEFAULT_GPIO_FILESYSTEM_PATH = LinuxGpio.DEFAULT_SYSTEM_PATH;
-    public static String DEFAULT_PWM_FILESYSTEM_PATH = LinuxPwm.DEFAULT_SYSTEM_PATH;
+    public static String DEFAULT_PWM_FILESYSTEM_PATH = DEFAULT_PWM_SYSTEM_PATH;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -123,11 +117,11 @@ public class LinuxFsPlugin implements Plugin {
 
         int pwmChip;
 
-        // When using an RP1,check the device address to find the correct PWM chip
+        // if using a RP1,check the device address to find the correct PWM chip
         if (BoardInfoHelper.usesRP1()) {
             pwmChip = getPWMChipForRP1(pwmFileSystemPath);
         } else {
-            pwmChip = LinuxPwm.DEFAULT_LEGACY_PWM_CHIP;
+            pwmChip = DEFAULT_LEGACY_PWM_CHIP;
         }
 
         // [GPIO] get overriding custom 'linux.gpio.system.path' setting from Pi4J context
@@ -160,43 +154,5 @@ public class LinuxFsPlugin implements Plugin {
 
         // register the LinuxFS I/O Providers with the plugin service
         service.register(providers);
-    }
-
-    protected int getPWMChipForRP1(String pwmFileSystemPath) {
-        int pwmChip = LinuxPwm.DEFAULT_RP1_PWM_CHIP;
-
-        // init to original bookworm using pwmChip2, test if different
-        String command = "ls -l " + pwmFileSystemPath;
-        CommandResult rslt = execute(command);
-        String[] paths = rslt.getOutputMessage().split("\n");
-        var foundChipNum = parsePWMPaths(paths);
-        if (foundChipNum.isPresent()) {
-            pwmChip = foundChipNum.get();
-        }
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Detected PWM chip {} on for RP1 on paths {}", pwmChip, Arrays.toString(paths));
-        }
-
-        return pwmChip;
-    }
-
-    protected static Optional<Integer> parsePWMPaths(String[] paths) {
-        var pwmChipIdentifier = "pwmchip";
-        for (int counter = 0; counter < paths.length; counter++) {
-            String chipNum = "";
-            StringBuilder chipName = new StringBuilder(pwmChipIdentifier);
-
-            // Test for the RP1 chip address for the user PWM channels
-            if (paths[counter].contains("1f00098000")) {
-                int numStart = paths[counter].indexOf(pwmChipIdentifier) + chipName.length();
-                while (Character.isDigit(paths[counter].substring(numStart, numStart + 1).charAt(0))) {
-                    chipName.append(paths[counter].charAt(numStart));
-                    numStart++;
-                }
-                return Optional.of(Integer.parseInt(chipNum));
-            }
-        }
-        return Optional.empty();
     }
 }
