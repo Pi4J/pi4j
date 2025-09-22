@@ -58,8 +58,8 @@ public class LinuxPwm {
      * <p>Constructor for LinuxPwm.</p>
      *
      * @param systemPath a {@link String} object.
-     * @param chip
-     * @param address    a int.
+     * @param chip       the chip number
+     * @param address    the chip address
      */
     public LinuxPwm(String systemPath, int chip, int address) {
         this.chip = chip;
@@ -182,14 +182,11 @@ public class LinuxPwm {
      */
     public Polarity getPolarity() throws IOException {
         var path = Paths.get(pwmPath, "polarity");
-        switch (Files.readString(path).trim().toLowerCase()) {
-            case "inversed":
-                return Polarity.INVERSED;
-            case "normal":
-                return Polarity.NORMAL;
-            default:
-                return Polarity.UNKNOWN;
-        }
+        return switch (Files.readString(path).trim().toLowerCase()) {
+            case "inversed" -> Polarity.INVERSED;
+            case "normal" -> Polarity.NORMAL;
+            default -> Polarity.UNKNOWN;
+        };
     }
 
     /**

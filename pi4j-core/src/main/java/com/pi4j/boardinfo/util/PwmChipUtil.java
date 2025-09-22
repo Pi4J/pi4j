@@ -29,14 +29,15 @@ package com.pi4j.boardinfo.util;
  *
  */
 
-import com.pi4j.boardinfo.util.command.CommandResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
-
-import static com.pi4j.boardinfo.util.command.CommandExecutor.execute;
 
 /**
  * PWM Util used to determine the PWM address on a Raspberry Pi.
@@ -80,19 +81,41 @@ public class PwmChipUtil {
         Logger logger = LoggerFactory.getLogger(PwmChipUtil.class);
         int pwmChip = DEFAULT_RP1_PWM_CHIP;
 
-        // init to original bookworm using pwmChip2, test if different
-        String command = "ls -l " + pwmFileSystemPath;
-        CommandResult rslt = execute(command);
-        String[] paths = rslt.getOutputMessage().split("\n");
-        var foundChipNum = parsePWMPaths(paths);
-        if (foundChipNum.isPresent()) {
-            pwmChip = foundChipNum.get();
-            if (logger.isDebugEnabled()) {
-                logger.debug("Detected PWM chip {} ", pwmChip);
+        try {
+            Path pwmPath = Paths.get(pwmFileSystemPath);
+            if (!Files.exists(pwmPath)) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("PWM filesystem path does not exist: {}", pwmFileSystemPath);
+                }
+                return pwmChip;
             }
-        } else {
+
+            List<String> pathEntries = Files.walk(pwmPath, 1)
+                .filter(path -> !path.equals(pwmPath)) // exclude the root directory
+                .map(path -> {
+                    try {
+                        return Files.readSymbolicLink(path).toString();
+                    } catch (IOException e) {
+                        // If it's not a symbolic link or can't be read, return the path name
+                        return path.getFileName().toString();
+                    }
+                })
+                .toList();
+
+            var foundChipNum = parsePWMPaths(pathEntries);
+            if (foundChipNum.isPresent()) {
+                pwmChip = foundChipNum.get();
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Detected PWM chip {} ", pwmChip);
+                }
+            } else {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Did NOT detect PWM chip for RP1 on paths {}", pathEntries);
+                }
+            }
+        } catch (IOException e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Did NOT detect PWM chip for RP1 on paths {}", Arrays.toString(paths));
+                logger.debug("Error reading PWM filesystem path {}: {}", pwmFileSystemPath, e.getMessage());
             }
         }
 
@@ -103,18 +126,18 @@ public class PwmChipUtil {
      * @param paths Array containing all objects found in pwmFileSystemPath
      * @return Optional containing an Int if successful, else an empty
      */
-    public static Optional<Integer> parsePWMPaths(String[] paths) {
+    public static Optional<Integer> parsePWMPaths(List<String> paths) {
         var pwmChipIdentifier = "pwmchip";
-        for (int counter = 0; counter < paths.length; counter++) {
+        for (String path : paths) {
             String chipNum = "";
             StringBuilder chipName = new StringBuilder(pwmChipIdentifier);
 
             // Test for the RP1 chip address for the user PWM channels
-            if (paths[counter].contains("1f00098000")) {
-                int numStart = paths[counter].indexOf(pwmChipIdentifier) + chipName.length();
-                while (Character.isDigit(paths[counter].substring(numStart, numStart + 1).charAt(0))) {
-                    chipName.append(paths[counter].charAt(numStart));
-                    chipNum = new StringBuilder().append(chipNum.substring(0, chipNum.length())).append(paths[counter].substring(numStart, numStart + 1)).toString();
+            if (path.contains("1f00098000")) {
+                int numStart = path.indexOf(pwmChipIdentifier) + chipName.length();
+                while (Character.isDigit(path.substring(numStart, numStart + 1).charAt(0))) {
+                    chipName.append(path.charAt(numStart));
+                    chipNum = new StringBuilder().append(chipNum.substring(0, chipNum.length())).append(path.substring(numStart, numStart + 1)).toString();
                     numStart++;
                 }
                 return Optional.of(Integer.parseInt(chipNum));
