@@ -16,7 +16,7 @@ public class SerialFFMProviderImpl extends SerialProviderBase {
 
     @Override
     public int getPriority() {
-        return 0;
+        return 1;
     }
 
     /**

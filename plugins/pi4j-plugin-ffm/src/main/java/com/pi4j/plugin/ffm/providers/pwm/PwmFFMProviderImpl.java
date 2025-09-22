@@ -1,6 +1,9 @@
 package com.pi4j.plugin.ffm.providers.pwm;
 
-import com.pi4j.io.pwm.*;
+import com.pi4j.io.pwm.Pwm;
+import com.pi4j.io.pwm.PwmConfig;
+import com.pi4j.io.pwm.PwmProvider;
+import com.pi4j.io.pwm.PwmProviderBase;
 
 public class PwmFFMProviderImpl extends PwmProviderBase implements PwmProvider {
 
@@ -11,7 +14,7 @@ public class PwmFFMProviderImpl extends PwmProviderBase implements PwmProvider {
 
     @Override
     public int getPriority() {
-        return 0;
+        return 1;
     }
 
     /**
