@@ -1,5 +1,4 @@
-package com.pi4j.plugin.linuxfs.provider.pwm;
-
+package com.pi4j.boardinfo.util;
 
 /*
  *
@@ -30,9 +29,7 @@ package com.pi4j.plugin.linuxfs.provider.pwm;
  *
  */
 
-
 import com.pi4j.boardinfo.util.command.CommandResult;
-import com.pi4j.plugin.linuxfs.internal.LinuxPwm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,14 +39,34 @@ import java.util.Optional;
 import static com.pi4j.boardinfo.util.command.CommandExecutor.execute;
 
 /**
- * LinuxFsPwmUtil
- * PWM Utilities used by a Pi with the RP1 chip.  Will determine if a user
- * accessible PWM is configured, if so, return an Int identifying which pwmchip
+ * PWM Util used to determine the PWM address on a Raspberry Pi.
+ * This will determine if a user accessible PWM is configured, if so, returns an Int identifying which pwmchip
  * If no user accessible PWM found, will return the original default value of 2.
  */
+public class PwmChipUtil {
 
+    /**
+     * Constant <code>DEFAULT_SYSTEM_PATH="/sys/class/pwm"</code>
+     */
+    public static String DEFAULT_PWM_SYSTEM_PATH = "/sys/class/pwm";
 
-public class LinuxFsPwmUtil {
+    /** Constant <code>DEFAULT_LEGACY_PWM_CHIP=0</code> */
+    /**
+     * In Pi Models Previous to RP1 the chip is number 0
+     */
+    public static int DEFAULT_LEGACY_PWM_CHIP = 0;
+
+    /** Constant <code>DEFAULT_RP1_PWM_CHIP=2</code> */
+    /**
+     * In RP1 the chip is number 2
+     */
+    public static int DEFAULT_RP1_PWM_CHIP = 2;
+
+    /** Constant <code>DEFAULT_PWM_CHIP=2</code> */
+    /**
+     * In RP1 the chip is number 2
+     */
+    public static int DEFAULT_PWM_CHIP = DEFAULT_RP1_PWM_CHIP;
 
     /**
      * getPWMChipForRP1
@@ -59,11 +76,9 @@ public class LinuxFsPwmUtil {
      * @return Int value for the pwmchip if configured,
      * else default to original expected value of 2.
      */
-
-
     public static int getPWMChipForRP1(String pwmFileSystemPath) {
-        Logger logger = LoggerFactory.getLogger(LinuxFsPwmUtil.class);
-        int pwmChip = LinuxPwm.DEFAULT_RP1_PWM_CHIP;
+        Logger logger = LoggerFactory.getLogger(PwmChipUtil.class);
+        int pwmChip = DEFAULT_RP1_PWM_CHIP;
 
         // init to original bookworm using pwmChip2, test if different
         String command = "ls -l " + pwmFileSystemPath;

@@ -31,37 +31,24 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static com.pi4j.boardinfo.util.PwmChipUtil.DEFAULT_PWM_CHIP;
+import static com.pi4j.boardinfo.util.PwmChipUtil.DEFAULT_PWM_SYSTEM_PATH;
+
 /**
  * <p>LinuxPwm class.</p>
  *
- * @see "https://www.kernel.org/doc/html/latest/driver-api/pwm.html"
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @see "https://www.kernel.org/doc/html/latest/driver-api/pwm.html"
  */
 public class LinuxPwm {
-
-    /** Constant <code>DEFAULT_SYSTEM_PATH="/sys/class/pwm"</code> */
-    public static String DEFAULT_SYSTEM_PATH = "/sys/class/pwm";
-
-    /** Constant <code>DEFAULT_LEGACY_PWM_CHIP=0</code> */
-    /** In Pi Models Previous to RP1 the chip is number 0 */
-    public static int DEFAULT_LEGACY_PWM_CHIP = 0;
-
-    /** Constant <code>DEFAULT_RP1_PWM_CHIP=2</code> */
-    /** In RP1 the chip is number 2 */
-    public static int DEFAULT_RP1_PWM_CHIP = 2;
-
-    /** Constant <code>DEFAULT_PWM_CHIP=2</code> */
-    /** In RP1 the chip is number 2 */
-    public static int DEFAULT_PWM_CHIP = DEFAULT_RP1_PWM_CHIP;
-
 
     protected final String systemPath;
     protected final int chip;
     protected final int address;
     protected final String pwmPath;
 
-    public enum Polarity{
+    public enum Polarity {
         NORMAL,
         INVERSED,
         UNKNOWN
@@ -72,9 +59,9 @@ public class LinuxPwm {
      *
      * @param systemPath a {@link String} object.
      * @param chip
-     * @param address a int.
+     * @param address    a int.
      */
-    public LinuxPwm(String systemPath, int chip, int address){
+    public LinuxPwm(String systemPath, int chip, int address) {
         this.chip = chip;
         this.address = address;
         this.systemPath = Paths.get(systemPath, String.format("pwmchip%d", chip)).toString();
@@ -85,11 +72,11 @@ public class LinuxPwm {
      * <p>Constructor for LinuxPwm.</p>
      *
      * @param systemPath a {@link String} object.
-     * @param address a int.
+     * @param address    a int.
      */
 
     public LinuxPwm(String systemPath, int address) {
-        this(DEFAULT_SYSTEM_PATH, DEFAULT_PWM_CHIP, address);
+        this(DEFAULT_PWM_SYSTEM_PATH, DEFAULT_PWM_CHIP, address);
     }
 
     /**
@@ -97,10 +84,9 @@ public class LinuxPwm {
      *
      * @param address a int.
      */
-    public LinuxPwm(int address){
-        this(DEFAULT_SYSTEM_PATH, address);
+    public LinuxPwm(int address) {
+        this(DEFAULT_PWM_SYSTEM_PATH, address);
     }
-
 
 
     /**
@@ -122,7 +108,7 @@ public class LinuxPwm {
      * @throws IOException if any.
      */
     public int getChannels() throws IOException {
-        var path = Paths.get(systemPath,"npwm");
+        var path = Paths.get(systemPath, "npwm");
         return Integer.parseInt(Files.readString(path).trim());
     }
 
@@ -166,6 +152,7 @@ public class LinuxPwm {
     public void polarity(Polarity polarity) throws IOException {
         setPolarity(polarity);
     }
+
     /**
      * <p>setPolarity.</p>
      *
@@ -186,6 +173,7 @@ public class LinuxPwm {
     public Polarity polarity() throws IOException {
         return getPolarity();
     }
+
     /**
      * <p>getPolarity.</p>
      *
@@ -194,10 +182,13 @@ public class LinuxPwm {
      */
     public Polarity getPolarity() throws IOException {
         var path = Paths.get(pwmPath, "polarity");
-        switch(Files.readString(path).trim().toLowerCase()){
-            case "inversed": return Polarity.INVERSED;
-            case "normal": return Polarity.NORMAL;
-            default: return Polarity.UNKNOWN;
+        switch (Files.readString(path).trim().toLowerCase()) {
+            case "inversed":
+                return Polarity.INVERSED;
+            case "normal":
+                return Polarity.NORMAL;
+            default:
+                return Polarity.UNKNOWN;
         }
     }
 
@@ -240,7 +231,7 @@ public class LinuxPwm {
      * @throws IOException if any.
      */
     public void setEnabled(boolean enabled) throws IOException {
-        var path = Paths.get(pwmPath,"enable");
+        var path = Paths.get(pwmPath, "enable");
         Files.writeString(path, (enabled ? "1" : "0"));
     }
 
@@ -261,7 +252,7 @@ public class LinuxPwm {
      * @throws IOException if any.
      */
     public boolean isEnabled() throws IOException {
-        var path = Paths.get(pwmPath,"enable");
+        var path = Paths.get(pwmPath, "enable");
         return Files.readString(path).trim().equalsIgnoreCase("1");
     }
 
@@ -275,6 +266,7 @@ public class LinuxPwm {
     public void period(long period) throws IOException {
         setPeriod(period);
     }
+
     public void period(Number period) throws IOException {
         setPeriod(period);
     }
@@ -286,12 +278,12 @@ public class LinuxPwm {
      * @throws IOException if any.
      */
     public void setPeriod(long period) throws IOException {
-        var path = Paths.get(pwmPath,"period");
+        var path = Paths.get(pwmPath, "period");
         Files.writeString(path, Long.toUnsignedString(period));
     }
 
     public void setPeriod(Number period) throws IOException {
-        var path = Paths.get(pwmPath,"period");
+        var path = Paths.get(pwmPath, "period");
         Files.writeString(path, period.toString());
     }
 
@@ -314,7 +306,7 @@ public class LinuxPwm {
      * @throws IOException if any.
      */
     public long getPeriod() throws IOException {
-        var path = Paths.get(pwmPath,"period");
+        var path = Paths.get(pwmPath, "period");
         return Long.parseLong(Files.readString(path).trim());
     }
 
@@ -337,7 +329,7 @@ public class LinuxPwm {
      * @throws IOException if any.
      */
     public void setDutyCycle(long dutyCycle) throws IOException {
-        var path = Paths.get(pwmPath,"duty_cycle");
+        var path = Paths.get(pwmPath, "duty_cycle");
         Files.writeString(path, Long.toString(dutyCycle));
     }
 
@@ -360,39 +352,43 @@ public class LinuxPwm {
      * @throws IOException if any.
      */
     public long getDutyCycle() throws IOException {
-        var path = Paths.get(pwmPath,"duty_cycle");
+        var path = Paths.get(pwmPath, "duty_cycle");
         return Long.parseLong(Files.readString(path).trim());
     }
 
     /**
      * Get Linux File System path for PWM
+     *
      * @return Linux File System path for PWM
      */
-    public String systemPath(){
+    public String systemPath() {
         return getSystemPath();
     }
 
     /**
      * Get Linux File System path for PWM
+     *
      * @return Linux File System path for PWM
      */
-    public String getSystemPath(){
+    public String getSystemPath() {
         return this.systemPath;
     }
 
     /**
      * Get Linux File System path for this PWM pin instance
+     *
      * @return Linux File System path for this PWM pin instance
      */
-    public String pwmPath(){
+    public String pwmPath() {
         return getPwmPath();
     }
 
     /**
      * Get Linux File System path for this PWM pin instance
+     *
      * @return Linux File System path for this PWM pin instance
      */
-    public String getPwmPath(){
+    public String getPwmPath() {
         return this.pwmPath;
     }
 }

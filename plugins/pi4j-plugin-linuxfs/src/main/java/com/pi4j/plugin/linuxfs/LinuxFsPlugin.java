@@ -42,8 +42,7 @@ import com.pi4j.provider.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-import static com.pi4j.plugin.linuxfs.provider.pwm.LinuxFsPwmUtil.getPWMChipForRP1;
+import static com.pi4j.boardinfo.util.PwmChipUtil.getPWMChipForRP1;
 
 /**
  * <p>LinuxFsPlugin class.</p>
