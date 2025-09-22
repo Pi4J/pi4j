@@ -27,12 +27,10 @@ package com.pi4j.plugin.linuxfs;
  * #L%
  */
 
-
 import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.extension.Plugin;
 import com.pi4j.extension.PluginService;
 import com.pi4j.plugin.linuxfs.internal.LinuxGpio;
-import com.pi4j.plugin.linuxfs.internal.LinuxPwm;
 import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalInputProvider;
 import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalOutputProvider;
 import com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CProvider;
@@ -42,7 +40,7 @@ import com.pi4j.provider.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.pi4j.boardinfo.util.PwmChipUtil.getPWMChipForRP1;
+import static com.pi4j.boardinfo.util.PwmChipUtil.*;
 
 /**
  * <p>LinuxFsPlugin class.</p>
@@ -103,7 +101,7 @@ public class LinuxFsPlugin implements Plugin {
     public static final String SPI_PROVIDER_ID = ID + "-spi";
 
     public static String DEFAULT_GPIO_FILESYSTEM_PATH = LinuxGpio.DEFAULT_SYSTEM_PATH;
-    public static String DEFAULT_PWM_FILESYSTEM_PATH = LinuxPwm.DEFAULT_SYSTEM_PATH;
+    public static String DEFAULT_PWM_FILESYSTEM_PATH = DEFAULT_PWM_SYSTEM_PATH;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -123,7 +121,7 @@ public class LinuxFsPlugin implements Plugin {
         if (BoardInfoHelper.usesRP1()) {
             pwmChip = getPWMChipForRP1(pwmFileSystemPath);
         } else {
-            pwmChip = LinuxPwm.DEFAULT_LEGACY_PWM_CHIP;
+            pwmChip = DEFAULT_LEGACY_PWM_CHIP;
         }
 
         // [GPIO] get overriding custom 'linux.gpio.system.path' setting from Pi4J context
