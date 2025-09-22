@@ -1,12 +1,15 @@
 package com.pi4j.plugin.ffm.providers.pwm;
 
-import com.pi4j.io.pwm.*;
+import com.pi4j.io.pwm.Pwm;
+import com.pi4j.io.pwm.PwmConfig;
+import com.pi4j.io.pwm.PwmProvider;
+import com.pi4j.io.pwm.PwmProviderBase;
 import com.pi4j.plugin.ffm.common.PermissionHelper;
 
 public class PwmFFMProviderImpl extends PwmProviderBase implements PwmProvider {
 
     public PwmFFMProviderImpl() {
-        this.id = "ffm--pwm";
+        this.id = "ffm-pwm";
         this.name = "FFM API Provider PWM";
         PermissionHelper.checkUser();
     }
