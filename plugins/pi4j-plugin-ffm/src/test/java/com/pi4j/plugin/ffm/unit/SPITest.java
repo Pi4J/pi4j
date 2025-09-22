@@ -7,6 +7,7 @@ import com.pi4j.io.spi.SpiConfigBuilder;
 import com.pi4j.plugin.ffm.common.spi.SpiTransferBuffer;
 import com.pi4j.plugin.ffm.mocks.FileDescriptorNativeMock;
 import com.pi4j.plugin.ffm.mocks.IoctlNativeMock;
+import com.pi4j.plugin.ffm.mocks.PermissionHelperMock;
 import com.pi4j.plugin.ffm.providers.spi.SpiFFMProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -33,7 +34,10 @@ public class SPITest {
 
     @Test
     public void testCreation() {
-        try (var _ = FileDescriptorNativeMock.echo(); var _ = IoctlNativeMock.echo()) {
+        try (var _ = PermissionHelperMock.echo();
+             var _ = FileDescriptorNativeMock.echo();
+             var _ = IoctlNativeMock.echo()) {
+
             pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
                 .bus(SpiBus.BUS_0)
                 .address(0)
@@ -49,7 +53,10 @@ public class SPITest {
             SpiTransferBuffer buffer = answer.getArgument(2);
             return new SpiTransferBuffer(buffer.getTxBuffer(), buffer.getTxBuffer(), buffer.getTxBuffer().length);
         });
-        try (var _ = FileDescriptorNativeMock.echo(); var _ = IoctlNativeMock.echo(spiTestData)) {
+        try (var _ = PermissionHelperMock.echo();
+             var _ = FileDescriptorNativeMock.echo();
+             var _ = IoctlNativeMock.echo(spiTestData)) {
+
             var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
                 .bus(SpiBus.BUS_0)
                 .address(1)
@@ -75,7 +82,10 @@ public class SPITest {
                 return new SpiTransferBuffer(buffer.getTxBuffer(), "Test".getBytes(), 4);
             }
         });
-        try (var _ = FileDescriptorNativeMock.echo(); var _ = IoctlNativeMock.echo(spiTestData)) {
+        try (var _ = PermissionHelperMock.echo();
+             var _ = FileDescriptorNativeMock.echo();
+             var _ = IoctlNativeMock.echo(spiTestData)) {
+
             var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
                 .bus(SpiBus.BUS_0)
                 .address(2)
@@ -99,7 +109,10 @@ public class SPITest {
             SpiTransferBuffer buffer = answer.getArgument(2);
             return new SpiTransferBuffer(buffer.getTxBuffer(), buffer.getTxBuffer(), buffer.getTxBuffer().length);
         });
-        try (var _ = FileDescriptorNativeMock.echo(); var _ = IoctlNativeMock.echo(spiTestData)) {
+        try (var _ = PermissionHelperMock.echo();
+             var _ = FileDescriptorNativeMock.echo();
+             var _ = IoctlNativeMock.echo(spiTestData)) {
+
             var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
                 .bus(SpiBus.BUS_0)
                 .address(3)

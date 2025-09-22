@@ -7,12 +7,14 @@ import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputProvider;
 import com.pi4j.io.gpio.digital.DigitalOutputProviderBase;
+import com.pi4j.plugin.ffm.common.PermissionHelper;
 
 public class DigitalOutputFFMProviderImpl extends DigitalOutputProviderBase implements DigitalOutputProvider {
 
     public DigitalOutputFFMProviderImpl() {
         this.id = getClass().getSimpleName();
         this.name = "Digital Pin Output (FFM API)";
+        PermissionHelper.checkUser();
     }
 
 

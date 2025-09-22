@@ -9,6 +9,7 @@ import com.pi4j.io.spi.SpiBase;
 import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.io.spi.SpiProvider;
 import com.pi4j.plugin.ffm.common.HexFormatter;
+import com.pi4j.plugin.ffm.common.PermissionHelper;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
@@ -32,6 +33,7 @@ public class SpiFFM extends SpiBase implements Spi {
     public SpiFFM(SpiProvider provider, SpiConfig config) {
         super(provider, config);
         this.path = SPI_BUS + config.bus().getBus() + "." + config.address();
+        PermissionHelper.checkDevice(path);
     }
 
     @Override

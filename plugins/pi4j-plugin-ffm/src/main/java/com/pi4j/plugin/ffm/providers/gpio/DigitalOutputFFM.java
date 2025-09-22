@@ -6,6 +6,7 @@ import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.gpio.digital.*;
+import com.pi4j.plugin.ffm.common.PermissionHelper;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
@@ -34,15 +35,13 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
         super(provider, config);
         this.pin = config.address();
         this.deviceName = "/dev/gpiochip" + config.busNumber();
+        PermissionHelper.checkDevice(deviceName);
     }
 
     @Override
     public DigitalOutput initialize(Context context) throws InitializeException {
         super.initialize(context);
         try {
-            if (!deviceExists()) {
-                throw new InitializeException("Device '" + deviceName + "' does not exist.");
-            }
             if (!canAccessDevice()) {
                 var posix = Files.readAttributes(Path.of(deviceName), PosixFileAttributes.class);
                 logger.error("Inaccessible device: '{} {} {} {}'", PosixFilePermissions.toString(posix.permissions()), posix.owner().getName(), posix.group().getName(), deviceName);

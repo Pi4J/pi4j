@@ -19,4 +19,5 @@ echo 1 > /sys/kernel/config/gpio-sim/basic/bank1/num_lines
 
 echo 1 > /sys/kernel/config/gpio-sim/basic/live
 
-chmod 0666 /dev/gpiochip0
+chmod 0660 /dev/gpiochip0
+chown root:dialout /dev/gpiochip0

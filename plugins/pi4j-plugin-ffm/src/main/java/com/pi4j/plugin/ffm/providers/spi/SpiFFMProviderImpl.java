@@ -4,12 +4,14 @@ import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.io.spi.SpiProvider;
 import com.pi4j.io.spi.SpiProviderBase;
+import com.pi4j.plugin.ffm.common.PermissionHelper;
 
 public class SpiFFMProviderImpl extends SpiProviderBase implements SpiProvider {
 
     public SpiFFMProviderImpl() {
         this.id = "SpiFFMProviderImpl";
         this.name = "SpiFFMProviderImpl";
+        PermissionHelper.checkUser();
     }
 
     @Override

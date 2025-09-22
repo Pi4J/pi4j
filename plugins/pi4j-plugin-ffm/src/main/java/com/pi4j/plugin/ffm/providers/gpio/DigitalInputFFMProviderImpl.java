@@ -7,12 +7,14 @@ import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalInputProvider;
 import com.pi4j.io.gpio.digital.DigitalInputProviderBase;
+import com.pi4j.plugin.ffm.common.PermissionHelper;
 
 public class DigitalInputFFMProviderImpl extends DigitalInputProviderBase implements DigitalInputProvider {
 
     public DigitalInputFFMProviderImpl() {
         this.id = getClass().getSimpleName();
         this.name = "Digital Pin Input (FFM API)";
+        PermissionHelper.checkUser();
     }
 
     @Override

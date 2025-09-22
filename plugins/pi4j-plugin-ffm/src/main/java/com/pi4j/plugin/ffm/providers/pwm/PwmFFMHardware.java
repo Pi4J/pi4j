@@ -6,6 +6,7 @@ import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.pwm.*;
+import com.pi4j.plugin.ffm.common.PermissionHelper;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import org.slf4j.Logger;
@@ -40,10 +41,11 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
     private final int pwmBusNumber;
     private final int pwmChipNumber;
 
-    public PwmFFMHardware(PwmProvider provider, PwmConfig config){
+    public PwmFFMHardware(PwmProvider provider, PwmConfig config) {
         super(provider, config);
         this.pwmBusNumber = config.busNumber();
         this.pwmChipNumber = config.address();
+        PermissionHelper.checkDevice(CHIP_PATH + pwmChipNumber);
     }
 
     /** {@inheritDoc} */

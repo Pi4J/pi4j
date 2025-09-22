@@ -6,6 +6,7 @@ import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CBusBase;
 import com.pi4j.io.i2c.I2CConfig;
+import com.pi4j.plugin.ffm.common.PermissionHelper;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
@@ -39,11 +40,9 @@ public class I2CBusFFM extends I2CBusBase {
     public I2CBusFFM(I2CConfig config) {
         super(config);
         this.busName = I2C_BUS + bus;
+        PermissionHelper.checkDevice(busName);
         try {
             logger.debug("{} - setting up I2CBus...", busName);
-            if (!deviceExists()) {
-                throw new InitializeException("Device '" + busName + "' does not exist.");
-            }
             if (!canAccessDevice()) {
                 var posix = Files.readAttributes(Path.of(busName), PosixFileAttributes.class);
                 logger.error("Inaccessible device: '{} {} {} {}'", PosixFilePermissions.toString(posix.permissions()), posix.owner().getName(), posix.group().getName(), busName);
@@ -166,9 +165,5 @@ public class I2CBusFFM extends I2CBusBase {
 
     private boolean canAccessDevice() {
         return file.access(busName, FileFlag.R_OK) == 0;
-    }
-
-    private boolean deviceExists() {
-        return file.access(busName, FileFlag.F_OK) == 0;
     }
 }

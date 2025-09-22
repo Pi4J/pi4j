@@ -5,6 +5,7 @@ import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.gpio.digital.*;
+import com.pi4j.plugin.ffm.common.PermissionHelper;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.gpio.DetectedEvent;
@@ -64,18 +65,13 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
         this.deviceName = "/dev/gpiochip" + config.busNumber();
         this.debounce = config.debounce();
         this.pull = config.pull();
+        PermissionHelper.checkDevice(deviceName);
     }
 
     @Override
     public DigitalInput initialize(Context context) throws InitializeException {
         super.initialize(context);
-//        if (chipName.equals("unknown")) {
-//            throw new InitializeException("Please, specify a chip name with builder call 'setGpioChipName()'.");
-//        }
         try {
-            if (!deviceExists()) {
-                throw new InitializeException("Device '" + deviceName + "' does not exist.");
-            }
             if (!canAccessDevice()) {
                 var posix = Files.readAttributes(Path.of(deviceName), PosixFileAttributes.class);
                 logger.error("Inaccessible device: '{} {} {} {}'", PosixFilePermissions.toString(posix.permissions()), posix.owner().getName(), posix.group().getName(), deviceName);
