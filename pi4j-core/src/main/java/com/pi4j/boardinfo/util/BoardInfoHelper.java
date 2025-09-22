@@ -29,27 +29,15 @@ import com.pi4j.boardinfo.datareader.BoardCodeReader;
 import com.pi4j.boardinfo.datareader.CpuInfoReader;
 import com.pi4j.boardinfo.datareader.MemInfoReader;
 import com.pi4j.boardinfo.definition.BoardModel;
-import com.pi4j.boardinfo.model.BoardInfo;
-import com.pi4j.boardinfo.model.BoardReading;
-import com.pi4j.boardinfo.model.JavaInfo;
-import com.pi4j.boardinfo.model.JvmMemory;
-import com.pi4j.boardinfo.model.OperatingSystem;
+import com.pi4j.boardinfo.model.*;
 import com.pi4j.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.pi4j.boardinfo.util.Command.CORE_VOLTAGE_COMMAND;
-import static com.pi4j.boardinfo.util.Command.TEMPERATURE_COMMAND;
-import static com.pi4j.boardinfo.util.Command.THROTTLED_STATE_COMMAND;
-import static com.pi4j.boardinfo.util.Command.UPTIME_COMMAND;
-import static com.pi4j.boardinfo.util.SystemProperties.ARCHITECTURE_DATA_MODEL;
-import static com.pi4j.boardinfo.util.SystemProperties.JAVA_RUNTIME_VERSION;
-import static com.pi4j.boardinfo.util.SystemProperties.JAVA_VENDOR;
-import static com.pi4j.boardinfo.util.SystemProperties.JAVA_VENDOR_VERSION;
-import static com.pi4j.boardinfo.util.SystemProperties.JAVA_VERSION;
-import static com.pi4j.boardinfo.util.SystemProperties.OS_ARCH;
-import static com.pi4j.boardinfo.util.SystemProperties.OS_NAME;
-import static com.pi4j.boardinfo.util.SystemProperties.OS_VERSION;
+import static com.pi4j.boardinfo.util.Command.*;
+import static com.pi4j.boardinfo.util.PwmChipUtil.DEFAULT_LEGACY_PWM_CHIP;
+import static com.pi4j.boardinfo.util.PwmChipUtil.DEFAULT_PWM_SYSTEM_PATH;
+import static com.pi4j.boardinfo.util.SystemProperties.*;
 import static com.pi4j.boardinfo.util.command.CommandExecutor.execute;
 
 /**
@@ -174,6 +162,13 @@ public class BoardInfoHelper {
      */
     public static boolean usesRP1() {
         return current().getBoardModel().usesRP1();
+    }
+
+    public static int getPwmChipAddress() {
+        if (BoardInfoHelper.usesRP1()) {
+            return PwmChipUtil.getPWMChipForRP1(DEFAULT_PWM_SYSTEM_PATH);
+        }
+        return DEFAULT_LEGACY_PWM_CHIP;
     }
 
     /**
