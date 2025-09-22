@@ -4,6 +4,7 @@ import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.io.spi.SpiBus;
 import com.pi4j.io.spi.SpiConfigBuilder;
+import com.pi4j.plugin.ffm.common.PermissionHelper;
 import com.pi4j.plugin.ffm.common.spi.SpiTransferBuffer;
 import com.pi4j.plugin.ffm.mocks.FileDescriptorNativeMock;
 import com.pi4j.plugin.ffm.mocks.IoctlNativeMock;
@@ -12,12 +13,15 @@ import com.pi4j.plugin.ffm.providers.spi.SpiFFMProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SPITest {
     private static Context pi4j;
+
+    private static final MockedStatic<PermissionHelper> permissionHelperMock = PermissionHelperMock.echo();
 
     @BeforeAll
     public static void setup() {
@@ -30,12 +34,12 @@ public class SPITest {
     @AfterAll
     public static void teardown() {
         pi4j.shutdown();
+        permissionHelperMock.close();
     }
 
     @Test
     public void testCreation() {
-        try (var _ = PermissionHelperMock.echo();
-             var _ = FileDescriptorNativeMock.echo();
+        try (var _ = FileDescriptorNativeMock.echo();
              var _ = IoctlNativeMock.echo()) {
 
             pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
@@ -53,8 +57,7 @@ public class SPITest {
             SpiTransferBuffer buffer = answer.getArgument(2);
             return new SpiTransferBuffer(buffer.getTxBuffer(), buffer.getTxBuffer(), buffer.getTxBuffer().length);
         });
-        try (var _ = PermissionHelperMock.echo();
-             var _ = FileDescriptorNativeMock.echo();
+        try (var _ = FileDescriptorNativeMock.echo();
              var _ = IoctlNativeMock.echo(spiTestData)) {
 
             var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
@@ -82,8 +85,7 @@ public class SPITest {
                 return new SpiTransferBuffer(buffer.getTxBuffer(), "Test".getBytes(), 4);
             }
         });
-        try (var _ = PermissionHelperMock.echo();
-             var _ = FileDescriptorNativeMock.echo();
+        try (var _ = FileDescriptorNativeMock.echo();
              var _ = IoctlNativeMock.echo(spiTestData)) {
 
             var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
@@ -109,8 +111,7 @@ public class SPITest {
             SpiTransferBuffer buffer = answer.getArgument(2);
             return new SpiTransferBuffer(buffer.getTxBuffer(), buffer.getTxBuffer(), buffer.getTxBuffer().length);
         });
-        try (var _ = PermissionHelperMock.echo();
-             var _ = FileDescriptorNativeMock.echo();
+        try (var _ = FileDescriptorNativeMock.echo();
              var _ = IoctlNativeMock.echo(spiTestData)) {
 
             var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
