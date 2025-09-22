@@ -9,8 +9,8 @@ import com.pi4j.plugin.ffm.providers.i2c.impl.I2CSMBus;
 public class I2CFFMProviderImpl extends I2CProviderBase implements I2CProvider {
 
     public I2CFFMProviderImpl() {
-        this.id = "FFMI2CProviderImpl";
-        this.name = "FFMI2CProviderImpl";
+        this.id = "ffm-i2c";
+        this.name = "FFM API Provider I2C";
         PermissionHelper.checkUser();
     }
 

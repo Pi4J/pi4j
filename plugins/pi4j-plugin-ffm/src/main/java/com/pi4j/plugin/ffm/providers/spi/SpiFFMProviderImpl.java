@@ -9,8 +9,8 @@ import com.pi4j.plugin.ffm.common.PermissionHelper;
 public class SpiFFMProviderImpl extends SpiProviderBase implements SpiProvider {
 
     public SpiFFMProviderImpl() {
-        this.id = "SpiFFMProviderImpl";
-        this.name = "SpiFFMProviderImpl";
+        this.id = "ffm-spi";
+        this.name = "FFM API Provider SPI";
         PermissionHelper.checkUser();
     }
 

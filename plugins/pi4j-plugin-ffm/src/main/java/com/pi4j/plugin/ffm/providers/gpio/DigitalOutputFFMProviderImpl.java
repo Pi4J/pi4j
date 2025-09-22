@@ -12,15 +12,15 @@ import com.pi4j.plugin.ffm.common.PermissionHelper;
 public class DigitalOutputFFMProviderImpl extends DigitalOutputProviderBase implements DigitalOutputProvider {
 
     public DigitalOutputFFMProviderImpl() {
-        this.id = getClass().getSimpleName();
-        this.name = "Digital Pin Output (FFM API)";
+        this.id = "ffm-digital-output";
+        this.name = "FFM API Provider Digital Output";
         PermissionHelper.checkUser();
     }
 
 
     @Override
     public DigitalOutput create(DigitalOutputConfig config) {
-        var chipName =  context.config().properties().get("gpio.chip.name");
+        var chipName = context.config().properties().get("gpio.chip.name");
         var digitalOutput = new DigitalOutputFFM(chipName, this, config);
         this.context.registry().add(digitalOutput);
         return digitalOutput;

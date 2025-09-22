@@ -12,14 +12,14 @@ import com.pi4j.plugin.ffm.common.PermissionHelper;
 public class DigitalInputFFMProviderImpl extends DigitalInputProviderBase implements DigitalInputProvider {
 
     public DigitalInputFFMProviderImpl() {
-        this.id = getClass().getSimpleName();
-        this.name = "Digital Pin Input (FFM API)";
+        this.id = "ffm-digital-input";
+        this.name = "FFM API Provider Digital Input";
         PermissionHelper.checkUser();
     }
 
     @Override
     public DigitalInput create(DigitalInputConfig config) {
-        var chipName =  context.config().properties().get("gpio.chip.name");
+        var chipName = context.config().properties().get("gpio.chip.name");
         var digitalInput = new DigitalInputFFM(chipName, this, config);
         this.context.registry().add(digitalInput);
         return digitalInput;

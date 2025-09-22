@@ -10,8 +10,8 @@ public class SerialFFMProviderImpl extends SerialProviderBase {
      * <p>Constructor for PiGpioSerialProviderImpl.</p>
      */
     public SerialFFMProviderImpl() {
-        this.id = "SerialFFMProviderImpl";
-        this.name = "SerialFFMProviderImpl";
+        this.id = "ffm-serial";
+        this.name = "FFM API Provider Serial";
     }
 
     @Override
