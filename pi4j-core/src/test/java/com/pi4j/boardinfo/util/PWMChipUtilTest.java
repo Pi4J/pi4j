@@ -13,8 +13,8 @@ class PWMChipUtilTest {
     @Test
     void shouldReturnCorrectPWMChipForRP1Paths() {
         var paths = List.of("total 0  ",
-            "lrwxrwxrwx 1root root 0Aug 20 07:51 pwmchip42 ->../../devices / platform / axi / 1000120000. pcie / 1f00098000. pwm / pwm / pwmchip0",
-            "lrwxrwxrwx 1 root root 0 Aug 20 07:51 pwmchip1 ->../../devices / platform / axi / 1000120000. pcie / 1f 0009c000.pwm / pwm / pwmchip1"
+            "../../devices/platform/axi/1000120000.pcie/1f00098000.pwm/pwm/pwmchip42",
+            "../../devices/platform/axi/1000120000.pcie/1f0009c000.pwm/pwm/pwmchip1"
         );
 
         Optional<Optional<Integer>> optionalInt = Optional.of(parsePWMPaths(paths));

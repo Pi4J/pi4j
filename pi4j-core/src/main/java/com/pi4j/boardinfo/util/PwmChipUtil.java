@@ -139,6 +139,8 @@ public class PwmChipUtil {
                     chipName.append(path.charAt(numStart));
                     chipNum = new StringBuilder().append(chipNum.substring(0, chipNum.length())).append(path.substring(numStart, numStart + 1)).toString();
                     numStart++;
+                    if (numStart == path.length())
+                        break ;
                 }
                 return Optional.of(Integer.parseInt(chipNum));
             }
