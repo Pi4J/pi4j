@@ -26,6 +26,7 @@ package com.pi4j.registry.impl;
  */
 
 import com.pi4j.io.IO;
+import com.pi4j.io.IOType;
 import com.pi4j.io.exception.IOAlreadyExistsException;
 import com.pi4j.io.exception.IOInvalidIDException;
 import com.pi4j.io.exception.IONotFoundException;
@@ -70,8 +71,8 @@ public class DefaultRegistry implements Registry {
     }
 
     @Override
-    public boolean exists(int address) {
-        return registry.exists(address);
+    public boolean exists(IOType ioType, int address) {
+        return registry.exists(ioType, address);
     }
 
     /** {@inheritDoc} */

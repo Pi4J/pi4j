@@ -62,18 +62,18 @@ public interface PwmPreset {
     }
 
     /**
-     *  Get the duty-cycle value as a decimal value that represents the
-     *  percentage of the ON vs OFF time of the PWM signal for each
-     *  period.  The duty-cycle range is valid from 0 to 100 including
-     *  factional values. (Values above 50% mean the signal will
-     *  remain HIGH more time than LOW.)
+     * Get the duty-cycle value as a decimal value that represents the
+     * percentage of the ON vs OFF time of the PWM signal for each
+     * period.  The duty-cycle range is valid from 0 to 100 including
+     * factional values. (Values above 50% mean the signal will
+     * remain HIGH more time than LOW.)
      * <p>
-     *  Example: A value of 50 represents a duty-cycle where half of
-     *  the time period the signal is LOW and the other half is HIGH.
+     * Example: A value of 50 represents a duty-cycle where half of
+     * the time period the signal is LOW and the other half is HIGH.
      *
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      */
-    Float dutyCycle();
+    Integer dutyCycle();
 
     /**
      *  Get the duty-cycle value as a decimal value that represents the
@@ -87,7 +87,7 @@ public interface PwmPreset {
      *
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      */
-    default Float getDutyCycle() {
+    default Integer getDutyCycle() {
         return dutyCycle();
     }
 

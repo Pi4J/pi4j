@@ -107,6 +107,11 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
         //return (DIGITAL_TYPE)this;
     }
 
+    public boolean hasListenersOrBindings() {
+        return stateChangeEventManager.hasListeners() || bindings.hasBindings();
+    }
+
+
     /**
      * Dispatch DigitalChangeEvent on digital input state changes
      *

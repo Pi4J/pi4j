@@ -460,12 +460,26 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      *
      * @param <T> the IO Type
      * @param id  the IO id
+     *
      * @return the IO which was shutdown or null if it wasn't created/registered
+     *
      * @throws IONotFoundException  if the IO was not registered
      * @throws IOInvalidIDException if the ID is invalid
      * @throws IOShutdownException  if an error occured while shuting down the IO
      */
     <T extends IO> T shutdown(String id) throws IOInvalidIDException, IONotFoundException, IOShutdownException;
+
+    /**
+     * shutdown and unregister a created IO.
+     *
+     * @param <T>      the IO Type
+     * @param instance the IO to shutdown and unregister
+     *
+     * @throws IONotFoundException  if the IO was not registered
+     * @throws IOInvalidIDException if the ID is invalid
+     * @throws IOShutdownException  if an error occured while shuting down the IO
+     */
+    <T extends IO> void shutdown(T instance) throws IOInvalidIDException, IONotFoundException, IOShutdownException;
 
     // ------------------------------------------------------------------------
     // I/O INSTANCE ACCESSORS

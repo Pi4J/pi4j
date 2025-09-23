@@ -27,7 +27,6 @@ package com.pi4j.plugin.linuxfs.provider.pwm;
  * #L%
  */
 
-
 import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.pwm.Pwm;
@@ -36,6 +35,7 @@ import com.pi4j.io.pwm.PwmProviderBase;
 import com.pi4j.io.pwm.PwmType;
 import com.pi4j.plugin.linuxfs.internal.LinuxPwm;
 
+import static com.pi4j.boardinfo.util.PwmChipUtil.DEFAULT_LEGACY_PWM_CHIP;
 import static java.text.MessageFormat.format;
 
 /**
@@ -51,8 +51,9 @@ public class LinuxFsPwmProviderImpl extends PwmProviderBase implements LinuxFsPw
 
     /**
      * <p>Constructor for LinuxFsPwmProviderImpl.</p>
-     * @param pwmFileSystemPath
-     * @param pwmChip
+     *
+     * @param pwmFileSystemPath Path to PWM device tree
+     * @param pwmChip           Number of PWM chip to use
      */
     public LinuxFsPwmProviderImpl(String pwmFileSystemPath, int pwmChip) {
         this.id = ID;
@@ -69,16 +70,19 @@ public class LinuxFsPwmProviderImpl extends PwmProviderBase implements LinuxFsPw
 
     /**
      * <p>Constructor for LinuxFsPwmProviderImpl.</p>
-     * @param pwmFileSystemPath
+     *
+     * @param pwmFileSystemPath Path to PWM device tree
      */
     public LinuxFsPwmProviderImpl(String pwmFileSystemPath) {
         this.id = ID;
         this.name = NAME;
         this.pwmFileSystemPath = pwmFileSystemPath;
-        if(BoardInfoHelper.usesRP1()) {
-            this.pwmChip = LinuxPwm.DEFAULT_RP1_PWM_CHIP;
-        }else{
-            this.pwmChip = LinuxPwm.DEFAULT_LEGACY_PWM_CHIP;
+
+        // if a RP1, check the device address to find the correct PWM chip
+        if (BoardInfoHelper.usesRP1()) {
+            this.pwmChip = BoardInfoHelper.getPwmChipAddress();
+        } else {
+            this.pwmChip = DEFAULT_LEGACY_PWM_CHIP;
         }
     }
 

@@ -82,6 +82,7 @@ public class GpioDDigitalOutput extends DigitalOutputBase implements DigitalOutp
     @Override
     public DigitalOutput shutdown(Context context) throws ShutdownException {
         super.shutdown(context);
+        GpioDContext.getInstance().closeLine(this.line);
         return this;
     }
 

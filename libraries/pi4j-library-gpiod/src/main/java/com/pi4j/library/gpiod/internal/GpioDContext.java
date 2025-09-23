@@ -155,6 +155,7 @@ public class GpioDContext implements Closeable {
     public synchronized void closeLine(GpioLine gpioLine) {
         long linePtr = gpioLine.getCPointer();
         GpioD.lineRelease(linePtr);
+        this.openLines.remove(gpioLine.getOffset());
     }
 
     public synchronized GpioLineEvent openLineEvent() {

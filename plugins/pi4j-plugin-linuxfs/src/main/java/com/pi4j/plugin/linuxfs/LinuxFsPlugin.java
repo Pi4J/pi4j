@@ -27,20 +27,20 @@ package com.pi4j.plugin.linuxfs;
  * #L%
  */
 
-
 import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.extension.Plugin;
 import com.pi4j.extension.PluginService;
 import com.pi4j.plugin.linuxfs.internal.LinuxGpio;
-import com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CProvider;
 import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalInputProvider;
 import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalOutputProvider;
+import com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CProvider;
 import com.pi4j.plugin.linuxfs.provider.pwm.LinuxFsPwmProvider;
-import com.pi4j.plugin.linuxfs.internal.LinuxPwm;
 import com.pi4j.plugin.linuxfs.provider.spi.LinuxFsSpiProvider;
 import com.pi4j.provider.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.pi4j.boardinfo.util.PwmChipUtil.*;
 
 /**
  * <p>LinuxFsPlugin class.</p>
@@ -59,11 +59,6 @@ public class LinuxFsPlugin implements Plugin {
      */
     public static final String ID = "linuxfs";
 
-//    // Analog Input (GPIO) Provider name and unique ID
-//    public static final String ANALOG_INPUT_PROVIDER_NAME = NAME + " Analog Input (GPIO) Provider";
-//    public static final String ANALOG_INPUT_PROVIDER_ID = ID + "-analog-input";
-
-    // Analog Output (GPIO) Provider name and unique ID
     /**
      * Constant <code>ANALOG_OUTPUT_PROVIDER_NAME="NAME +  Analog Output (GPIO) Provider"</code>
      */
@@ -101,17 +96,12 @@ public class LinuxFsPlugin implements Plugin {
     public static final String I2C_PROVIDER_NAME = NAME + " I2C Provider";
     public static final String I2C_PROVIDER_ID = ID + "-i2c";
 
-
-//    // Serial Provider name and unique ID
-//    public static final String SERIAL_PROVIDER_NAME = NAME + " Serial Provider";
-//    public static final String SERIAL_PROVIDER_ID = ID + "-serial";
-
     // SPI Provider name and unique ID
     public static final String SPI_PROVIDER_NAME = NAME + " SPI Provider";
     public static final String SPI_PROVIDER_ID = ID + "-spi";
 
     public static String DEFAULT_GPIO_FILESYSTEM_PATH = LinuxGpio.DEFAULT_SYSTEM_PATH;
-    public static String DEFAULT_PWM_FILESYSTEM_PATH = LinuxPwm.DEFAULT_SYSTEM_PATH;
+    public static String DEFAULT_PWM_FILESYSTEM_PATH = DEFAULT_PWM_SYSTEM_PATH;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -126,33 +116,34 @@ public class LinuxFsPlugin implements Plugin {
         String pwmFileSystemPath = DEFAULT_PWM_FILESYSTEM_PATH;
 
         int pwmChip;
-        if(BoardInfoHelper.usesRP1()) {
-            pwmChip = LinuxPwm.DEFAULT_RP1_PWM_CHIP;
-        }else{
-            pwmChip = LinuxPwm.DEFAULT_LEGACY_PWM_CHIP;
+
+        // if using a RP1,check the device address to find the correct PWM chip
+        if (BoardInfoHelper.usesRP1()) {
+            pwmChip = getPWMChipForRP1(pwmFileSystemPath);
+        } else {
+            pwmChip = DEFAULT_LEGACY_PWM_CHIP;
         }
 
         // [GPIO] get overriding custom 'linux.gpio.system.path' setting from Pi4J context
-        if(service.context().properties().has("linux.gpio.system.path")){
+        if (service.context().properties().has("linux.gpio.system.path")) {
             gpioFileSystemPath = service.context().properties().get("linux.gpio.system.path", gpioFileSystemPath);
         }
 
         // [PWM] get overriding custom 'linux.gpio.system.path' setting from Pi4J context
-        if(service.context().properties().has("linux.pwm.system.path")){
+        if (service.context().properties().has("linux.pwm.system.path")) {
             pwmFileSystemPath = service.context().properties().get("linux.pwm.system.path", pwmFileSystemPath);
         }
 
         // [PWM] get overriding custom 'linux.gpio.system.path' setting from Pi4J context
-        if(service.context().properties().has("linux.pwm.chip")){
+        if (service.context().properties().has("linux.pwm.chip")) {
             try {
                 pwmChip = Integer.parseInt(service.context().properties().get("linux.pwm.chip", Integer.toString(pwmChip)));
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
         }
 
-        // create & define supported Linux file system I/O providers that will be exposed to Pi4J via this plugin
+        // Create & define supported Linux file system I/O providers that will be exposed to Pi4J via this plugin
         Provider[] providers = {
             LinuxFsDigitalInputProvider.newInstance(gpioFileSystemPath),
             LinuxFsDigitalOutputProvider.newInstance(gpioFileSystemPath),

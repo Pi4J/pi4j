@@ -50,15 +50,30 @@ public interface RuntimeRegistry extends Registry {
      * @throws com.pi4j.io.exception.IOInvalidIDException if any.
      */
     RuntimeRegistry add(IO instance) throws IOAlreadyExistsException, IOInvalidIDException;
+
     /**
      * <p>remove.</p>
      *
-     * @param id a {@link java.lang.String} object.
-     * @param <T> a T object.
-     * @return a T object.
-     * @throws com.pi4j.io.exception.IONotFoundException if any.
+     * @param instance the instance to remove
+     * @param <T>      a T object.
+     *
+     * @throws com.pi4j.io.exception.IONotFoundException  if any.
      * @throws com.pi4j.io.exception.IOInvalidIDException if any.
-     * @throws com.pi4j.io.exception.IOShutdownException if any.
+     * @throws com.pi4j.io.exception.IOShutdownException  if any.
+     */
+    <T extends IO> void remove(T instance) throws IONotFoundException, IOInvalidIDException, IOShutdownException;
+
+    /**
+     * <p>remove.</p>
+     *
+     * @param id  a {@link java.lang.String} object.
+     * @param <T> a T object.
+     *
+     * @return a T object.
+     *
+     * @throws com.pi4j.io.exception.IONotFoundException  if any.
+     * @throws com.pi4j.io.exception.IOInvalidIDException if any.
+     * @throws com.pi4j.io.exception.IOShutdownException  if any.
      */
     <T extends IO> T remove(String id) throws IONotFoundException, IOInvalidIDException, IOShutdownException;
 
