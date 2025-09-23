@@ -144,7 +144,7 @@
         <snapshotRepository>
             <id>sonatype-oss-snapshots</id>
             <name>Sonatype Open Source Maven Snapshots Repository</name>
-            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -153,7 +153,7 @@
         <repository>
             <id>oss-snapshots-repo</id>
             <name>Sonatype OSS Maven Repository</name>
-            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <url>https://oss.sonatype.org/content/groups/public</url>
             <releases>
                 <enabled>false</enabled>
             </releases>
@@ -1025,8 +1025,7 @@
                         <extensions>true</extensions>
                         <configuration>
                             <publishingServerId>central</publishingServerId>
-                            <!--                            <autoPublish>true</autoPublish>-->
-                            <!--                            <waitUntil>published</waitUntil>-->
+                            <autoPublish>true</autoPublish>
                         </configuration>
                     </plugin>
                 </plugins>
