@@ -1023,8 +1023,7 @@
                         <extensions>true</extensions>
                         <configuration>
                             <publishingServerId>central</publishingServerId>
-                            <!--                            <autoPublish>true</autoPublish>-->
-                            <!--                            <waitUntil>published</waitUntil>-->
+                            <autoPublish>true</autoPublish>
                         </configuration>
                     </plugin>
                 </plugins>
