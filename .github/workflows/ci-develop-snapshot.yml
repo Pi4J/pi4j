@@ -11,24 +11,55 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Validate secrets are available
+        run: |
+          if [ -z "${{ secrets.OSSRH_USERNAME }}" ]; then
+            echo "ERROR: OSSRH_USERNAME secret is not set"
+            exit 1
+          fi
+          if [ -z "${{ secrets.OSSRH_TOKEN }}" ]; then
+            echo "ERROR: OSSRH_TOKEN secret is not set"
+            exit 1
+          fi
+          echo "✅ Both OSSRH_USERNAME and OSSRH_TOKEN secrets are available"
+          echo "Username length: ${#MAVEN_USERNAME}"
+          echo "Token length: ${#MAVEN_PASSWORD}"
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+
+      - name: Verify Maven settings
+        run: |
+          echo "Generated Maven settings.xml:"
+          cat ~/.m2/settings.xml || echo "No settings.xml found"
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+
       - name: Get latest Docker image
         run: docker pull pi4j/pi4j-builder:2.0
+
       - name: Build entire Pi4J Project in Docker
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-        run: docker run --env MAVEN_USERNAME=$MAVEN_USERNAME --env MAVEN_PASSWORD=$MAVEN_PASSWORD --user "$(id -u):$(id -g)" --rm --volume $(pwd):/build pi4j/pi4j-builder:2.0 clean deploy -Pnative,cross-compile --batch-mode
+        run: docker run --env MAVEN_USERNAME=$MAVEN_USERNAME --env MAVEN_PASSWORD=$MAVEN_PASSWORD --user "$(id -u):$(id -g)" --rm --volume $(pwd):/build pi4j/pi4j-builder:2.0 clean deploy -Pdefault,native,cross-compile,deploy --batch-mode
+
       - name: Make staging directory
         run: mkdir staging
+
       - name: Copy distribution files to staging
         run: |
           cp -r pi4j-distribution/target/*.deb staging
           cp -r pi4j-distribution/target/*.zip staging
+
       - name: Upload distribution files to staging
         uses: actions/upload-artifact@v4
         with:
           name: pi4j-dist
           path: staging
+
   DeployPackages:
     name: Deploy to APT/Download Repo
     needs: [ Build ]
@@ -41,9 +72,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: pi4j-dist
+
       - name: Display downloaded build artifacts
         shell: bash
         run: tree
+
       - name: Publish build packages to APT download repository
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
