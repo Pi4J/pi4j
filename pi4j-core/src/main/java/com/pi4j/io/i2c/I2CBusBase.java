@@ -8,7 +8,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static java.text.MessageFormat.format;
+import static java.lang.String.format;
 
 public abstract class I2CBusBase implements I2CBus {
 

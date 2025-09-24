@@ -34,6 +34,7 @@ import com.pi4j.io.exception.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Abstract PwmBase class.</p>
@@ -45,6 +46,7 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
 
     protected int frequency = 100;
     protected Integer dutyCycle = 50;
+    protected long period = TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / frequency;
     protected boolean onState = false;
     protected PwmPolarity polarity = PwmPolarity.NORMAL;
     protected Map<String, PwmPreset> presets = Collections.synchronizedMap(new HashMap<>());
@@ -53,11 +55,11 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
      * <p>Constructor for PwmBase.</p>
      *
      * @param provider a {@link com.pi4j.io.pwm.PwmProvider} object.
-     * @param config a {@link com.pi4j.io.pwm.PwmConfig} object.
+     * @param config   a {@link com.pi4j.io.pwm.PwmConfig} object.
      */
     public PwmBase(PwmProvider provider, PwmConfig config) {
         super(provider, config);
-        for(PwmPreset preset : config.presets()){
+        for (PwmPreset preset : config.presets()) {
             this.presets.put(preset.name().toLowerCase().trim(), preset);
         }
     }
@@ -70,44 +72,56 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
         return this.dutyCycle;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getFrequency() throws IOException {
         return this.frequency;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getActualFrequency() throws IOException {
         return this.frequency;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setDutyCycle(Integer dutyCycle) throws IOException {
         Integer dc = dutyCycle;
 
         // bounds check the duty-cycle value
-        if(dc < 0) dc = 0;
-        if(dc > 100) dc = 100;
+        if (dc < 0) dc = 0;
+        if (dc > 100) dc = 100;
 
         // update the duty-cycle member
         this.dutyCycle = dc;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setFrequency(int frequency) throws IOException {
         this.frequency = frequency;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isOn() {
         return this.onState;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Pwm initialize(Context context) throws InitializeException {
 
@@ -131,10 +145,10 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
         }
 
         // apply an initial value if configured
-        if(this.config.initialValue() != null){
+        if (this.config.initialValue() != null) {
             try {
-                if(this.config.initialValue() <= 0){
-                    if(this.isOn()) {
+                if (this.config.initialValue() <= 0) {
+                    if (this.isOn()) {
                         this.off();
                     }
                 } else {
@@ -148,13 +162,15 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Pwm shutdown(Context context) throws ShutdownException {
         // apply a shutdown value if configured
-        if(this.config.shutdownValue() != null){
+        if (this.config.shutdownValue() != null) {
             try {
-                if(this.config.shutdownValue() <= 0){
+                if (this.config.shutdownValue() <= 0) {
                     this.off();
                 } else {
                     this.on(this.config.shutdownValue());
@@ -166,53 +182,63 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Map<String, PwmPreset> getPresets(){
+    public Map<String, PwmPreset> getPresets() {
         return Collections.unmodifiableMap(this.presets);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public PwmPreset getPreset(String name){
+    public PwmPreset getPreset(String name) {
         String key = name.toLowerCase().trim();
-        if(presets.containsKey(key)) {
+        if (presets.containsKey(key)) {
             return presets.get(key);
         }
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public PwmPreset deletePreset(String name){
+    public PwmPreset deletePreset(String name) {
         String key = name.toLowerCase().trim();
-        if(presets.containsKey(key)) {
+        if (presets.containsKey(key)) {
             return presets.remove(key);
         }
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Pwm addPreset(PwmPreset preset){
+    public Pwm addPreset(PwmPreset preset) {
         String key = preset.name().toLowerCase().trim();
         presets.put(key, preset);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Pwm applyPreset(String name) throws IOException {
         String key = name.toLowerCase().trim();
-        if(presets.containsKey(key)) {
+        if (presets.containsKey(key)) {
             PwmPreset preset = presets.get(key);
-            if(preset.dutyCycle() != null)
+            if (preset.dutyCycle() != null)
                 setDutyCycle(preset.dutyCycle());
-            if(preset.frequency() != null)
+            if (preset.frequency() != null)
                 setFrequency(preset.frequency().intValue());
             on(); // update PWM signal now
-        } else{
-            throw new IOException("PWM PRESET NOT FOUND: "+ name);
+        } else {
+            throw new IOException("PWM PRESET NOT FOUND: " + name);
         }
         return this;
     }

@@ -38,6 +38,8 @@ import java.util.Collection;
  */
 public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfig> {
 
+    String PWM_BUS_NUMBER = "bus-number";
+
     /** Constant <code>PWM_TYPE_KEY="pwm-type"</code> */
     String PWM_TYPE_KEY = "pwm-type";
     /** Constant <code>POLARITY_KEY="polarity"</code> */
@@ -50,6 +52,8 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
     String SHUTDOWN_VALUE_KEY = "shutdown";
     /** Constant <code>INITIAL_VALUE_KEY="initial"</code> */
     String INITIAL_VALUE_KEY = "initial";
+
+    Integer busNumber();
 
     /**
      *  Get the configured duty-cycle value as a decimal value that represents

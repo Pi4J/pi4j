@@ -42,6 +42,7 @@ public class DefaultAnalogOutputConfig
         implements AnalogOutputConfig {
 
     // private configuration properties
+    protected Integer busNumber = null;
     protected Integer shutdownValue = null;
     protected Integer initialValue = null;
     protected Integer stepValue = null;
@@ -65,6 +66,10 @@ public class DefaultAnalogOutputConfig
         this.id = StringUtil.setIfNullOrEmpty(this.id, "AOUT-" + this.address, true);
         this.name = StringUtil.setIfNullOrEmpty(this.name, "AOUT-" + this.address, true);
         this.description = StringUtil.setIfNullOrEmpty(this.description, "AOUT-" + this.address, true);
+
+        if(properties.containsKey(BUS_NUMBER)){
+            this.busNumber = Integer.parseInt(properties.get(BUS_NUMBER));
+        }
 
         // load initial value property
         if(properties.containsKey(INITIAL_VALUE_KEY)){
@@ -98,6 +103,11 @@ public class DefaultAnalogOutputConfig
 
         // default values
         if(this.stepValue == null) this.stepValue = 1;
+    }
+
+    @Override
+    public Integer busNumber() {
+        return this.busNumber;
     }
 
     /** {@inheritDoc} */

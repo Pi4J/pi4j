@@ -28,6 +28,7 @@ package com.pi4j.io.i2c.impl;
 import com.pi4j.config.exception.ConfigMissingRequiredKeyException;
 import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.io.i2c.I2CConfig;
+import com.pi4j.io.i2c.I2CImplementation;
 import com.pi4j.io.impl.IOConfigBase;
 import com.pi4j.util.StringUtil;
 
@@ -46,6 +47,7 @@ public class DefaultI2CConfig
     // private configuration properties
     protected Integer bus = null;
     protected Integer device = null;
+    protected I2CImplementation i2cImplementation = null;
 
     /**
      * PRIVATE CONSTRUCTOR
@@ -79,6 +81,13 @@ public class DefaultI2CConfig
             throw new ConfigMissingRequiredKeyException(DEVICE_KEY);
         }
 
+        // i2c implementation
+        if(properties.containsKey(I2C_IMPLEMENTATION)){
+            this.i2cImplementation = I2CImplementation.valueOf(properties.get(I2C_IMPLEMENTATION));
+        } else {
+            this.i2cImplementation = I2CImplementation.SMBUS;
+        }
+
         // define default property values if any are missing (based on the required address value)
         this.id = StringUtil.setIfNullOrEmpty(this.id, "I2C-" + this.bus() + "." + this.device(), true);
         this.name = StringUtil.setIfNullOrEmpty(this.name, "I2C-" + this.bus() + "." + this.device(), true);
@@ -95,5 +104,10 @@ public class DefaultI2CConfig
     @Override
     public Integer device() {
         return this.device;
+    }
+
+    @Override
+    public I2CImplementation i2cImplementation() {
+        return i2cImplementation;
     }
 }

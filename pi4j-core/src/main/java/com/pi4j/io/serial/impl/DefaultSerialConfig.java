@@ -38,7 +38,6 @@ import java.util.Map;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-@Deprecated(forRemoval = true)
 public class DefaultSerialConfig
     extends IODeviceConfigBase<SerialConfig>
     implements SerialConfig {

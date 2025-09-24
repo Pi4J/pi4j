@@ -46,6 +46,8 @@ public interface PwmConfigBuilder extends GpioConfigBuilder<PwmConfigBuilder, Pw
         return DefaultPwmConfigBuilder.newInstance(context);
     }
 
+    PwmConfigBuilder busNumber(int busNumber);
+
     /**
      *  Set the configured frequency value in Hertz (number of cycles per second)
      *  that the PWM signal generator should attempt to output when the PWM state

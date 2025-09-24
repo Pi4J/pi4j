@@ -52,6 +52,7 @@ public class DefaultDigitalInputConfig
     }
 
     // private configuration properties
+    protected Integer busNumber = 0;
     protected PullResistance pullResistance = PullResistance.OFF;
     protected Long debounce = DigitalInput.DEFAULT_DEBOUNCE;
     protected DigitalState onState = DigitalState.HIGH;
@@ -69,6 +70,10 @@ public class DefaultDigitalInputConfig
         this.name = StringUtil.setIfNullOrEmpty(this.name, "DIN-" + this.address, true);
         this.description = StringUtil.setIfNullOrEmpty(this.description, "DIN-" + this.address, true);
 
+        if(properties.containsKey(BUS_NUMBER)){
+            this.busNumber = Integer.parseInt(properties.get(BUS_NUMBER));
+        }
+
         // load optional pull resistance from properties
         if(properties.containsKey(PULL_RESISTANCE_KEY)){
             this.pullResistance = PullResistance.parse(properties.get(PULL_RESISTANCE_KEY));
@@ -83,6 +88,11 @@ public class DefaultDigitalInputConfig
         if(properties.containsKey(ON_STATE_KEY)){
             this.onState = DigitalState.parse(properties.get(ON_STATE_KEY));
         }
+    }
+
+    @Override
+    public Integer busNumber() {
+        return this.busNumber;
     }
 
     /** {@inheritDoc} */

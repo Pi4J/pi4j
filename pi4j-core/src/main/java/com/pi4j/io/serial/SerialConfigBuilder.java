@@ -35,7 +35,6 @@ import com.pi4j.io.serial.impl.DefaultSerialConfigBuilder;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-@Deprecated(forRemoval = true)
 public interface SerialConfigBuilder extends
     IODeviceConfigBuilder<SerialConfigBuilder, SerialConfig> {
     /**

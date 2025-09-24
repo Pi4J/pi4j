@@ -61,6 +61,12 @@ public class DefaultPwmConfigBuilder
         return new DefaultPwmConfigBuilder(context);
     }
 
+    @Override
+    public PwmConfigBuilder busNumber(int busNumber) {
+        this.properties.put(PwmConfig.PWM_BUS_NUMBER, String.valueOf(busNumber));
+        return this;
+    }
+
     /** {@inheritDoc} */
     @Override
     public PwmConfigBuilder frequency(Integer frequency) {

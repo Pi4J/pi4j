@@ -34,7 +34,6 @@ import com.pi4j.provider.Provider;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-@Deprecated(forRemoval = true)
 public interface SerialProvider extends Provider<SerialProvider, Serial, SerialConfig> {
 
     /**

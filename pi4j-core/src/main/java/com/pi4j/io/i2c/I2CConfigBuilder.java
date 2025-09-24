@@ -63,4 +63,6 @@ public interface I2CConfigBuilder extends
      * @return a {@link com.pi4j.io.i2c.I2CConfigBuilder} object.
      */
     I2CConfigBuilder device(Integer device);
+
+    I2CConfigBuilder i2cImplementation(I2CImplementation i2CImplementation);
 }

@@ -41,6 +41,8 @@ public interface I2CConfig extends IOConfig<I2CConfig> {
     /** Constant <code>DEVICE_KEY="device"</code> */
     String DEVICE_KEY = "device";
 
+    String I2C_IMPLEMENTATION = "i2c_implementation";
+
     /**
      * <p>bus.</p>
      *
@@ -69,6 +71,12 @@ public interface I2CConfig extends IOConfig<I2CConfig> {
      */
     default Integer getDevice() {
         return device();
+    }
+
+    I2CImplementation i2cImplementation();
+
+    default I2CImplementation getI2CImplementation() {
+        return i2cImplementation();
     }
 
     /**

@@ -26,6 +26,7 @@ package com.pi4j.io.gpio.analog.impl;
  */
 
 import com.pi4j.context.Context;
+import com.pi4j.io.gpio.GpioConfig;
 import com.pi4j.io.gpio.analog.AnalogOutputConfig;
 import com.pi4j.io.gpio.analog.AnalogOutputConfigBuilder;
 
@@ -54,6 +55,12 @@ public class DefaultAnalogOutputConfigBuilder
      */
     public static AnalogOutputConfigBuilder newInstance(Context context) {
         return new DefaultAnalogOutputConfigBuilder(context);
+    }
+
+    @Override
+    public AnalogOutputConfigBuilder busNumber(int busNumber) {
+        this.properties.put(GpioConfig.BUS_NUMBER, String.valueOf(busNumber));
+        return this;
     }
 
     /** {@inheritDoc} */
