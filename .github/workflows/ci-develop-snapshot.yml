@@ -33,11 +33,6 @@ jobs:
         run: |
           echo "Generated Maven settings.xml:"
           cat ~/.m2/settings.xml || echo "No settings.xml found"
-          
-          if [[ ! -f ~/.m2/settings.xml ]] ; then
-            echo "ERROR: No settings.xml found"
-            exit 1
-          fi
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
