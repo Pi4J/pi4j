@@ -11,8 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Get latest Docker image
         run: docker pull pi4j/pi4j-builder:2.0
+
       - name: Build entire Pi4J Project in Docker
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
@@ -27,12 +29,15 @@ jobs:
             --volume $(pwd):/build \
             pi4j/pi4j-builder:2.0 \
             clean install -Pnative,cross-compile --batch-mode
+
       - name: Make staging directory
         run: mkdir staging
+
       - name: Copy distribution files to staging
         run: |
           cp -r pi4j-distribution/target/*.deb staging
           cp -r pi4j-distribution/target/*.zip staging
+
       - name: Upload distribution files to staging
         uses: actions/upload-artifact@v4
         with:
