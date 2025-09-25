@@ -30,12 +30,10 @@ public class GPIOChecker {
             detectGpioDrivers(),
 
             // Executed commands which could return related info
-            detectWithCommand("lsmod | grep gpio"),
-            detectWithCommand("lsmod | grep gpiod"),
-            detectWithCommand("which gpiodetect"),
-            detectWithCommand("which gpioinfo"),
-            detectWithCommand("gpiodetect 2>/dev/null || echo 'gpiodetect not available'"),
-            detectWithCommand("cat /proc/device-tree/soc/gpio*/status 2>/dev/null || echo 'no device-tree gpio info'")
+            detectLoadedGpioModules(),
+            detectGpioTools(),
+            detectGpioDevicesWithTools(),
+            detectDeviceTreeGpioInfo()
         ));
     }
 
@@ -103,6 +101,149 @@ public class GPIOChecker {
         } else {
             return new CheckerResult.Check("Hardware detected in " + path, result.toString());
         }
+    }
+
+
+    private static CheckerResult.Check detectLoadedGpioModules() {
+        var result = new StringBuilder();
+
+        try {
+            Path modulesPath = Paths.get("/proc/modules");
+            if (Files.exists(modulesPath)) {
+                List<String> lines = Files.readAllLines(modulesPath);
+                for (String line : lines) {
+                    String moduleName = line.split("\\s+")[0]; // First column is module name
+                    String lowerName = moduleName.toLowerCase();
+                    if (lowerName.contains("gpio") || lowerName.contains("gpiod")) {
+                        result.append(line).append("\n");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.debug("Error reading loaded modules for GPIO detection: {}", e.getMessage());
+        }
+
+        if (result.isEmpty()) {
+            return new CheckerResult.Check("No GPIO modules loaded", "");
+        } else {
+            return new CheckerResult.Check("GPIO modules loaded", result.toString());
+        }
+    }
+
+    private static CheckerResult.Check detectGpioTools() {
+        var result = new StringBuilder();
+
+        // Common paths where gpio tools might be installed
+        String[] commonPaths = {"/usr/bin", "/usr/local/bin", "/bin", "/sbin", "/usr/sbin"};
+        String[] toolNames = {"gpiodetect", "gpioinfo", "gpioset", "gpioget"};
+
+        for (String toolName : toolNames) {
+            boolean found = false;
+            for (String path : commonPaths) {
+                Path toolPath = Paths.get(path, toolName);
+                if (Files.exists(toolPath) && Files.isExecutable(toolPath)) {
+                    result.append(toolName).append(" found at ").append(toolPath).append("\n");
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                result.append(toolName).append(" not found\n");
+            }
+        }
+
+        if (result.isEmpty()) {
+            return new CheckerResult.Check("No GPIO tool availability info", "");
+        } else {
+            return new CheckerResult.Check("GPIO tool availability", result.toString());
+        }
+    }
+
+    private static CheckerResult.Check detectGpioDevicesWithTools() {
+        var result = new StringBuilder();
+
+        try {
+            // Try to find gpiodetect tool first
+            String gpiodetectPath = null;
+            String[] commonPaths = {"/usr/bin/gpiodetect", "/usr/local/bin/gpiodetect", "/bin/gpiodetect"};
+
+            for (String path : commonPaths) {
+                if (Files.exists(Paths.get(path)) && Files.isExecutable(Paths.get(path))) {
+                    gpiodetectPath = path;
+                    break;
+                }
+            }
+
+            if (gpiodetectPath != null) {
+                // Run gpiodetect without shell redirections
+                var output = execute(gpiodetectPath);
+                if (output.isSuccess() && !output.getOutputMessage().trim().isEmpty()) {
+                    result.append(output.getOutputMessage());
+                } else {
+                    result.append("gpiodetect available but returned no output\n");
+                }
+            } else {
+                result.append("gpiodetect not available\n");
+            }
+        } catch (Exception e) {
+            logger.debug("Error detecting GPIO devices with gpiodetect: {}", e.getMessage());
+            result.append("Error running gpiodetect: ").append(e.getMessage()).append("\n");
+        }
+
+        return new CheckerResult.Check("GPIO device detection with tools", result.toString());
+    }
+
+    private static CheckerResult.Check detectDeviceTreeGpioInfo() {
+        var result = new StringBuilder();
+
+        try {
+            // Look for GPIO device-tree information
+            Path dtBasePath = Paths.get("/proc/device-tree/soc");
+            if (Files.exists(dtBasePath)) {
+                try (var stream = Files.walk(dtBasePath, 2)) {
+                    var gpioPaths = stream
+                        .filter(Files::isDirectory)
+                        .filter(path -> {
+                            String name = path.getFileName().toString();
+                            return name.contains("gpio");
+                        })
+                        .sorted()
+                        .toList();
+
+                    if (!gpioPaths.isEmpty()) {
+                        for (Path gpioPath : gpioPaths) {
+                            String dirName = gpioPath.getFileName().toString();
+                            result.append("Found GPIO device-tree entry: ").append(dirName);
+
+                            // Try to read status
+                            Path statusPath = gpioPath.resolve("status");
+                            if (Files.exists(statusPath)) {
+                                try {
+                                    String status = Files.readString(statusPath).trim();
+                                    // Remove null bytes that might be present in device-tree files
+                                    status = status.replace("\0", "");
+                                    if (!status.isEmpty()) {
+                                        result.append(" (status: ").append(status).append(")");
+                                    }
+                                } catch (Exception e) {
+                                    logger.debug("Could not read status for {}: {}", gpioPath, e.getMessage());
+                                }
+                            }
+                            result.append("\n");
+                        }
+                    } else {
+                        result.append("No GPIO device-tree entries found in /proc/device-tree/soc\n");
+                    }
+                }
+            } else {
+                result.append("Device-tree path /proc/device-tree/soc not available\n");
+            }
+        } catch (Exception e) {
+            logger.debug("Error reading device-tree GPIO info: {}", e.getMessage());
+            result.append("Error reading device-tree info: ").append(e.getMessage()).append("\n");
+        }
+
+        return new CheckerResult.Check("Device-tree GPIO information", result.toString());
     }
 
     private static CheckerResult.Check detectGpioChips() {
@@ -263,18 +404,5 @@ public class GPIOChecker {
         } catch (NumberFormatException e) {
             return Integer.MAX_VALUE; // Put non-numeric entries at the end
         }
-    }
-
-    private static CheckerResult.Check detectWithCommand(String command) {
-        try {
-            var output = execute(command);
-            if (output.isSuccess() && !output.getOutputMessage().trim().isEmpty()) {
-                return new CheckerResult.Check("Info returned by '" + command + "'",
-                    output.getOutputMessage());
-            }
-        } catch (Exception e) {
-            logger.error("Error detecting GPIO devices with command '{}': {}", command, e.getMessage());
-        }
-        return new CheckerResult.Check("No info returned by '" + command + "'", "");
     }
 }

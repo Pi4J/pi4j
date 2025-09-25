@@ -30,9 +30,11 @@ public class SPIChecker {
             detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/fe215080.spi")), // Pi 4 aux SPI
 
             // Executed commands which could return related info
-            detectWithCommand("lsmod | grep spi"),
             detectWithCommand("which spi-config"),
-            detectWithCommand("cat /boot/config.txt | grep dtparam=spi"),
+
+            // Extra checks
+            detectLoadedSpiModules(),
+            detectSpiConfigSettings(),
             detectSpiPins()
         ));
     }
@@ -141,6 +143,66 @@ public class SPIChecker {
             result.append(configuredCount).append(" configured");
         } else {
             result.append("not configured");
+        }
+    }
+
+    private static CheckerResult.Check detectLoadedSpiModules() {
+        var result = new StringBuilder();
+
+        try {
+            Path modulesPath = Paths.get("/proc/modules");
+            if (Files.exists(modulesPath)) {
+                List<String> lines = Files.readAllLines(modulesPath);
+                for (String line : lines) {
+                    String moduleName = line.split("\\s+")[0]; // First column is module name
+                    if (moduleName.toLowerCase().contains("spi")) {
+                        result.append(line).append("\n");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.debug("Error reading loaded modules for SPI detection: {}", e.getMessage());
+        }
+
+        if (result.isEmpty()) {
+            return new CheckerResult.Check("No SPI modules loaded", "");
+        } else {
+            return new CheckerResult.Check("SPI modules loaded", result.toString());
+        }
+    }
+
+    private static CheckerResult.Check detectSpiConfigSettings() {
+        var result = new StringBuilder();
+
+        String[] configPaths = {"/boot/config.txt", "/boot/firmware/config.txt"};
+
+        for (String configPath : configPaths) {
+            try {
+                Path path = Paths.get(configPath);
+                if (Files.exists(path)) {
+                    List<String> lines = Files.readAllLines(path);
+                    boolean foundSpiConfig = false;
+
+                    for (String line : lines) {
+                        if (line.contains("dtparam=spi")) {
+                            result.append(configPath).append(": ").append(line).append("\n");
+                            foundSpiConfig = true;
+                        }
+                    }
+
+                    if (!foundSpiConfig) {
+                        result.append("No dtparam=spi setting found in ").append(configPath).append("\n");
+                    }
+                }
+            } catch (Exception e) {
+                logger.debug("Could not read config file {}: {}", configPath, e.getMessage());
+            }
+        }
+
+        if (result.isEmpty()) {
+            return new CheckerResult.Check("No SPI config files accessible", "");
+        } else {
+            return new CheckerResult.Check("SPI configuration settings", result.toString());
         }
     }
 

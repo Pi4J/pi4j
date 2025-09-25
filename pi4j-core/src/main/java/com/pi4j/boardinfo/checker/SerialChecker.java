@@ -6,9 +6,8 @@ import org.slf4j.LoggerFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
-
-import static com.pi4j.boardinfo.util.command.CommandExecutor.execute;
 
 public class SerialChecker {
 
@@ -29,12 +28,10 @@ public class SerialChecker {
             detectUartDevices(),
 
             // Executed commands which could return related info
-            detectWithCommand("lsmod | grep uart"),
-            detectWithCommand("lsmod | grep serial"),
-            detectWithCommand("dmesg | grep -i uart | tail -5"),
-            detectWithCommand("cat /boot/config.txt | grep enable_uart"),
-            detectWithCommand("stty -F /dev/ttyS0 2>/dev/null || echo 'ttyS0 not available'"),
-            detectWithCommand("stty -F /dev/ttyAMA0 2>/dev/null || echo 'ttyAMA0 not available'")
+            detectLoadedSerialModules(),
+            detectDmesgUartInfo(),
+            detectUartConfigSettings(),
+            detectSerialPortAvailability()
         ));
     }
 
@@ -204,16 +201,141 @@ public class SerialChecker {
         }
     }
 
-    private static CheckerResult.Check detectWithCommand(String command) {
+    private static CheckerResult.Check detectLoadedSerialModules() {
+        var result = new StringBuilder();
+
         try {
-            var output = execute(command);
-            if (output.isSuccess() && !output.getOutputMessage().trim().isEmpty()) {
-                return new CheckerResult.Check("Info returned by '" + command + "'",
-                    output.getOutputMessage());
+            Path modulesPath = Paths.get("/proc/modules");
+            if (Files.exists(modulesPath)) {
+                List<String> lines = Files.readAllLines(modulesPath);
+                for (String line : lines) {
+                    String moduleName = line.split("\\s+")[0]; // First column is module name
+                    String lowerName = moduleName.toLowerCase();
+                    if (lowerName.contains("uart") || lowerName.contains("serial")) {
+                        result.append(line).append("\n");
+                    }
+                }
             }
         } catch (Exception e) {
-            logger.error("Error detecting serial devices with command '{}': {}", command, e.getMessage());
+            logger.debug("Error reading loaded modules for serial detection: {}", e.getMessage());
         }
-        return new CheckerResult.Check("No info returned by '" + command + "'", "");
+
+        if (result.isEmpty()) {
+            return new CheckerResult.Check("No serial/UART modules loaded", "");
+        } else {
+            return new CheckerResult.Check("Serial/UART modules loaded", result.toString());
+        }
+    }
+
+    private static CheckerResult.Check detectDmesgUartInfo() {
+        var result = new StringBuilder();
+
+        try {
+            Path dmesgPath = Paths.get("/var/log/dmesg");
+            Path kernelLogPath = Paths.get("/var/log/kern.log");
+
+            // Try to read from /var/log/dmesg first, then /var/log/kern.log
+            Path logPath = Files.exists(dmesgPath) ? dmesgPath :
+                Files.exists(kernelLogPath) ? kernelLogPath : null;
+
+            if (logPath != null) {
+                List<String> lines = Files.readAllLines(logPath);
+                List<String> uartLines = new ArrayList<>();
+
+                // Find lines containing "uart" (case insensitive) and keep last 5
+                for (String line : lines) {
+                    if (line.toLowerCase().contains("uart")) {
+                        uartLines.add(line);
+                    }
+                }
+
+                // Get last 5 entries
+                int startIndex = Math.max(0, uartLines.size() - 5);
+                for (int i = startIndex; i < uartLines.size(); i++) {
+                    result.append(uartLines.get(i)).append("\n");
+                }
+            } else {
+                result.append("No accessible dmesg log files found\n");
+            }
+        } catch (Exception e) {
+            logger.debug("Error reading dmesg for UART info: {}", e.getMessage());
+            result.append("Error reading dmesg: ").append(e.getMessage()).append("\n");
+        }
+
+        if (result.isEmpty()) {
+            return new CheckerResult.Check("No UART info in dmesg", "");
+        } else {
+            return new CheckerResult.Check("Recent UART messages from dmesg", result.toString());
+        }
+    }
+
+    private static CheckerResult.Check detectUartConfigSettings() {
+        var result = new StringBuilder();
+
+        String[] configPaths = {"/boot/config.txt", "/boot/firmware/config.txt"};
+
+        for (String configPath : configPaths) {
+            try {
+                Path path = Paths.get(configPath);
+                if (Files.exists(path)) {
+                    List<String> lines = Files.readAllLines(path);
+                    boolean foundUartConfig = false;
+
+                    for (String line : lines) {
+                        if (line.contains("enable_uart")) {
+                            result.append(configPath).append(": ").append(line).append("\n");
+                            foundUartConfig = true;
+                        }
+                    }
+
+                    if (!foundUartConfig) {
+                        result.append("No enable_uart setting found in ").append(configPath).append("\n");
+                    }
+                }
+            } catch (Exception e) {
+                logger.debug("Could not read config file {}: {}", configPath, e.getMessage());
+            }
+        }
+
+        if (result.isEmpty()) {
+            return new CheckerResult.Check("No UART config files accessible", "");
+        } else {
+            return new CheckerResult.Check("UART configuration settings", result.toString());
+        }
+    }
+
+    private static CheckerResult.Check detectSerialPortAvailability() {
+        var result = new StringBuilder();
+
+        String[] serialDevices = {"/dev/ttyS0", "/dev/ttyAMA0", "/dev/ttyUSB0", "/dev/ttyACM0"};
+
+        for (String devicePath : serialDevices) {
+            try {
+                Path device = Paths.get(devicePath);
+                if (Files.exists(device)) {
+                    // Check if device is readable/writable
+                    boolean readable = Files.isReadable(device);
+                    boolean writable = Files.isWritable(device);
+
+                    result.append(devicePath).append(" exists");
+                    if (readable || writable) {
+                        result.append(" (");
+                        if (readable) result.append("readable");
+                        if (readable && writable) result.append(", ");
+                        if (writable) result.append("writable");
+                        result.append(")");
+                    } else {
+                        result.append(" (no permissions)");
+                    }
+                    result.append("\n");
+                } else {
+                    result.append(devicePath).append(" not available\n");
+                }
+            } catch (Exception e) {
+                result.append(devicePath).append(" - error checking: ").append(e.getMessage()).append("\n");
+            }
+        }
+
+        return new CheckerResult.Check("Serial port availability", result.toString());
     }
 }

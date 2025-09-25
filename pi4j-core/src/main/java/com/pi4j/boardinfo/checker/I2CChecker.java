@@ -26,8 +26,10 @@ public class I2CChecker {
             detectFilesInDirectory(Paths.get("/sys/class/i2c-adapter")),
             detectFilesInDirectory(Paths.get("/sys/bus/i2c/devices")),
 
+            // "lsmod | grep i2c"
+            detectLoadedI2cModules(),
+
             // Executed commands which could return related info
-            detectWithCommand("lsmod | grep i2c"),
             detectWithCommand("which i2cdetect")
         ));
     }
@@ -70,6 +72,31 @@ public class I2CChecker {
             return new CheckerResult.Check("No info found in '" + path + "'", "");
         } else {
             return new CheckerResult.Check("Hardware detected in " + path, result.toString());
+        }
+    }
+
+    private static CheckerResult.Check detectLoadedI2cModules() {
+        var result = new StringBuilder();
+
+        try {
+            Path modulesPath = Paths.get("/proc/modules");
+            if (Files.exists(modulesPath)) {
+                List<String> lines = Files.readAllLines(modulesPath);
+                for (String line : lines) {
+                    String moduleName = line.split("\\s+")[0]; // First column is module name
+                    if (moduleName.toLowerCase().contains("i2c")) {
+                        result.append(line).append("\n");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.debug("Error reading loaded modules for I2C detection: {}", e.getMessage());
+        }
+
+        if (result.isEmpty()) {
+            return new CheckerResult.Check("No I2C modules loaded", "");
+        } else {
+            return new CheckerResult.Check("I2C modules loaded", result.toString());
         }
     }
 
