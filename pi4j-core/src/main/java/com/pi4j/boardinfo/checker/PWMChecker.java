@@ -8,8 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static com.pi4j.boardinfo.util.command.CommandExecutor.execute;
-
 public class PWMChecker {
 
     private static final Logger logger = LoggerFactory.getLogger(PWMChecker.class);
@@ -29,11 +27,17 @@ public class PWMChecker {
             // Check for PWM chip files
             detectPwmChips(),
 
-            // Executed commands which could return related info
-            detectWithCommand("lsmod | grep pwm"),
-            detectWithCommand("find /sys -name 'pwm*' -type d 2>/dev/null | head -10"),
-            detectWithCommand("cat /boot/config.txt | grep dtoverlay=pwm"),
-            detectWithCommand("cat /boot/firmware/config.txt | grep dtoverlay=pwm")
+            // "lsmod | grep pwm"
+            detectLoadedPwmModules(),
+
+            // "find /sys -name 'pwm*' -type d 2>/dev/null | head -10"
+            detectPwmDirectoriesInSys(),
+
+            // "cat /boot/config.txt | grep dtoverlay=pwm"
+            detectInConfigFile("/boot/config.txt"),
+
+            // "/boot/firmware/config.txt | grep dtoverlay=pwm"
+            detectInConfigFile("/boot/firmware/config.txt")
         ));
     }
 
@@ -73,6 +77,67 @@ public class PWMChecker {
             return new CheckerResult.Check("No info found in '" + path + "'", "");
         } else {
             return new CheckerResult.Check("Hardware detected in " + path, result.toString());
+        }
+    }
+
+    private static CheckerResult.Check detectLoadedPwmModules() {
+        var result = new StringBuilder();
+
+        try {
+            Path modulesPath = Paths.get("/proc/modules");
+            if (Files.exists(modulesPath)) {
+                List<String> lines = Files.readAllLines(modulesPath);
+                for (String line : lines) {
+                    String moduleName = line.split("\\s+")[0]; // First column is module name
+                    if (moduleName.toLowerCase().contains("pwm")) {
+                        result.append(line).append("\n");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.debug("Error reading loaded modules for PWM detection: {}", e.getMessage());
+        }
+
+        if (result.isEmpty()) {
+            return new CheckerResult.Check("No PWM modules loaded", "");
+        } else {
+            return new CheckerResult.Check("PWM modules loaded", result.toString());
+        }
+    }
+
+    private static CheckerResult.Check detectPwmDirectoriesInSys() {
+        var result = new StringBuilder();
+        final int maxResults = 10; // Equivalent to "head -10"
+        int count = 0;
+
+        try {
+            Path sysPath = Paths.get("/sys");
+            if (Files.exists(sysPath)) {
+                try (var stream = Files.walk(sysPath, 4)) { // Reasonable depth limit to avoid infinite recursion
+                    var pwmDirs = stream
+                        .filter(Files::isDirectory)
+                        .filter(path -> {
+                            String fileName = path.getFileName().toString();
+                            return fileName.startsWith("pwm");
+                        })
+                        .limit(maxResults) // Equivalent to "head -10"
+                        .sorted()
+                        .toList();
+
+                    for (Path pwmDir : pwmDirs) {
+                        result.append(pwmDir.toString()).append("\n");
+                        count++;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.debug("Error searching for PWM directories in /sys: {}", e.getMessage());
+        }
+
+        if (result.isEmpty()) {
+            return new CheckerResult.Check("No PWM directories found in /sys", "");
+        } else {
+            return new CheckerResult.Check("PWM directories found in /sys (" + count + " found)", result.toString());
         }
     }
 
@@ -129,16 +194,26 @@ public class PWMChecker {
         }
     }
 
-    private static CheckerResult.Check detectWithCommand(String command) {
+    private static CheckerResult.Check detectInConfigFile(String configPath) {
+        var result = new StringBuilder();
         try {
-            var output = execute(command);
-            if (output.isSuccess() && !output.getOutputMessage().trim().isEmpty()) {
-                return new CheckerResult.Check("Info returned by '" + command + "'",
-                    output.getOutputMessage());
+            Path path = Paths.get(configPath);
+            if (Files.exists(path)) {
+                List<String> lines = Files.readAllLines(path);
+                for (String line : lines) {
+                    if (line.contains("dtoverlay=pwm")) {
+                        result.append(line).append("\n");
+                    }
+                }
             }
         } catch (Exception e) {
-            logger.error("Error detecting PWM devices with command '{}': {}", command, e.getMessage());
+            logger.debug("Could not read config file {}: {}", configPath, e.getMessage());
         }
-        return new CheckerResult.Check("No info returned by '" + command + "'", "");
+
+        if (result.isEmpty()) {
+            return new CheckerResult.Check("No PWM dtoverlay found in '" + configPath + "'", "");
+        } else {
+            return new CheckerResult.Check("PWM dtoverlay found in " + configPath, result.toString());
+        }
     }
 }
