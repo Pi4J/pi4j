@@ -32,7 +32,8 @@ public class PWMChecker {
             // Executed commands which could return related info
             detectWithCommand("lsmod | grep pwm"),
             detectWithCommand("find /sys -name 'pwm*' -type d 2>/dev/null | head -10"),
-            detectWithCommand("cat /boot/config.txt | grep dtoverlay=pwm")
+            detectWithCommand("cat /boot/config.txt | grep dtoverlay=pwm"),
+            detectWithCommand("cat /boot/firmware/config.txt | grep dtoverlay=pwm")
         ));
     }
 
