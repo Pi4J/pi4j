@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static com.pi4j.boardinfo.util.command.CommandExecutor.execute;
 
@@ -18,22 +19,22 @@ public class I2CChecker {
         // Hide constructor
     }
 
-    public static String detectI2C() {
-        StringBuilder result = new StringBuilder();
+    public static CheckerResult detect() {
+        return new CheckerResult("I2C Detection", List.of(
+            // Check for I2C device files in specific locations
+            detectFilesInDirectory(Paths.get("/dev")),
+            detectFilesInDirectory(Paths.get("/sys/class/i2c-adapter")),
+            detectFilesInDirectory(Paths.get("/sys/bus/i2c/devices")),
 
-        // Check for I2C device files in specific locations
-        detectFilesInDirectory(result, Paths.get("/dev"));
-        detectFilesInDirectory(result, Paths.get("/sys/class/i2c-adapter"));
-        detectFilesInDirectory(result, Paths.get("/sys/bus/i2c/devices"));
-
-        // Executed commands which could return related info
-        detectWithCommand(result, "lsmod | grep i2c");
-        detectWithCommand(result, "which i2cdetect");
-
-        return result.toString().trim();
+            // Executed commands which could return related info
+            detectWithCommand("lsmod | grep i2c"),
+            detectWithCommand("which i2cdetect")
+        ));
     }
 
-    private static StringBuilder detectFilesInDirectory(StringBuilder result, Path path) {
+    private static CheckerResult.Check detectFilesInDirectory(Path path) {
+        var result = new StringBuilder();
+
         try {
             if (Files.exists(path)) {
                 try (var stream = Files.walk(path, 1)) {
@@ -53,7 +54,6 @@ public class I2CChecker {
                             }
                         }).toList();
                     if (!i2cDevices.isEmpty()) {
-                        result.append("I2C Hardware detected in ").append(path).append(":\n");
                         for (Path device : i2cDevices) {
                             String busNumber = device.getFileName().toString().substring(4);
                             result.append(busNumber).append(" ");
@@ -66,19 +66,25 @@ public class I2CChecker {
             logger.error("Error detecting I2C devices in path '{}': {}", path, e.getMessage());
         }
 
-        return result;
+        if (result.isEmpty()) {
+            return new CheckerResult.Check("No info found in '" + path + "'", "");
+        } else {
+            return new CheckerResult.Check("Hardware detected in " + path, result.toString());
+        }
     }
 
-    private static StringBuilder detectWithCommand(StringBuilder result, String command) {
+    private static CheckerResult.Check detectWithCommand(String command) {
         try {
             var output = execute(command);
             if (output.isSuccess() && !output.getOutputMessage().trim().isEmpty()) {
-                result.append("Info returned by '").append(command).append("':\n");
-                result.append(output.getOutputMessage()).append("\n");
+
+
+                return new CheckerResult.Check("Info returned by '" + command + "'",
+                    output.getOutputMessage());
             }
         } catch (Exception e) {
             logger.error("Error detecting I2C devices with command '{}': {}", command, e.getMessage());
         }
-        return result;
+        return new CheckerResult.Check("No info returned by '" + command + "'", "");
     }
 }
