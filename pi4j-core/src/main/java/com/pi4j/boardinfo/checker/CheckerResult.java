@@ -12,12 +12,11 @@ public record CheckerResult(String title, List<Check> results) {
         results.forEach(r -> {
             if (!r.command.isEmpty()) {
                 log.append("\n\t")
-                    .append(r.command);
+                    .append(r.command.trim());
             }
             if (!r.result.isEmpty()) {
                 log.append("\n\t\t")
-                    .append(r.result)
-                    .append("\n");
+                    .append(r.result.trim());
             }
         });
         return log.toString();
