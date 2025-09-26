@@ -30,4 +30,13 @@ import com.pi4j.io.exception.IOException;
 public interface OnOffWrite<T> {
     T on() throws IOException;
     T off() throws IOException;
+    @SuppressWarnings("unchecked")
+    default T setState(boolean state) throws IOException {
+        if (state) {
+            on();
+        } else {
+            off();
+        }
+        return (T) this;
+    }
 }

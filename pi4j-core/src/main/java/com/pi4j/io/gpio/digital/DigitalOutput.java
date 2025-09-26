@@ -118,16 +118,6 @@ public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfi
     /**
      * <p>setState.</p>
      *
-     * @param state a boolean.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws IOException if any.
-     */
-    default DigitalOutput setState(boolean state) throws IOException {
-        return this.state(DigitalState.getState(state));
-    }
-    /**
-     * <p>setState.</p>
-     *
      * @param state a byte.
      * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
      * @throws IOException if any.
