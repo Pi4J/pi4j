@@ -178,6 +178,21 @@ public enum BoardModel {
             "20241209: Confirmed by Jeff Geerling who has evaluation version: d04190."
         ),
         true),
+    MODEL_500_PLUS("Raspberry Pi 500+", ALL_IN_ONE_COMPUTER,
+        List.of("e04190"),
+        PiModel.MODEL_B,
+        HeaderVersion.TYPE_3,
+        LocalDate.of(2025, 9, 25),
+        Soc.BCM2712,
+        Cpu.CORTEX_A76, 4,
+        List.of(2400),
+        List.of(16384 * 1024),
+        List.of(
+            "20250925: Confirmed by Jeff Geerling who has evaluation version: e04190.",
+            "Internal 256GB Raspberry Pi SSD.",
+            "Support for M.2 NVMe SSDs up to 2280 form factor."
+        ),
+        true),
     COMPUTE_1("Compute Module 1", STACK_ON_COMPUTER,
         List.of("0011", "0014", "900061"),
         PiModel.COMPUTE,
