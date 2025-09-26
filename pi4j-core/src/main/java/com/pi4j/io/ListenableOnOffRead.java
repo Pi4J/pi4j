@@ -38,6 +38,8 @@ import java.util.function.Consumer;
  * The purpose of this interface is to provide a simple DigitalInput abstraction that can be used to stand
  * in for a "real" digital input, e.g. when providing IO pins managed by IO expanders to drivers.
  * </p>
+ *
+ * @param <T> See OnOffRead.
  */
 public interface ListenableOnOffRead<T> extends OnOffRead<T> {
 
@@ -76,6 +78,8 @@ public interface ListenableOnOffRead<T> extends OnOffRead<T> {
 
     /**
      * A simple implementation that will notify listeners for state-changing on()/off() (or setState()) calls.
+     *
+     * @param <T> See OnOffRead.
      */
     class Impl<T> implements ListenableOnOffRead<T>, OnOff<T> {
         private List<Consumer<Boolean>> listeners = new ArrayList<>();
