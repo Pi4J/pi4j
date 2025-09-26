@@ -20,9 +20,11 @@ public class SerialChecker {
     public static CheckerResult detect() {
         return new CheckerResult("Serial Detection", List.of(
             // Check for serial device files in specific locations
-            detectFilesInDirectory(Paths.get("/dev")),
+            detectFilesInDirectory(Paths.get("/dev"), "ttyS0 serial0 (and possibly ttyAMA0 when UART is enabled)"),
+            detectFilesInDirectory(Paths.get("/sys/class/tty"), "ttyS0 ttyAMA0 console (various TTY devices including serial)"),
+
+            //
             detectSerialBySerial(),
-            detectFilesInDirectory(Paths.get("/sys/class/tty")),
 
             // Check UART-specific paths
             detectUartDevices(),
@@ -35,7 +37,7 @@ public class SerialChecker {
         ));
     }
 
-    private static CheckerResult.Check detectFilesInDirectory(Path path) {
+    private static CheckerResult.Check detectFilesInDirectory(Path path, String expectedOutput) {
         var result = new StringBuilder();
 
         try {
@@ -94,14 +96,15 @@ public class SerialChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No info found in '" + path + "'", "");
+            return new CheckerResult.Check("No info found in '" + path + "'", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("Hardware detected in " + path, result.toString());
+            return new CheckerResult.Check("Hardware detected in " + path, expectedOutput, result.toString());
         }
     }
 
     private static CheckerResult.Check detectSerialBySerial() {
         var result = new StringBuilder();
+        String expectedOutput = "USB-to-serial devices or hardware serial interfaces (when present)";
 
         try {
             Path serialPath = Paths.get("/dev/serial/by-id");
@@ -154,14 +157,15 @@ public class SerialChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No serial by-id/by-path devices found", "");
+            return new CheckerResult.Check("No serial by-id/by-path devices found", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("Serial devices by-id/by-path", result.toString());
+            return new CheckerResult.Check("Serial devices by-id/by-path", expectedOutput, result.toString());
         }
     }
 
     private static CheckerResult.Check detectUartDevices() {
         var result = new StringBuilder();
+        String expectedOutput = "3f201000.serial or fe201000.serial (main UART), 3f215040.serial or fe215040.serial (aux UART)";
 
         try {
             // Check for UART-specific sysfs entries
@@ -187,9 +191,9 @@ public class SerialChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No UART hardware paths found", "");
+            return new CheckerResult.Check("No UART hardware paths found", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("UART hardware detected", result.toString());
+            return new CheckerResult.Check("UART hardware detected", expectedOutput, result.toString());
         }
     }
 
@@ -203,6 +207,7 @@ public class SerialChecker {
 
     private static CheckerResult.Check detectLoadedSerialModules() {
         var result = new StringBuilder();
+        String expectedOutput = "8250 or amba-pl011 (UART kernel driver modules)";
 
         try {
             Path modulesPath = Paths.get("/proc/modules");
@@ -221,14 +226,15 @@ public class SerialChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No serial/UART modules loaded", "");
+            return new CheckerResult.Check("No serial/UART modules loaded", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("Serial/UART modules loaded", result.toString());
+            return new CheckerResult.Check("Serial/UART modules loaded", expectedOutput, result.toString());
         }
     }
 
     private static CheckerResult.Check detectDmesgUartInfo() {
         var result = new StringBuilder();
+        String expectedOutput = "UART initialization messages and device registration info";
 
         try {
             Path dmesgPath = Paths.get("/var/log/dmesg");
@@ -263,14 +269,15 @@ public class SerialChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No UART info in dmesg", "");
+            return new CheckerResult.Check("No UART info in dmesg", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("Recent UART messages from dmesg", result.toString());
+            return new CheckerResult.Check("Recent UART messages from dmesg", expectedOutput, result.toString());
         }
     }
 
     private static CheckerResult.Check detectUartConfigSettings() {
         var result = new StringBuilder();
+        String expectedOutput = "enable_uart=1 (in /boot/config.txt or /boot/firmware/config.txt)";
 
         String[] configPaths = {"/boot/config.txt", "/boot/firmware/config.txt"};
 
@@ -298,14 +305,15 @@ public class SerialChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No UART config files accessible", "");
+            return new CheckerResult.Check("No UART config files accessible", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("UART configuration settings", result.toString());
+            return new CheckerResult.Check("UART configuration settings", expectedOutput, result.toString());
         }
     }
 
     private static CheckerResult.Check detectSerialPortAvailability() {
         var result = new StringBuilder();
+        String expectedOutput = "/dev/ttyS0 exists (readable, writable), /dev/ttyAMA0 exists (readable, writable) when UART enabled";
 
         String[] serialDevices = {"/dev/ttyS0", "/dev/ttyAMA0", "/dev/ttyUSB0", "/dev/ttyACM0"};
 
@@ -336,6 +344,6 @@ public class SerialChecker {
             }
         }
 
-        return new CheckerResult.Check("Serial port availability", result.toString());
+        return new CheckerResult.Check("Serial port availability", expectedOutput, result.toString());
     }
 }

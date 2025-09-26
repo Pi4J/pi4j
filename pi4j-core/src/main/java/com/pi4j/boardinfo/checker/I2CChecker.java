@@ -8,9 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static com.pi4j.boardinfo.util.command.CommandExecutor.execute;
-
-public class I2CChecker {
+public class I2CChecker extends BaseChecker {
 
     private static final Logger logger = LoggerFactory.getLogger(I2CChecker.class);
 
@@ -22,19 +20,19 @@ public class I2CChecker {
     public static CheckerResult detect() {
         return new CheckerResult("I2C Detection", List.of(
             // Check for I2C device files in specific locations
-            detectFilesInDirectory(Paths.get("/dev")),
-            detectFilesInDirectory(Paths.get("/sys/class/i2c-adapter")),
-            detectFilesInDirectory(Paths.get("/sys/bus/i2c/devices")),
+            detectFilesInDirectory(Paths.get("/dev"), "i2c-1 (and possibly i2c-0 if camera/display interface enabled)"),
+            detectFilesInDirectory(Paths.get("/sys/class/i2c-adapter"), "i2c-1 (and possibly i2c-0)"),
+            detectFilesInDirectory(Paths.get("/sys/bus/i2c/devices"), "1-0048 1-0049 (or similar I2C device addresses if devices connected)"),
 
             // "lsmod | grep i2c"
             detectLoadedI2cModules(),
 
             // Executed commands which could return related info
-            detectWithCommand("which i2cdetect")
+            detectWithCommand("which i2cdetect", "/usr/bin/i2cdetect or /usr/sbin/i2cdetect (path to i2c-tools utility)")
         ));
     }
 
-    private static CheckerResult.Check detectFilesInDirectory(Path path) {
+    private static CheckerResult.Check detectFilesInDirectory(Path path, String expectedOutput) {
         var result = new StringBuilder();
 
         try {
@@ -69,14 +67,15 @@ public class I2CChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No info found in '" + path + "'", "");
+            return new CheckerResult.Check("No info found in '" + path + "'", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("Hardware detected in " + path, result.toString());
+            return new CheckerResult.Check("Hardware detected in " + path, expectedOutput, result.toString());
         }
     }
 
     private static CheckerResult.Check detectLoadedI2cModules() {
         var result = new StringBuilder();
+        String expectedOutput = "i2c_bcm2835 or i2c_bcm2708 (I2C kernel driver module)";
 
         try {
             Path modulesPath = Paths.get("/proc/modules");
@@ -94,24 +93,10 @@ public class I2CChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No I2C modules loaded", "");
+            return new CheckerResult.Check("No I2C modules loaded", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("I2C modules loaded", result.toString());
+            return new CheckerResult.Check("I2C modules loaded", expectedOutput, result.toString());
         }
     }
 
-    private static CheckerResult.Check detectWithCommand(String command) {
-        try {
-            var output = execute(command);
-            if (output.isSuccess() && !output.getOutputMessage().trim().isEmpty()) {
-
-
-                return new CheckerResult.Check("Info returned by '" + command + "'",
-                    output.getOutputMessage());
-            }
-        } catch (Exception e) {
-            logger.error("Error detecting I2C devices with command '{}': {}", command, e.getMessage());
-        }
-        return new CheckerResult.Check("No info returned by '" + command + "'", "");
-    }
 }

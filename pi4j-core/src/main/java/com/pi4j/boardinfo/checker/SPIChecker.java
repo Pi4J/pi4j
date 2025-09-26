@@ -8,9 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static com.pi4j.boardinfo.util.command.CommandExecutor.execute;
-
-public class SPIChecker {
+public class SPIChecker extends BaseChecker {
 
     private static final Logger logger = LoggerFactory.getLogger(SPIChecker.class);
 
@@ -21,16 +19,16 @@ public class SPIChecker {
     public static CheckerResult detect() {
         return new CheckerResult("SPI Detection", List.of(
             // Check for SPI device files in specific locations
-            detectFilesInDirectory(Paths.get("/dev")),
-            detectFilesInDirectory(Paths.get("/sys/class/spidev")),
-            detectFilesInDirectory(Paths.get("/sys/bus/spi/devices")),
-            detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/3f204000.spi")), // Pi 2/3 main SPI
-            detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/fe204000.spi")), // Pi 4 main SPI
-            detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/3f215080.spi")), // Pi 2/3 aux SPI
-            detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/fe215080.spi")), // Pi 4 aux SPI
+            detectFilesInDirectory(Paths.get("/dev"), "spidev0.0 spidev0.1 (main SPI bus devices when dtparam=spi=on)"),
+            detectFilesInDirectory(Paths.get("/sys/class/spidev"), "spidev0.0 spidev0.1"),
+            detectFilesInDirectory(Paths.get("/sys/bus/spi/devices"), "spi0.0 spi0.1 (SPI device entries)"),
+            detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/3f204000.spi"), "SPI hardware platform device directory for RPi 2 and 3 main SPI"),
+            detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/fe204000.spi"), "SPI hardware platform device directory for RPi 4 main SPI"),
+            detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/3f215080.spi"), "SPI hardware platform device directory for RPi 2 and 3 aux SPI"),
+            detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/fe215080.spi"), "SPI hardware platform device directory for RPi 4 aux SPI"),
 
             // Executed commands which could return related info
-            detectWithCommand("which spi-config"),
+            detectWithCommand("which spi-config", "spi-config utility not commonly available by default"),
 
             // Extra checks
             detectLoadedSpiModules(),
@@ -39,7 +37,7 @@ public class SPIChecker {
         ));
     }
 
-    private static CheckerResult.Check detectFilesInDirectory(Path path) {
+    private static CheckerResult.Check detectFilesInDirectory(Path path, String expectedOutput) {
         var result = new StringBuilder();
 
         try {
@@ -97,14 +95,15 @@ public class SPIChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No info found in '" + path + "'", "");
+            return new CheckerResult.Check("No info found in '" + path + "'", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("Hardware detected in " + path, result.toString());
+            return new CheckerResult.Check("Hardware detected in " + path, expectedOutput, result.toString());
         }
     }
 
     private static CheckerResult.Check detectSpiPins() {
         var result = new StringBuilder();
+        String expectedOutput = "Main SPI pins (7,8,9,10,11): not configured, Aux SPI pins (16,17,18,19,20,21): not configured (normal state when SPI not actively used)";
 
         try {
             // Check if SPI pins are configured by looking at GPIO export states
@@ -125,9 +124,9 @@ public class SPIChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No SPI pin info available", "");
+            return new CheckerResult.Check("No SPI pin info available", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("SPI pin status", result.toString());
+            return new CheckerResult.Check("SPI pin status", expectedOutput, result.toString());
         }
     }
 
@@ -148,6 +147,7 @@ public class SPIChecker {
 
     private static CheckerResult.Check detectLoadedSpiModules() {
         var result = new StringBuilder();
+        String expectedOutput = "spi_bcm2835 or spidev (SPI kernel driver modules when SPI is enabled)";
 
         try {
             Path modulesPath = Paths.get("/proc/modules");
@@ -165,14 +165,15 @@ public class SPIChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No SPI modules loaded", "");
+            return new CheckerResult.Check("No SPI modules loaded", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("SPI modules loaded", result.toString());
+            return new CheckerResult.Check("SPI modules loaded", expectedOutput, result.toString());
         }
     }
 
     private static CheckerResult.Check detectSpiConfigSettings() {
         var result = new StringBuilder();
+        String expectedOutput = "dtparam=spi=on (in /boot/config.txt or /boot/firmware/config.txt)";
 
         String[] configPaths = {"/boot/config.txt", "/boot/firmware/config.txt"};
 
@@ -200,22 +201,9 @@ public class SPIChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No SPI config files accessible", "");
+            return new CheckerResult.Check("No SPI config files accessible", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("SPI configuration settings", result.toString());
+            return new CheckerResult.Check("SPI configuration settings", expectedOutput, result.toString());
         }
-    }
-
-    private static CheckerResult.Check detectWithCommand(String command) {
-        try {
-            var output = execute(command);
-            if (output.isSuccess() && !output.getOutputMessage().trim().isEmpty()) {
-                return new CheckerResult.Check("Info returned by '" + command + "'",
-                    output.getOutputMessage());
-            }
-        } catch (Exception e) {
-            logger.error("Error detecting SPI devices with command '{}': {}", command, e.getMessage());
-        }
-        return new CheckerResult.Check("No info returned by '" + command + "'", "");
     }
 }

@@ -40,6 +40,13 @@ public class GPIOChecker {
     private static CheckerResult.Check detectFilesInDirectory(Path path) {
         var result = new StringBuilder();
 
+        String expectedOutput = "";
+        if (path.toString().equals("/dev")) {
+            expectedOutput = "gpiochip0 gpiochip1 gpiomem";
+        } else if (path.toString().equals("/sys/class/gpio")) {
+            expectedOutput = "export gpiochip0 gpiochip1 unexport";
+        }
+
         try {
             if (Files.exists(path)) {
                 try (var stream = Files.walk(path, 1)) {
@@ -97,15 +104,16 @@ public class GPIOChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No info found in '" + path + "'", "");
+            return new CheckerResult.Check("No info found in '" + path + "'", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("Hardware detected in " + path, result.toString());
+            return new CheckerResult.Check("Hardware detected in " + path, expectedOutput, result.toString());
         }
     }
 
 
     private static CheckerResult.Check detectLoadedGpioModules() {
         var result = new StringBuilder();
+        String expectedOutput = "gpio_bcm2835 or similar GPIO kernel modules";
 
         try {
             Path modulesPath = Paths.get("/proc/modules");
@@ -124,14 +132,15 @@ public class GPIOChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No GPIO modules loaded", "");
+            return new CheckerResult.Check("No GPIO modules loaded", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("GPIO modules loaded", result.toString());
+            return new CheckerResult.Check("GPIO modules loaded", expectedOutput, result.toString());
         }
     }
 
     private static CheckerResult.Check detectGpioTools() {
         var result = new StringBuilder();
+        String expectedOutput = "gpiodetect, gpioinfo, gpioset, gpioget tools available in /usr/bin";
 
         // Common paths where gpio tools might be installed
         String[] commonPaths = {"/usr/bin", "/usr/local/bin", "/bin", "/sbin", "/usr/sbin"};
@@ -153,14 +162,15 @@ public class GPIOChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No GPIO tool availability info", "");
+            return new CheckerResult.Check("No GPIO tool availability info", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("GPIO tool availability", result.toString());
+            return new CheckerResult.Check("GPIO tool availability", expectedOutput, result.toString());
         }
     }
 
     private static CheckerResult.Check detectGpioDevicesWithTools() {
         var result = new StringBuilder();
+        String expectedOutput = "gpiochip0 [pinctrl-bcm2835] (54 lines)\ngpiochip1 [raspberrypi-exp-gpio] (8 lines)";
 
         try {
             // Try to find gpiodetect tool first
@@ -190,11 +200,12 @@ public class GPIOChecker {
             result.append("Error running gpiodetect: ").append(e.getMessage()).append("\n");
         }
 
-        return new CheckerResult.Check("GPIO device detection with tools", result.toString());
+        return new CheckerResult.Check("GPIO device detection with tools", expectedOutput, result.toString());
     }
 
     private static CheckerResult.Check detectDeviceTreeGpioInfo() {
         var result = new StringBuilder();
+        String expectedOutput = "Found GPIO device-tree entry: gpio@7e200000 (status: okay)";
 
         try {
             // Look for GPIO device-tree information
@@ -243,11 +254,12 @@ public class GPIOChecker {
             result.append("Error reading device-tree info: ").append(e.getMessage()).append("\n");
         }
 
-        return new CheckerResult.Check("Device-tree GPIO information", result.toString());
+        return new CheckerResult.Check("Device-tree GPIO information", expectedOutput, result.toString());
     }
 
     private static CheckerResult.Check detectGpioChips() {
         var result = new StringBuilder();
+        String expectedOutput = "chip0 (base=0, label=pinctrl-bcm2835, pins=54) chip1 (base=504, label=raspberrypi-exp-gpio, pins=8)";
 
         try {
             Path gpioPath = Paths.get("/sys/class/gpio");
@@ -300,14 +312,15 @@ public class GPIOChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No GPIO chips found", "");
+            return new CheckerResult.Check("No GPIO chips found", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("GPIO chips detected", result.toString());
+            return new CheckerResult.Check("GPIO chips detected", expectedOutput, result.toString());
         }
     }
 
     private static CheckerResult.Check detectExportedPins() {
         var result = new StringBuilder();
+        String expectedOutput = "No pins currently exported (normal state when no GPIO pins are actively used)";
 
         try {
             Path gpioPath = Paths.get("/sys/class/gpio");
@@ -359,14 +372,15 @@ public class GPIOChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No exported pin info available", "");
+            return new CheckerResult.Check("No exported pin info available", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("GPIO pin export status", result.toString());
+            return new CheckerResult.Check("GPIO pin export status", expectedOutput, result.toString());
         }
     }
 
     private static CheckerResult.Check detectGpioDrivers() {
         var result = new StringBuilder();
+        String expectedOutput = "3f200000.gpio or fe200000.gpio (depending on Pi model), gpio-bcm2835, pinctrl-bcm2835";
 
         try {
             // Check for GPIO-related platform drivers
@@ -392,9 +406,9 @@ public class GPIOChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No GPIO driver paths found", "");
+            return new CheckerResult.Check("No GPIO driver paths found", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("GPIO drivers detected", result.toString());
+            return new CheckerResult.Check("GPIO drivers detected", expectedOutput, result.toString());
         }
     }
 

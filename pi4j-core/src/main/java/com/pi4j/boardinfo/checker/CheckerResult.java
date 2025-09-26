@@ -3,7 +3,7 @@ package com.pi4j.boardinfo.checker;
 import java.util.List;
 
 public record CheckerResult(String title, List<Check> results) {
-    record Check(String command, String result) {
+    record Check(String command, String expected, String result) {
     }
 
     public String logOutput() {
@@ -14,10 +14,10 @@ public record CheckerResult(String title, List<Check> results) {
                 log.append("\n\t")
                     .append(r.command.trim());
             }
-            if (!r.result.isEmpty()) {
-                log.append("\n\t\t")
-                    .append(r.result.trim());
-            }
+            log.append("\n\t\tExpected: ")
+                .append(r.expected.isEmpty() ? "-" : r.expected.trim());
+            log.append("\n\t\tResult: ")
+                .append(r.result.isEmpty() ? "-" : r.result.trim().replace("\n", " - "));
         });
         return log.toString();
     }

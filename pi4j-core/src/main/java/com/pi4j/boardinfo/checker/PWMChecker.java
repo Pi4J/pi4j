@@ -19,10 +19,10 @@ public class PWMChecker {
     public static CheckerResult detect() {
         return new CheckerResult("PWM Detection", List.of(
             // Check for PWM device files in specific locations
-            detectFilesInDirectory(Paths.get("/sys/class/pwm")),
-            detectFilesInDirectory(Paths.get("/sys/class/pwm-bcm2835")),
-            detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/3f20c000.pwm")),
-            detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/fe20c000.pwm")), // Pi 4 path
+            detectFilesInDirectory(Paths.get("/sys/class/pwm"), "pwmchip0 pwmchip1 (PWM chip devices when dtoverlay=pwm is enabled)"),
+            detectFilesInDirectory(Paths.get("/sys/class/pwm-bcm2835"), "pwm device files (when PWM hardware is properly configured)"),
+            detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/3f20c000.pwm"), "PWM hardware platform device directory"),
+            detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/fe20c000.pwm"), "PWM hardware platform device directory"), // Pi 4 path
 
             // Check for PWM chip files
             detectPwmChips(),
@@ -41,7 +41,7 @@ public class PWMChecker {
         ));
     }
 
-    private static CheckerResult.Check detectFilesInDirectory(Path path) {
+    private static CheckerResult.Check detectFilesInDirectory(Path path, String expectedOutput) {
         var result = new StringBuilder();
 
         try {
@@ -74,14 +74,15 @@ public class PWMChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No info found in '" + path + "'", "");
+            return new CheckerResult.Check("No info found in '" + path + "'", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("Hardware detected in " + path, result.toString());
+            return new CheckerResult.Check("Hardware detected in " + path, expectedOutput, result.toString());
         }
     }
 
     private static CheckerResult.Check detectLoadedPwmModules() {
         var result = new StringBuilder();
+        String expectedOutput = "pwm_bcm2835 (PWM kernel driver module when PWM is enabled)";
 
         try {
             Path modulesPath = Paths.get("/proc/modules");
@@ -99,14 +100,15 @@ public class PWMChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No PWM modules loaded", "");
+            return new CheckerResult.Check("No PWM modules loaded", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("PWM modules loaded", result.toString());
+            return new CheckerResult.Check("PWM modules loaded", expectedOutput, result.toString());
         }
     }
 
     private static CheckerResult.Check detectPwmDirectoriesInSys() {
         var result = new StringBuilder();
+        String expectedOutput = "/sys/class/pwm/pwmchip0\n/sys/class/pwm/pwmchip1\n/sys/devices/platform/soc/[address].pwm";
         final int maxResults = 10; // Equivalent to "head -10"
         int count = 0;
 
@@ -135,14 +137,15 @@ public class PWMChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No PWM directories found in /sys", "");
+            return new CheckerResult.Check("No PWM directories found in /sys", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("PWM directories found in /sys (" + count + " found)", result.toString());
+            return new CheckerResult.Check("PWM directories found in /sys (" + count + " found)", expectedOutput, result.toString());
         }
     }
 
     private static CheckerResult.Check detectPwmChips() {
         var result = new StringBuilder();
+        String expectedOutput = "chip0(2 channels) chip1(2 channels) (when dtoverlay=pwm is properly configured)";
 
         try {
             Path pwmPath = Paths.get("/sys/class/pwm");
@@ -188,14 +191,16 @@ public class PWMChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No PWM chips found", "");
+            return new CheckerResult.Check("No PWM chips found", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("PWM chips detected", result.toString());
+            return new CheckerResult.Check("PWM chips detected", expectedOutput, result.toString());
         }
     }
 
     private static CheckerResult.Check detectInConfigFile(String configPath) {
         var result = new StringBuilder();
+        String expectedOutput = "dtoverlay=pwm (or dtoverlay=pwm-2chan for 2-channel PWM)";
+
         try {
             Path path = Paths.get(configPath);
             if (Files.exists(path)) {
@@ -211,9 +216,9 @@ public class PWMChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No PWM dtoverlay found in '" + configPath + "'", "");
+            return new CheckerResult.Check("No PWM dtoverlay found in '" + configPath + "'", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("PWM dtoverlay found in " + configPath, result.toString());
+            return new CheckerResult.Check("PWM dtoverlay found in " + configPath, expectedOutput, result.toString());
         }
     }
 }
