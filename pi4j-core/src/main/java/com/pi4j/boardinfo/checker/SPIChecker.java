@@ -1,11 +1,14 @@
 package com.pi4j.boardinfo.checker;
 
+import com.pi4j.boardinfo.definition.Generation;
+import com.pi4j.boardinfo.util.BoardInfoHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SPIChecker extends BaseChecker {
@@ -17,24 +20,30 @@ public class SPIChecker extends BaseChecker {
     }
 
     public static CheckerResult detect() {
-        return new CheckerResult("SPI Detection", List.of(
-            // Check for SPI device files in specific locations
-            detectFilesInDirectory(Paths.get("/dev"), "spidev0.0 spidev0.1 (main SPI bus devices when dtparam=spi=on)"),
-            detectFilesInDirectory(Paths.get("/sys/class/spidev"), "spidev0.0 spidev0.1"),
-            detectFilesInDirectory(Paths.get("/sys/bus/spi/devices"), "spi0.0 spi0.1 (SPI device entries)"),
-            detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/3f204000.spi"), "SPI hardware platform device directory for RPi 2 and 3 main SPI"),
-            detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/fe204000.spi"), "SPI hardware platform device directory for RPi 4 main SPI"),
-            detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/3f215080.spi"), "SPI hardware platform device directory for RPi 2 and 3 aux SPI"),
-            detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/fe215080.spi"), "SPI hardware platform device directory for RPi 4 aux SPI"),
+        var checks = new ArrayList<CheckerResult.Check>();
+        // Check for SPI device files in specific locations
+        checks.add(detectFilesInDirectory(Paths.get("/dev"), "spidev0.0 spidev0.1 (main SPI bus devices when dtparam=spi=on)"));
+        checks.add(detectFilesInDirectory(Paths.get("/sys/class/spidev"), "spidev0.0 spidev0.1"));
+        checks.add(detectFilesInDirectory(Paths.get("/sys/bus/spi/devices"), "spi0.0 spi0.1 (SPI device entries)"));
 
-            // Executed commands which could return related info
-            detectWithCommand("which spi-config", "spi-config utility not commonly available by default"),
+        // Executed commands which could return related info
+        checks.add(detectWithCommand("which spi-config", "spi-config utility not commonly available by default"));
 
-            // Extra checks
-            detectLoadedSpiModules(),
-            detectSpiConfigSettings(),
-            detectSpiPins()
-        ));
+        // Extra checks
+        checks.add(detectLoadedSpiModules());
+        checks.add(detectSpiConfigSettings());
+        checks.add(detectSpiPins());
+
+        var boardGeneration = BoardInfoHelper.current().getBoardModel().getGeneration();
+        if (boardGeneration == Generation.GENERATION_2 || boardGeneration == Generation.GENERATION_3) {
+            checks.add(detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/3f204000.spi"), "SPI hardware platform device directory for RPi 2 and 3 main SPI"));
+            checks.add(detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/3f215080.spi"), "SPI hardware platform device directory for RPi 2 and 3 aux SPI"));
+        } else if (boardGeneration == Generation.GENERATION_4) {
+            checks.add(detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/fe204000.spi"), "SPI hardware platform device directory for RPi 4 main SPI"));
+            checks.add(detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/fe215080.spi"), "SPI hardware platform device directory for RPi 4 aux SPI"));
+        }
+        
+        return new CheckerResult("SPI Detection", checks);
     }
 
     private static CheckerResult.Check detectFilesInDirectory(Path path, String expectedOutput) {

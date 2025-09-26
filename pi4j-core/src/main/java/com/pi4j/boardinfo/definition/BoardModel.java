@@ -49,7 +49,9 @@ import static com.pi4j.boardinfo.definition.BoardType.*;
  * @see <a href="https://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/">Checking Your Raspberry Pi Board Version</a>
  */
 public enum BoardModel {
-    MODEL_1_A("Raspberry Pi 1 Model A", SINGLE_BOARD_COMPUTER,
+    MODEL_1_A("Raspberry Pi 1 Model A",
+        SINGLE_BOARD_COMPUTER,
+        Generation.GENERATION_1,
         List.of("0007", "0008", "0009"),
         PiModel.MODEL_A,
         HeaderVersion.TYPE_1,
@@ -58,7 +60,9 @@ public enum BoardModel {
         Cpu.ARM1176JZF_S, 1,
         List.of(700),
         List.of(256 * 1024)),
-    MODEL_1_A_PLUS("Raspberry Pi 1 Model A+", SINGLE_BOARD_COMPUTER,
+    MODEL_1_A_PLUS("Raspberry Pi 1 Model A+",
+        SINGLE_BOARD_COMPUTER,
+        Generation.GENERATION_1,
         List.of("0012", "0015", "900021"),
         PiModel.MODEL_A,
         HeaderVersion.TYPE_1,
@@ -69,7 +73,9 @@ public enum BoardModel {
         List.of(256 * 1024, 512 * 1024),
         List.of("Amount of memory changed to 512Mb on 20160810"),
         false),
-    MODEL_3_A_PLUS("Raspberry Pi 3 Model A+", SINGLE_BOARD_COMPUTER,
+    MODEL_3_A_PLUS("Raspberry Pi 3 Model A+",
+        SINGLE_BOARD_COMPUTER,
+        Generation.GENERATION_3,
         List.of("9020e0", "9020e1"),
         PiModel.MODEL_A,
         HeaderVersion.TYPE_3,
@@ -80,7 +86,9 @@ public enum BoardModel {
         List.of(512 * 1024),
         new ArrayList<>(),
         false),
-    MODEL_1_B("Raspberry Pi 1 Model B", SINGLE_BOARD_COMPUTER,
+    MODEL_1_B("Raspberry Pi 1 Model B",
+        SINGLE_BOARD_COMPUTER,
+        Generation.GENERATION_1,
         List.of("0002", "0003", "0004", "0005", "0006", "000d", "000e", "000f"),
         PiModel.MODEL_B,
         HeaderVersion.TYPE_1,
@@ -91,7 +99,9 @@ public enum BoardModel {
         List.of(256 * 1024, 512 * 1024),
         List.of("Amount of memory changed to 512Mb on 20121015"),
         false),
-    MODEL_1_B_PLUS("Raspberry Pi 1 Model B+", SINGLE_BOARD_COMPUTER,
+    MODEL_1_B_PLUS("Raspberry Pi 1 Model B+",
+        SINGLE_BOARD_COMPUTER,
+        Generation.GENERATION_1,
         List.of("0010", "0013", "900032"),
         PiModel.MODEL_B,
         HeaderVersion.TYPE_1,
@@ -100,7 +110,9 @@ public enum BoardModel {
         Cpu.ARM1176JZF_S, 1,
         List.of(700),
         List.of(512 * 1024)),
-    MODEL_2_B("Raspberry Pi 2 Model B", SINGLE_BOARD_COMPUTER,
+    MODEL_2_B("Raspberry Pi 2 Model B",
+        SINGLE_BOARD_COMPUTER,
+        Generation.GENERATION_2,
         List.of("a01040", "a01041", "a21041"),
         PiModel.MODEL_B,
         HeaderVersion.TYPE_2,
@@ -109,7 +121,9 @@ public enum BoardModel {
         Cpu.CORTEX_A7, 4,
         List.of(900),
         List.of(1024 * 1024)),
-    MODEL_2_B_V1_2("Raspberry Pi 2 Model B V1.2", SINGLE_BOARD_COMPUTER,
+    MODEL_2_B_V1_2("Raspberry Pi 2 Model B V1.2",
+        SINGLE_BOARD_COMPUTER,
+        Generation.GENERATION_2,
         List.of("a02042", "a22042"),
         PiModel.MODEL_B,
         HeaderVersion.TYPE_2,
@@ -118,7 +132,9 @@ public enum BoardModel {
         Cpu.CORTEX_A53, 4,
         List.of(900),
         List.of(1024 * 1024)),
-    MODEL_3_B("Raspberry Pi 3 Model B", SINGLE_BOARD_COMPUTER,
+    MODEL_3_B("Raspberry Pi 3 Model B",
+        SINGLE_BOARD_COMPUTER,
+        Generation.GENERATION_3,
         List.of("a02082", "a22082", "a32082", "a52082", "a22083"),
         PiModel.MODEL_B,
         HeaderVersion.TYPE_3,
@@ -127,7 +143,9 @@ public enum BoardModel {
         Cpu.CORTEX_A53, 4,
         List.of(1200),
         List.of(1024 * 1024)),
-    MODEL_3_B_PLUS("Raspberry Pi 3 Model B+", SINGLE_BOARD_COMPUTER,
+    MODEL_3_B_PLUS("Raspberry Pi 3 Model B+",
+        SINGLE_BOARD_COMPUTER,
+        Generation.GENERATION_3,
         List.of("a020d3", "a020d4"),
         PiModel.MODEL_B,
         HeaderVersion.TYPE_3,
@@ -136,7 +154,9 @@ public enum BoardModel {
         Cpu.CORTEX_A53, 4,
         List.of(1400),
         List.of(1024 * 1024)),
-    MODEL_4_B("Raspberry Pi 4 Model B", SINGLE_BOARD_COMPUTER,
+    MODEL_4_B("Raspberry Pi 4 Model B",
+        SINGLE_BOARD_COMPUTER,
+        Generation.GENERATION_4,
         List.of("a03111", "b03111", "b03112", "b03114", "b03115", "c03111", "c03112", "c03114", "c03115", "d03114", "d03115"),
         PiModel.MODEL_B,
         HeaderVersion.TYPE_3,
@@ -145,7 +165,9 @@ public enum BoardModel {
         Cpu.CORTEX_A72, 4,
         List.of(1500, 1800),
         List.of(1024 * 1024, 2048 * 1024, 4096 * 1024, 8192 * 1024)),
-    MODEL_400("Raspberry Pi 400", ALL_IN_ONE_COMPUTER,
+    MODEL_400("Raspberry Pi 400",
+        ALL_IN_ONE_COMPUTER,
+        Generation.GENERATION_4,
         List.of("c03130"),
         PiModel.MODEL_B,
         HeaderVersion.TYPE_3,
@@ -154,7 +176,9 @@ public enum BoardModel {
         Cpu.CORTEX_A72, 4,
         List.of(1800),
         List.of(4096 * 1024)),
-    MODEL_5_B("Raspberry Pi 5 Model B", SINGLE_BOARD_COMPUTER,
+    MODEL_5_B("Raspberry Pi 5 Model B",
+        SINGLE_BOARD_COMPUTER,
+        Generation.GENERATION_5,
         List.of("b04170", "c04170", "d04170", "e04171"),
         PiModel.MODEL_B,
         HeaderVersion.TYPE_3,
@@ -165,7 +189,9 @@ public enum BoardModel {
         List.of(2048 * 1024, 4096 * 1024, 8192 * 1024, 16384 * 1024),
         new ArrayList<>(),
         true),
-    MODEL_500("Raspberry Pi 500", ALL_IN_ONE_COMPUTER,
+    MODEL_500("Raspberry Pi 500",
+        ALL_IN_ONE_COMPUTER,
+        Generation.GENERATION_5,
         List.of("d04190"),
         PiModel.MODEL_B,
         HeaderVersion.TYPE_3,
@@ -178,7 +204,9 @@ public enum BoardModel {
             "20241209: Confirmed by Jeff Geerling who has evaluation version: d04190."
         ),
         true),
-    COMPUTE_1("Compute Module 1", STACK_ON_COMPUTER,
+    COMPUTE_1("Compute Module 1",
+        STACK_ON_COMPUTER,
+        Generation.GENERATION_1,
         List.of("0011", "0014", "900061"),
         PiModel.COMPUTE,
         HeaderVersion.COMPUTE,
@@ -187,7 +215,9 @@ public enum BoardModel {
         Cpu.ARM1176JZF_S, 1,
         List.of(700),
         List.of(512 * 1024)),
-    COMPUTE_3("Compute Module 3", STACK_ON_COMPUTER,
+    COMPUTE_3("Compute Module 3",
+        STACK_ON_COMPUTER,
+        Generation.GENERATION_3,
         List.of("a020a0", "a220a0"),
         PiModel.COMPUTE,
         HeaderVersion.COMPUTE,
@@ -196,7 +226,9 @@ public enum BoardModel {
         Cpu.CORTEX_A53, 4,
         List.of(1200),
         List.of(1024 * 1024)),
-    COMPUTE_3_PLUS("Compute Module 3+", STACK_ON_COMPUTER,
+    COMPUTE_3_PLUS("Compute Module 3+",
+        STACK_ON_COMPUTER,
+        Generation.GENERATION_3,
         List.of("a02100"),
         PiModel.COMPUTE,
         HeaderVersion.COMPUTE,
@@ -205,7 +237,9 @@ public enum BoardModel {
         Cpu.CORTEX_A53, 4,
         List.of(1200),
         List.of(1024 * 1024)),
-    COMPUTE_4("Compute Module 4", STACK_ON_COMPUTER,
+    COMPUTE_4("Compute Module 4",
+        STACK_ON_COMPUTER,
+        Generation.GENERATION_4,
         List.of("a03140", "b03140", "c03140", "d03140", "a03141", "b03141", "c03141", "d03141"),
         PiModel.COMPUTE,
         HeaderVersion.COMPUTE,
@@ -215,7 +249,9 @@ public enum BoardModel {
         List.of(1500),
         List.of(1024 * 1024, 2048 * 1024, 4096 * 1024, 8192 * 1024)),
     // https://datasheets.raspberrypi.com/cm4s/cm4s-datasheet.pdf
-    COMPUTE_4_SODIMM("Compute Module 4 SODIMM", STACK_ON_COMPUTER,
+    COMPUTE_4_SODIMM("Compute Module 4 SODIMM",
+        STACK_ON_COMPUTER,
+        Generation.GENERATION_4,
         new ArrayList<>(), // Not known yet
         PiModel.COMPUTE,
         HeaderVersion.COMPUTE,
@@ -225,7 +261,9 @@ public enum BoardModel {
         List.of(1500),
         List.of(1024 * 1024, 2048 * 1024, 4096 * 1024, 8192 * 1024)),
     // https://www-cnx--software-com.cdn.ampproject.org/c/s/www.cnx-software.com/2024/11/27/raspberry-pi-cm5-broadcom-bcm2712-soc-16gb-lpddr4-ecc-memory/?amp=1
-    COMPUTE_5("Compute Module 5", STACK_ON_COMPUTER,
+    COMPUTE_5("Compute Module 5",
+        STACK_ON_COMPUTER,
+        Generation.GENERATION_5,
         List.of("a04180", "b04180", "c04180", "d04180", "a041a0", "b041a0", "c041a0", "c041a0"),
         PiModel.COMPUTE,
         HeaderVersion.COMPUTE,
@@ -241,7 +279,9 @@ public enum BoardModel {
             "Will be further completed or modified when more info is available."
         ),
         true),
-    ZERO_PCB_1_2("Raspberry Pi Zero PCB V1.2", SINGLE_BOARD_COMPUTER,
+    ZERO_PCB_1_2("Raspberry Pi Zero PCB V1.2",
+        SINGLE_BOARD_COMPUTER,
+        Generation.GENERATION_1,
         List.of("900092", "920092"),
         PiModel.ZERO,
         HeaderVersion.TYPE_3,
@@ -250,7 +290,9 @@ public enum BoardModel {
         Cpu.ARM1176JZF_S, 1,
         List.of(1000),
         List.of(512 * 1024)),
-    ZERO_PCB_1_3("Raspberry Pi Zero PCB V1.3", SINGLE_BOARD_COMPUTER,
+    ZERO_PCB_1_3("Raspberry Pi Zero PCB V1.3",
+        SINGLE_BOARD_COMPUTER,
+        Generation.GENERATION_1,
         List.of("900093", "920093"),
         PiModel.ZERO,
         HeaderVersion.TYPE_3,
@@ -259,7 +301,9 @@ public enum BoardModel {
         Cpu.ARM1176JZF_S, 1,
         List.of(1000),
         List.of(512 * 1024)),
-    ZERO_W("Raspberry Pi Zero W", SINGLE_BOARD_COMPUTER,
+    ZERO_W("Raspberry Pi Zero W",
+        SINGLE_BOARD_COMPUTER,
+        Generation.GENERATION_1,
         List.of("9000c1"),
         PiModel.ZERO,
         HeaderVersion.TYPE_3,
@@ -268,7 +312,9 @@ public enum BoardModel {
         Cpu.ARM1176JZF_S, 1,
         List.of(1000),
         List.of(512 * 1024)),
-    ZERO_V2("Raspberry Pi Zero V2", SINGLE_BOARD_COMPUTER,
+    ZERO_V2("Raspberry Pi Zero V2",
+        SINGLE_BOARD_COMPUTER,
+        Generation.GENERATION_4,
         List.of("902120"),
         PiModel.ZERO,
         HeaderVersion.TYPE_3,
@@ -277,7 +323,9 @@ public enum BoardModel {
         Cpu.CORTEX_A53, 4,
         List.of(1000),
         List.of(512 * 1024)),
-    PICO("Raspberry Pi Pico", MICROCONTROLLER,
+    PICO("Raspberry Pi Pico",
+        MICROCONTROLLER,
+        Generation.UNKNOWN,
         new ArrayList<>(),
         PiModel.PICO,
         HeaderVersion.PICO,
@@ -286,7 +334,9 @@ public enum BoardModel {
         Cpu.CORTEX_MO_PLUS, 1,
         List.of(133),
         List.of(264 + 2048)),
-    PICO_W("Raspberry Pi Pico W", MICROCONTROLLER,
+    PICO_W("Raspberry Pi Pico W",
+        MICROCONTROLLER,
+        Generation.UNKNOWN,
         new ArrayList<>(),
         PiModel.PICO,
         HeaderVersion.PICO,
@@ -297,7 +347,9 @@ public enum BoardModel {
         List.of(264 + 2048),
         List.of("Same form factor as PICO but with Wi-Fi"),
         false),
-    PICO_2("Raspberry Pi Pico 2", MICROCONTROLLER,
+    PICO_2("Raspberry Pi Pico 2",
+        MICROCONTROLLER,
+        Generation.UNKNOWN,
         new ArrayList<>(),
         PiModel.PICO,
         HeaderVersion.PICO,
@@ -306,7 +358,9 @@ public enum BoardModel {
         Cpu.CORTEX_M33, 1,
         List.of(150),
         List.of(520 + 4096)),
-    PICO_2_W("Raspberry Pi Pico 2 W", MICROCONTROLLER,
+    PICO_2_W("Raspberry Pi Pico 2 W",
+        MICROCONTROLLER,
+        Generation.UNKNOWN,
         new ArrayList<>(),
         PiModel.PICO,
         HeaderVersion.PICO,
@@ -317,7 +371,9 @@ public enum BoardModel {
         List.of(520 + 4096)),
     // Generic model, this can be used to force the library
     // to load Raspberry Pi plugins on other board types
-    GENERIC("Generic board compatible with Raspberry Pi 4", SINGLE_BOARD_COMPUTER,
+    GENERIC("Generic board compatible with Raspberry Pi 4",
+        SINGLE_BOARD_COMPUTER,
+        Generation.UNKNOWN,
         new ArrayList<>(),
         PiModel.MODEL_B,
         HeaderVersion.TYPE_3,
@@ -326,7 +382,9 @@ public enum BoardModel {
         Cpu.UNKNOWN, 4,
         new ArrayList<>(),
         new ArrayList<>()),
-    GENERIC_RP1("Generic board compatible with Raspberry Pi 5", SINGLE_BOARD_COMPUTER,
+    GENERIC_RP1("Generic board compatible with Raspberry Pi 5",
+        SINGLE_BOARD_COMPUTER,
+        Generation.UNKNOWN,
         new ArrayList<>(),
         PiModel.MODEL_B,
         HeaderVersion.TYPE_3,
@@ -338,7 +396,9 @@ public enum BoardModel {
         new ArrayList<>(),
         true),
     // Unknown model
-    UNKNOWN("Unknown", BoardType.UNKNOWN,
+    UNKNOWN("Unknown",
+        BoardType.UNKNOWN,
+        Generation.UNKNOWN,
         new ArrayList<>(),
         PiModel.UNKNOWN,
         HeaderVersion.UNKNOWN,
@@ -352,6 +412,7 @@ public enum BoardModel {
 
     private final String label;
     private final BoardType boardType;
+    private final Generation generation;
     private final List<String> boardCodes;
     private final PiModel model;
     private final HeaderVersion headerVersion;
@@ -379,11 +440,11 @@ public enum BoardModel {
      * @param versionsProcessorSpeedInMhz list of processor speeds in MHz
      * @param versionsMemoryInKb          list of memory sizes in KB
      */
-    BoardModel(String label, BoardType boardType, List<String> boardCodes,
+    BoardModel(String label, BoardType boardType, Generation generation, List<String> boardCodes,
                PiModel model, HeaderVersion headerVersion, LocalDate releaseDate,
                Soc soc, Cpu cpu, Integer numberOfCpu,
                List<Integer> versionsProcessorSpeedInMhz, List<Integer> versionsMemoryInKb) {
-        this(label, boardType, boardCodes, model, headerVersion, releaseDate, soc, cpu, numberOfCpu,
+        this(label, boardType, generation, boardCodes, model, headerVersion, releaseDate, soc, cpu, numberOfCpu,
             versionsProcessorSpeedInMhz, versionsMemoryInKb, new ArrayList<>(), false);
     }
 
@@ -392,6 +453,7 @@ public enum BoardModel {
      *
      * @param label                       the descriptive name of the board
      * @param boardType                   the type of the board
+     * @param generation                  the generation of the board (e.g. 1, 2, 3, 4)
      * @param boardCodes                  a list of unique codes identifying this board
      * @param model                       the Pi model of the board
      * @param headerVersion               the header version
@@ -404,7 +466,7 @@ public enum BoardModel {
      * @param remarks                     any remarks or notes about the board
      * @param usesRP1                     board contains the RP1 chip to control GPIOs
      */
-    BoardModel(String label, BoardType boardType, List<String> boardCodes,
+    BoardModel(String label, BoardType boardType, Generation generation, List<String> boardCodes,
                PiModel model, HeaderVersion headerVersion, LocalDate releaseDate,
                Soc soc, Cpu cpu, Integer numberOfCpu,
                List<Integer> versionsProcessorSpeedInMhz, List<Integer> versionsMemoryInKb,
@@ -412,6 +474,7 @@ public enum BoardModel {
                Boolean usesRP1) {
         this.label = label;
         this.boardType = boardType;
+        this.generation = generation;
         this.boardCodes = boardCodes;
         this.model = model;
         this.headerVersion = headerVersion;
@@ -492,6 +555,13 @@ public enum BoardModel {
      */
     public BoardType getBoardType() {
         return boardType;
+    }
+
+    /**
+     * @return the generation
+     */
+    public Generation getGeneration() {
+        return generation;
     }
 
     /**
