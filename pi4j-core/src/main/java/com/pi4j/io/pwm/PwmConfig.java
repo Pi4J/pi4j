@@ -29,6 +29,7 @@ import com.pi4j.config.AddressConfig;
 import com.pi4j.io.gpio.GpioConfig;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * <p>PwmConfig interface.</p>
@@ -54,6 +55,10 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
     String INITIAL_VALUE_KEY = "initial";
 
     Integer busNumber();
+
+    default Integer getBusNumber() {
+        return this.busNumber();
+    }
 
     /**
      *  Get the configured duty-cycle value as a decimal value that represents
