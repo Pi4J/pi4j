@@ -35,6 +35,8 @@ import com.pi4j.io.binding.BindingManager;
 import com.pi4j.io.binding.DigitalBinding;
 import com.pi4j.io.gpio.GpioBase;
 
+import java.util.function.Consumer;
+
 /**
  * <p>Abstract DigitalBase class.</p>
  *
@@ -74,6 +76,12 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
         // create a binding manager for digital state change events
         bindings = new BindingManager(this, (BindingDelegate<DigitalBinding, DigitalStateChangeEvent>)
                 (binding, event) -> binding.process(event));
+    }
+
+    @Override
+    public DIGITAL_TYPE addListener(Consumer<Boolean> listener) {
+        addListener((DigitalStateChangeListener) event -> listener.accept(event.state().equals(true)));
+        return (DIGITAL_TYPE)this;
     }
 
     /** {@inheritDoc} */

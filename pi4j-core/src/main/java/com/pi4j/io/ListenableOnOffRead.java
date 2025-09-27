@@ -43,38 +43,7 @@ import java.util.function.Consumer;
  */
 public interface ListenableOnOffRead<T> extends OnOffRead<T> {
 
-    void addListener(Consumer<Boolean> listener);
-    void removeListener(Consumer<Boolean> listener);
-
-    static ListenableOnOffRead<DigitalInput> wrap(DigitalInput digitalInput) {
-        return new ListenableOnOffRead<>() {
-            Map<Consumer<Boolean>, DigitalStateChangeListener> listeners = new HashMap<>();
-            @Override
-            public void addListener(Consumer<Boolean> listener) {
-                DigitalStateChangeListener wrapper = new DigitalStateChangeListener() {
-                    @Override
-                    public void onDigitalStateChange(DigitalStateChangeEvent event) {
-                        listener.accept(event.state().equals(true));
-                    }
-                };
-                digitalInput.addListener(wrapper);
-                listeners.put(listener, wrapper);
-            }
-
-            @Override
-            public void removeListener(Consumer<Boolean> listener) {
-                DigitalStateChangeListener wrapper = listeners.remove(listener);
-                if (wrapper != null) {
-                    digitalInput.removeListener(wrapper);
-                }
-            }
-
-            @Override
-            public boolean isOn() {
-                return digitalInput.isOn();
-            }
-        };
-    }
+    T addListener(Consumer<Boolean> listener);
 
     /**
      * A simple implementation that will notify listeners for state-changing on()/off() (or setState()) calls.
@@ -95,21 +64,20 @@ public interface ListenableOnOffRead<T> extends OnOffRead<T> {
 
         @Override
         public T on() throws IOException {
-            if (!state) {
-                state = true;
-                for (Consumer<Boolean> listener: listeners) {
-                    listener.accept(true);
-                }
-            }
-            return (T) this;
+            return setState(true);
         }
 
         @Override
         public T off() throws IOException {
-            if (!state) {
-                state = false;
+            return setState(false);
+        }
+
+        @Override
+        public T setState(boolean newState) {
+            if (state != newState) {
+                state = newState;
                 for (Consumer<Boolean> listener: listeners) {
-                    listener.accept(false);
+                    listener.accept(newState);
                 }
             }
             return (T) this;
@@ -121,13 +89,9 @@ public interface ListenableOnOffRead<T> extends OnOffRead<T> {
         }
 
         @Override
-        public void addListener(Consumer<Boolean> listener) {
+        public T addListener(Consumer<Boolean> listener) {
             listeners.add(listener);
-        }
-
-        @Override
-        public void removeListener(Consumer<Boolean> listener) {
-            listeners.remove(listener);
+            return (T) this;
         }
     }
 }
