@@ -25,7 +25,7 @@ package com.pi4j.io.gpio.digital;
  * #L%
  */
 
-import com.pi4j.io.OnOffRead;
+import com.pi4j.io.ListenableOnOffRead;
 import com.pi4j.io.binding.Bindable;
 import com.pi4j.io.binding.DigitalBinding;
 import com.pi4j.io.gpio.Gpio;
@@ -43,7 +43,7 @@ public interface Digital<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE,
         CONFIG_TYPE extends DigitalConfig<CONFIG_TYPE>,
         PROVIDER_TYPE extends DigitalProvider>
         extends Gpio<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
-        OnOffRead<DIGITAL_TYPE>,
+        ListenableOnOffRead<DIGITAL_TYPE>,
         Bindable<DIGITAL_TYPE, DigitalBinding>
 {
 
@@ -61,6 +61,7 @@ public interface Digital<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE,
      * @return a DIGITAL_TYPE object.
      */
     DIGITAL_TYPE addListener(DigitalStateChangeListener... listener);
+
     /**
      * <p>removeListener.</p>
      *
