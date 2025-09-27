@@ -20,7 +20,7 @@ public class DigitalOutputFFMProviderImpl extends DigitalOutputProviderBase impl
 
     @Override
     public DigitalOutput create(DigitalOutputConfig config) {
-        var chipName = context.config().properties().get("gpio.chip.name");
+        var chipName = context.config().properties().getOrDefault("gpio.chip.name", "unknown");
         var digitalOutput = new DigitalOutputFFM(chipName, this, config);
         this.context.registry().add(digitalOutput);
         return digitalOutput;
