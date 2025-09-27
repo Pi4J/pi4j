@@ -40,7 +40,6 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
 
     @Override
     public DigitalOutput initialize(Context context) throws InitializeException {
-        super.initialize(context);
         try {
             if (!canAccessDevice()) {
                 var posix = Files.readAttributes(Path.of(deviceName), PosixFileAttributes.class);
@@ -71,7 +70,7 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
             logger.error("{}-{} - DigitalOutput Pin Initialization error: {}", deviceName, pin, e.getMessage());
             throw new InitializeException(e);
         }
-        return this;
+        return super.initialize(context);
     }
 
     @Override
