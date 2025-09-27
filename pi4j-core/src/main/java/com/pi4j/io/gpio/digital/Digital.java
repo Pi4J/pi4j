@@ -26,12 +26,9 @@ package com.pi4j.io.gpio.digital;
  */
 
 import com.pi4j.io.ListenableOnOffRead;
-import com.pi4j.io.OnOffRead;
 import com.pi4j.io.binding.Bindable;
 import com.pi4j.io.binding.DigitalBinding;
 import com.pi4j.io.gpio.Gpio;
-
-import java.util.function.Consumer;
 
 /**
  * <p>Digital interface.</p>
