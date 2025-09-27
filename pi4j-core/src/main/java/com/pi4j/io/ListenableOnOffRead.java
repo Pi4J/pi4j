@@ -40,7 +40,8 @@ import java.util.function.Consumer;
  */
 public interface ListenableOnOffRead<T> extends OnOffRead<T> {
 
-    T addListener(Consumer<Boolean> listener);
+    /** Adds a consumer as a listener to this object. */
+    T addConsumer(Consumer<Boolean> listener);
 
     /**
      * A simple implementation that will notify listeners for state-changing on()/off() (or setState()) calls.
@@ -86,7 +87,7 @@ public interface ListenableOnOffRead<T> extends OnOffRead<T> {
         }
 
         @Override
-        public T addListener(Consumer<Boolean> listener) {
+        public T addConsumer(Consumer<Boolean> listener) {
             listeners.add(listener);
             return (T) this;
         }
