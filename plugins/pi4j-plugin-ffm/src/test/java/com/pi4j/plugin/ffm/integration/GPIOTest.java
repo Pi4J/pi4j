@@ -4,6 +4,7 @@ import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
+import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.plugin.ffm.providers.gpio.DigitalInputFFMProviderImpl;
@@ -130,5 +131,16 @@ public class GPIOTest {
         assertEquals(DigitalState.HIGH, pin.state());
         pin.state(DigitalState.LOW);
         assertEquals(DigitalState.LOW, pin.state());
+    }
+
+    @Test
+    public void testOutputCustomConfig() {
+        var config = DigitalOutputConfigBuilder.newInstance(pi4j0)
+            .address(4)
+            .initial(DigitalState.HIGH)
+            .build();
+        var pin = pi4j0.digitalOutput().create(config);
+        assertEquals(DigitalState.HIGH, pin.config().initialState());
+        assertEquals(4, pin.address());
     }
 }
