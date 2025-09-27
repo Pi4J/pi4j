@@ -49,7 +49,7 @@ public interface ListenableOnOffRead<T> extends OnOffRead<T> {
     /**
      * A simple implementation that will notify listeners for state-changing on()/off() (or setState()) calls.
      */
-    class Impl implements ListenableOnOffRead<Impl>, OnOff<Impl> {
+    final class Impl implements ListenableOnOffRead<Impl>, OnOff<Impl> {
         private List<Consumer<Boolean>> listeners = new ArrayList<>();
         private boolean state;
 
