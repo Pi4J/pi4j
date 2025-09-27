@@ -29,7 +29,6 @@ import com.pi4j.config.AddressConfig;
 import com.pi4j.io.gpio.GpioConfig;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * <p>PwmConfig interface.</p>
