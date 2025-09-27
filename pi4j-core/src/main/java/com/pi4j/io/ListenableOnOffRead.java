@@ -40,7 +40,10 @@ import java.util.function.Consumer;
  */
 public interface ListenableOnOffRead<T> extends OnOffRead<T> {
 
-    /** Adds a consumer as a listener to this object. */
+    /**
+     * Adds a boolan consumer as a listener to this object. This method name was chosen to avoid any ambiguity with
+     * addListener in Digital.
+     */
     T addConsumer(Consumer<Boolean> listener);
 
     /**
