@@ -55,6 +55,10 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
 
     Integer busNumber();
 
+    default Integer getBusNumber() {
+        return this.busNumber();
+    }
+
     /**
      *  Get the configured duty-cycle value as a decimal value that represents
      *  the percentage of the ON vs OFF time of the PWM signal for each period.
