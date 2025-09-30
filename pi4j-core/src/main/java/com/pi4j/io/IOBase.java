@@ -43,7 +43,7 @@ import com.pi4j.provider.Provider;
  * @param <PROVIDER_TYPE>
  */
 public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, PROVIDER_TYPE extends Provider>
-        extends IdentityBase implements IO<IO_TYPE,CONFIG_TYPE, PROVIDER_TYPE> {
+        extends IdentityBase implements IO<IO_TYPE,CONFIG_TYPE, PROVIDER_TYPE>, Closeable {
 
     protected CONFIG_TYPE config;
     protected PROVIDER_TYPE provider;
@@ -82,6 +82,11 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
     public IO_TYPE description(String description){
         this.description = description;
         return (IO_TYPE)this;
+    }
+
+    @Override
+    public void close() {
+        context().shutdown(getId());
     }
 
     /** {@inheritDoc} */

@@ -52,7 +52,7 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
         PROVIDER_TYPE extends DigitalProvider>
         extends GpioBase<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>
         implements Digital<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
-        Bindable<DIGITAL_TYPE, DigitalBinding>, Closeable
+        Bindable<DIGITAL_TYPE, DigitalBinding>
 
 {
     // internal listeners collection
@@ -91,11 +91,6 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
     public DIGITAL_TYPE addListener(DigitalStateChangeListener... listener) {
         stateChangeEventManager.add(listener);
         return (DIGITAL_TYPE)this;
-    }
-
-    @Override
-    public void close() {
-        context().shutdown(getId());
     }
 
     /** {@inheritDoc} */
