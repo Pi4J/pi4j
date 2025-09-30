@@ -32,6 +32,7 @@ import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.provider.Provider;
 
+import java.io.Closeable;
 
 /**
  * <p>Abstract IOBase class.</p>

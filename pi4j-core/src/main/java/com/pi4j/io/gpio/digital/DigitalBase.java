@@ -35,7 +35,6 @@ import com.pi4j.io.binding.BindingManager;
 import com.pi4j.io.binding.DigitalBinding;
 import com.pi4j.io.gpio.GpioBase;
 
-import java.io.Closeable;
 import java.util.function.Consumer;
 
 /**
@@ -53,7 +52,6 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
         extends GpioBase<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>
         implements Digital<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
         Bindable<DIGITAL_TYPE, DigitalBinding>
-
 {
     // internal listeners collection
     protected final EventManager<DIGITAL_TYPE, DigitalStateChangeListener, DigitalStateChangeEvent> stateChangeEventManager;
