@@ -54,7 +54,7 @@ public class BaseChecker {
 
         if (!foundAny) {
             return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
-                "Configuration for " + interfaceName + " not found",
+                "Configuration check in /boot/config.txt and /boot/firmware/config.txt",
                 expectedOutput, result.toString());
         }
 
@@ -114,12 +114,12 @@ public class BaseChecker {
 
         if (foundDevices.isEmpty()) {
             return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
-                "No active " + interfaceType.toUpperCase() + " interfaces found",
+                "Search for " + interfaceType.toString() + " in /proc/device-tree",
                 expectedOutput, result.toString());
         }
 
         return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
-            "Found " + foundDevices.size() + " active " + interfaceType.toUpperCase() + " interface(s)",
+            "Search for " + interfaceType.toString() + " in /proc/device-tree",
             expectedOutput, result.toString());
     }
 

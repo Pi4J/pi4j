@@ -41,10 +41,12 @@ public class I2CChecker extends BaseChecker {
 
         if (devices.isEmpty()) {
             return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
-                "No I2C devices detected by i2cdetect", expectedOutput, "");
+                "i2cdetect -l",
+                expectedOutput, "");
         } else {
             return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
-                "Found " + devices.size() + " I2C device(s)", expectedOutput,
+                "i2cdetect -l",
+                expectedOutput,
                 devices.stream()
                     .map(I2CDevice::output)
                     .collect(Collectors.joining("\n")));
@@ -53,7 +55,7 @@ public class I2CChecker extends BaseChecker {
 
     private static CheckerResult.Check detectI2CUsedAddresses(I2CDevice device) {
         var result = new StringBuilder();
-        String expectedOutput = "I2C device addresses detected on bus " + device.getBusNumber();
+        String expectedOutput = "One or more I2C used addresses detected on bus " + device.getBusNumber();
         List<Byte> addresses = new ArrayList<>();
 
         try {
@@ -81,11 +83,11 @@ public class I2CChecker extends BaseChecker {
 
         if (addresses.isEmpty()) {
             return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
-                "No devices found on I2C bus " + device.getBusNumber(),
+                "i2cdetect -y " + device.getBusNumber(),
                 expectedOutput, result.toString());
         } else {
             return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
-                addresses.size() + " device(s) found on I2C bus " + device.getBusNumber(),
+                "i2cdetect -y " + device.getBusNumber(),
                 expectedOutput, result.toString());
         }
     }
