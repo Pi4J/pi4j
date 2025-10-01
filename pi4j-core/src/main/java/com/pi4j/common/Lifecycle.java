@@ -53,8 +53,8 @@ public interface Lifecycle<T> {
     /**
      * <p>shutdown.</p>
      *
-     * <p>This method is called by the registry when the registry shutting down. To shutdown an element, call
-     * {@link Context#shutdown(String)} passing the ID of the relevant element.</p>
+     * <p>This method is called by the registry when the registry shutting down. To shut down an IO instance, call
+     * io.close().</p>
      *
      * @param context a {@link com.pi4j.context.Context} object.
      *

@@ -80,13 +80,13 @@ public class RegistryTest {
         // create a new input, then shutdown
         var input = pi4j.create(inputConfig);
 
-        pi4j.shutdown(input.id());
+        input.close();
 
         // shouldn't fail when recreating
         input = pi4j.create(inputConfig);
 
         // or shutting down
-        pi4j.shutdown(input.id());
+        input.close();
     }
 
     @Test
@@ -116,9 +116,9 @@ public class RegistryTest {
         assertFalse(registry.exists(IOType.ANALOG_OUTPUT, output.address()));
 
         // now shutdown all I/O instances
-        pi4j.shutdown(input);
-        pi4j.shutdown(output);
-        pi4j.shutdown(pwm);
+        input.close();
+        output.close();
+        pwm.close();
 
         // and now we shouldn't find them by address or ID
         assertFalse(registry.exists(IOType.PWM, 3));
