@@ -19,7 +19,6 @@ public class PWMChecker extends BaseChecker {
     public static CheckerResult detect() {
         return new CheckerResult("PWM Detection", List.of(
             detectConfigSetting("dtoverlay=pwm", "PWM", "dtoverlay=pwm (or dtoverlay=pwm-2chan for 2-channel PWM)"),
-            detectInterfaceFromDeviceTree("pwm", "PWM controller"),
             detectPwmChips(),
             detectPwmFromPinctrl()
         ));
@@ -69,25 +68,12 @@ public class PWMChecker extends BaseChecker {
                 try (var stream = Files.walk(pwmPath, 2)) {
                     var pwmChips = stream
                         .filter(sub -> sub.getFileName().toString().startsWith("pwmchip"))
-                        .sorted((a, b) -> {
-                            String nameA = a.getFileName().toString().substring(7); // Remove "pwmchip"
-                            String nameB = b.getFileName().toString().substring(7);
-                            try {
-                                int chipA = Integer.parseInt(nameA);
-                                int chipB = Integer.parseInt(nameB);
-                                return Integer.compare(chipA, chipB);
-                            } catch (NumberFormatException e) {
-                                return nameA.compareTo(nameB);
-                            }
-                        }).toList();
+                        .toList();
 
-                    for (Path chip : pwmChips) {
-                        String pwmChip = chip.getFileName().toString().substring(7);
-                        result.append(pwmChip);
-                    }
-                    if (!pwmChips.isEmpty()) {
-                        result.append("\n");
-                    }
+                    pwmChips.stream()
+                        .map(Path::getFileName)
+                        .sorted()
+                        .forEach(result::append);
                 }
             }
         } catch (Exception e) {
