@@ -12,9 +12,9 @@ public class AllCheckers {
         return List.of(
             //GPIOChecker.detect()
             //I2CChecker.detect()
-            PWMChecker.detect(),
-            SPIChecker.detect()
-            //SerialChecker.detect()
+            //PWMChecker.detect(),
+            //SPIChecker.detect()
+            SerialChecker.detect()
         );
     }
 
