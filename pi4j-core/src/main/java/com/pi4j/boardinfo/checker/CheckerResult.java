@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record CheckerResult(String title, List<Check> results) {
+    public void addResult(Check result) {
+        results.add(result);
+    }
+
     record Check(ResultStatus resultStatus, String command, String expected, String result) {
     }
 

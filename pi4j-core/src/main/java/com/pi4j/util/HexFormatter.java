@@ -1,4 +1,4 @@
-package com.pi4j.plugin.ffm.common;
+package com.pi4j.util;
 
 import java.util.HexFormat;
 

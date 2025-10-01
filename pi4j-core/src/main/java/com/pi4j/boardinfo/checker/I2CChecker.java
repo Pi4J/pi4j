@@ -1,12 +1,15 @@
 package com.pi4j.boardinfo.checker;
 
+import com.pi4j.util.HexFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.pi4j.boardinfo.util.command.CommandExecutor.execute;
 
 public class I2CChecker extends BaseChecker {
 
@@ -18,92 +21,152 @@ public class I2CChecker extends BaseChecker {
     }
 
     public static CheckerResult detect() {
-        return new CheckerResult("I2C Detection", List.of(
+        var devices = detectI2CDevices();
+
+        var result = new CheckerResult("I2C Detection", new ArrayList<>(List.of(
             detectConfigSetting("dtparam=i2c", "I2C", "dtparam=i2c_arm=on"),
             detectInterfaceFromDeviceTree("i2c", "I2C bus controller"),
+            detectI2CDevicesWithCommand(devices)
+        )));
 
-            // Check for I2C device files in specific locations
-            detectFilesInDirectory(Paths.get("/dev"), "i2c-1 (and possibly i2c-0 if camera/display interface enabled)"),
-            detectFilesInDirectory(Paths.get("/sys/class/i2c-adapter"), "i2c-1 (and possibly i2c-0)"),
-            detectFilesInDirectory(Paths.get("/sys/bus/i2c/devices"), "1-0048 1-0049 (or similar I2C device addresses if devices connected)"),
+        if (!devices.isEmpty()) {
+            devices.forEach(d -> result.addResult(detectI2CUsedAddresses(d)));
+        }
 
-            // "lsmod | grep i2c"
-            detectLoadedI2cModules(),
-
-            // Executed commands which could return related info
-            detectWithCommand("which i2cdetect", "/usr/bin/i2cdetect or /usr/sbin/i2cdetect (path to i2c-tools utility)")
-        ));
+        return result;
     }
 
-    private static CheckerResult.Check detectFilesInDirectory(Path path, String expectedOutput) {
+    private static CheckerResult.Check detectI2CDevicesWithCommand(List<I2CDevice> devices) {
+        String expectedOutput = "One or more devices like i2c-1 (I2C bus adapters detected by 'i2cdetect -l')";
+
+        if (devices.isEmpty()) {
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No I2C devices detected by i2cdetect", expectedOutput, "");
+        } else {
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                devices.size() + " I2C device(s) detected", expectedOutput,
+                devices.stream().map(I2CDevice::output).collect(Collectors.joining("/n")));
+        }
+    }
+
+    private static CheckerResult.Check detectI2CUsedAddresses(I2CDevice device) {
         var result = new StringBuilder();
+        String expectedOutput = "I2C device addresses detected on bus " + device.getBusNumber();
+        List<Byte> addresses = new ArrayList<>();
 
         try {
-            if (Files.exists(path)) {
-                try (var stream = Files.walk(path, 1)) {
-                    var i2cDevices = stream
-                        .filter(sub -> !path.equals(sub)) // exclude the root directory
-                        .filter(sub -> sub.getFileName().toString().startsWith("i2c-"))
-                        .sorted((a, b) -> {
-                            // Sort by bus number
-                            String nameA = a.getFileName().toString().substring(4);
-                            String nameB = b.getFileName().toString().substring(4);
-                            try {
-                                int busA = Integer.parseInt(nameA);
-                                int busB = Integer.parseInt(nameB);
-                                return Integer.compare(busA, busB);
-                            } catch (NumberFormatException e) {
-                                return nameA.compareTo(nameB);
-                            }
-                        }).toList();
-                    if (!i2cDevices.isEmpty()) {
-                        for (Path device : i2cDevices) {
-                            String busNumber = device.getFileName().toString().substring(4);
-                            result.append(busNumber).append(" ");
+            var output = execute("i2cdetect -y " + device.getBusNumber());
+            if (output.isSuccess() && !output.getOutputMessage().trim().isEmpty()) {
+                addresses = parseI2CDeviceAddresses(output.getOutputMessage());
+
+                if (!addresses.isEmpty()) {
+                    result.append("Found ").append(addresses.size())
+                        .append(" device(s) on bus ").append(device.getBusNumber())
+                        .append(": ");
+                    result.append(addresses.stream().map(HexFormatter::format).sorted().collect(Collectors.joining(","))).append("\n");
+                } else {
+                    result.append("No devices found on bus ").append(device.getBusNumber()).append("\n");
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error detecting I2C addresses on bus {}: {}", device.getBusNumber(), e.getMessage());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "Error scanning I2C bus " + device.getBusNumber(),
+                expectedOutput, e.getMessage());
+        }
+
+        if (addresses.isEmpty()) {
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No devices found on I2C bus " + device.getBusNumber(),
+                expectedOutput, result.toString());
+        } else {
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                addresses.size() + " device(s) found on I2C bus " + device.getBusNumber(),
+                expectedOutput, result.toString());
+        }
+    }
+
+    static List<Byte> parseI2CDeviceAddresses(String output) {
+        List<Byte> addresses = new ArrayList<>();
+
+        try {
+            for (String line : output.split("\n")) {
+                line = line.trim();
+                if (line.startsWith("00: ") || line.startsWith("10: ") ||
+                    line.startsWith("20: ") || line.startsWith("30: ") || line.startsWith("40: ") ||
+                    line.startsWith("50: ") || line.startsWith("60: ") || line.startsWith("70: ")) {
+
+                    // Skip the row number at the beginning
+                    String[] parts = line.substring(3).split("\\s+");
+
+                    // Start from index 1 to skip the row number (00:, 10:, etc.)
+                    for (int i = 0; i < parts.length; i++) {
+                        String part = parts[i].trim();
+                        // Valid addresses are two hex digits (not -- or UU)
+                        if (part.matches("[0-9a-fA-F]{2}")) {
+                            addresses.add((byte) Integer.parseInt(part.toLowerCase(), 16));
                         }
-                        result.append("\n");
                     }
                 }
             }
         } catch (Exception e) {
-            logger.error("Error detecting I2C devices in path '{}': {}", path, e.getMessage());
+            logger.error("Error parsing I2C addresses: {}", e.getMessage());
         }
 
-        if (result.isEmpty()) {
-            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
-                "No info found in '" + path + "'", expectedOutput, "");
-        } else {
-            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
-                "Hardware detected in " + path, expectedOutput, result.toString());
-        }
+        return addresses;
     }
 
-    private static CheckerResult.Check detectLoadedI2cModules() {
-        var result = new StringBuilder();
-        String expectedOutput = "i2c_bcm2835 or i2c_bcm2708 (I2C kernel driver module)";
-
+    private static List<I2CDevice> detectI2CDevices() {
         try {
-            Path modulesPath = Paths.get("/proc/modules");
-            if (Files.exists(modulesPath)) {
-                List<String> lines = Files.readAllLines(modulesPath);
-                for (String line : lines) {
-                    String moduleName = line.split("\\s+")[0]; // First column is module name
-                    if (moduleName.toLowerCase().contains("i2c")) {
-                        result.append(line).append("\n");
-                    }
-                }
+            var output = execute("i2cdetect -l");
+            if (output.isSuccess() && !output.getOutputMessage().trim().isEmpty()) {
+                return parseI2CDetectOutput(output.getOutputMessage());
             }
         } catch (Exception e) {
-            logger.debug("Error reading loaded modules for I2C detection: {}", e.getMessage());
+            logger.error("Error detecting I2C devices with i2cdetect command: {}", e.getMessage());
         }
 
-        if (result.isEmpty()) {
-            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
-                "No I2C modules loaded", expectedOutput, "");
-        } else {
-            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
-                "I2C modules loaded", expectedOutput, result.toString());
-        }
+        return new ArrayList<>();
     }
 
+    private static List<I2CDevice> parseI2CDetectOutput(String output) {
+        List<I2CDevice> devices = new ArrayList<>();
+
+        for (String line : output.split("\n")) {
+            line = line.trim();
+            if (line.isEmpty()) {
+                continue;
+            }
+
+            // Split by whitespace (multiple spaces/tabs)
+            String[] parts = line.split("\\s+");
+
+            if (parts.length >= 4) {
+                String bus = parts[0];          // e.g., "i2c-1"
+                String type = parts[1];         // e.g., "i2c"
+                String name = parts[2];         // e.g., "Synopsys" or "107d508200.i2c"
+
+                // Join remaining parts as description
+                String description = String.join(" ", Arrays.copyOfRange(parts, 3, parts.length));
+
+                devices.add(new I2CDevice(bus, type, name, description));
+            }
+        }
+
+        return devices;
+    }
+
+    private record I2CDevice(String bus, String type, String name, String description) {
+        public int getBusNumber() {
+            try {
+                return Integer.parseInt(bus.replace("i2c-", ""));
+            } catch (NumberFormatException e) {
+                return -1; // or throw exception
+            }
+        }
+
+        public String output() {
+            return getBusNumber() + ": " + name + ", " + description;
+        }
+    }
 }

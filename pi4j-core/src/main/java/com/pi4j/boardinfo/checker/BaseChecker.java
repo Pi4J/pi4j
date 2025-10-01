@@ -65,7 +65,7 @@ public class BaseChecker {
 
     static CheckerResult.Check detectInterfaceFromDeviceTree(String interfaceType, String description) {
         var result = new StringBuilder();
-        String expectedOutput = "Found " + interfaceType + " device-tree entries with status=okay";
+        String expectedOutput = interfaceType + " device-tree entries with status=okay";
         List<String> foundDevices = new ArrayList<>();
 
         try {

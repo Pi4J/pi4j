@@ -8,13 +8,13 @@ import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBase;
 import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.io.spi.SpiProvider;
-import com.pi4j.plugin.ffm.common.HexFormatter;
 import com.pi4j.plugin.ffm.common.PermissionHelper;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
 import com.pi4j.plugin.ffm.common.spi.SpiTransferBuffer;
+import com.pi4j.util.HexFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
