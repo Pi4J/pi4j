@@ -114,12 +114,12 @@ public class BaseChecker {
 
         if (foundDevices.isEmpty()) {
             return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
-                "No active " + interfaceType.toUpperCase() + " devices found",
+                "No active " + interfaceType.toUpperCase() + " interfaces found",
                 expectedOutput, result.toString());
         }
 
         return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
-            foundDevices.size() + " active " + interfaceType.toUpperCase() + " device(s) found",
+            "Found " + foundDevices.size() + " active " + interfaceType.toUpperCase() + " interface(s)",
             expectedOutput, result.toString());
     }
 

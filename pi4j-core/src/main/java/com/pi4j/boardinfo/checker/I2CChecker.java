@@ -44,8 +44,10 @@ public class I2CChecker extends BaseChecker {
                 "No I2C devices detected by i2cdetect", expectedOutput, "");
         } else {
             return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
-                devices.size() + " I2C device(s) detected", expectedOutput,
-                devices.stream().map(I2CDevice::output).collect(Collectors.joining("/n")));
+                "Found " + devices.size() + " I2C device(s)", expectedOutput,
+                devices.stream()
+                    .map(d -> "\n\t\t\t" + d.output())
+                    .collect(Collectors.joining("n")));
         }
     }
 
@@ -61,11 +63,13 @@ public class I2CChecker extends BaseChecker {
 
                 if (!addresses.isEmpty()) {
                     result.append("Found ").append(addresses.size())
-                        .append(" device(s) on bus ").append(device.getBusNumber())
+                        .append(" used addres(ses) on bus ").append(device.getBusNumber())
                         .append(": ");
-                    result.append(addresses.stream().map(HexFormatter::format).sorted().collect(Collectors.joining(","))).append("\n");
+                    result.append(addresses.stream()
+                        .map(HexFormatter::format).sorted()
+                        .collect(Collectors.joining(", ")));
                 } else {
-                    result.append("No devices found on bus ").append(device.getBusNumber()).append("\n");
+                    result.append("No used addresses found on bus ").append(device.getBusNumber()).append("\n");
                 }
             }
         } catch (Exception e) {
