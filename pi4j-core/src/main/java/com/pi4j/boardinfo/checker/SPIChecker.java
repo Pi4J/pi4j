@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SPIChecker extends BaseChecker {
@@ -21,31 +20,30 @@ public class SPIChecker extends BaseChecker {
         return new CheckerResult("SPI Detection", List.of(
             detectConfigSetting("dtparam=spi", "SPI", "dtparam=spi=on"),
             detectInterfaceFromDeviceTree("spi", "SPI bus controller"),
-            detectFilesInDirectory(Paths.get("/sys/bus/spi/devices"), "spi0.0 spi0.1 (SPI device entries)")
+            detectSpi()
         ));
     }
 
-    private static CheckerResult.Check detectFilesInDirectory(Path path, String expectedOutput) {
-        var result = new ArrayList<String>();
+    private static CheckerResult.Check detectSpi() {
+        var result = new StringBuilder();
 
         try {
-            if (Files.exists(path)) {
-                try (var stream = Files.walk(path, 1)) {
+            Path pwmPath = Paths.get("/sys/bus/spi/devices");
+            if (Files.exists(pwmPath)) {
+                try (var stream = Files.walk(pwmPath, 2)) {
                     stream
-                        .filter(sub -> !path.equals(sub)) // exclude the root directory
-                        .filter(sub -> {
-                            String name = sub.getFileName().toString();
-                            return name.startsWith("spidev") || name.startsWith("spi-");
-                        })
+                        .map(Path::getFileName)
+                        .filter(fileName -> fileName.toString().startsWith("spi"))
                         .sorted()
-                        .forEach(sub -> result.add(sub.getFileName().toString()));
+                        .forEach(result::append);
                 }
             }
         } catch (Exception e) {
-            logger.error("Error detecting SPI devices in path '{}': {}", path, e.getMessage());
+            logger.error("Error detecting SPI: {}", e.getMessage());
         }
 
-        var command = path.toString();
+        var command = "ls -l /sys/bus/spi/devices";
+        var expectedOutput = "spiX.Y (X and Y = numbers, when dtparam=spi=on is properly configured)";
 
         if (result.isEmpty()) {
             return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
