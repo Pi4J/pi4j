@@ -49,6 +49,8 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
     protected CONFIG_TYPE config;
     protected PROVIDER_TYPE provider;
     private Context context;
+    // close() requires idempotency.
+    private boolean closed = false;
 
     /** {@inheritDoc} */
     @Override
@@ -88,7 +90,8 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
     @Override
     public void close() {
         // Account for contextless tests or somehow just closing without initializing
-        if (this.context != null) {
+        if (this.context != null && !closed) {
+            this.closed = true;
             this.context.shutdown(getId());
         }
     }
@@ -113,6 +116,8 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
     /** {@inheritDoc} */
     @Override
     public IO_TYPE shutdown(Context context) throws ShutdownException {
+        // Avoid close calling shutdown after shutdown was called by other means
+        this.closed = true;
         return (IO_TYPE) this;
     }
 
