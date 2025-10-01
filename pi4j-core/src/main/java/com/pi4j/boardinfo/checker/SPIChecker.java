@@ -32,8 +32,8 @@ public class SPIChecker extends BaseChecker {
             if (Files.exists(pwmPath)) {
                 try (var stream = Files.walk(pwmPath, 2)) {
                     stream
-                        .map(Path::getFileName)
-                        .filter(fileName -> fileName.toString().startsWith("spi"))
+                        .map(f -> f.getFileName() + " ")
+                        .filter(f -> f.startsWith("spi"))
                         .sorted()
                         .forEach(result::append);
                 }
@@ -43,7 +43,7 @@ public class SPIChecker extends BaseChecker {
         }
 
         var command = "ls -l /sys/bus/spi/devices";
-        var expectedOutput = "spiX.Y (X and Y = numbers, when dtparam=spi=on is properly configured)";
+        var expectedOutput = "One or more spiX.Y (X and Y = numbers)";
 
         if (result.isEmpty()) {
             return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,

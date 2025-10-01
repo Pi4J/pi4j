@@ -67,8 +67,8 @@ public class PWMChecker extends BaseChecker {
             if (Files.exists(pwmPath)) {
                 try (var stream = Files.walk(pwmPath, 2)) {
                     stream
-                        .map(Path::getFileName)
-                        .filter(fileName -> fileName.toString().startsWith("pwmchip"))
+                        .map(f -> f.getFileName() + " ")
+                        .filter(f -> f.startsWith("pwmchip"))
                         .sorted()
                         .forEach(result::append);
                 }
@@ -78,7 +78,7 @@ public class PWMChecker extends BaseChecker {
         }
 
         var command = "ls -l /sys/class/pwm/";
-        var expectedOutput = "pwmchipX (X = number, when dtoverlay=pwm is properly configured)";
+        var expectedOutput = "One or more pwmchipX (X = number)";
 
         if (result.isEmpty()) {
             return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
