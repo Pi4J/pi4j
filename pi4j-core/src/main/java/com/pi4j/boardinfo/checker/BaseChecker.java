@@ -52,20 +52,18 @@ public class BaseChecker {
             }
         }
 
+        var command = "Configuration check for " + interfaceName.toUpperCase() + " in /boot/config.txt and /boot/firmware/config.txt";
         if (!foundAny) {
             return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
-                "Configuration check in /boot/config.txt and /boot/firmware/config.txt",
-                expectedOutput, result.toString());
+                command, expectedOutput, result.toString());
         }
 
         return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
-            "Configuration for " + interfaceName + " found",
-            expectedOutput, result.toString());
+            command, expectedOutput, result.toString());
     }
 
     static CheckerResult.Check detectInterfaceFromDeviceTree(String interfaceType, String description) {
         var result = new StringBuilder();
-        String expectedOutput = interfaceType + " device-tree entries with status=okay";
         List<String> foundDevices = new ArrayList<>();
 
         try {
@@ -112,15 +110,16 @@ public class BaseChecker {
             result.append("Error reading device-tree info: ").append(e.getMessage()).append("\n");
         }
 
+        var command = "Search for " + interfaceType.toUpperCase() + " in /proc/device-tree";
+        var expectedOutput = interfaceType + " device-tree entries with status=okay";
+
         if (foundDevices.isEmpty()) {
             return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
-                "Search for " + interfaceType.toString() + " in /proc/device-tree",
-                expectedOutput, result.toString());
+                command, expectedOutput, result.toString());
         }
 
         return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
-            "Search for " + interfaceType.toString() + " in /proc/device-tree",
-            expectedOutput, result.toString());
+            command, expectedOutput, result.toString());
     }
 
     static Optional<Path> findSocPath() {

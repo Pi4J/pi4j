@@ -18,7 +18,7 @@ public record CheckerResult(String title, List<Check> results) {
 
     public String logOutput() {
         var log = new StringBuilder();
-        log.append("Result from ").append(title);
+        log.append("Result from ").append(title).append("\n");
         results.forEach(r -> {
             if (!r.command.isEmpty()) {
                 log.append("\n\t")
@@ -31,6 +31,7 @@ public record CheckerResult(String title, List<Check> results) {
                 .append(r.result.isEmpty() ? "\n\t\t\t-" : Arrays.stream(r.result.trim().split("\n"))
                     .map(l -> "\n\t\t\t" + l)
                     .collect(Collectors.joining()));
+            log.append("\n");
         });
         return log.toString();
     }

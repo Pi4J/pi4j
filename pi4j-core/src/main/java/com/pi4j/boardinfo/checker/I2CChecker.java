@@ -37,7 +37,7 @@ public class I2CChecker extends BaseChecker {
     }
 
     private static CheckerResult.Check detectI2CDevicesWithCommand(List<I2CDevice> devices) {
-        String expectedOutput = "One or more devices like i2c-1 (I2C bus adapters detected by 'i2cdetect -l')";
+        String expectedOutput = "One or more devices, e.g. 'i2c-1' (I2C bus adapters detected by 'i2cdetect -l')";
 
         if (devices.isEmpty()) {
             return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,

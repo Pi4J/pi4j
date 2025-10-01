@@ -20,7 +20,8 @@ public class AllCheckers {
 
     public static void main(String[] args) {
         AllCheckers.detect()
-            .forEach(c -> System.out.println(c.logOutput()
+            .forEach(c -> System.out.println("\n"
+                + c.logOutput()
                 + "\n\n-------------------------------------------------------------------\n"));
     }
 }
