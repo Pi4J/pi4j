@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.pi4j.boardinfo.util.command.CommandExecutor.execute;
 
@@ -54,7 +55,7 @@ public class GPIOChecker extends BaseChecker {
                 command, expectedOutput, "");
         } else {
             return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
-                command, expectedOutput, String.join("\n", found));
+                command, expectedOutput, found.stream().distinct().sorted().collect(Collectors.joining("\n")));
         }
     }
 }
