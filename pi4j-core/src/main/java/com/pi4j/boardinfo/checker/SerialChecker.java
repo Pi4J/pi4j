@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SerialChecker {
+public class SerialChecker extends BaseChecker {
 
     private static final Logger logger = LoggerFactory.getLogger(SerialChecker.class);
 
@@ -19,6 +19,9 @@ public class SerialChecker {
 
     public static CheckerResult detect() {
         return new CheckerResult("Serial Detection", List.of(
+            detectConfigSetting("enable_uart", "UART", "enable_uart=1"),
+            detectInterfaceFromDeviceTree("uart", "UART serial controller"),
+
             // Check for serial device files in specific locations
             detectFilesInDirectory(Paths.get("/dev"), "ttyS0 serial0 (and possibly ttyAMA0 when UART is enabled)"),
             detectFilesInDirectory(Paths.get("/sys/class/tty"), "ttyS0 ttyAMA0 console (various TTY devices including serial)"),
@@ -96,9 +99,11 @@ public class SerialChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No info found in '" + path + "'", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No info found in '" + path + "'", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("Hardware detected in " + path, expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "Hardware detected in " + path, expectedOutput, result.toString());
         }
     }
 
@@ -157,9 +162,11 @@ public class SerialChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No serial by-id/by-path devices found", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No serial by-id/by-path devices found", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("Serial devices by-id/by-path", expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "Serial devices by-id/by-path", expectedOutput, result.toString());
         }
     }
 
@@ -191,9 +198,11 @@ public class SerialChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No UART hardware paths found", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No UART hardware paths found", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("UART hardware detected", expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "UART hardware detected", expectedOutput, result.toString());
         }
     }
 
@@ -226,9 +235,11 @@ public class SerialChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No serial/UART modules loaded", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No serial/UART modules loaded", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("Serial/UART modules loaded", expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "Serial/UART modules loaded", expectedOutput, result.toString());
         }
     }
 
@@ -269,9 +280,11 @@ public class SerialChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No UART info in dmesg", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No UART info in dmesg", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("Recent UART messages from dmesg", expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "Recent UART messages from dmesg", expectedOutput, result.toString());
         }
     }
 
@@ -305,9 +318,11 @@ public class SerialChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No UART config files accessible", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No UART config files accessible", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("UART configuration settings", expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "UART configuration settings", expectedOutput, result.toString());
         }
     }
 
@@ -344,6 +359,6 @@ public class SerialChecker {
             }
         }
 
-        return new CheckerResult.Check("Serial port availability", expectedOutput, result.toString());
+        return new CheckerResult.Check(CheckerResult.ResultStatus.TO_EVALUATE, "Serial port availability", expectedOutput, result.toString());
     }
 }

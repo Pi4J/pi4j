@@ -10,8 +10,6 @@ public class AllCheckers {
 
     public static List<CheckerResult> detect() {
         return List.of(
-            DeviceTreeChecker.detect(),
-            ConfigurationChecker.detect(),
             GPIOChecker.detect(),
             I2CChecker.detect(),
             PWMChecker.detect(),

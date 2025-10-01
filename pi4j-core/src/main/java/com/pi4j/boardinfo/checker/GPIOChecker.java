@@ -10,7 +10,7 @@ import java.util.List;
 
 import static com.pi4j.boardinfo.util.command.CommandExecutor.execute;
 
-public class GPIOChecker {
+public class GPIOChecker extends BaseChecker {
 
     private static final Logger logger = LoggerFactory.getLogger(GPIOChecker.class);
 
@@ -20,6 +20,8 @@ public class GPIOChecker {
 
     public static CheckerResult detect() {
         return new CheckerResult("GPIO Detection", List.of(
+            detectInterfaceFromDeviceTree("gpio", "GPIO controller with pinctrl functionality"),
+
             // Check for GPIO device files and sysfs entries
             detectFilesInDirectory(Paths.get("/dev")),
             detectFilesInDirectory(Paths.get("/sys/class/gpio")),
@@ -104,9 +106,11 @@ public class GPIOChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No info found in '" + path + "'", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No info found in '" + path + "'", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("Hardware detected in " + path, expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "Hardware detected in " + path, expectedOutput, result.toString());
         }
     }
 
@@ -132,9 +136,11 @@ public class GPIOChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No GPIO modules loaded", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No GPIO modules loaded", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("GPIO modules loaded", expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "GPIO modules loaded", expectedOutput, result.toString());
         }
     }
 
@@ -162,9 +168,11 @@ public class GPIOChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No GPIO tool availability info", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No GPIO tool availability info", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("GPIO tool availability", expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "GPIO tool availability", expectedOutput, result.toString());
         }
     }
 
@@ -200,7 +208,8 @@ public class GPIOChecker {
             result.append("Error running gpiodetect: ").append(e.getMessage()).append("\n");
         }
 
-        return new CheckerResult.Check("GPIO device detection with tools", expectedOutput, result.toString());
+        return new CheckerResult.Check(CheckerResult.ResultStatus.TO_EVALUATE,
+            "GPIO device detection with tools", expectedOutput, result.toString());
     }
 
     private static CheckerResult.Check detectDeviceTreeGpioInfo() {
@@ -254,7 +263,8 @@ public class GPIOChecker {
             result.append("Error reading device-tree info: ").append(e.getMessage()).append("\n");
         }
 
-        return new CheckerResult.Check("Device-tree GPIO information", expectedOutput, result.toString());
+        return new CheckerResult.Check(CheckerResult.ResultStatus.TO_EVALUATE,
+            "Device-tree GPIO information", expectedOutput, result.toString());
     }
 
     private static CheckerResult.Check detectGpioChips() {
@@ -312,9 +322,11 @@ public class GPIOChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No GPIO chips found", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No GPIO chips found", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("GPIO chips detected", expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "GPIO chips detected", expectedOutput, result.toString());
         }
     }
 
@@ -372,9 +384,11 @@ public class GPIOChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No exported pin info available", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No exported pin info available", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("GPIO pin export status", expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "GPIO pin export status", expectedOutput, result.toString());
         }
     }
 
@@ -406,9 +420,11 @@ public class GPIOChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No GPIO driver paths found", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No GPIO driver paths found", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("GPIO drivers detected", expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "GPIO drivers detected", expectedOutput, result.toString());
         }
     }
 

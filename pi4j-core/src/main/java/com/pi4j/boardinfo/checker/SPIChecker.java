@@ -21,6 +21,9 @@ public class SPIChecker extends BaseChecker {
 
     public static CheckerResult detect() {
         var checks = new ArrayList<CheckerResult.Check>();
+        checks.add(detectConfigSetting("dtparam=spi", "SPI", "dtparam=spi=on"));
+        checks.add(detectInterfaceFromDeviceTree("spi", "SPI bus controller"));
+
         // Check for SPI device files in specific locations
         checks.add(detectFilesInDirectory(Paths.get("/dev"), "spidev0.0 spidev0.1 (main SPI bus devices when dtparam=spi=on)"));
         checks.add(detectFilesInDirectory(Paths.get("/sys/class/spidev"), "spidev0.0 spidev0.1"));
@@ -42,7 +45,7 @@ public class SPIChecker extends BaseChecker {
             checks.add(detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/fe204000.spi"), "SPI hardware platform device directory for RPi 4 main SPI"));
             checks.add(detectFilesInDirectory(Paths.get("/sys/devices/platform/soc/fe215080.spi"), "SPI hardware platform device directory for RPi 4 aux SPI"));
         }
-        
+
         return new CheckerResult("SPI Detection", checks);
     }
 
@@ -104,9 +107,11 @@ public class SPIChecker extends BaseChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No info found in '" + path + "'", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No info found in '" + path + "'", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("Hardware detected in " + path, expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "Hardware detected in " + path, expectedOutput, result.toString());
         }
     }
 
@@ -133,9 +138,11 @@ public class SPIChecker extends BaseChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No SPI pin info available", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No SPI pin info available", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("SPI pin status", expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "SPI pin status", expectedOutput, result.toString());
         }
     }
 
@@ -174,9 +181,11 @@ public class SPIChecker extends BaseChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No SPI modules loaded", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No SPI modules loaded", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("SPI modules loaded", expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "SPI modules loaded", expectedOutput, result.toString());
         }
     }
 
@@ -210,9 +219,11 @@ public class SPIChecker extends BaseChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No SPI config files accessible", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No SPI config files accessible", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("SPI configuration settings", expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "SPI configuration settings", expectedOutput, result.toString());
         }
     }
 }

@@ -19,6 +19,9 @@ public class I2CChecker extends BaseChecker {
 
     public static CheckerResult detect() {
         return new CheckerResult("I2C Detection", List.of(
+            detectConfigSetting("dtparam=i2c", "I2C", "dtparam=i2c_arm=on"),
+            detectInterfaceFromDeviceTree("i2c", "I2C bus controller"),
+
             // Check for I2C device files in specific locations
             detectFilesInDirectory(Paths.get("/dev"), "i2c-1 (and possibly i2c-0 if camera/display interface enabled)"),
             detectFilesInDirectory(Paths.get("/sys/class/i2c-adapter"), "i2c-1 (and possibly i2c-0)"),
@@ -67,9 +70,11 @@ public class I2CChecker extends BaseChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No info found in '" + path + "'", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No info found in '" + path + "'", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("Hardware detected in " + path, expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "Hardware detected in " + path, expectedOutput, result.toString());
         }
     }
 
@@ -93,9 +98,11 @@ public class I2CChecker extends BaseChecker {
         }
 
         if (result.isEmpty()) {
-            return new CheckerResult.Check("No I2C modules loaded", expectedOutput, "");
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                "No I2C modules loaded", expectedOutput, "");
         } else {
-            return new CheckerResult.Check("I2C modules loaded", expectedOutput, result.toString());
+            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+                "I2C modules loaded", expectedOutput, result.toString());
         }
     }
 
