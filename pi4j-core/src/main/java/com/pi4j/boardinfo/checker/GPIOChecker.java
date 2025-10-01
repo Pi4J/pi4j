@@ -55,7 +55,13 @@ public class GPIOChecker extends BaseChecker {
                 command, expectedOutput, "");
         } else {
             return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
-                command, expectedOutput, found.stream().distinct().sorted().collect(Collectors.joining("\n")));
+                command, expectedOutput,
+                found.stream()
+                    .map(String::trim)
+                    .distinct()
+                    .sorted()
+                    .collect(Collectors.joining("\n"))
+            );
         }
     }
 }
