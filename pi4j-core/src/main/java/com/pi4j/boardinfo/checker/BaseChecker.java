@@ -3,11 +3,13 @@ package com.pi4j.boardinfo.checker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.pi4j.boardinfo.util.command.CommandExecutor.execute;
 
@@ -40,7 +42,7 @@ public class BaseChecker {
 
                     for (String line : lines) {
                         if (line.contains(setting)) {
-                            result.append(configPath).append(": ").append(line.trim()).append("\n");
+                            result.append("Found in ").append(configPath).append(": ").append(line.trim()).append("\n");
                             foundAny = true;
                         }
                     }
@@ -67,9 +69,9 @@ public class BaseChecker {
         List<String> foundDevices = new ArrayList<>();
 
         try {
-            Path dtBasePath = Paths.get("/proc/device-tree/soc");
-            if (Files.exists(dtBasePath)) {
-                try (var stream = Files.walk(dtBasePath, 2)) {
+            var socPath = findSocPath();
+            if (socPath.isPresent()) {
+                try (var stream = Files.walk(socPath.get(), 2)) {
                     var interfacePaths = stream
                         .filter(Files::isDirectory)
                         .filter(path -> {
@@ -111,14 +113,33 @@ public class BaseChecker {
         }
 
         if (foundDevices.isEmpty()) {
-            new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
                 "No active " + interfaceType.toUpperCase() + " devices found",
                 expectedOutput, result.toString());
         }
 
-
         return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
             foundDevices.size() + " active " + interfaceType.toUpperCase() + " device(s) found",
             expectedOutput, result.toString());
+    }
+
+    static Optional<Path> findSocPath() {
+        // Look for any directory in /proc/device-tree that starts with "soc"
+        Path dtBasePath = Paths.get("/proc/device-tree");
+
+        try {
+            if (Files.exists(dtBasePath)) {
+                try (var stream = Files.list(dtBasePath)) {
+                    return stream
+                        .filter(Files::isDirectory)
+                        .filter(path -> path.getFileName().toString().startsWith("soc"))
+                        .findFirst();
+                }
+            }
+        } catch (IOException e) {
+            logger.error("Error reading device-tree info: {}", e.getMessage());
+        }
+
+        return Optional.empty();
     }
 }
