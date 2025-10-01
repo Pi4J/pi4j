@@ -11,8 +11,8 @@ public class AllCheckers {
     public static List<CheckerResult> detect() {
         return List.of(
             //GPIOChecker.detect(),
-            I2CChecker.detect()
-            //PWMChecker.detect(),
+            //I2CChecker.detect()
+            PWMChecker.detect()
             //SPIChecker.detect(),
             //SerialChecker.detect()
         );
