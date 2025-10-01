@@ -118,7 +118,11 @@ public class RegistryTest {
         // now shutdown all I/O instances by closing them.
         input.close();
         output.close();
-        pi4j.shutdown(pwm);  // PWM has no context here for some reason.
+
+        // The test PWM has no context here; assuming mock/fake incompleteness.
+        // First guess was that this is because TestPwmProvider returns null from the create method, but this would
+        // mean that pwm.id() above would fail already.
+        pi4j.shutdown(pwm);
 
         // and now we shouldn't find them by address or ID
         assertFalse(registry.exists(IOType.PWM, 3));
@@ -128,5 +132,10 @@ public class RegistryTest {
         assertFalse(registry.exists(pwm.id()));
         assertFalse(registry.exists(input.id()));
         assertFalse(registry.exists(output.id()));
+
+        // Check close idempotency.
+        input.close();
+        output.close();
+        pwm.close();
     }
 }
