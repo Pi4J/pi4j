@@ -35,15 +35,12 @@ public class SerialChecker extends BaseChecker {
                     stream
                         .filter(sub -> !serialPath.equals(sub)) // exclude the root directory
                         .map(sub -> sub.getFileName() + " ")
-                        .filter(fileName -> {
-                            String name = fileName.toString();
-                            return name.startsWith("ttyS") ||
-                                name.startsWith("ttyAMA") ||
-                                name.startsWith("ttyUSB") ||
-                                name.startsWith("ttyACM") ||
-                                name.equals("serial0") ||
-                                name.equals("serial1");
-                        })
+                        .filter(fileName -> fileName.startsWith("ttyS") ||
+                            fileName.startsWith("ttyAMA") ||
+                            fileName.startsWith("ttyUSB") ||
+                            fileName.startsWith("ttyACM") ||
+                            fileName.equals("serial0") ||
+                            fileName.equals("serial1"))
                         .sorted()
                         .forEach(result::append);
                 }
@@ -65,9 +62,8 @@ public class SerialChecker extends BaseChecker {
 
     private static CheckerResult.Check detectSerialPortAvailability() {
         var result = new StringBuilder();
-        String expectedOutput = "/dev/ttyS0 exists (readable, writable), /dev/ttyAMA0 exists (readable, writable) when UART enabled";
-
         String[] serialDevices = {"/dev/ttyS0", "/dev/ttyAMA0", "/dev/ttyUSB0", "/dev/ttyACM0"};
+        var found = false;
 
         for (String devicePath : serialDevices) {
             try {
@@ -79,6 +75,7 @@ public class SerialChecker extends BaseChecker {
 
                     result.append(devicePath).append(" exists");
                     if (readable || writable) {
+                        found = true;
                         result.append(" (");
                         if (readable) result.append("readable");
                         if (readable && writable) result.append(", ");
@@ -96,6 +93,15 @@ public class SerialChecker extends BaseChecker {
             }
         }
 
-        return new CheckerResult.Check(CheckerResult.ResultStatus.TO_EVALUATE, "Serial port availability", expectedOutput, result.toString());
+        var command = "Checking serial device availability";
+        var expectedOutput = "/dev/ttyS0 exists (readable, writable)";
+
+        if (!found) {
+            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
+                command, expectedOutput, result.toString());
+        }
+
+        return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
+            command, expectedOutput, result.toString());
     }
 }
