@@ -158,4 +158,9 @@ public class TestAnalogOutput implements AnalogOutput {
     public Object shutdown(Context context) throws ShutdownException {
         return null;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public void close() {
+    }
 }
