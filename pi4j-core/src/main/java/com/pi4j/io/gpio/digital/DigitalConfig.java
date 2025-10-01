@@ -31,14 +31,19 @@ import com.pi4j.io.gpio.GpioConfig;
 /**
  * <p>DigitalConfig interface.</p>
  *
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
- * @param <CONFIG_TYPE>
  */
 public interface DigitalConfig<CONFIG_TYPE extends Config> extends GpioConfig<CONFIG_TYPE> {
 
-    /** Constant <code>ON_STATE_KEY="onstate"</code> */
+    /**
+     * Constant <code>ON_STATE_KEY="onstate"</code>
+     */
     String ON_STATE_KEY = "onstate";
+
+    Integer pin();
+
     /**
      * <p>onState.</p>
      *
@@ -46,12 +51,16 @@ public interface DigitalConfig<CONFIG_TYPE extends Config> extends GpioConfig<CO
      */
     DigitalState onState();
 
+    default Integer pin() {
+        return this.getPin();
+    }
+
     /**
      * <p>getOnState.</p>
      *
      * @return a {@link com.pi4j.io.gpio.digital.DigitalState} object.
      */
-    default DigitalState getOnState(){
+    default DigitalState getOnState() {
         return this.onState();
     }
 }

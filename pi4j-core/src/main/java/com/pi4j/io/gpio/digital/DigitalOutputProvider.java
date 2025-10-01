@@ -24,6 +24,7 @@ package com.pi4j.io.gpio.digital;
  * limitations under the License.
  * #L%
  */
+
 /**
  * <p>DigitalOutputProvider interface.</p>
  *
@@ -36,78 +37,78 @@ public interface DigitalOutputProvider extends DigitalProvider<DigitalOutputProv
      * <p>create.</p>
      *
      * @param builder a {@link com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder} object.
-     * @param <T> a T object.
+     * @param <T>     a T object.
      * @return a T object.
      */
     default <T extends DigitalOutput> T create(DigitalOutputConfigBuilder builder) {
-        return (T)create(builder.build());
+        return (T) create(builder.build());
     }
 
     /**
      * <p>create.</p>
      *
-     * @param address a {@link java.lang.Integer} object.
+     * @param pin a {@link java.lang.Integer} object.
      * @param <T> a T object.
      * @return a T object.
      */
-    default <T extends DigitalOutput> T create(Integer address) {
+    default <T extends DigitalOutput> T create(Integer pin) {
         var config = DigitalOutput.newConfigBuilder(context())
-                .address(address)
-                .build();
-        return (T)create(config);
+            .pin(pin)
+            .build();
+        return (T) create(config);
     }
 
     /**
      * <p>create.</p>
      *
-     * @param address a {@link java.lang.Integer} object.
-     * @param id a {@link java.lang.String} object.
+     * @param pin a {@link java.lang.Integer} object.
+     * @param id  a {@link java.lang.String} object.
      * @param <T> a T object.
      * @return a T object.
      */
-    default <T extends DigitalOutput> T create(Integer address, String id) {
+    default <T extends DigitalOutput> T create(Integer pin, String id) {
         var config = DigitalOutput.newConfigBuilder(context())
-                .id(id)
-                .address(address)
-                .build();
-        return (T)create(config);
+            .id(id)
+            .pin(pin)
+            .build();
+        return (T) create(config);
     }
 
     /**
      * <p>create.</p>
      *
-     * @param address a {@link java.lang.Integer} object.
-     * @param id a {@link java.lang.String} object.
+     * @param pin  a {@link java.lang.Integer} object.
+     * @param id   a {@link java.lang.String} object.
      * @param name a {@link java.lang.String} object.
-     * @param <T> a T object.
+     * @param <T>  a T object.
      * @return a T object.
      */
-    default <T extends DigitalOutput> T create(Integer address, String id, String name) {
+    default <T extends DigitalOutput> T create(Integer pin, String id, String name) {
         var config = DigitalOutput.newConfigBuilder(context())
-                .address(address)
-                .id(id)
-                .name(name)
-                .build();
-        return (T)create(config);
+            .pin(pin)
+            .id(id)
+            .name(name)
+            .build();
+        return (T) create(config);
     }
 
     /**
      * <p>create.</p>
      *
-     * @param address a {@link java.lang.Integer} object.
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
+     * @param pin         a {@link java.lang.Integer} object.
+     * @param id          a {@link java.lang.String} object.
+     * @param name        a {@link java.lang.String} object.
      * @param description a {@link java.lang.String} object.
-     * @param <T> a T object.
+     * @param <T>         a T object.
      * @return a T object.
      */
-    default <T extends DigitalOutput> T create(Integer address, String id, String name, String description) {
+    default <T extends DigitalOutput> T create(Integer pin, String id, String name, String description) {
         var config = DigitalOutput.newConfigBuilder(context())
-                .address(address)
-                .id(id)
-                .name(name)
-                .description(description)
-                .build();
-        return (T)create(config);
+            .pin(pin)
+            .id(id)
+            .name(name)
+            .description(description)
+            .build();
+        return (T) create(config);
     }
 }

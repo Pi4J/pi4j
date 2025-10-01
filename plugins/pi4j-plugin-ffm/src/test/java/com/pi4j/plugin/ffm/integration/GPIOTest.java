@@ -90,14 +90,14 @@ public class GPIOTest {
 
     @Test
     public void testInputCreate() {
-        var pin = pi4j0.digitalInput().create(0);
-        assertEquals(0, pin.address());
+        var input = pi4j0.digitalInput().create(0);
+        assertEquals(0, input.pin());
     }
 
     @Test
     public void testInputState() {
-        var pin = pi4j0.digitalInput().create(1);
-        assertEquals(DigitalState.LOW, pin.state());
+        var input = pi4j0.digitalInput().create(1);
+        assertEquals(DigitalState.LOW, input.state());
     }
 
     @Test
@@ -112,16 +112,16 @@ public class GPIOTest {
             .debounce(99L, TimeUnit.MICROSECONDS)
             .pull(PullResistance.PULL_DOWN)
             .build();
-        var pin = pi4j0.digitalInput().create(config);
-        assertEquals(99, pin.config().debounce());
-        assertEquals(3, pin.address());
-        assertEquals(PullResistance.PULL_DOWN, pin.pull());
+        var input = pi4j0.digitalInput().create(config);
+        assertEquals(99, input.config().debounce());
+        assertEquals(3, input.pin());
+        assertEquals(PullResistance.PULL_DOWN, input.pull());
     }
 
     @Test
     public void testOutputCreate() {
-        var pin = pi4j0.digitalOutput().create(4);
-        assertEquals(4, pin.address());
+        var output = pi4j0.digitalOutput().create(4);
+        assertEquals(4, output.pin());
     }
 
     @Test
@@ -139,8 +139,8 @@ public class GPIOTest {
             .address(4)
             .initial(DigitalState.HIGH)
             .build();
-        var pin = pi4j0.digitalOutput().create(config);
-        assertEquals(DigitalState.HIGH, pin.config().initialState());
-        assertEquals(4, pin.address());
+        var output = pi4j0.digitalOutput().create(config);
+        assertEquals(DigitalState.HIGH, output.config().initialState());
+        assertEquals(4, output.pin());
     }
 }

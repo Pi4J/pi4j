@@ -30,13 +30,22 @@ import com.pi4j.io.gpio.GpioConfigBuilder;
 /**
  * <p>DigitalConfigBuilder interface.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
+ * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
+ * @version $Id: $Id
  */
 public interface DigitalConfigBuilder<BUILDER_TYPE extends DigitalConfigBuilder, CONFIG_TYPE extends DigitalConfig>
-        extends GpioConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+    extends GpioConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+
+    /**
+     * <p>pin.</p>
+     *
+     * @param pin a {@link java.lang.Integer} object.
+     * @return a BUILDER_TYPE object.
+     */
+    BUILDER_TYPE pin(Integer pin);
+
     /**
      * <p>pull.</p>
      *

@@ -10,7 +10,7 @@ package com.pi4j.io.gpio.digital.impl;
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
  * **********************************************************************
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,7 +25,8 @@ package com.pi4j.io.gpio.digital.impl;
  * #L%
  */
 
-import com.pi4j.io.gpio.digital.*;
+import com.pi4j.io.gpio.digital.DigitalOutputConfig;
+import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.impl.IOAddressConfigBase;
 import com.pi4j.util.StringUtil;
 
@@ -38,8 +39,8 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public class DefaultDigitalOutputConfig
-        extends IOAddressConfigBase<DigitalOutputConfig>
-        implements DigitalOutputConfig {
+    extends IOAddressConfigBase<DigitalOutputConfig>
+    implements DigitalOutputConfig {
 
     // private configuration properties
     protected Integer busNumber = null;
@@ -50,7 +51,7 @@ public class DefaultDigitalOutputConfig
     /**
      * PRIVATE CONSTRUCTOR
      */
-    private DefaultDigitalOutputConfig(){
+    private DefaultDigitalOutputConfig() {
         super();
     }
 
@@ -59,7 +60,7 @@ public class DefaultDigitalOutputConfig
      *
      * @param properties a {@link java.util.Map} object.
      */
-    protected DefaultDigitalOutputConfig(Map<String,String> properties){
+    protected DefaultDigitalOutputConfig(Map<String, String> properties) {
         super(properties);
 
         // define default property values if any are missing (based on the required address value)
@@ -67,7 +68,7 @@ public class DefaultDigitalOutputConfig
         this.name = StringUtil.setIfNullOrEmpty(this.name, "DOUT-" + this.address, true);
         this.description = StringUtil.setIfNullOrEmpty(this.description, "DOUT-" + this.address, true);
 
-        if(properties.containsKey(BUS_NUMBER)){
+        if (properties.containsKey(BUS_NUMBER)) {
             this.busNumber = Integer.parseInt(properties.get(BUS_NUMBER));
         } else {
             // this is essential for FFM Plugin if using pi4j autoContext
@@ -75,17 +76,17 @@ public class DefaultDigitalOutputConfig
         }
 
         // load initial value property
-        if(properties.containsKey(INITIAL_STATE_KEY)){
+        if (properties.containsKey(INITIAL_STATE_KEY)) {
             this.initialState = DigitalState.parse(properties.get(INITIAL_STATE_KEY));
         }
 
         // load shutdown value property
-        if(properties.containsKey(SHUTDOWN_STATE_KEY)){
+        if (properties.containsKey(SHUTDOWN_STATE_KEY)) {
             this.shutdownState = DigitalState.parse(properties.get(SHUTDOWN_STATE_KEY));
         }
 
         // load on-state value property
-        if(properties.containsKey(ON_STATE_KEY)){
+        if (properties.containsKey(ON_STATE_KEY)) {
             this.onState = DigitalState.parse(properties.get(ON_STATE_KEY));
         }
     }
@@ -95,20 +96,31 @@ public class DefaultDigitalOutputConfig
         return busNumber;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public DigitalState shutdownState(){
+    public Integer pin() {
+        return this.pin;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DigitalState shutdownState() {
         return this.shutdownState;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public DefaultDigitalOutputConfig shutdownState(DigitalState state){
+    public DefaultDigitalOutputConfig shutdownState(DigitalState state) {
         this.shutdownState = state;
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalState initialState() {
         return this.initialState;
