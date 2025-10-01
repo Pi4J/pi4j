@@ -46,8 +46,8 @@ public class I2CChecker extends BaseChecker {
             return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
                 "Found " + devices.size() + " I2C device(s)", expectedOutput,
                 devices.stream()
-                    .map(d -> "\n\t\t\t" + d.output())
-                    .collect(Collectors.joining("n")));
+                    .map(I2CDevice::output)
+                    .collect(Collectors.joining("\n")));
         }
     }
 
