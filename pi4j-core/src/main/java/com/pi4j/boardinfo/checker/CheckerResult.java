@@ -18,7 +18,7 @@ public record CheckerResult(String title, List<Check> results) {
 
     public String logOutput() {
         var log = new StringBuilder();
-        log.append("Result from ").append(title).append("\n");
+        log.append("Result").append(results.size() > 1 ? "s" : "").append(" from ").append(title).append("\n");
         results.forEach(r -> {
             if (!r.command.isEmpty()) {
                 log.append("\n\t")

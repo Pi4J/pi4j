@@ -41,7 +41,7 @@ public class BaseChecker {
                     List<String> lines = Files.readAllLines(path);
 
                     for (String line : lines) {
-                        if (line.contains(setting)) {
+                        if (line.contains(setting) && !line.startsWith("#")) {
                             result.append("Found in ").append(configPath).append(": ").append(line.trim()).append("\n");
                             foundAny = true;
                         }
@@ -52,7 +52,7 @@ public class BaseChecker {
             }
         }
 
-        var command = "Configuration check for " + interfaceName.toUpperCase() + " in /boot/config.txt and /boot/firmware/config.txt";
+        var command = "Configuration check for " + interfaceName.toUpperCase() + " in config.txt";
         if (!foundAny) {
             return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
                 command, expectedOutput, result.toString());

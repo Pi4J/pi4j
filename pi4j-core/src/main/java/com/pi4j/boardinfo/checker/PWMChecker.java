@@ -49,7 +49,7 @@ public class PWMChecker extends BaseChecker {
         }
 
         var command = "pinctrl | grep PWM";
-        var expectedOutput = "GPIO lines configured with PWM function (e.g., GPIO18 = PWM0_CHAN2, GPIO19 = PWM0_CHAN3)";
+        var expectedOutput = "GPIO line(s) with PWM function (e.g., GPIO18 = PWM0_CHAN2)";
 
         if (result.isEmpty()) {
             return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
@@ -82,20 +82,8 @@ public class PWMChecker extends BaseChecker {
                         }).toList();
 
                     for (Path chip : pwmChips) {
-                        String chipNumber = chip.getFileName().toString().substring(7);
-                        result.append("chip").append(chipNumber);
-
-                        // Check for npwm file to get number of PWM channels
-                        Path npwmFile = chip.resolve("npwm");
-                        if (Files.exists(npwmFile)) {
-                            try {
-                                String channels = Files.readString(npwmFile).trim();
-                                result.append("(").append(channels).append(" channels)");
-                            } catch (Exception e) {
-                                logger.debug("Could not read npwm for {}: {}", chip, e.getMessage());
-                            }
-                        }
-                        result.append(" ");
+                        String pwmChip = chip.getFileName().toString().substring(7);
+                        result.append(pwmChip);
                     }
                     if (!pwmChips.isEmpty()) {
                         result.append("\n");
@@ -107,7 +95,7 @@ public class PWMChecker extends BaseChecker {
         }
 
         var command = "ls -la /sys/class/pwm/";
-        var expectedOutput = "pwmchip0 (when dtoverlay=pwm is properly configured)";
+        var expectedOutput = "pwmchipX (X = number, when dtoverlay=pwm is properly configured)";
 
         if (result.isEmpty()) {
             return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
