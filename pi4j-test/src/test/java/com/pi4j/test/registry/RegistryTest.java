@@ -115,7 +115,7 @@ public class RegistryTest {
         assertFalse(registry.exists(IOType.ANALOG_INPUT, output.address()));
         assertFalse(registry.exists(IOType.ANALOG_OUTPUT, output.address()));
 
-        // now shutdown all I/O instances
+        // now shutdown all I/O instances by closing them.
         input.close();
         output.close();
         pwm.close();
