@@ -20,44 +20,8 @@ public class SerialChecker extends BaseChecker {
         return new CheckerResult("Serial Detection", List.of(
             detectConfigSetting("enable_uart", "UART", "enable_uart=1"),
             detectInterfaceFromDeviceTree("uart", "UART serial controller"),
-            detectFilesInDirectory(),
             detectSerialPortAvailability()
         ));
-    }
-
-    private static CheckerResult.Check detectFilesInDirectory() {
-        var result = new StringBuilder();
-        var serialPath = Paths.get("/dev/serial");
-
-        try {
-            if (Files.exists(serialPath)) {
-                try (var stream = Files.walk(serialPath, 1)) {
-                    stream
-                        .filter(sub -> !serialPath.equals(sub)) // exclude the root directory
-                        .map(sub -> sub.getFileName() + " ")
-                        .filter(fileName -> fileName.startsWith("ttyS") ||
-                            fileName.startsWith("ttyAMA") ||
-                            fileName.startsWith("ttyUSB") ||
-                            fileName.startsWith("ttyACM") ||
-                            fileName.equals("serial0") ||
-                            fileName.equals("serial1"))
-                        .sorted()
-                        .forEach(result::append);
-                }
-            }
-        } catch (Exception e) {
-            logger.error("Error detecting serial devices in path '{}': {}", serialPath, e.getMessage());
-        }
-
-        var command = "ls -l /sys/class/tty";
-        var expectedOutput = "ttyS0 ttyAMA0 (or similar)";
-        if (result.isEmpty()) {
-            return new CheckerResult.Check(CheckerResult.ResultStatus.FAIL,
-                command, expectedOutput, "");
-        } else {
-            return new CheckerResult.Check(CheckerResult.ResultStatus.PASS,
-                command, expectedOutput, result.toString());
-        }
     }
 
     private static CheckerResult.Check detectSerialPortAvailability() {
