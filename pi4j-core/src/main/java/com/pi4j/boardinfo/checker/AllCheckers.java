@@ -10,10 +10,10 @@ public class AllCheckers {
 
     public static List<CheckerResult> detect() {
         return List.of(
-            GPIOChecker.detect()
+            //GPIOChecker.detect()
             //I2CChecker.detect()
             //PWMChecker.detect()
-            //SPIChecker.detect(),
+            SPIChecker.detect()
             //SerialChecker.detect()
         );
     }
