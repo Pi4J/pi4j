@@ -87,9 +87,9 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
 
     @Override
     public void close() {
-        // Account for
-        if (context() != null) {
-            context().shutdown(getId());
+        // Account for contextless tests or somehow just closing without initializing
+        if (this.context != null) {
+            this.context.shutdown(getId());
         }
     }
 
