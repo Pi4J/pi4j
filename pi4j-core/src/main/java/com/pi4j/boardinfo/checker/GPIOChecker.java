@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,22 +28,18 @@ public class GPIOChecker extends BaseChecker {
         var found = new ArrayList<String>();
 
         try {
-            // Try to find gpiodetect tool first
-            String gpiodetectPath = null;
-            String[] commonPaths = {"/usr/bin/gpiodetect", "/usr/local/bin/gpiodetect", "/bin/gpiodetect"};
+            Path[] commonPaths = {
+                Path.of("/usr/bin/gpiodetect"),
+                Path.of("/usr/local/bin/gpiodetect"),
+                Path.of("/bin/gpiodetect")
+            };
 
-            for (String path : commonPaths) {
-                if (Files.exists(Paths.get(path)) && Files.isExecutable(Paths.get(path))) {
-                    gpiodetectPath = path;
-                    break;
-                }
-            }
-
-            if (gpiodetectPath != null) {
-                // Run gpiodetect without shell redirections
-                var output = execute(gpiodetectPath);
-                if (output.isSuccess() && !output.getOutputMessage().trim().isEmpty()) {
-                    found.add("In " + gpiodetectPath + ": " + output.getOutputMessage());
+            for (Path path : commonPaths) {
+                if (Files.exists(path) && Files.isExecutable(path)) {
+                    var output = execute(path.toString());
+                    if (output.isSuccess() && !output.getOutputMessage().trim().isEmpty()) {
+                        found.add(output.getOutputMessage());
+                    }
                 }
             }
         } catch (Exception e) {
