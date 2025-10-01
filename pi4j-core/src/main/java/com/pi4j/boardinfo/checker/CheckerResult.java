@@ -1,6 +1,8 @@
 package com.pi4j.boardinfo.checker;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public record CheckerResult(String title, List<Check> results) {
     record Check(ResultStatus resultStatus, String command, String expected, String result) {
@@ -20,9 +22,11 @@ public record CheckerResult(String title, List<Check> results) {
             }
             log.append("\n\t\tStatus: ").append(r.resultStatus);
             log.append("\n\t\tExpected: ")
-                .append(r.expected.isEmpty() ? "-" : r.expected.trim());
+                .append("\n\t\t\t").append(r.expected.isEmpty() ? "-" : r.expected.trim());
             log.append("\n\t\tResult: ")
-                .append(r.result.isEmpty() ? "-" : r.result.trim().replace("\n", " - "));
+                .append(r.result.isEmpty() ? "\n\t\t\t-" : Arrays.stream(r.result.trim().split("\n"))
+                    .map(l -> "\n\t\t\t" + l)
+                    .collect(Collectors.joining()));
         });
         return log.toString();
     }
