@@ -118,7 +118,7 @@ public class RegistryTest {
         // now shutdown all I/O instances by closing them.
         input.close();
         output.close();
-        pwm.close();
+        pi4j.shutdown(pwm);  // PWM has no context here for some reason.
 
         // and now we shouldn't find them by address or ID
         assertFalse(registry.exists(IOType.PWM, 3));
