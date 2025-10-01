@@ -87,7 +87,10 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
 
     @Override
     public void close() {
-        context().shutdown(getId());
+        // Account for
+        if (context() != null) {
+            context().shutdown(getId());
+        }
     }
 
     /** {@inheritDoc} */
