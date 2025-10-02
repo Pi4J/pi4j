@@ -80,13 +80,13 @@ public class RegistryTest {
         // create a new input, then shutdown
         var input = pi4j.create(inputConfig);
 
-        pi4j.shutdown(input.id());
+        input.close();
 
         // shouldn't fail when recreating
         input = pi4j.create(inputConfig);
 
         // or shutting down
-        pi4j.shutdown(input.id());
+        input.close();
     }
 
     @Test
@@ -115,9 +115,13 @@ public class RegistryTest {
         assertFalse(registry.exists(IOType.ANALOG_INPUT, output.address()));
         assertFalse(registry.exists(IOType.ANALOG_OUTPUT, output.address()));
 
-        // now shutdown all I/O instances
-        pi4j.shutdown(input);
-        pi4j.shutdown(output);
+        // now shutdown all I/O instances by closing them.
+        input.close();
+        output.close();
+
+        // The test PWM has no context here; assuming mock/fake incompleteness.
+        // First guess was that this is because TestPwmProvider returns null from the create method, but this would
+        // mean that pwm.id() above would fail already.
         pi4j.shutdown(pwm);
 
         // and now we shouldn't find them by address or ID
@@ -128,5 +132,10 @@ public class RegistryTest {
         assertFalse(registry.exists(pwm.id()));
         assertFalse(registry.exists(input.id()));
         assertFalse(registry.exists(output.id()));
+
+        // Check close idempotency.
+        input.close();
+        output.close();
+        pwm.close();
     }
 }
