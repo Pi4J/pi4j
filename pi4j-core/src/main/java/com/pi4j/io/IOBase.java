@@ -87,8 +87,15 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
         return (IO_TYPE)this;
     }
 
+    /**
+     * Closes the driver by calling this.context().shutdown(this.getId()), which in turn calls
+     * the local shutdown() method here via DefaultRuntimeRegistry.remove().
+     * <p>
+     * IO implementations need to override the local shutdown method with implementation-
+     * specific shutdown behaviour as needed.
+     */
     @Override
-    public void close() {
+    public final void close() {
         // Account for contextless tests or somehow just closing without initializing
         if (this.context != null && !closed) {
             this.closed = true;
@@ -116,8 +123,12 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
     /** {@inheritDoc} */
     @Override
     public IO_TYPE shutdown(Context context) throws ShutdownException {
-        // Avoid close calling shutdown after shutdown was called by other means
+        // Close is supposed to be idempotent. We interpret this here to include effective shutdowns by
+        // other means, i.e. the infrastructure calling this method.
         this.closed = true;
+        if (context != this.context) {
+            throw new IllegalArgumentException("The context parameter and the local context don't match.");
+        }
         return (IO_TYPE) this;
     }
 
