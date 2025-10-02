@@ -51,10 +51,9 @@ public interface Lifecycle<T> {
     T initialize(Context context) throws InitializeException;
 
     /**
-     * <p>shutdown.</p>
-     *
-     * <p>This method is called by the registry when the registry shutting down. To shut down an IO instance, call
-     * io.close().</p>
+     * This method is called by the registry when the registry shutting down and should not be called by
+     * users directly. To shut down an IO instance, call close() instead. This will make sure that the
+     * instance is not just shut down and closed but also properly unregistered.</p>
      *
      * @param context a {@link com.pi4j.context.Context} object.
      *

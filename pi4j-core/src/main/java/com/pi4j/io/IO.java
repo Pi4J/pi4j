@@ -44,7 +44,13 @@ import java.io.Closeable;
 public interface IO<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, PROVIDER_TYPE extends Provider>
         extends Describable, Lifecycle, Identity, Closeable {
 
-    /** Pi4J generally throws unchecked exceptions, so we restrict Closeable.close() here accordingly. */
+    /**
+     * Closes this IO instance.
+     * <p>
+     * Pi4J generally throws unchecked exceptions, so we restrict Closeable.close() here accordingly.
+     * For the interaction with shutdown and general overriding and usage recommendations, please
+     * refer to the documentation of IOBase.close().
+     */
     @Override
     void close();
 
