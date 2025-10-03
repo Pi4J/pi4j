@@ -69,9 +69,9 @@ public class SpiFFM extends SpiBase implements Spi {
     }
 
     @Override
-    public Spi shutdown(Context context) throws ShutdownException {
+    public Spi shutdownInternal(Context context) throws ShutdownException {
         FILE.close(spiFileDescriptor);
-        return super.shutdown(context);
+        return super.shutdownInternal(context);
     }
 
     @Override

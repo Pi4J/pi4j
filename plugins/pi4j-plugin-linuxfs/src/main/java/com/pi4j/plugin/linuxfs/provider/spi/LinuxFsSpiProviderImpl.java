@@ -70,13 +70,13 @@ public class LinuxFsSpiProviderImpl extends SpiProviderBase
     }
 
     @Override
-    public SpiProvider shutdown(Context context) throws ShutdownException {
+    public SpiProvider shutdownInternal(Context context) throws ShutdownException {
 
         // Is this the right place to call close?
         this.context.registry().allByType(LinuxFsSpi.class).values()
             .forEach(LinuxFsSpi::close);
 
-        return super.shutdown(context);
+        return super.shutdownInternal(context);
     }
 
 

@@ -10,7 +10,6 @@ import com.pi4j.plugin.ffm.common.PermissionHelper;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
-import com.pi4j.plugin.ffm.common.gpio.structs.*;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
 import org.slf4j.Logger;
@@ -54,7 +53,7 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
             logger.trace("{}-{} - getting line info.", deviceName, pin);
             lineInfo = ioctl.call(fd, Command.getGpioV2GetLineInfoIoctl(), lineInfo);
             if ((lineInfo.flags() & PinFlag.USED.getValue()) > 0) {
-                shutdown(context());
+                this.shutdownInternal(context());
                 throw new InitializeException("Pin " + pin + " is in use");
             }
             logger.trace("{}-{} - DigitalOutput Pin line info: {}", deviceName, pin, lineInfo);
@@ -74,8 +73,8 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
     }
 
     @Override
-    public DigitalOutput shutdown(Context context) throws ShutdownException {
-        super.shutdown(context);
+    public DigitalOutput shutdownInternal(Context context) throws ShutdownException {
+        super.shutdownInternal(context);
         logger.info("{}-{} - closing GPIO Pin.", deviceName, pin);
         try {
             if (chipFileDescriptor > 0) {

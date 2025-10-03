@@ -13,7 +13,6 @@ import com.pi4j.plugin.ffm.common.gpio.PinEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinEventProcessing;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.enums.LineAttributeId;
-import com.pi4j.plugin.ffm.common.gpio.structs.*;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
 import com.pi4j.plugin.ffm.common.poll.PollFlag;
@@ -85,7 +84,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
             logger.trace("{}-{} - getting line info.", deviceName, pin);
             lineInfo = ioctl.call(fd, Command.getGpioV2GetLineInfoIoctl(), lineInfo);
             if ((lineInfo.flags() & PinFlag.USED.getValue()) > 0) {
-                shutdown(context());
+                this.shutdownInternal(context());
                 throw new InitializeException("Pin " + pin + " is in use");
             }
             logger.trace("{}-{} - DigitalInput Pin line info: {}", deviceName, pin, lineInfo);
@@ -130,8 +129,8 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
     }
 
     @Override
-    public DigitalInput shutdown(Context context) throws ShutdownException {
-        super.shutdown(context);
+    public DigitalInput shutdownInternal(Context context) throws ShutdownException {
+        super.shutdownInternal(context);
         logger.info("{}-{} - closing GPIO Pin.", deviceName, pin);
         try {
             if (chipFileDescriptor > 0) {

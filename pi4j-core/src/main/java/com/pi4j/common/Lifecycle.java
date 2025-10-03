@@ -51,7 +51,7 @@ public interface Lifecycle<T> {
     T initialize(Context context) throws InitializeException;
 
     /**
-     * This method is called by the registry when the registry shutting down and should not be called by
+     * This method is called by the registry internally when the registry shutting down and should not be called by
      * users directly. To shut down an IO instance, call close() instead. This will make sure that the
      * instance is not just shut down and closed but also properly unregistered.</p>
      *
@@ -61,5 +61,5 @@ public interface Lifecycle<T> {
      *
      * @throws com.pi4j.exception.ShutdownException if an error occurs during shutdown.
      */
-    T shutdown(Context context) throws ShutdownException;
+    T shutdownInternal(Context context) throws ShutdownException;
 }

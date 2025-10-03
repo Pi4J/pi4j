@@ -50,8 +50,8 @@ public class GpioDDigitalInputProviderImpl extends DigitalInputProviderBase impl
     }
 
     @Override
-    public DigitalInputProvider shutdown(Context context) throws ShutdownException {
+    public DigitalInputProvider shutdownInternal(Context context) throws ShutdownException {
         GpioDContext.getInstance().close();
-        return super.shutdown(context);
+        return super.shutdownInternal(context);
     }
 }

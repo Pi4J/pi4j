@@ -79,8 +79,8 @@ public class GpioDDigitalOutputProviderImpl extends DigitalOutputProviderBase im
     }
 
     @Override
-    public DigitalOutputProvider shutdown(Context context) throws ShutdownException {
+    public DigitalOutputProvider shutdownInternal(Context context) throws ShutdownException {
         GpioDContext.getInstance().close();
-        return super.shutdown(context);
+        return super.shutdownInternal(context);
     }
 }
