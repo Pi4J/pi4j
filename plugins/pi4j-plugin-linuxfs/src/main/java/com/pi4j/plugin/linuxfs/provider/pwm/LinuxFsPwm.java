@@ -209,7 +209,7 @@ public class LinuxFsPwm extends PwmBase implements Pwm {
      * {@inheritDoc}
      */
     @Override
-    public Pwm shutdown(Context context) throws ShutdownException {
+    public Pwm shutdownInternal(Context context) throws ShutdownException {
         logger.trace("shutdown PWM [{}]; {}", this.config.address(), pwm.getPwmPath());
 
         // --------------------------------------------------------------------------
@@ -228,7 +228,7 @@ public class LinuxFsPwm extends PwmBase implements Pwm {
 
         // set pin state to shutdown state if a shutdown state is configured
         if (config().shutdownValue() != null) {
-            return super.shutdown(context);
+            return super.shutdownInternal(context);
         }
 
         // otherwise ... un-export the GPIO pin from the Linux file system impl

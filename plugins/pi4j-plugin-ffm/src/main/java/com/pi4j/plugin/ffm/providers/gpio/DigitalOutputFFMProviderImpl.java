@@ -37,7 +37,7 @@ public class DigitalOutputFFMProviderImpl extends DigitalOutputProviderBase impl
     }
 
     @Override
-    public DigitalOutputProvider shutdown(Context context) throws ShutdownException {
-        return super.shutdown(context);
+    public DigitalOutputProvider shutdownInternal(Context context) throws ShutdownException {
+        return super.shutdownInternal(context);
     }
 }

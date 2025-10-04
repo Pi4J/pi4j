@@ -155,7 +155,7 @@ public class TestAnalogOutput implements AnalogOutput {
 
     /** {@inheritDoc} */
     @Override
-    public Object shutdown(Context context) throws ShutdownException {
+    public Object shutdownInternal(Context context) throws ShutdownException {
         return null;
     }
 

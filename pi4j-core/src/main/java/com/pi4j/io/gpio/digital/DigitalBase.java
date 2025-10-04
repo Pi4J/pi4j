@@ -132,7 +132,7 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
 
     /** {@inheritDoc} */
     @Override
-    public DIGITAL_TYPE shutdown(Context context) throws ShutdownException {
+    public DIGITAL_TYPE shutdownInternal(Context context) throws ShutdownException {
         // remove all listeners
         stateChangeEventManager.clear();
 

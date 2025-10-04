@@ -32,6 +32,6 @@ public class FFMPlugin implements Plugin {
 
     @Override
     public void shutdown(Context context) throws ShutdownException {
-        Arrays.stream(this.providers).forEach(provider -> provider.shutdown(context));
+        Arrays.stream(this.providers).forEach(provider -> provider.shutdownInternal(context));
     }
 }

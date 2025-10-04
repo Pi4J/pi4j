@@ -126,7 +126,7 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
 
     /** {@inheritDoc} */
     @Override
-    public IO_TYPE shutdown(Context context) throws ShutdownException {
+    public IO_TYPE shutdownInternal(Context context) throws ShutdownException {
         // Close is supposed to be idempotent. We interpret this here to include effective shutdowns by
         // other means, i.e. the infrastructure calling this method.
         this.closed = true;

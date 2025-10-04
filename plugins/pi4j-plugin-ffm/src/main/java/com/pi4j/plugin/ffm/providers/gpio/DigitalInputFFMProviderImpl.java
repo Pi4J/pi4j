@@ -36,7 +36,7 @@ public class DigitalInputFFMProviderImpl extends DigitalInputProviderBase implem
     }
 
     @Override
-    public DigitalInputProvider shutdown(Context context) throws ShutdownException {
-        return super.shutdown(context);
+    public DigitalInputProvider shutdownInternal(Context context) throws ShutdownException {
+        return super.shutdownInternal(context);
     }
 }

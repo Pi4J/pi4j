@@ -168,7 +168,7 @@ public class LinuxFsDigitalInput extends DigitalInputBase implements DigitalInpu
 
     /** {@inheritDoc} */
     @Override
-    public DigitalInput shutdown(Context context) throws ShutdownException {
+    public DigitalInput shutdownInternal(Context context) throws ShutdownException {
         logger.trace("shutdown GPIO [{}]; {}", this.config.address(), gpio.getPinPath());
 
         // this line will execute immediately, not waiting for your task to complete
@@ -179,7 +179,7 @@ public class LinuxFsDigitalInput extends DigitalInputBase implements DigitalInpu
         }
 
         // perform any shutdown cleanup via superclass
-        super.shutdown(context);
+        super.shutdownInternal(context);
 
         // un-export the GPIO pin from the Linux file system impl
         try {

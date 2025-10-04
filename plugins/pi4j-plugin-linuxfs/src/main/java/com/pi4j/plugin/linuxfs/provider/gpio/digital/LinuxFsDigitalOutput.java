@@ -103,7 +103,7 @@ public class LinuxFsDigitalOutput extends DigitalOutputBase implements DigitalOu
 
     /** {@inheritDoc} */
     @Override
-    public DigitalOutput shutdown(Context context) throws ShutdownException {
+    public DigitalOutput shutdownInternal(Context context) throws ShutdownException {
         logger.trace("shutdown GPIO [{}]; {}", this.config.address(), gpio.getPinPath());
 
         // --------------------------------------------------------------------------
@@ -124,7 +124,7 @@ public class LinuxFsDigitalOutput extends DigitalOutputBase implements DigitalOu
 
         // set pin state to shutdown state if a shutdown state is configured
         if(config().shutdownState() != null && config().shutdownState() != DigitalState.UNKNOWN){
-            return super.shutdown(context);
+            return super.shutdownInternal(context);
         }
 
         // otherwise ... un-export the GPIO pin from the Linux file system impl
