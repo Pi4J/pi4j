@@ -35,7 +35,7 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
         super(provider, config);
         this.pin = config.address();
         this.deviceName = "/dev/gpiochip" + config.busNumber();
-        PermissionHelper.checkDevice(deviceName);
+        PermissionHelper.checkDevicePermissions(deviceName, config);
     }
 
     @Override

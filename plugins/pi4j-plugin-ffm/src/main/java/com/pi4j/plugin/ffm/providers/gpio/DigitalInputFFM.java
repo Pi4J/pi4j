@@ -65,7 +65,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
         this.deviceName = "/dev/gpiochip" + config.busNumber();
         this.debounce = config.debounce();
         this.pull = config.pull();
-        PermissionHelper.checkDevice(deviceName);
+        PermissionHelper.checkDevicePermissions(deviceName, config);
     }
 
     @Override

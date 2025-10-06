@@ -12,6 +12,24 @@ import java.lang.invoke.MethodHandle;
  */
 class PermissionContext extends Pi4JNativeContext {
 
+    // Native glibc 'setgrent' method
+    static final MethodHandle SET_GR_ENT = Linker.nativeLinker().downcallHandle(
+        LIBC_LIB.find("setgrent").orElseThrow(),
+        FunctionDescriptor.ofVoid(),
+        Linker.Option.captureCallState("errno"));
+
+    // Native glibc 'getgrent' method
+    static final MethodHandle GET_GR_ENT = Linker.nativeLinker().downcallHandle(
+        LIBC_LIB.find("getgrent").orElseThrow(),
+        FunctionDescriptor.of(ValueLayout.ADDRESS),
+        Linker.Option.captureCallState("errno"));
+
+    // Native glibc 'endgrent' method
+    static final MethodHandle END_GR_ENT = Linker.nativeLinker().downcallHandle(
+        LIBC_LIB.find("endgrent").orElseThrow(),
+        FunctionDescriptor.ofVoid(),
+        Linker.Option.captureCallState("errno"));
+
     // Native glibc 'getgrouplist' method
     static final MethodHandle GET_GROUP_LIST = Linker.nativeLinker().downcallHandle(
         LIBC_LIB.find("getgrouplist").orElseThrow(),
