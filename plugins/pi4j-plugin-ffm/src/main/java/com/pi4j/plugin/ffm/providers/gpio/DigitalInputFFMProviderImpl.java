@@ -14,7 +14,7 @@ public class DigitalInputFFMProviderImpl extends DigitalInputProviderBase implem
     public DigitalInputFFMProviderImpl() {
         this.id = "ffm-digital-input";
         this.name = "FFM API Provider Digital Input";
-        PermissionHelper.checkUser();
+        PermissionHelper.checkUserPermissions(this);
     }
 
     @Override

@@ -14,7 +14,7 @@ public class DigitalOutputFFMProviderImpl extends DigitalOutputProviderBase impl
     public DigitalOutputFFMProviderImpl() {
         this.id = "ffm-digital-output";
         this.name = "FFM API Provider Digital Output";
-        PermissionHelper.checkUser();
+        PermissionHelper.checkUserPermissions(this);
     }
 
 

@@ -45,7 +45,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
         super(provider, config);
         this.pwmBusNumber = config.busNumber();
         this.pwmChipNumber = config.address();
-        PermissionHelper.checkDevice(CHIP_PATH + pwmChipNumber);
+        PermissionHelper.checkDevicePermissions(CHIP_PATH + pwmChipNumber, config);
     }
 
     /** {@inheritDoc} */
