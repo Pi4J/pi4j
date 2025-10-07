@@ -30,6 +30,7 @@ import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.IOBase;
 import com.pi4j.io.i2c.impl.DefaultI2CRegister;
 
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 /**
@@ -80,6 +81,48 @@ public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig, I
      */
     public I2CRegister getRegister(int address) {
         return new DefaultI2CRegister(this, address);
+    }
+
+    @Override
+    public int readRegister(int register) {
+        write(register);
+        return read();
+    }
+
+    @Override
+    public int readRegister(byte[] register, byte[] buffer, int offset, int length) {
+        write(register);
+        return read(buffer, offset, length);
+    }
+
+    @Override
+    public int readRegister(int register, byte[] buffer, int offset, int length) {
+        write(register);
+        return read(buffer, offset, length);
+    }
+
+    @Override
+    public int writeRegister(int register, byte b) {
+        return write((byte) register, b);
+    }
+
+    @Override
+    public int writeRegister(int register, byte[] data, int offset, int length) {
+        Objects.checkFromIndexSize(offset, length, data.length);
+        byte[] tmp = new byte[length + 1];
+        tmp[0] = (byte) register;
+        System.arraycopy(data, offset, tmp, 1, length);
+        return write(tmp);
+    }
+
+    @Override
+    public int writeRegister(byte[] register, byte[] data, int offset, int length) {
+        Objects.checkFromIndexSize(offset, length, data.length);
+        byte[] tmp = new byte[length + register.length];
+        System.arraycopy(register,0, tmp, 0, register.length);
+        System.arraycopy(data, offset, tmp, register.length, length);
+        int rc = write(tmp);
+        return (rc - register.length);  // do not include the register bytes as what was written...
     }
 
     @Override
