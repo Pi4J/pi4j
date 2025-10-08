@@ -85,20 +85,23 @@ public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig, I
 
     @Override
     public int readRegister(int register) {
-        write(register);
-        return read();
+        return execute(() -> {
+            write(register);
+            return read();
+        });
     }
 
     @Override
     public int readRegister(byte[] register, byte[] buffer, int offset, int length) {
-        write(register);
-        return read(buffer, offset, length);
+        return writeRead(register, register.length, 0, buffer, length, offset);
     }
 
     @Override
     public int readRegister(int register, byte[] buffer, int offset, int length) {
-        write(register);
-        return read(buffer, offset, length);
+        return execute(() ->{
+            write(register);
+            return read(buffer, offset, length);
+        });
     }
 
     @Override
