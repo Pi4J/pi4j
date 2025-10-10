@@ -30,6 +30,8 @@ import com.pi4j.common.Identity;
 import com.pi4j.common.Lifecycle;
 import com.pi4j.provider.Provider;
 
+import java.io.Closeable;
+
 /**
  * <p>IO interface.</p>
  *
@@ -40,7 +42,17 @@ import com.pi4j.provider.Provider;
  * @param <PROVIDER_TYPE>
  */
 public interface IO<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, PROVIDER_TYPE extends Provider>
-        extends Describable, Lifecycle, Identity {
+        extends Describable, Lifecycle, Identity, Closeable {
+
+    /**
+     * Closes this IO instance.
+     * <p>
+     * Pi4J generally throws unchecked exceptions, so we restrict Closeable.close() here accordingly.
+     * For the interaction with shutdown and general overriding and usage recommendations, please
+     * refer to the documentation of IOBase.close().
+     */
+    @Override
+    void close();
 
     /**
      * <p>config.</p>

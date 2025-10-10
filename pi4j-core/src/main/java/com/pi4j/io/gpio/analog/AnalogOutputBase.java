@@ -136,7 +136,7 @@ public abstract class AnalogOutputBase extends AnalogBase<AnalogOutput, AnalogOu
 
     /** {@inheritDoc} */
     @Override
-    public AnalogOutput shutdown(Context context){
+    public AnalogOutput shutdownInternal(Context context){
         // update the analog value to the shutdown value if a shutdown value is configured
         if(config().shutdownValue() != null){
             try {

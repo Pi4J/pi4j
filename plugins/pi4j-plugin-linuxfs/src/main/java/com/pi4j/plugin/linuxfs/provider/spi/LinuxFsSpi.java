@@ -333,22 +333,21 @@ public class LinuxFsSpi extends SpiBase implements Spi {
     /**
      * {@inheritDoc}
      * write
-     *
-     *   SPI_BUFFSIZ most often is set to 4096.  See initialize()
-     *   for the current configured size.
+     * <p>
+     * SPI_BUFFSIZ most often is set to 4096.  See initialize()
+     * for the current configured size.
      * This implementation can write blocks greater than SPI_BUFFSIZ byte
      * 'however', read and understand how this is accomplished.
-     *
+     * <p>
      * A write of data greater than SPI_BUFFSIZ bytes is accomplished with
      * a single SPI write operation.
      * So CE line low, write bytes, CE line high
-     *
+     * <p>
      * A write greater than SPI_BUFFSIZ bytes will be segmented to multiple
      * spi_ioc_transfer.  All spi_ioc_transfer will be written to the kernel
      * in a single IOCTL
      *
-     *
-     * @param data data array of bytes to be written
+     * @param data   data array of bytes to be written
      * @param offset offset in data buffer to start at
      * @param length number of bytes to be written
      * @return
@@ -357,21 +356,18 @@ public class LinuxFsSpi extends SpiBase implements Spi {
     public int write(byte[] data, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, data.length);
 
-        int fullEntries = (length < SPI_BUFFSIZ) ? 1 : length / SPI_BUFFSIZ;
-        int partialEntries = (((fullEntries * SPI_BUFFSIZ) < length) ? 1 : 0);
-        int numberXferEntries = fullEntries + partialEntries;
+        int numberXferEntries = (length + SPI_BUFFSIZ -1) / SPI_BUFFSIZ;
         spi_ioc_transfer[] transferArray = getTransferArray(numberXferEntries);
-        Memory[] peerArray = getPeerMem(numberXferEntries, SPI_BUFFSIZ) ;
+        Memory[] peerArray = getPeerMem(numberXferEntries, SPI_BUFFSIZ);
         int start = offset;
-        int lastOffset = data.length + offset ;
+        int lastOffset = data.length + offset;
         int entryNum = 0;
         while (start < lastOffset) {
-            //  PeerAccessibleMemory buf = new PeerAccessibleMemory(SPI_BUFFSIZ);
             spi_ioc_transfer txEntry = transferArray[entryNum];
             int end = Math.min(lastOffset, start + SPI_BUFFSIZ);
             peerArray[entryNum].write(0, data, start, end - start);
             // set fields in transfer msg
-            txEntry.tx_buf = Memory.nativeValue(peerArray[entryNum]) ;
+            txEntry.tx_buf = Memory.nativeValue(peerArray[entryNum]);
             txEntry.rx_buf = 0;
             txEntry.bits_per_word = BITS8;
             txEntry.speed_hz = config.baud();
@@ -382,9 +378,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
             entryNum++;
             start += SPI_BUFFSIZ;
         }
-        // last entry has chip select change  set to  deassert
-        transferArray[entryNum - 1].cs_change = 1;
-        int ret = libc.ioctl(fd, SPI_IOC_MESSAGE(numberXferEntries), transferArray);
+        int ret = libc.ioctl(fd, SPI_IOC_MESSAGE(numberXferEntries), (Object) transferArray);
         logger.trace("[SPI::WRITE] <- Number bytes {} ", ret);
 
         if (ret < 0) {
@@ -395,16 +389,11 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         return length;
     }
 
-    private spi_ioc_transfer[] getTransferArray(int numberEntries) {
-        spi_ioc_transfer[] transferArray = (spi_ioc_transfer[]) new spi_ioc_transfer().toArray(numberEntries);
 
-        for (int i = 0 ; i <  numberEntries ; i++){
-            transferArray[i] = new spi_ioc_transfer();
-            PeerAccessibleMemory buf = new PeerAccessibleMemory(SPI_BUFFSIZ) ;
-            transferArray[i].tx_buf = buf.getPeer() ;
-        }
-        return transferArray ;
+    private static spi_ioc_transfer[] getTransferArray(int numberEntries) {
+        return (spi_ioc_transfer[]) new spi_ioc_transfer().toArray(numberEntries);
     }
+
     private static  Memory[] getPeerMem(int numberEntries, int size){
         Memory[] memArray = new Memory[numberEntries] ;;
         for (int i = 0 ; i <  numberEntries ; i++){

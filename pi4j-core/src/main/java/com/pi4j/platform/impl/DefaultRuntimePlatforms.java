@@ -306,7 +306,7 @@ public class DefaultRuntimePlatforms implements RuntimePlatforms {
         try {
             logger.trace("calling 'shutdown' platform [id={}; name={}; class={}]",
                     platform.id(), platform.name(), platform.getClass().getName());
-            platform.shutdown(runtime.context());
+            platform.shutdownInternal(runtime.context());
         } catch (Exception e) {
             logger.error("unable to 'shutdown()' platform: [id={}; name={}]; {}",
                     platform.id(), platform.name(), e.getMessage());

@@ -14,7 +14,7 @@ public class DigitalInputFFMProviderImpl extends DigitalInputProviderBase implem
     public DigitalInputFFMProviderImpl() {
         this.id = "ffm-digital-input";
         this.name = "FFM API Provider Digital Input";
-        PermissionHelper.checkUser();
+        PermissionHelper.checkUserPermissions(this);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class DigitalInputFFMProviderImpl extends DigitalInputProviderBase implem
     }
 
     @Override
-    public DigitalInputProvider shutdown(Context context) throws ShutdownException {
-        return super.shutdown(context);
+    public DigitalInputProvider shutdownInternal(Context context) throws ShutdownException {
+        return super.shutdownInternal(context);
     }
 }

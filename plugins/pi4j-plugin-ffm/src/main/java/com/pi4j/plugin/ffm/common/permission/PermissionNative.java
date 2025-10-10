@@ -21,6 +21,40 @@ import static com.pi4j.plugin.ffm.common.Pi4JNativeContext.processError;
 public class PermissionNative {
     private final PermissionContext context = new PermissionContext();
 
+
+    public void openGroupDatabase() {
+        try {
+            var capturedState = context.allocateCapturedState();
+            PermissionContext.SET_GR_ENT.invoke(capturedState);
+        } catch (Throwable e) {
+            throw new Pi4JException(e.getMessage(), e);
+        }
+    }
+
+    public GroupData getNextGroup() {
+        try {
+            var capturedState = context.allocateCapturedState();
+            var callResult = (MemorySegment) PermissionContext.GET_GR_ENT.invoke(capturedState);
+            if (callResult.equals(MemorySegment.NULL)) {
+                return null;
+            }
+            var groupMemorySegment = callResult.reinterpret(8).get(ValueLayout.ADDRESS, 0);
+            return GroupData.create(groupMemorySegment.reinterpret(GroupData.LAYOUT.byteSize()));
+        } catch (Throwable e) {
+            throw new Pi4JException(e.getMessage(), e);
+        }
+    }
+
+
+    public void closeGroupDatabase() {
+        try {
+            var capturedState = context.allocateCapturedState();
+            PermissionContext.END_GR_ENT.invoke(capturedState);
+        } catch (Throwable e) {
+            throw new Pi4JException(e.getMessage(), e);
+        }
+    }
+
     /**
      * Gets an array of group ids, where current user corresponds.
      *

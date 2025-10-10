@@ -45,7 +45,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
         super(provider, config);
         this.pwmBusNumber = config.busNumber();
         this.pwmChipNumber = config.address();
-        PermissionHelper.checkDevice(CHIP_PATH + pwmChipNumber);
+        PermissionHelper.checkDevicePermissions(CHIP_PATH + pwmChipNumber, config);
     }
 
     /** {@inheritDoc} */
@@ -155,9 +155,9 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
     }
 
     @Override
-    public Pwm shutdown(Context context) throws ShutdownException {
+    public Pwm shutdownInternal(Context context) throws ShutdownException {
         if (config.getShutdownValue() != null) {
-            return super.shutdown(context);
+            return super.shutdownInternal(context);
         }
 
         var exportFd = file.open(CHIP_PATH + pwmChipNumber + CHIP_UNEXPORT_PATH, FileFlag.O_WRONLY);

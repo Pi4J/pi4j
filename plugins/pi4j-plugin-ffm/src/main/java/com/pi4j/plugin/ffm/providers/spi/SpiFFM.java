@@ -33,7 +33,7 @@ public class SpiFFM extends SpiBase implements Spi {
     public SpiFFM(SpiProvider provider, SpiConfig config) {
         super(provider, config);
         this.path = SPI_BUS + config.bus().getBus() + "." + config.address();
-        PermissionHelper.checkDevice(path);
+        PermissionHelper.checkDevicePermissions(path, config);
     }
 
     @Override
@@ -69,9 +69,9 @@ public class SpiFFM extends SpiBase implements Spi {
     }
 
     @Override
-    public Spi shutdown(Context context) throws ShutdownException {
+    public Spi shutdownInternal(Context context) throws ShutdownException {
         FILE.close(spiFileDescriptor);
-        return super.shutdown(context);
+        return super.shutdownInternal(context);
     }
 
     @Override

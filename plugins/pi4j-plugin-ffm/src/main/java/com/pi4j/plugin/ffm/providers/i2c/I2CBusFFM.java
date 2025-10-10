@@ -40,7 +40,7 @@ public class I2CBusFFM extends I2CBusBase {
     public I2CBusFFM(I2CConfig config) {
         super(config);
         this.busName = I2C_BUS + bus;
-        PermissionHelper.checkDevice(busName);
+        PermissionHelper.checkDevicePermissions(busName, config);
         try {
             logger.debug("{} - setting up I2CBus...", busName);
             if (!canAccessDevice()) {

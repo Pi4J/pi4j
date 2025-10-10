@@ -88,7 +88,7 @@ public abstract class ProviderBase<PROVIDER_TYPE extends Provider, IO_TYPE exten
 
     /** {@inheritDoc} */
     @Override
-    public PROVIDER_TYPE shutdown(Context context) throws ShutdownException {
+    public PROVIDER_TYPE shutdownInternal(Context context) throws ShutdownException {
 
         // TODO :: ABSTRACT PROVIDER IO INSTANCE SHUTDOWN VIA PROXY IMPL
 
@@ -96,7 +96,7 @@ public abstract class ProviderBase<PROVIDER_TYPE extends Provider, IO_TYPE exten
         Map<String, IO> instances = context.registry().allByProvider(this.id(), IO.class);
         instances.forEach((address, instance)->{
             try {
-                instance.shutdown(context);
+                instance.shutdownInternal(context);
             } catch (LifecycleException e) {
                 logger.error(e.getMessage(), e);
             }
