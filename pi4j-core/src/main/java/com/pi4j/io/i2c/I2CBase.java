@@ -93,7 +93,7 @@ public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig, I
      * {@inheritDoc}
      */
     @Override
-    public I2C shutdown(Context context) throws ShutdownException {
+    public I2C shutdownInternal(Context context) throws ShutdownException {
         // if this I2C device is still open, then we need to close it since we are shutting down
         if (this.isOpen()) {
             try {

@@ -74,8 +74,8 @@ public class GpioDDigitalInput extends DigitalInputBase implements DigitalInput 
     }
 
     @Override
-    public DigitalInput shutdown(Context context) throws ShutdownException {
-        super.shutdown(context);
+    public DigitalInput shutdownInternal(Context context) throws ShutdownException {
+        super.shutdownInternal(context);
         if (this.inputListener != null)
             shutdownInputListener();
         GpioDContext.getInstance().closeLine(this.line);

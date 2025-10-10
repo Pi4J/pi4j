@@ -117,7 +117,7 @@ public abstract class AnalogBase<ANALOG_TYPE
 
     /** {@inheritDoc} */
     @Override
-    public ANALOG_TYPE shutdown(Context context){
+    public ANALOG_TYPE shutdownInternal(Context context){
         // remove all listeners
         valueChangeEventManager.clear();
 

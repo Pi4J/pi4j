@@ -233,7 +233,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
 
     /** {@inheritDoc} */
     @Override
-    public DigitalOutput shutdown(Context context) throws ShutdownException {
+    public DigitalOutput shutdownInternal(Context context) throws ShutdownException {
         // set pin state to the shutdown state if a shutdown state is configured
         if(config().shutdownState() != null && config().shutdownState() != DigitalState.UNKNOWN){
             try {
@@ -242,7 +242,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
                 throw new ShutdownException(e);
             }
         }
-        return super.shutdown(context);
+        return super.shutdownInternal(context);
     }
 
     /** {@inheritDoc} */
