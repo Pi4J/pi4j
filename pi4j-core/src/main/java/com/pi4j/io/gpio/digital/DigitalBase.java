@@ -80,7 +80,10 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
 
     @Override
     public DIGITAL_TYPE addConsumer(Consumer<Boolean> listener) {
-        addListener((DigitalStateChangeListener) event -> listener.accept(event.state().equals(true)));
+        addListener((DigitalStateChangeListener) event -> {
+            DigitalState onState = config().onState() != null ? config().onState() : DigitalState.HIGH;
+            listener.accept(event.state().equals(onState));
+        });
         return (DIGITAL_TYPE)this;
     }
 
