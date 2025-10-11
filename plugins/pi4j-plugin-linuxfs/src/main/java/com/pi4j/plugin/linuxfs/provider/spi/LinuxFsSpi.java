@@ -43,7 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -364,28 +363,31 @@ public class LinuxFsSpi extends SpiBase implements Spi {
     public int write(byte[] data, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, data.length);
 
-        int start = offset;
-        while (start < data.length) {
-            PeerAccessibleMemory buf = new PeerAccessibleMemory(SPI_BUFFSIZ);
-            spi_ioc_transfer txEntry = new spi_ioc_transfer() ;
-            int end = Math.min(data.length, start + SPI_BUFFSIZ);
-            byte[] chunk = Arrays.copyOfRange(data, start, end);
-            buf.write(0, chunk, 0 , chunk.length);
+        int position = offset;
+        int dataEnd = offset + length;
+        PeerAccessibleMemory buf = new PeerAccessibleMemory(SPI_BUFFSIZ);
+        spi_ioc_transfer txEntry = new spi_ioc_transfer();
+        txEntry.tx_buf = buf.getPeer();
+        txEntry.rx_buf = 0;
+        txEntry.bits_per_word = BITS8;
+        txEntry.speed_hz = config.baud();
+        txEntry.delay_usecs = 0;
+        txEntry.cs_change = 0;
+
+        while (position < dataEnd) {
+            int chunkEnd = Math.min(dataEnd, position + SPI_BUFFSIZ);
+            int chunkLength = chunkEnd - position;
+            buf.write(0, data, position, chunkLength);
             // set fields in transfer msg
-            txEntry.tx_buf = buf.getPeer();
-            txEntry.rx_buf = 0;
-            txEntry.bits_per_word = BITS8;
-            txEntry.speed_hz = config.baud();
-            txEntry.delay_usecs = 0;
-            txEntry.len = chunk.length ;
-            txEntry.cs_change = 1 ;
+            txEntry.len = chunkLength;
             int ret = libc.ioctl(fd, SPI_IOC_MESSAGE(1), txEntry);
             logger.trace("[SPI::WRITE] <- Number bytes {} ", ret);
             if (ret < 0) {
                 logger.error("Could not write SPI message. ret {}, error: {}", ret, Native.getLastError());
                 length = 0;
+                break;
             }
-            start += SPI_BUFFSIZ;
+            position += chunkLength;
         }
 
         return length;
