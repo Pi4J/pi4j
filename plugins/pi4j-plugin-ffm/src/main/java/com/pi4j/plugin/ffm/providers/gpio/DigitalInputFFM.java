@@ -28,7 +28,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,16 +115,23 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
 
     @Override
     public DigitalInput addListener(DigitalStateChangeListener... listener) {
-        var factory =  Thread.ofVirtual().name(deviceName + "-event-detection-pin-", pin)
+        logger.trace("{}-{} - Adding new listener", deviceName, pin);
+        var factory = Thread.ofVirtual().name(deviceName + "-event-detection-pin-", pin)
             .uncaughtExceptionHandler(((_, e) -> logger.error(e.getMessage(), e)))
             .factory();
         this.eventTaskProcessor = Executors.newSingleThreadExecutor(factory);
         this.watcher = new EventWatcher(chipFileDescriptor, PinEvent.BOTH, events -> {
             for (DetectedEvent detectedEvent : events) {
-                this.dispatch(new DigitalStateChangeEvent<DigitalInput>(this, DigitalState.getState(detectedEvent.pinEvent().getValue())));
+                var state = switch (detectedEvent.pinEvent()) {
+                    case RISING -> DigitalState.HIGH;
+                    case FALLING -> DigitalState.LOW;
+                    default -> DigitalState.UNKNOWN;
+                };
+                this.dispatch(new DigitalStateChangeEvent<DigitalInput>(this, state));
             }
-        }, 16);
+        });
         eventTaskProcessor.submit(watcher);
+        logger.trace("{}-{} - New listener added", deviceName, pin);
         return super.addListener(listener);
     }
 
@@ -195,8 +201,6 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
         private final int fd;
         private final PinEvent pinEvent;
         private final PinEventProcessing eventProcessor;
-        private final int eventBufferSize;
-        private final Duration updatePeriod;
 
         private boolean stopWatching = false;
 
@@ -205,50 +209,42 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
          *
          * @param pinEvent        event
          * @param eventProcessor  event processor
-         * @param eventBufferSize event buffer size
          */
-        EventWatcher(int fd, PinEvent pinEvent, PinEventProcessing eventProcessor, int eventBufferSize) {
+        EventWatcher(int fd, PinEvent pinEvent, PinEventProcessing eventProcessor) {
             this.fd = fd;
             this.pinEvent = pinEvent;
             this.eventProcessor = eventProcessor;
-            this.eventBufferSize = eventBufferSize;
-            this.updatePeriod = Duration.ZERO;
-        }
-
-        /**
-         * Constructs the EventWatcher
-         *
-         * @param pinEvent       event
-         * @param eventProcessor event processor
-         * @param updatePeriod   update period
-         */
-        EventWatcher(int fd, PinEvent pinEvent, PinEventProcessing eventProcessor, Duration updatePeriod) {
-            this.fd = fd;
-            this.pinEvent = pinEvent;
-            this.eventProcessor = eventProcessor;
-            this.eventBufferSize = 1;
-            this.updatePeriod = updatePeriod;
         }
 
         @Override
         public void run() {
-            var pollFd = new PollingData(fd, (short) (PollFlag.POLLIN | PollFlag.POLLERR), (short) 0);
             var eventSize = (int) LineEvent.LAYOUT.byteSize();
             var timestamp = Instant.now();
             List<DetectedEvent> eventList = new ArrayList<>();
+            logger.trace("{} - Start polling GPIO Pin data at {}", Thread.currentThread().getName(), timestamp);
             while (!stopWatching) {
                 try {
+                    // PollingData structure need to be recreated each time, because poll does not erase revents between calls
+                    var pollData = new PollingData(fd, (short) (PollFlag.POLLIN | PollFlag.POLLPRI), (short) 0);
                     // number of file descriptors is set to 1, since we are polling only one pin
-                    // timeout is set to 25s for default
-                    var retPollFd = poll.poll(pollFd, 1, updatePeriod.equals(Duration.ZERO) ? EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS / 2 : (int) updatePeriod.toMillis());
-                    if (retPollFd == null) {
+                    // timeout is set to EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS / 2 to make sure we can gracefully shut down in a main thread.
+                    pollData = poll.poll(pollData, 1, EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS / 2);
+                    if (pollData == null) {
+                        var duration = timestamp.until(Instant.now()).toMillis();
+                        logger.trace("{} - No events detected: polling timeout at {} (took {}ms)", Thread.currentThread().getName(), timestamp, duration);
                         // timeout happened, process all left events, update timestamp
                         eventProcessor.process(eventList);
                         eventList.clear();
                         timestamp = Instant.now();
                         continue;
                     }
-                    if ((retPollFd.revents() & (PollFlag.POLLIN)) != 0) {
+                    if ((pollData.revents() & (PollFlag.POLLERR | PollFlag.POLLHUP | PollFlag.POLLNVAL)) != 0) {
+                        // internal error on polling
+                        logger.error("{} - Internal error during polling. Last polling data: {}", Thread.currentThread().getName(), pollData);
+                        stopWatching();
+                        continue;
+                    }
+                    if ((pollData.revents() & (PollFlag.POLLIN | PollFlag.POLLPRI)) != 0) {
                         // default minimum buffer size is 16 line events
                         // see https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/gpio.h#L185
                         var buf = file.read(fd, new byte[16 * eventSize], 16 * eventSize);
@@ -263,28 +259,23 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
                             var memoryBuffer = Arena.ofAuto().allocate(LineEvent.LAYOUT);
                             memoryBuffer.asByteBuffer().put(holder);
                             var event = LineEvent.createEmpty().from(memoryBuffer);
+                            logger.trace("{} - Detected new event: {}", Thread.currentThread().getName(), event);
                             // process only interested events
                             if ((event.id() & this.pinEvent.getValue()) != 0) {
-                                eventList.add(new DetectedEvent(event.timestampNs(), PinEvent.getByValue(event.id()), event.lineSeqno()));
+                                var pinEvent = PinEvent.getByValue(event.id());
+                                logger.trace("{} - Added to event list new state {}", Thread.currentThread().getName(), pinEvent);
+                                eventList.add(new DetectedEvent(event.timestampNs(), pinEvent, event.lineSeqno()));
                             }
                         }
-                        if (eventList.size() >= eventBufferSize && updatePeriod.equals(Duration.ZERO)) {
-                            // process by number of events
-                            eventProcessor.process(eventList);
-                            eventList.clear();
-                        } else if (timestamp.plus(updatePeriod).isBefore(Instant.now())) {
-                            // process by update period
-                            eventProcessor.process(eventList);
-                            eventList.clear();
-                            timestamp = Instant.now();
-                        }
-                    }
-                    if ((retPollFd.revents() & (PollFlag.POLLERR)) != 0) {
-                        // internal error on polling
-                        logger.error("Internal error during polling");
-                        stopWatching();
+                        logger.trace("{} - Total events: {}", Thread.currentThread().getName(), eventList.size());
+                        // process by number of events
+                        eventProcessor.process(eventList);
+                        eventList.clear();
+                        logger.trace("{} - Total processing took {}ms", Thread.currentThread().getName(), timestamp.until(Instant.now()).toMillis());
+                        timestamp = Instant.now();
                     }
                 } catch (Throwable e) {
+                    logger.error("{} - Error while polling pin", Thread.currentThread().getName(), e);
                     throw new Pi4JException(e);
                 }
             }
