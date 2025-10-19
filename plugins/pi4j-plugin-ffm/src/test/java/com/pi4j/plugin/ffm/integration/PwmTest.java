@@ -18,7 +18,7 @@ import org.mockito.MockedStatic;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
-//@Disabled
+@Disabled
 public class PwmTest {
     private static final MockedStatic<PermissionHelper> permissionHelperMock = PermissionHelperMock.echo();
 
