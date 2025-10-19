@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
@@ -54,7 +55,8 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
 
     // executor services for event watcher
     private ExecutorService eventTaskProcessor;
-    private EventWatcher watcher;
+    private final List<EventWatcher> watchers = new ArrayList<>();
+    private ThreadFactory threadFactory;
 
     private boolean closed = false;
 
@@ -116,11 +118,13 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
     @Override
     public DigitalInput addListener(DigitalStateChangeListener... listener) {
         logger.trace("{}-{} - Adding new listener", deviceName, pin);
-        var factory = Thread.ofVirtual().name(deviceName + "-event-detection-pin-", pin)
-            .uncaughtExceptionHandler(((_, e) -> logger.error(e.getMessage(), e)))
-            .factory();
-        this.eventTaskProcessor = Executors.newSingleThreadExecutor(factory);
-        this.watcher = new EventWatcher(chipFileDescriptor, PinEvent.BOTH, events -> {
+        if (threadFactory == null) {
+            this.threadFactory = Thread.ofVirtual().name(deviceName + "-event-detection-pin-", pin)
+                .uncaughtExceptionHandler(((_, e) -> logger.error(e.getMessage(), e)))
+                .factory();
+            this.eventTaskProcessor = Executors.newThreadPerTaskExecutor(threadFactory);
+        }
+        var watcher = new EventWatcher(chipFileDescriptor, PinEvent.BOTH, events -> {
             for (DetectedEvent detectedEvent : events) {
                 var state = switch (detectedEvent.pinEvent()) {
                     case RISING -> DigitalState.HIGH;
@@ -130,6 +134,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
                 this.dispatch(new DigitalStateChangeEvent<DigitalInput>(this, state));
             }
         });
+        watchers.add(watcher);
         eventTaskProcessor.submit(watcher);
         logger.trace("{}-{} - New listener added", deviceName, pin);
         return super.addListener(listener);
@@ -143,10 +148,15 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
             if (chipFileDescriptor > 0) {
                 file.close(chipFileDescriptor);
             }
-            if (watcher != null) {
+            logger.trace("{}-{} - Stopping event watchers", deviceName, pin);
+            for (EventWatcher watcher : watchers) {
                 watcher.stopWatching();
+            }
+            if (!watchers.isEmpty()) {
+                logger.trace("{}-{} - Gracefully shutting down event processor", deviceName, pin);
                 eventTaskProcessor.shutdown();
                 if (!eventTaskProcessor.awaitTermination(EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
+                    logger.trace("{}-{} - Timeout when shutting down event processor, halting it", deviceName, pin);
                     eventTaskProcessor.shutdownNow();
                 }
             }
@@ -293,7 +303,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
          *
          * @return true if event watcher is running
          */
-        public boolean isRunning() {
+        public synchronized boolean isRunning() {
             return !this.stopWatching;
         }
 
