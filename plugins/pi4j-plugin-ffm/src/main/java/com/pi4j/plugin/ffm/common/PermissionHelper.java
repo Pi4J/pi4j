@@ -40,6 +40,9 @@ public class PermissionHelper {
 
     private static final PermissionNative PERMISSION_NATIVE = new PermissionNative();
 
+    private static List<String> osGroups;
+    private static List<String> userGroups;
+
     /**
      * Checks user permissions to run pi4j:
      * - run with `sudo`. Prints warning message, skip checks
@@ -69,25 +72,28 @@ public class PermissionHelper {
             return;
         }
 
-        // opens database with groups
-        PERMISSION_NATIVE.openGroupDatabase();
+        if (osGroups == null) {
+            // opens database with groups
+            PERMISSION_NATIVE.openGroupDatabase();
 
-        var osGroups = new ArrayList<String>();
+            osGroups = new ArrayList<>();
 
-        // fill groups
-        var group = PERMISSION_NATIVE.getNextGroup();
-        while (group != null) {
-            osGroups.add(new String(group.grName()));
-            group = PERMISSION_NATIVE.getNextGroup();
+            // fill groups
+            var group = PERMISSION_NATIVE.getNextGroup();
+            while (group != null) {
+                osGroups.add(new String(group.grName()));
+                group = PERMISSION_NATIVE.getNextGroup();
+            }
+
+            // closes database with groups
+            PERMISSION_NATIVE.closeGroupDatabase();
         }
 
-        // closes database with groups
-        PERMISSION_NATIVE.closeGroupDatabase();
-
-        // gets user groups
-        var userGroupIds = PERMISSION_NATIVE.getGroupList(CURRENT_USER);
-        var userGroups = Arrays.stream(userGroupIds).mapToObj(PERMISSION_NATIVE::getGroupData).map(g -> new String(g.grName())).toList();
-
+        if (userGroups == null) {
+            // gets user groups
+            var userGroupIds = PERMISSION_NATIVE.getGroupList(CURRENT_USER);
+            userGroups = Arrays.stream(userGroupIds).mapToObj(PERMISSION_NATIVE::getGroupData).map(g -> new String(g.grName())).toList();
+        }
         // checking groups existence and user belonging to the groups
         switch (provider) {
             case DigitalInputFFMProviderImpl _, DigitalOutputFFMProviderImpl _, PwmFFMProviderImpl _ -> checkGroups(osGroups, userGroups, "gpio", "dialout");
