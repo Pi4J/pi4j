@@ -5,18 +5,23 @@ import com.pi4j.context.Context;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfigBuilder;
 import com.pi4j.io.pwm.PwmType;
+import com.pi4j.plugin.ffm.common.PermissionHelper;
+import com.pi4j.plugin.ffm.mocks.PermissionHelperMock;
 import com.pi4j.plugin.ffm.providers.pwm.PwmFFMProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.mockito.MockedStatic;
 
 import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
-@Disabled
+//@Disabled
 public class PwmTest {
+    private static final MockedStatic<PermissionHelper> permissionHelperMock = PermissionHelperMock.echo();
+
     private static Context pi4j;
     private static Pwm pwm;
 
@@ -35,6 +40,7 @@ public class PwmTest {
     @AfterAll
     public static void shutdown() {
         pi4j.shutdown();
+        permissionHelperMock.close();
     }
 
     @Test
