@@ -6,6 +6,9 @@ package com.pi4j.plugin.ffm.common.poll;
  */
 public final class PollFlag {
 
-    public static final int POLLIN	= 0x0001;
-    public static final int POLLERR	= 0x0008;
+    public static final int POLLIN = 0x0001;
+    public static final int POLLPRI = 0x0002;
+    public static final int POLLERR = 0x0008;
+    public static final int POLLHUP = 0x0010;
+    public static final int POLLNVAL = 0x0020;
 }

@@ -23,16 +23,16 @@ public class PollNative {
      * @param pollingData data to filled by poll
      * @param size        size of the event buffer for polling data
      * @param timeout     time needed for timeout to occur, in milliseconds
-     * @return filled {@link PollingData} with events
+     * @return filled {@link PollingData} with events or null if no events detected
      */
     public PollingData poll(PollingData pollingData, int size, int timeout) {
         try {
-            var pollingDataMemorySegment = context.allocate(pollingData.getMemoryLayout());
+            var pollingDataMemorySegment = context.allocate(PollingData.LAYOUT);
             pollingData.to(pollingDataMemorySegment);
             var capturedState = context.allocateCapturedState();
             var callResult = (int) PollContext.POLL.invoke(capturedState, pollingDataMemorySegment, size, timeout);
             processError(callResult, capturedState, "poll", pollingData, size, timeout);
-            return pollingData.from(pollingDataMemorySegment);
+            return callResult > 0 ? PollingData.create(pollingDataMemorySegment) : null;
         } catch (Throwable e) {
             throw new Pi4JException(e.getMessage(), e);
         }

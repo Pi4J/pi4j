@@ -17,7 +17,6 @@ public record PollingData(int fd, short events, short revents) implements Pi4JLa
     public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
         ValueLayout.JAVA_INT.withName("fd"),
         ValueLayout.JAVA_SHORT.withName("events"),
-        MemoryLayout.paddingLayout(2),
         ValueLayout.JAVA_SHORT.withName("revents")
     );
 
