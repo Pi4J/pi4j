@@ -79,12 +79,17 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
     }
 
     @Override
-    public DIGITAL_TYPE addConsumer(Consumer<Boolean> listener) {
-        addListener((DigitalStateChangeListener) event -> {
-            DigitalState onState = config().onState() != null ? config().onState() : DigitalState.HIGH;
-            listener.accept(event.state().equals(onState));
-        });
-        return (DIGITAL_TYPE)this;
+    public Consumer<Boolean> addConsumer(Consumer<Boolean> listener) {
+        addListener(new ConsumerAdapter(listener, config().onState() != null ? config().onState() : DigitalState.HIGH));
+        return listener;
+    }
+
+    @Override
+    public DIGITAL_TYPE removeConsumer(Consumer<Boolean> listener) {
+        stateChangeEventManager.remove(
+            (candidate) -> (candidate instanceof ConsumerAdapter)
+                && ((ConsumerAdapter) candidate).consumer == listener);
+        return (DIGITAL_TYPE) this;
     }
 
     /** {@inheritDoc} */
@@ -159,5 +164,20 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
 
         // return TRUE if the current state matches the configured ON state
         return state().equals(onState);
+    }
+
+    private static class ConsumerAdapter implements DigitalStateChangeListener {
+        private final Consumer<Boolean> consumer;
+        private final DigitalState onState;
+
+        private ConsumerAdapter(Consumer<Boolean> consumer, DigitalState onState) {
+            this.consumer = consumer;
+            this.onState = onState;
+        }
+
+        @Override
+        public void onDigitalStateChange(DigitalStateChangeEvent event) {
+            consumer.accept(event.state().equals(onState));
+        }
     }
 }

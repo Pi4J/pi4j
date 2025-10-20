@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.function.Predicate;
 
 public class EventManager<SOURCE_TYPE, LISTENER_TYPE extends Listener, EVENT_TYPE> {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -55,6 +56,11 @@ public class EventManager<SOURCE_TYPE, LISTENER_TYPE extends Listener, EVENT_TYP
 
     public SOURCE_TYPE remove(LISTENER_TYPE ... listener){
         listeners.removeAll(List.of(listener));
+        return this.source;
+    }
+
+    public SOURCE_TYPE remove(Predicate<LISTENER_TYPE> condition){
+        listeners.removeIf(condition);
         return this.source;
     }
 

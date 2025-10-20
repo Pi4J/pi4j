@@ -44,7 +44,9 @@ public interface ListenableOnOffRead<T> extends OnOffRead<T> {
      * Adds a boolean consumer as a listener to this object. This method name was chosen to avoid any ambiguity with
      * addListener in Digital.
      */
-    T addConsumer(Consumer<Boolean> listener);
+    Consumer<Boolean> addConsumer(Consumer<Boolean> listener);
+
+    T removeConsumer(Consumer<Boolean> listener);
 
     /**
      * A simple implementation that will notify listeners for state-changing on()/off() (or setState()) calls.
@@ -88,8 +90,14 @@ public interface ListenableOnOffRead<T> extends OnOffRead<T> {
         }
 
         @Override
-        public Impl addConsumer(Consumer<Boolean> listener) {
+        public Consumer<Boolean> addConsumer(Consumer<Boolean> listener) {
             listeners.add(listener);
+            return listener;
+        }
+
+        @Override
+        public Impl removeConsumer(Consumer<Boolean> listener) {
+            listeners.remove(listener);
             return this;
         }
     }
