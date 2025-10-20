@@ -9,6 +9,7 @@ import com.pi4j.io.pwm.*;
 import com.pi4j.plugin.ffm.common.PermissionHelper;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
+import com.pi4j.util.DeferredDelay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,15 +49,15 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
         PermissionHelper.checkDevicePermissions(CHIP_PATH + pwmChipNumber, config);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Pwm initialize(Context context) throws InitializeException {
         var pwmChipFile = CHIP_PATH + pwmChipNumber;
-        if (!deviceExists(pwmChipFile)) {
-            throw new IllegalArgumentException("PWM Chip at path '" + pwmChipFile + "' does not exist!");
-        }
+
         var pwmFile = pwmChipFile + PWM_PATH + pwmBusNumber;
-        if (!deviceExists(pwmFile)) {
+        if (deviceNotExists(pwmFile)) {
             logger.trace("{} - no PWM Bus found... will try to export PWM Bus first.", pwmFile);
             var npwmFd = file.open(pwmChipFile + CHIP_NPWM_PATH, FileFlag.O_RDONLY);
             var maxChannel = getIntegerContent(file.read(npwmFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
@@ -67,20 +68,21 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
             var exportFd = file.open(pwmChipFile + CHIP_EXPORT_PATH, FileFlag.O_WRONLY);
             file.write(exportFd, getByteContent(pwmBusNumber));
             file.close(exportFd);
-            if (!deviceExists(pwmFile)) {
+            if (deviceNotExists(pwmFile)) {
                 throw new IllegalArgumentException("PWM Bus at path '" + pwmFile + "' cannot be exported!");
             }
         }
         this.pwmPath = pwmFile;
 
-        var stateFd = file.open(this.pwmPath + ENABLE_PATH, FileFlag.O_RDWR);
+        waitForPermissions(this.pwmPath + ENABLE_PATH, 0);
+        var stateFd = file.open(this.pwmPath + ENABLE_PATH, FileFlag.O_RDONLY);
         this.onState = getIntegerContent(file.read(stateFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE)) == 1;
         file.close(stateFd);
 
         if (config.dutyCycle() != null) {
             this.dutyCycle = config.dutyCycle();
         } else {
-            var dutyCycleFd = file.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_RDWR);
+            var dutyCycleFd = file.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_RDONLY);
             this.dutyCycle = getIntegerContent(file.read(dutyCycleFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
             file.close(dutyCycleFd);
         }
@@ -88,7 +90,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
         if (config.polarity() != null) {
             this.polarity = config.polarity();
         } else {
-            var polarityFd = file.open(this.pwmPath + POLARITY_PATH, FileFlag.O_RDWR);
+            var polarityFd = file.open(this.pwmPath + POLARITY_PATH, FileFlag.O_RDONLY);
             this.polarity = PwmPolarity.parse(getStringContent(file.read(polarityFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE)));
             file.close(polarityFd);
         }
@@ -97,7 +99,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
             this.frequency = config.frequency();
             this.period = NANOS_IN_SECOND / this.frequency;
         } else {
-            var periodFd = file.open(this.pwmPath + PERIOD_PATH, FileFlag.O_RDWR);
+            var periodFd = file.open(this.pwmPath + PERIOD_PATH, FileFlag.O_RDONLY);
             this.period = getIntegerContent(file.read(periodFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
             file.close(periodFd);
         }
@@ -185,10 +187,30 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
         return String.valueOf(number).getBytes();
     }
 
-    private boolean deviceExists(String path) {
+    private boolean deviceNotExists(String path) {
         var access = file.access(path, FileFlag.F_OK);
         logger.trace("{} - device has access flag '{}'", pwmPath, access);
-        return access == 0;
+        return access != 0;
+    }
+
+    /**
+     * Waits the udev rules to be applied for 100ms at most.
+     *
+     * @param path    path of the file
+     * @param timeout counting timeout
+     */
+    private void waitForPermissions(String path, int timeout) {
+        if (timeout > 100) {
+            throw new Pi4JException("Timeout occurred while waiting for permissions");
+        }
+        logger.trace("{} - Waiting for permissions '{}' for {}ms", pwmPath, path, timeout);
+        var access = file.access(path, FileFlag.R_OK);
+        if (access != 0) {
+            var deferredDelay = new DeferredDelay();
+            deferredDelay.setDelayMillis(10);
+            deferredDelay.materializeDelay();
+            waitForPermissions(path, timeout + 10);
+        }
     }
 
 
