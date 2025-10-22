@@ -16,7 +16,7 @@ public class I2CFFMProviderImpl extends I2CProviderBase implements I2CProvider {
 
     @Override
     public int getPriority() {
-        return 1;
+        return 200;
     }
 
     /**
