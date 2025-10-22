@@ -16,7 +16,7 @@ public class PwmFFMProviderImpl extends PwmProviderBase implements PwmProvider {
 
     @Override
     public int getPriority() {
-        return 1;
+        return 200;
     }
 
     /**

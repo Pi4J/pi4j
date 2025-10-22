@@ -16,7 +16,7 @@ public class SpiFFMProviderImpl extends SpiProviderBase implements SpiProvider {
 
     @Override
     public int getPriority() {
-        return 1;
+        return 200;
     }
 
     @Override

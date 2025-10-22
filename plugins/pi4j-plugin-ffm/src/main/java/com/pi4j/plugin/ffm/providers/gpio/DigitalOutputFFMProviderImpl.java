@@ -28,7 +28,7 @@ public class DigitalOutputFFMProviderImpl extends DigitalOutputProviderBase impl
 
     @Override
     public int getPriority() {
-        return 1;
+        return 200;
     }
 
     @Override
