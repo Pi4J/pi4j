@@ -41,7 +41,6 @@ import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.util.Objects;
 import java.util.Scanner;
@@ -334,27 +333,21 @@ public class LinuxFsSpi extends SpiBase implements Spi {
     /**
      * {@inheritDoc}
      * write
-     *
-     *   SPI_BUFFSIZ most often is set to 4096.  See initialize()
-     * This implementation can write blocks greater than 4096 byte
+     * <p>
+     * SPI_BUFFSIZ most often is set to 4096.  See initialize()
+     * for the current configured size.
+     * This implementation can write blocks greater than SPI_BUFFSIZ byte
      * 'however', read and understand how this is accomplished.
-     *
-     * A write of data no greater than 4096 bytes is accomplished with
+     * <p>
+     * A write of data greater than SPI_BUFFSIZ bytes is accomplished with
      * a single SPI write operation.
      * So CE line low, write bytes, CE line high
+     * <p>
+     * A write greater than SPI_BUFFSIZ bytes will be segmented to multiple
+     * spi_ioc_transfer.  All spi_ioc_transfer will be written to the kernel
+     * in a single IOCTL
      *
-     * A write greater than 4096 bytes will be segmented to multiple writes
-     * each 4096  bytes in length, the last write is the MOD value.
-     * So, CE line low, write first 4096 bytes CE line high.  This
-     * pattern will repeat until the last bytes length MOD 4096 are written.
-     * This means multiple SPI transaction with you SPI device. If CE line
-     * toggling creates problems with your SPI device your application
-     * can use a vacant GPIO configured as an Output pin and your
-     * application keep the CE pin low during the duration of the call to
-     * spi,write.
-     *
-     *
-     * @param data data array of bytes to be written
+     * @param data   data array of bytes to be written
      * @param offset offset in data buffer to start at
      * @param length number of bytes to be written
      * @return
@@ -363,36 +356,52 @@ public class LinuxFsSpi extends SpiBase implements Spi {
     public int write(byte[] data, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, data.length);
 
-        int position = offset;
-        int dataEnd = offset + length;
-        PeerAccessibleMemory buf = new PeerAccessibleMemory(SPI_BUFFSIZ);
-        spi_ioc_transfer txEntry = new spi_ioc_transfer();
-        txEntry.tx_buf = buf.getPeer();
-        txEntry.rx_buf = 0;
-        txEntry.bits_per_word = BITS8;
-        txEntry.speed_hz = config.baud();
-        txEntry.delay_usecs = 0;
-        txEntry.cs_change = 0;
-
-        while (position < dataEnd) {
-            int chunkEnd = Math.min(dataEnd, position + SPI_BUFFSIZ);
-            int chunkLength = chunkEnd - position;
-            buf.write(0, data, position, chunkLength);
+        int numberXferEntries = (length + SPI_BUFFSIZ -1) / SPI_BUFFSIZ;
+        spi_ioc_transfer[] transferArray = getTransferArray(numberXferEntries);
+        Memory[] peerArray = getPeerMem(numberXferEntries, SPI_BUFFSIZ);
+        int start = offset;
+        int lastOffset = data.length + offset;
+        int entryNum = 0;
+        while (start < lastOffset) {
+            spi_ioc_transfer txEntry = transferArray[entryNum];
+            int end = Math.min(lastOffset, start + SPI_BUFFSIZ);
+            peerArray[entryNum].write(0, data, start, end - start);
             // set fields in transfer msg
-            txEntry.len = chunkLength;
-            int ret = libc.ioctl(fd, SPI_IOC_MESSAGE(1), txEntry);
-            logger.trace("[SPI::WRITE] <- Number bytes {} ", ret);
-            if (ret < 0) {
-                logger.error("Could not write SPI message. ret {}, error: {}", ret, Native.getLastError());
-                length = 0;
-                break;
-            }
-            position += chunkLength;
+            txEntry.tx_buf = Memory.nativeValue(peerArray[entryNum]);
+            txEntry.rx_buf = 0;
+            txEntry.bits_per_word = BITS8;
+            txEntry.speed_hz = config.baud();
+            txEntry.delay_usecs = 0;
+            txEntry.len = end - start;
+            txEntry.cs_change = 0;
+            transferArray[entryNum] = txEntry;
+            entryNum++;
+            start += SPI_BUFFSIZ;
+        }
+        int ret = libc.ioctl(fd, SPI_IOC_MESSAGE(numberXferEntries), (Object) transferArray);
+        logger.trace("[SPI::WRITE] <- Number bytes {} ", ret);
+
+        if (ret < 0) {
+            logger.error("Could not write SPI message. ret {}, error: {}", ret, Native.getLastError());
+            length = 0;
         }
 
         return length;
     }
 
+
+    private static spi_ioc_transfer[] getTransferArray(int numberEntries) {
+        return (spi_ioc_transfer[]) new spi_ioc_transfer().toArray(numberEntries);
+    }
+
+    private static  Memory[] getPeerMem(int numberEntries, int size){
+        Memory[] memArray = new Memory[numberEntries] ;;
+        for (int i = 0 ; i <  numberEntries ; i++){
+            PeerAccessibleMemory buf = new PeerAccessibleMemory(size) ;
+            memArray[i] = new Memory(size) ;
+        }
+        return memArray ;
+    }
     /**
      * Extension of Memory to allow direct access to the native peer pointer. This is required because
      * the {@link spi_ioc_transfer} structure uses a long for the tx_buf and rx_buf fields but a
