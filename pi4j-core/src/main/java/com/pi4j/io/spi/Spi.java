@@ -416,7 +416,7 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
      */
     default int registerRead(byte[] write, int writeOffset, int writeNumberOfBytes,  short writeDelayUsecs, byte[] read, int readOffset, int readNumberOfBytes,  short readDelayUsecs) {
-        throw new IllegalStateException("Not supported in this provider. \n See https://www.pi4j.com/documentation/providers/");
+        throw new IllegalStateException("registerRead Not supported in this provider. \n See https://www.pi4j.com/documentation/providers/");
     }
 
 
