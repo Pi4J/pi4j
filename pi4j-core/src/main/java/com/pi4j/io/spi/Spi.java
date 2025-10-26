@@ -368,10 +368,10 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
     }
 
     // ------------------------------------------------------------------------------------
-    //  Register Read
+    //  writeRead
     // ------------------------------------------------------------------------------------
     /**
-     * This function writes multiple bytes to the SPI device and then reads bytes from the device
+     * This function writes bytes to the SPI device and then reads bytes from the device
      * Write data is taken from the 'buffer' byte array, data
      * read back from the SPI device is then copied to the 'read' byte array
      *
@@ -383,21 +383,22 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
      * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
      */
-    default int registerRead(byte[] buffer, int writeLength,  byte[] read,  int readlength) {
-        return registerRead(buffer, 0, writeLength, (short) 0, read, 0, readlength, (short) 0);
+    default int writeRead(byte[] buffer, int writeLength,  byte[] read,  int readlength) {
+        return writeRead(buffer, 0, writeLength, (short) 0, read, 0, readlength, (short) 0);
     }
 
 
     /**
-     * This function writes multiple bytes to the SPI device and then reads bytes from the device
-     *  Write data is taken from the 'buffer' byte array
-     * from the given 'writeOffset' index to the specified 'writeLength' (number of bytes).  Data
-     * read back from the SPI device is then copied to the 'read' byte array starting
+     * This function writes bytes to the SPI device and then reads bytes from the device.
+     *  Write data is taken from the 'buffer' byte array from the given 'writeOffset' index to
+     *  the specified 'writeLength' (number of bytes).
+     *  Data read back from the SPI device is then copied to the 'read' byte array starting
      * at the given 'readOffset' using the 'readLength' (number of bytes).  The 'buffer' and  'read' byte
-     * array must be at least the size of the defined 'length' + 'offset'.
+     * array must be at least the size of their defined 'length' + 'offset'.
      *
      * In addition. both the write and read operation can provide a configurable delay
-     * allowing the effected SPI chip complete any processing.
+     * allowing the effected SPI chip to complete any processing. The write operation and the read
+     * operation each have an individual delay value.
      *
      * @param write              the array of bytes to write to the SPI device and to store read data
      *                           back from the SPI device
@@ -416,8 +417,8 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
      * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
      */
-    default int registerRead(byte[] write, int writeOffset, int writeNumberOfBytes,  short writeDelayUsecs, byte[] read, int readOffset, int readNumberOfBytes,  short readDelayUsecs) {
-        throw new IllegalStateException("registerRead Not supported in this provider. \n See https://www.pi4j.com/documentation/providers/");
+    default int writeRead(byte[] write, int writeOffset, int writeNumberOfBytes,  short writeDelayUsecs, byte[] read, int readOffset, int readNumberOfBytes,  short readDelayUsecs) {
+        throw new IllegalStateException("writeRead Not supported in this provider. \n See https://www.pi4j.com/documentation/providers/");
     }
 
 

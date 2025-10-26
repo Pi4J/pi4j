@@ -371,7 +371,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
     }
 
     @Override
-    public int registerRead(byte[] write, int writeOffset, int writeNumberOfBytes, short writeDelayUsec, byte[] read, int readOffset, int readNumberOfBytes, short readDelayUsec) {
+    public int writeRead(byte[] write, int writeOffset, int writeNumberOfBytes, short writeDelayUsec, byte[] read, int readOffset, int readNumberOfBytes, short readDelayUsec) {
         final int firstRecord = 0;
         final int secondRecord = 1;
         final int totalRecords = 2;
@@ -410,7 +410,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
 
         logger.trace("[SPI::RegRead] <- Number bytes read {} ", ret);
         if (ret < 0) {
-            logger.error("Could not write SPI message. ret {}, error: {}", ret, Native.getLastError());
+            logger.error("Failed ioctl SPI message. ret {}, error: {}", ret, Native.getLastError());
         }
         rxBuf.read(0, read, readOffset, readNumberOfBytes);
 
