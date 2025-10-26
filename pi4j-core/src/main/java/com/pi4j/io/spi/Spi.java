@@ -117,7 +117,8 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      *
      * @param write the array of bytes to write to the SPI device
      * @param writeOffset the starting offset position in the provided 'write' buffer to
-     *                    start writing to the SPI device from.     * @param read the array of bytes to store read data in from the SPI device
+     *                    start writing to the SPI device from.
+     * @param read the array of bytes to store read data in from the SPI device
      * @param readOffset the starting offset position in the provided 'read' buffer to place
      *                   data bytes read from the SPI device.
      * @param numberOfBytes the number of bytes to transfer/exchange (read &amp; read))
