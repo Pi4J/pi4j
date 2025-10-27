@@ -4,6 +4,7 @@ import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfigBuilder;
+import com.pi4j.io.pwm.PwmPreset;
 import com.pi4j.io.pwm.PwmType;
 import com.pi4j.plugin.ffm.common.PermissionHelper;
 import com.pi4j.plugin.ffm.mocks.PermissionHelperMock;
@@ -15,10 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.mockito.MockedStatic;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
-@Disabled
+//@Disabled
 public class PwmTest {
     private static final MockedStatic<PermissionHelper> permissionHelperMock = PermissionHelperMock.echo();
 
@@ -48,7 +51,23 @@ public class PwmTest {
         pwm.on();
         pwm.off();
         pwm.setFrequency(500);
+        pwm.setDutyCycle(5);
         pwm.on();
+        pwm.off();
+        pwm.on();
+        pwm.setFrequency(10_000);
+        pwm.setDutyCycle(10);
+        pwm.off();
+    }
+
+    @Test
+    public void testPwmChangeValues() {
+        pwm.on();
+        pwm.setFrequency(500);
+        pwm.setDutyCycle(50);
+        assertEquals(500, pwm.actualFrequency());
+        assertEquals(50, pwm.dutyCycle());
+        pwm.off();
     }
 
 }

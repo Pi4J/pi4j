@@ -87,8 +87,10 @@ public class SpiFFM extends SpiBase implements Spi {
         if (read != null) {
             ByteBuffer.wrap(read).put(readBytes);
             logger.trace("{} - Read buffer: {}", path, HexFormatter.format(read));
+            return readBytes.length;
+        } else {
+            return spiTransfer.getTxBuffer().length;
         }
-        return readBytes.length;
     }
 
     @Override
@@ -98,7 +100,7 @@ public class SpiFFM extends SpiBase implements Spi {
 
     @Override
     public int write(byte[] data, int offset, int length) {
-        return transfer(data, offset, new byte[data.length], 0, length);
+        return transfer(data, offset, null, 0, length);
     }
 
     @Override

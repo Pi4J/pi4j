@@ -84,7 +84,7 @@ public class I2CDirect extends I2CBase<I2CBusFFM> {
 
     @Override
     public int read() {
-        return internalRead(0, new byte[1])[0];
+        return internalRead(1, new byte[1])[0];
     }
 
     @Override

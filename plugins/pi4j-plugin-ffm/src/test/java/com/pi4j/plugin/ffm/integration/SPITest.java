@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
-@Disabled
+//@Disabled
 public class SPITest {
     private static final String IN_CONTAINER = System.getenv("IN_CONTAINER");
     private static Context pi4j;
@@ -27,18 +27,18 @@ public class SPITest {
 
     @BeforeAll
     public static void setup() throws InterruptedException, IOException {
-        if (IN_CONTAINER == null || !IN_CONTAINER.equals("true")) {
-            var scriptPath = Paths.get("src/test/resources/spi-setup.sh");
-            var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.toFile().getAbsolutePath()).start();
-            var result = setupScript.waitFor();
-            if (result != 0) {
-                var username = System.getProperty("user.name");
-                var errorOutput = new String(setupScript.getErrorStream().readAllBytes());
-                fail("Failed to setup SPI Test: \n" + errorOutput + "\n" +
-                    "Probably you need to add the SPI bash script to sudoers file " +
-                    "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
-            }
-        }
+//        if (IN_CONTAINER == null || !IN_CONTAINER.equals("true")) {
+//            var scriptPath = Paths.get("src/test/resources/spi-setup.sh");
+//            var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.toFile().getAbsolutePath()).start();
+//            var result = setupScript.waitFor();
+//            if (result != 0) {
+//                var username = System.getProperty("user.name");
+//                var errorOutput = new String(setupScript.getErrorStream().readAllBytes());
+//                fail("Failed to setup SPI Test: \n" + errorOutput + "\n" +
+//                    "Probably you need to add the SPI bash script to sudoers file " +
+//                    "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
+//            }
+//        }
 
         pi4j = Pi4J.newContextBuilder()
             .add(new SpiFFMProviderImpl())
@@ -51,37 +51,40 @@ public class SPITest {
     public static void shutdown() throws InterruptedException, IOException {
         pi4j.shutdown();
 
-        if (IN_CONTAINER == null || !IN_CONTAINER.equals("true")) {
-            var scriptPath = Paths.get("src/test/resources/spi-clean.sh");
-            var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.toFile().getAbsolutePath()).start();
-            var result = setupScript.waitFor();
-            if (result != 0) {
-                var username = System.getProperty("user.name");
-                var errorOutput = new String(setupScript.getErrorStream().readAllBytes());
-                fail("Failed to cleanup SPI Test: \n" + errorOutput + "\n" +
-                    "Probably you need to add the SPI bash script to sudoers file " +
-                    "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
-            }
-        }
+//        if (IN_CONTAINER == null || !IN_CONTAINER.equals("true")) {
+//            var scriptPath = Paths.get("src/test/resources/spi-clean.sh");
+//            var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.toFile().getAbsolutePath()).start();
+//            var result = setupScript.waitFor();
+//            if (result != 0) {
+//                var username = System.getProperty("user.name");
+//                var errorOutput = new String(setupScript.getErrorStream().readAllBytes());
+//                fail("Failed to cleanup SPI Test: \n" + errorOutput + "\n" +
+//                    "Probably you need to add the SPI bash script to sudoers file " +
+//                    "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
+//            }
+//        }
     }
 
     @Test
     public void testSPITransfer() {
-        var buffer = new byte[4];
-        spi.transfer("Test".getBytes(), 0, buffer, 0, 4 );
-        assertEquals("Test", new String(buffer));
+        var buffer = new byte[5];
+        spi.transfer("Test1".getBytes(), 0, buffer, 0, 5 );
+        assertEquals("Test1", new String(buffer));
     }
 
     @Test
     public void testSPIWrite() {
-        var written = spi.write("Test".getBytes());
-        assertEquals(4, written);
+        var written = spi.write("Test2".getBytes());
+        assertEquals(5, written);
     }
 
     @Test
     public void testSPIRead() {
-        var buffer = new byte[4];
+        var written = spi.write("Test3".getBytes());
+        assertEquals(5, written);
+
+        var buffer = new byte[5];
         spi.read(buffer);
-        assertArrayEquals(new byte[] {1, 1, 1, 1}, buffer);
+        assertEquals("Test3", new String(buffer));
     }
 }

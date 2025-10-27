@@ -51,9 +51,9 @@ public class SMBusNative implements AutoCloseable {
     public byte readByte(int fd) {
         try {
             var capturedState = context.allocateCapturedState();
-            var callResult = (byte) READ_BYTE.invoke(capturedState, fd);
+            var callResult = Byte.toUnsignedInt((byte) READ_BYTE.invoke(capturedState, fd));
             processError(callResult, capturedState, "readByte", fd);
-            return callResult;
+            return (byte) callResult;
         } catch (Throwable e) {
             throw new Pi4JException(e.getMessage(), e);
         }
