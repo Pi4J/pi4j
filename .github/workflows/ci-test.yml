@@ -12,6 +12,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install dependencies
         run: sudo apt-get install --yes build-essential linux-headers-$(uname -r) sudo libi2c-dev gcc-arm-linux-gnueabihf  gcc-aarch64-linux-gnu libtool tree
+      - name: Install JDK25
+        uses: sfesenko/setup-sdkman@v1
+        with:
+          deps: java:25-amzn
       - name: Build entire Pi4J Project
         run: ./mvnw clean install -Pnative,cross-compile --batch-mode
 
