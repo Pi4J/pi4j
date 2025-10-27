@@ -23,26 +23,24 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
-//@Disabled
 public class I2CSMBusTest {
-    private static final String IN_CONTAINER = System.getenv("IN_CONTAINER");
     private static Context pi4j;
     private static I2C i2c;
 
     @BeforeAll
     public static void setup() throws InterruptedException, IOException {
-//        if (IN_CONTAINER == null || !IN_CONTAINER.equals("true")) {
-//            var scriptPath = Paths.get("src/test/resources/i2c-setup.sh");
-//            var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.toFile().getAbsolutePath()).start();
-//            var result = setupScript.waitFor();
-//            if (result != 0) {
-//                var username = System.getProperty("user.name");
-//                var errorOutput = new String(setupScript.getErrorStream().readAllBytes());
-//                fail("Failed to setup I2C Test: \n" + errorOutput + "\n" +
-//                    "Probably you need to add the I2C bash script to sudoers file " +
-//                    "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
-//            }
-//        }
+        var scriptPath = Paths.get("src/test/resources/").toFile().getAbsoluteFile();
+        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.getAbsolutePath() + "/i2c-setup.sh");
+        setupScript.directory(scriptPath);
+        var process = setupScript.start();
+        var result = process.waitFor();
+        if (result != 0) {
+            var username = System.getProperty("user.name");
+            var errorOutput = new String(process.getErrorStream().readAllBytes());
+            fail("Failed to setup I2C Test: \n" + errorOutput + "\n" +
+                "Probably you need to add the I2C bash script to sudoers file " +
+                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.getParentFile().getAbsolutePath() + "/'");
+        }
 
         pi4j = Pi4J.newContextBuilder()
             .add(new I2CFFMProviderImpl())
@@ -54,18 +52,18 @@ public class I2CSMBusTest {
     @AfterAll
     public static void shutdown() throws InterruptedException, IOException {
         pi4j.shutdown();
-//        if (IN_CONTAINER == null || !IN_CONTAINER.equals("true")) {
-//            var scriptPath = Paths.get("src/test/resources/i2c-clean.sh");
-//            var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.toFile().getAbsolutePath()).start();
-//            var result = setupScript.waitFor();
-//            if (result != 0) {
-//                var username = System.getProperty("user.name");
-//                var errorOutput = new String(setupScript.getErrorStream().readAllBytes());
-//                fail("Failed to cleanup I2C Test: \n" + errorOutput + "\n" +
-//                    "Probably you need to add the I2C bash script to sudoers file " +
-//                    "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
-//            }
-//        }
+        var scriptPath = Paths.get("src/test/resources/").toFile().getAbsoluteFile();;
+        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.getAbsolutePath() + "/i2c-clean.sh");
+        setupScript.directory(scriptPath);
+        var process = setupScript.start();
+        var result = process.waitFor();
+        if (result != 0) {
+            var username = System.getProperty("user.name");
+            var errorOutput = new String(process.getErrorStream().readAllBytes());
+            fail("Failed to cleanup I2C Test: \n" + errorOutput + "\n" +
+                "Probably you need to add the I2C bash script to sudoers file " +
+                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.getParentFile().getAbsolutePath() + "/'");
+        }
     }
 
     @Test
@@ -92,12 +90,11 @@ public class I2CSMBusTest {
 
     @Test
     public void testI2CWriteReadBlockData() {
-        var writeBuffer = new byte[] {0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
+        var writeBuffer = new byte[]{0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
         var write = i2c.writeRegister(0xFF, writeBuffer);
         assertEquals(6, write);
         var readBuffer = new byte[6];
         var read = i2c.readRegister(0xFF, readBuffer);
-        System.out.println(Arrays.toString(readBuffer));
         assertEquals(6, read);
         assertArrayEquals(writeBuffer, readBuffer);
     }

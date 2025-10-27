@@ -18,7 +18,11 @@ import com.pi4j.plugin.ffm.common.spi.SpiTransferBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SpiFFM extends SpiBase implements Spi {
     private static final Logger logger = LoggerFactory.getLogger(SpiFFM.class);
@@ -128,5 +132,22 @@ public class SpiFFM extends SpiBase implements Spi {
         if (!isOpen) {
             throw new Pi4JException("SPI bus  '" + path + "' is closed");
         }
+    }
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+        List<String> command = new ArrayList<>();
+        //command.add("/bin/bash");
+        command.add("./test.sh");
+
+        var scriptPath = Paths.get("plugins/pi4j-plugin-ffm/src/main/resources/").toFile().getAbsoluteFile();
+
+        ProcessBuilder pb = new ProcessBuilder(command);
+        pb.directory(scriptPath);
+        Process p = pb.start();
+        p.waitFor();
+        var errorOutput = new String(p.getErrorStream().readAllBytes());
+        var output = new String(p.getInputStream().readAllBytes());
+        System.out.println(errorOutput);
+        System.out.println(output);
     }
 }

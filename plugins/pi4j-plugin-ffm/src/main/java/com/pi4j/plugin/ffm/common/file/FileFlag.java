@@ -34,4 +34,5 @@ public final class FileFlag {
     // access flags
     public static final int F_OK = 0;
     public static final int R_OK = 0x04;
+    public static final int W_OK = 0x02;
 }

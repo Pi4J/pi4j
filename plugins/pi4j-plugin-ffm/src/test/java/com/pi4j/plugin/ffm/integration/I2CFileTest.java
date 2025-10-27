@@ -8,23 +8,37 @@ import com.pi4j.io.i2c.I2CImplementation;
 import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
-//@Disabled
 public class I2CFileTest {
     private static Context pi4j;
     private static I2C i2c;
 
     @BeforeAll
     public static void setup() throws InterruptedException, IOException {
+        var scriptPath = Paths.get("src/test/resources/").toFile().getAbsoluteFile();
+        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.getAbsolutePath() + "/i2c-setup.sh");
+        setupScript.directory(scriptPath);
+        var process = setupScript.start();
+        var result = process.waitFor();
+        if (result != 0) {
+            var username = System.getProperty("user.name");
+            var errorOutput = new String(process.getErrorStream().readAllBytes());
+            fail("Failed to setup I2C Test: \n" + errorOutput + "\n" +
+                "Probably you need to add the I2C bash script to sudoers file " +
+                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.getParentFile().getAbsolutePath() + "/'");
+        }
+
         pi4j = Pi4J.newContextBuilder()
             .add(new I2CFFMProviderImpl())
             .build();
@@ -35,6 +49,19 @@ public class I2CFileTest {
     @AfterAll
     public static void shutdown() throws InterruptedException, IOException {
         pi4j.shutdown();
+
+        var scriptPath = Paths.get("src/test/resources/").toFile().getAbsoluteFile();;
+        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.getAbsolutePath() + "/i2c-clean.sh");
+        setupScript.directory(scriptPath);
+        var process = setupScript.start();
+        var result = process.waitFor();
+        if (result != 0) {
+            var username = System.getProperty("user.name");
+            var errorOutput = new String(process.getErrorStream().readAllBytes());
+            fail("Failed to cleanup I2C Test: \n" + errorOutput + "\n" +
+                "Probably you need to add the I2C bash script to sudoers file " +
+                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.getParentFile().getAbsolutePath() + "/'");
+        }
     }
 
     @Test

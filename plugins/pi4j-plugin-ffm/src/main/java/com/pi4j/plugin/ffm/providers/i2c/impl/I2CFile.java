@@ -98,6 +98,12 @@ public class I2CFile extends I2CBase<I2CBusFFM> {
         var buffer = new byte[register.length + data.length];
         System.arraycopy(register, 0, buffer, 0, register.length);
         System.arraycopy(data, 0, buffer, register.length, data.length);
-        return i2CBus.execute(this, (i2cFileDescriptor) -> FILE.write(i2cFileDescriptor, buffer)) - 1;
+        return i2CBus.execute(this, (i2cFileDescriptor) -> FILE.write(i2cFileDescriptor, buffer)) - register.length;
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        i2CBus.close();
     }
 }
