@@ -41,7 +41,7 @@
             <version>5.18.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>com.pi4j</groupId>
             <artifactId>pi4j-plugin-linuxfs</artifactId>
             <version>${project.version}</version>
@@ -52,7 +52,7 @@
             <artifactId>pi4j-plugin-gpiod</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
     </dependencies>
     <!-- STANDARD BUILD INSTRUCTIONS -->
     <build>

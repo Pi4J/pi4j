@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class SPITest {
     private static Context pi4j;
 
-    private static final MockedStatic<PermissionHelper> permissionHelperMock = PermissionHelperMock.echo();
+    private static final MockedStatic<PermissionHelper> permissionHelperMock = PermissionHelperMock.setup();
 
     @BeforeAll
     public static void setup() {
@@ -39,8 +39,8 @@ public class SPITest {
 
     @Test
     public void testCreation() {
-        try (var _ = FileDescriptorNativeMock.echo();
-             var _ = IoctlNativeMock.echo()) {
+        try (var _ = FileDescriptorNativeMock.setup();
+             var _ = IoctlNativeMock.setup()) {
 
             pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
                 .bus(SpiBus.BUS_0)
@@ -57,8 +57,8 @@ public class SPITest {
             SpiTransferBuffer buffer = answer.getArgument(2);
             return new SpiTransferBuffer(buffer.getTxBuffer(), buffer.getTxBuffer(), buffer.getTxBuffer().length);
         });
-        try (var _ = FileDescriptorNativeMock.echo();
-             var _ = IoctlNativeMock.echo(spiTestData)) {
+        try (var _ = FileDescriptorNativeMock.setup();
+             var _ = IoctlNativeMock.setup(spiTestData)) {
 
             var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
                 .bus(SpiBus.BUS_0)
@@ -85,8 +85,8 @@ public class SPITest {
                 return new SpiTransferBuffer(buffer.getTxBuffer(), "Test".getBytes(), 4);
             }
         });
-        try (var _ = FileDescriptorNativeMock.echo();
-             var _ = IoctlNativeMock.echo(spiTestData)) {
+        try (var _ = FileDescriptorNativeMock.setup();
+             var _ = IoctlNativeMock.setup(spiTestData)) {
 
             var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
                 .bus(SpiBus.BUS_0)
@@ -111,8 +111,8 @@ public class SPITest {
             SpiTransferBuffer buffer = answer.getArgument(2);
             return new SpiTransferBuffer(buffer.getTxBuffer(), buffer.getTxBuffer(), buffer.getTxBuffer().length);
         });
-        try (var _ = FileDescriptorNativeMock.echo();
-             var _ = IoctlNativeMock.echo(spiTestData)) {
+        try (var _ = FileDescriptorNativeMock.setup();
+             var _ = IoctlNativeMock.setup(spiTestData)) {
 
             var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
                 .bus(SpiBus.BUS_0)

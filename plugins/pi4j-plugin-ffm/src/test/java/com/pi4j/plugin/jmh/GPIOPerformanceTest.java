@@ -7,10 +7,6 @@ import com.pi4j.io.gpio.digital.DigitalStateChangeEvent;
 import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.plugin.ffm.providers.gpio.DigitalInputFFMProviderImpl;
 import com.pi4j.plugin.ffm.providers.gpio.DigitalOutputFFMProviderImpl;
-import com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalInputProviderImpl;
-import com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalOutputProviderImpl;
-import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalInputProviderImpl;
-import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalOutputProviderImpl;
 import org.openjdk.jmh.annotations.*;
 
 import java.io.IOException;
@@ -91,85 +87,85 @@ public class GPIOPerformanceTest {
         pi4j.shutdown();
     }
 
-    @Benchmark
-    @Warmup(iterations = 3)
-    public void testLinuxFsInputRoundTrip() {
-        var pi4j = Pi4J.newContextBuilder().add(new LinuxFsDigitalInputProviderImpl("/sys/class/gpio/")).setGpioChipName("gpiochip0").build();
-        var config = DigitalInputConfigBuilder.newInstance(pi4j)
-            .address(512)
-            .debounce(99L, TimeUnit.MICROSECONDS)
-            .pull(PullResistance.PULL_DOWN)
-            .build();
-        var pin = pi4j.digitalInput().create(config);
-        pin.state();
-        pi4j.shutdown();
-    }
-
-    @Benchmark
-    @Warmup(iterations = 3)
-    public void testLinuxFsInputWithListenerRoundTrip() {
-        var pi4j = Pi4J.newContextBuilder().add(new LinuxFsDigitalInputProviderImpl("/sys/class/gpio/")).setGpioChipName("gpiochip0").build();
-        var config = DigitalInputConfigBuilder.newInstance(pi4j)
-            .address(512)
-            .debounce(99L, TimeUnit.MICROSECONDS)
-            .pull(PullResistance.PULL_DOWN)
-            .build();
-        var pin = pi4j.digitalInput().create(config);
-        pin.addListener(DigitalStateChangeEvent::state);
-        pin.state();
-        pi4j.shutdown();
-    }
-
-    @Benchmark
-    @Warmup(iterations = 3)
-    public void testLinuxFsOutputRoundTrip() {
-        var pi4j = Pi4J.newContextBuilder().add(new LinuxFsDigitalOutputProviderImpl("/sys/class/gpio/")).setGpioChipName("gpiochip0").build();
-        var config = DigitalOutputConfigBuilder.newInstance(pi4j)
-            .address(512)
-            .build();
-        var pin = pi4j.digitalOutput().create(config);
-        pin.state();
-        pi4j.shutdown();
-    }
-
-    @Benchmark
-    @Warmup(iterations = 3)
-    public void testGpioDInputRoundTrip() throws InterruptedException {
-        var pi4j = Pi4J.newContextBuilder().add(new GpioDDigitalInputProviderImpl()).setGpioChipName("gpiochip0").build();
-        var config = DigitalInputConfigBuilder.newInstance(pi4j)
-            .address(0)
-            .debounce(99L, TimeUnit.MICROSECONDS)
-            .pull(PullResistance.PULL_DOWN)
-            .build();
-        var pin = pi4j.create(config);
-        pin.state();
-        pi4j.shutdown();
-    }
-
-    @Benchmark
-    @Warmup(iterations = 3)
-    public void testGpioDInputWithListenerRoundTrip() {
-        var pi4j = Pi4J.newContextBuilder().add(new GpioDDigitalInputProviderImpl()).setGpioChipName("gpiochip0").build();
-        var config = DigitalInputConfigBuilder.newInstance(pi4j)
-            .address(0)
-            .debounce(99L, TimeUnit.MICROSECONDS)
-            .pull(PullResistance.PULL_DOWN)
-            .build();
-        var pin = pi4j.create(config);
-        pin.addListener(DigitalStateChangeEvent::state);
-        pin.state();
-        pi4j.shutdown();
-    }
-
-    @Benchmark
-    @Warmup(iterations = 3)
-    public void testGpioDOutputRoundTrip() {
-        var pi4j = Pi4J.newContextBuilder().add(new GpioDDigitalOutputProviderImpl()).setGpioChipName("gpiochip0").build();
-        var config = DigitalOutputConfigBuilder.newInstance(pi4j)
-            .address(0)
-            .build();
-        var pin = pi4j.create(config);
-        pin.state();
-        pi4j.shutdown();
-    }
+//    @Benchmark
+//    @Warmup(iterations = 3)
+//    public void testLinuxFsInputRoundTrip() {
+//        var pi4j = Pi4J.newContextBuilder().add(new LinuxFsDigitalInputProviderImpl("/sys/class/gpio/")).setGpioChipName("gpiochip0").build();
+//        var config = DigitalInputConfigBuilder.newInstance(pi4j)
+//            .address(512)
+//            .debounce(99L, TimeUnit.MICROSECONDS)
+//            .pull(PullResistance.PULL_DOWN)
+//            .build();
+//        var pin = pi4j.digitalInput().create(config);
+//        pin.state();
+//        pi4j.shutdown();
+//    }
+//
+//    @Benchmark
+//    @Warmup(iterations = 3)
+//    public void testLinuxFsInputWithListenerRoundTrip() {
+//        var pi4j = Pi4J.newContextBuilder().add(new LinuxFsDigitalInputProviderImpl("/sys/class/gpio/")).setGpioChipName("gpiochip0").build();
+//        var config = DigitalInputConfigBuilder.newInstance(pi4j)
+//            .address(512)
+//            .debounce(99L, TimeUnit.MICROSECONDS)
+//            .pull(PullResistance.PULL_DOWN)
+//            .build();
+//        var pin = pi4j.digitalInput().create(config);
+//        pin.addListener(DigitalStateChangeEvent::state);
+//        pin.state();
+//        pi4j.shutdown();
+//    }
+//
+//    @Benchmark
+//    @Warmup(iterations = 3)
+//    public void testLinuxFsOutputRoundTrip() {
+//        var pi4j = Pi4J.newContextBuilder().add(new LinuxFsDigitalOutputProviderImpl("/sys/class/gpio/")).setGpioChipName("gpiochip0").build();
+//        var config = DigitalOutputConfigBuilder.newInstance(pi4j)
+//            .address(512)
+//            .build();
+//        var pin = pi4j.digitalOutput().create(config);
+//        pin.state();
+//        pi4j.shutdown();
+//    }
+//
+//    @Benchmark
+//    @Warmup(iterations = 3)
+//    public void testGpioDInputRoundTrip() throws InterruptedException {
+//        var pi4j = Pi4J.newContextBuilder().add(new GpioDDigitalInputProviderImpl()).setGpioChipName("gpiochip0").build();
+//        var config = DigitalInputConfigBuilder.newInstance(pi4j)
+//            .address(0)
+//            .debounce(99L, TimeUnit.MICROSECONDS)
+//            .pull(PullResistance.PULL_DOWN)
+//            .build();
+//        var pin = pi4j.create(config);
+//        pin.state();
+//        pi4j.shutdown();
+//    }
+//
+//    @Benchmark
+//    @Warmup(iterations = 3)
+//    public void testGpioDInputWithListenerRoundTrip() {
+//        var pi4j = Pi4J.newContextBuilder().add(new GpioDDigitalInputProviderImpl()).setGpioChipName("gpiochip0").build();
+//        var config = DigitalInputConfigBuilder.newInstance(pi4j)
+//            .address(0)
+//            .debounce(99L, TimeUnit.MICROSECONDS)
+//            .pull(PullResistance.PULL_DOWN)
+//            .build();
+//        var pin = pi4j.create(config);
+//        pin.addListener(DigitalStateChangeEvent::state);
+//        pin.state();
+//        pi4j.shutdown();
+//    }
+//
+//    @Benchmark
+//    @Warmup(iterations = 3)
+//    public void testGpioDOutputRoundTrip() {
+//        var pi4j = Pi4J.newContextBuilder().add(new GpioDDigitalOutputProviderImpl()).setGpioChipName("gpiochip0").build();
+//        var config = DigitalOutputConfigBuilder.newInstance(pi4j)
+//            .address(0)
+//            .build();
+//        var pin = pi4j.create(config);
+//        pin.state();
+//        pi4j.shutdown();
+//    }
 }
