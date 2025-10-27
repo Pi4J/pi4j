@@ -1,3 +1,3 @@
 #!/bin/sh
 
-modprobe -r -f i2c-stub
+rmmod i2c_mock

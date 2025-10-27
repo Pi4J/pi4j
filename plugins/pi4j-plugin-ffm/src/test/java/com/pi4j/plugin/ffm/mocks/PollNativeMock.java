@@ -13,7 +13,7 @@ import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 public class PollNativeMock {
-    public static MockedConstruction<PollNative> echo(Function<InvocationOnMock, PollingData> callback) {
+    public static MockedConstruction<PollNative> setup(Function<InvocationOnMock, PollingData> callback) {
         return mockConstruction(PollNative.class ,(mock, _) -> {
             when(mock.poll(isA(PollingData.class), anyInt(), anyInt())).thenAnswer(callback::apply);
         });

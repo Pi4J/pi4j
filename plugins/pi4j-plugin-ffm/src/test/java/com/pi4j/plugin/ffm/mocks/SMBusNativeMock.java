@@ -8,7 +8,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 public class SMBusNativeMock {
-    public static MockedConstruction<SMBusNative> echo() {
+    public static MockedConstruction<SMBusNative> setup() {
         return mockConstruction(SMBusNative.class , withSettings().defaultAnswer(Answers.RETURNS_MOCKS),(mock, _) -> {
             when(mock.writeByte(anyInt(), anyByte())).thenReturn(1);
             when(mock.writeBlockData(anyInt(), anyByte(), any(byte[].class))).thenAnswer((answer) -> {

@@ -205,16 +205,18 @@ static struct i2c_adapter i2c_mock_adapter = {
 	.class		= I2C_CLASS_HWMON,
 	.algo		= &i2c_algorithm,
 	.name		= MODULE_NAME,
+	.nr			= 99
 };
 
 static int __init i2c_mock_init(void)
 {
 	int ret;
-	ret = i2c_add_adapter(&i2c_mock_adapter);
+	ret = i2c_add_numbered_adapter(&i2c_mock_adapter);
 	if (ret) {
         pr_err("i2c-mock: Failed to add new adapter");
         return ret;
     }
+
 	dev_info(&i2c_mock_adapter.dev, "Setup: mock adapter at '/dev/i2c-%d' with deivce at address '1C'", i2c_mock_adapter.nr);
 	internal_buf = (char *)kmalloc(1024 * sizeof(char), GFP_KERNEL);
 

@@ -1,8 +1,6 @@
 #!/bin/sh
 
-# TODO: Guess the chip number, should be last available.
-modprobe i2c-stub chip_addr=0x1c functionality=0xf7f0000
-# sleep is needed to make all driver processes establish the device
-sleep 0.5
-chmod 0660 /dev/i2c-1
-chown root:dialout /dev/i2c-1
+/bin/bash  ../native/i2c/build.sh
+# This is a hack to load i2c-dev only if it is not built in kernel
+modinfo i2c-dev >/dev/null 2>/dev/null && ! modprobe -n --first-time i2c-dev 2>/dev/null && echo "i2c-dev is loaded" || modprobe i2c-dev
+insmod i2c-mock.ko
