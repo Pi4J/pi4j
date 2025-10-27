@@ -17,5 +17,7 @@ jobs:
         with:
           deps: java:25-amzn
       - name: Build entire Pi4J Project
-        run: ./mvnw clean install -Pnative,cross-compile --batch-mode
+        run: |
+          source ~/.sdkman/bin/sdkman-init.sh 
+          ./mvnw clean install -Pnative,cross-compile --batch-mode
 
