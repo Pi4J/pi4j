@@ -19,7 +19,6 @@ jobs:
       - name: Create and add current user to suitable groups
         run: |
           sudo addgroup spi
-          sudo addgroup i2c
           sudo adduser $USER spi
           sudo adduser $USER i2c
           sudo adduser $USER dialout
