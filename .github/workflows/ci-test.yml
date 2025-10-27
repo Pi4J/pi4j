@@ -16,6 +16,29 @@ jobs:
         uses: sfesenko/setup-sdkman@v1
         with:
           deps: java:25-amzn
+      - name: Create and add current user to suitable groups
+        run: |
+          sudo addgroup spi
+          sudo addgroup i2c
+          sudo adduser $USER spi
+          sudo adduser $USER i2c
+          sudo adduser $USER dialout
+      - name: Add proper udev rules and trigger udevadm
+        run: |
+          sudo touch /etc/udev/rules.d/99-pi4j-io.rules
+          sudo cat > /etc/udev/rules.d/99-pi4j-io.rules << EOF
+          SUBSYSTEM=="pwm", ACTION=="add|change", PROGRAM="/bin/sh -c 'chgrp -R dialout /sys%p && chmod -R 770 /sys%p'"
+          SUBSYSTEM=="spidev", GROUP="spi", MODE="0660"
+          
+          SUBSYSTEM=="gpio", KERNEL=="gpiochip*", GROUP="dialout", MODE="0660"
+          KERNEL=="gpio", GROUP="dialout", MODE="0660"
+          KERNEL=="gpio*", PROGRAM="/bin/sh -c '\
+                    chown -R root:dialout /sys/class/gpio && chmod -R 770 /sys/class/gpio;\
+                    chown -R root:dialout /sys/devices/virtual/gpio && chmod -R 770 /sys/devices/virtual/gpio;\
+                    chown -R root:dialout /sys$devpath && chmod -R 770 /sys$devpath\
+          '"
+          EOF
+          sudo udevadm control --reload-rules && sudo udevadm trigger
       - name: Build entire Pi4J Project
         run: |
           source ~/.sdkman/bin/sdkman-init.sh 
