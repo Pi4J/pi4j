@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
-        run: apt-get install --yes build-essential linux-headers-$(uname -r) sudo libi2c-dev gcc-arm-linux-gnueabihf  gcc-aarch64-linux-gnu libtool tree
+        run: sudo apt-get install --yes build-essential linux-headers-$(uname -r) sudo libi2c-dev gcc-arm-linux-gnueabihf  gcc-aarch64-linux-gnu libtool tree
       - name: Build entire Pi4J Project
         run: ./mvnw clean install -Pnative,cross-compile --batch-mode
 
