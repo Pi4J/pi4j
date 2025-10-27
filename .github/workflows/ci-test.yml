@@ -1,5 +1,8 @@
 name: ci-test.yml
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - "test-framework"
 
 jobs:
   Build:
