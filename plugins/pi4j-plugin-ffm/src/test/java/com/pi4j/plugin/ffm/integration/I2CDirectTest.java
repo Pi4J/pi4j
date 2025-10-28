@@ -41,7 +41,7 @@ public class I2CDirectTest {
         pi4j = Pi4J.newContextBuilder()
             .add(new I2CFFMProviderImpl())
             .build();
-        i2c = pi4j.i2c().create(I2CConfigBuilder.newInstance(pi4j).bus(1).device(0x1C).i2cImplementation(I2CImplementation.DIRECT));
+        i2c = pi4j.i2c().create(I2CConfigBuilder.newInstance(pi4j).bus(0).device(0x1C).i2cImplementation(I2CImplementation.DIRECT));
 
     }
 
