@@ -53,15 +53,10 @@ public class I2CDirect extends I2CBase<I2CBusFFM> {
     }
 
     private int internalWrite(byte[] register, byte[] data) {
-        var messages = new I2CMessage[]{
-            new I2CMessage(config.device(), 0, register.length, register),
-            new I2CMessage(config.device(), 0, data.length, data)
-        };
-        var packets = new RDWRData(messages, 2);
-        return i2CBus.execute(this, (i2cFileDescriptor) -> {
-            var result = IOCTL.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
-            return result.msgs()[1].len();
-        });
+        var buffer = new byte[register.length + data.length];
+        System.arraycopy(register, 0, buffer, 0, register.length);
+        System.arraycopy(data, 0, buffer, register.length, data.length);
+        return internalWrite(buffer) - register.length;
     }
 
     private int internalWrite(byte[] data) {
