@@ -37,6 +37,8 @@ public class SPITest {
                 "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.getParentFile().getAbsolutePath() + "/'");
         }
 
+        System.err.println(new String(process.getInputStream().readAllBytes()));
+
         pi4j = Pi4J.newContextBuilder()
             .add(new SpiFFMProviderImpl())
             .build();
