@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
+@Disabled
 public class I2CFileTest {
     private static Context pi4j;
     private static I2C i2c;

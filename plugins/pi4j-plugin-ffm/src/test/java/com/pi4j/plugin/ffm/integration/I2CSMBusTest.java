@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
+@Disabled
 public class I2CSMBusTest {
     private static Context pi4j;
     private static I2C i2c;

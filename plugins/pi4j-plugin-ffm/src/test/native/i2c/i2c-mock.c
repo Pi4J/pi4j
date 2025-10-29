@@ -226,9 +226,7 @@ static void __exit i2c_mock_exit(void)
 	dev_info(&i2c_mock_adapter.dev, "Removing i2c mock adapter");
 	i2c_del_adapter(&i2c_mock_adapter);
 	kfree(internal_buf);
-	if (registers) {
-	    kfree(registers);
-	}
+	kfree(registers);
 }
 
 module_init(i2c_mock_init);
