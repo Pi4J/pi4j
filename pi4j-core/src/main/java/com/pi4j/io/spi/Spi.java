@@ -376,6 +376,21 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * read back from the SPI device is then copied to the 'read' byte array
      *
      * @param buffer the array of bytes to write to the SPI device
+
+     * @param read   Buffer to contain read data
+     * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
+     * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
+     */
+    default int writeRead(byte[] buffer,  byte[] read) {
+        return writeRead(buffer, 0, buffer.length, (short) 0, read, 0, read.length, (short) 0);
+    }
+
+    /**
+     * This function writes bytes to the SPI device and then reads bytes from the device
+     * Write data is taken from the 'buffer' byte array, data
+     * read back from the SPI device is then copied to the 'read' byte array
+     *
+     * @param buffer the array of bytes to write to the SPI device
      * @param writeLength
      *               Number bytes written from buffer to the SPI
      * @param read   Buffer to contain read data
