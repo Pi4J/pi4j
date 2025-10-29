@@ -144,9 +144,9 @@ public class PiGpioDigitalInput extends DigitalInputBase implements DigitalInput
      * {@inheritDoc}
      */
     @Override
-    public DigitalInput shutdown(Context context) throws ShutdownException {
+    public DigitalInput shutdownInternal(Context context) throws ShutdownException {
         // remove this pin listener
         this.piGpio.removePinListener(pin, piGpioPinListener);
-        return super.shutdown(context);
+        return super.shutdownInternal(context);
     }
 }

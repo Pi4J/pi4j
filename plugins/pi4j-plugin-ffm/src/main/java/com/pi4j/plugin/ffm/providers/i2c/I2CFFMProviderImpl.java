@@ -11,12 +11,12 @@ public class I2CFFMProviderImpl extends I2CProviderBase implements I2CProvider {
     public I2CFFMProviderImpl() {
         this.id = "ffm-i2c";
         this.name = "FFM API Provider I2C";
-        PermissionHelper.checkUser();
+        PermissionHelper.checkUserPermissions(this);
     }
 
     @Override
     public int getPriority() {
-        return 1;
+        return 200;
     }
 
     /**

@@ -261,7 +261,7 @@ public abstract class PlatformBase<PLATFORM extends Platform>
 
     /** {@inheritDoc} */
     @Override
-    public PLATFORM shutdown(Context context) throws ShutdownException {
+    public PLATFORM shutdownInternal(Context context) throws ShutdownException {
         return (PLATFORM)this;
     }
 

@@ -2,10 +2,11 @@ package com.pi4j.plugin.ffm.common.i2c.rdwr;
 
 import com.pi4j.plugin.ffm.common.Pi4JLayout;
 
+import java.lang.foreign.Arena;
 import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
+import java.lang.foreign.SegmentAllocator;
 import java.lang.foreign.ValueLayout;
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
 import java.util.Arrays;
 
@@ -68,15 +69,18 @@ import java.util.Arrays;
  */
 public record I2CMessage(int address, int flags, int len, byte[] buf) implements Pi4JLayout {
     public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
-        ValueLayout.JAVA_INT.withName("address"),
-        ValueLayout.JAVA_INT.withName("flags"),
-        ValueLayout.JAVA_INT.withName("len"),
-        MemoryLayout.sequenceLayout(1024, ValueLayout.JAVA_BYTE).withName("buf")
+        ValueLayout.JAVA_SHORT.withName("address"),
+        ValueLayout.JAVA_SHORT.withName("flags"),
+        ValueLayout.JAVA_SHORT.withName("len"),
+        MemoryLayout.paddingLayout(2),
+        ValueLayout.ADDRESS.withName("buf")
     );
     private static final VarHandle VH_ADDRESS = LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("address"));
     private static final VarHandle VH_FLAGS = LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("flags"));
     private static final VarHandle VH_LEN = LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("len"));
-    private static final MethodHandle MH_BUF = LAYOUT.sliceHandle(MemoryLayout.PathElement.groupElement("buf"));
+    private static final VarHandle VH_BUFFER = LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("buf"));
+
+    private static final SegmentAllocator SEGMENT_ALLOCATOR = Arena.ofAuto();
 
     /**
      * Creates empty I2CMessage object.
@@ -98,23 +102,23 @@ public record I2CMessage(int address, int flags, int len, byte[] buf) implements
         var address = (int) VH_ADDRESS.get(buffer, 0L);
         var flags = (int) VH_FLAGS.get(buffer, 0L);
         var len = (int) VH_LEN.get(buffer, 0L);
-        var bufMemorySegment = invokeExact(MH_BUF, buffer);
-        var buf = new byte[len];
-        for (int i = 0; i < buf.length; i++) {
-            buf[i] = bufMemorySegment.getAtIndex(ValueLayout.JAVA_BYTE, i);
-        }
-        return new I2CMessage(address, flags, len, buf);
+
+        var bufferSegment = (MemorySegment)VH_BUFFER.get(buffer, 0L);
+        var bytes = new byte[len];
+        bufferSegment.reinterpret(len).asByteBuffer().get(bytes, 0, len);
+
+        return new I2CMessage(address, flags, len, bytes);
     }
 
     @Override
     public void to(MemorySegment buffer) throws Throwable {
-        VH_ADDRESS.set(buffer, 0L, address);
-        VH_FLAGS.set(buffer, 0L, flags);
-        VH_LEN.set(buffer, 0L, len);
-        var bufTmp = invokeExact(MH_BUF, buffer);
-        for (int i = 0; i < buf.length; i++) {
-            bufTmp.setAtIndex(ValueLayout.JAVA_BYTE, i, buf[i]);
-        }
+        VH_ADDRESS.set(buffer, 0L, (short) address);
+        VH_FLAGS.set(buffer, 0L, (short) flags);
+        VH_LEN.set(buffer, 0L, (short) len);
+
+        var bufferSegment = SEGMENT_ALLOCATOR.allocate(buf.length);
+        bufferSegment.asByteBuffer().put(buf);
+        VH_BUFFER.set(buffer, 0L, bufferSegment);
     }
 
     @Override

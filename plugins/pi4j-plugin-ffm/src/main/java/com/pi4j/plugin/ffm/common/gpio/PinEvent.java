@@ -16,7 +16,7 @@ public enum PinEvent {
     /**
      * If the state was HIGH and changed to LOW.
      */
-    FALLING(1 << 1),
+    FALLING(2),
     /**
      * if the state is changed.
      */

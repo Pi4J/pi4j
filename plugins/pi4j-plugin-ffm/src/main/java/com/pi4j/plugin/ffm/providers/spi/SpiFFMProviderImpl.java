@@ -11,12 +11,12 @@ public class SpiFFMProviderImpl extends SpiProviderBase implements SpiProvider {
     public SpiFFMProviderImpl() {
         this.id = "ffm-spi";
         this.name = "FFM API Provider SPI";
-        PermissionHelper.checkUser();
+        PermissionHelper.checkUserPermissions(this);
     }
 
     @Override
     public int getPriority() {
-        return 1;
+        return 200;
     }
 
     @Override

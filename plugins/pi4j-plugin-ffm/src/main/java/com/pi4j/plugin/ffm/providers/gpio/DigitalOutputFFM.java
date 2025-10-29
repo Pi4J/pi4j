@@ -35,7 +35,7 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
         super(provider, config);
         this.pin = config.pin();
         this.deviceName = "/dev/gpiochip" + config.busNumber();
-        PermissionHelper.checkDevice(deviceName);
+        PermissionHelper.checkDevicePermissions(deviceName, config);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
             logger.trace("{}-{} - getting line info.", deviceName, pin);
             lineInfo = ioctl.call(fd, Command.getGpioV2GetLineInfoIoctl(), lineInfo);
             if ((lineInfo.flags() & PinFlag.USED.getValue()) > 0) {
-                shutdown(context());
+                this.shutdownInternal(context());
                 throw new InitializeException("Pin " + pin + " is in use");
             }
             logger.trace("{}-{} - DigitalOutput Pin line info: {}", deviceName, pin, lineInfo);
@@ -74,8 +74,8 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
     }
 
     @Override
-    public DigitalOutput shutdown(Context context) throws ShutdownException {
-        super.shutdown(context);
+    public DigitalOutput shutdownInternal(Context context) throws ShutdownException {
+        super.shutdownInternal(context);
         logger.info("{}-{} - closing GPIO Pin.", deviceName, pin);
         try {
             if (chipFileDescriptor > 0) {

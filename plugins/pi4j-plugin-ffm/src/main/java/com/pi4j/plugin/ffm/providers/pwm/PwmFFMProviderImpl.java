@@ -11,12 +11,12 @@ public class PwmFFMProviderImpl extends PwmProviderBase implements PwmProvider {
     public PwmFFMProviderImpl() {
         this.id = "ffm-pwm";
         this.name = "FFM API Provider PWM";
-        PermissionHelper.checkUser();
+        PermissionHelper.checkUserPermissions(this);
     }
 
     @Override
     public int getPriority() {
-        return 1;
+        return 200;
     }
 
     /**

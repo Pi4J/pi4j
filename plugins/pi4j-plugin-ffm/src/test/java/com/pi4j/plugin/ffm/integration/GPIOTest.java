@@ -136,11 +136,11 @@ public class GPIOTest {
     @Test
     public void testOutputCustomConfig() {
         var config = DigitalOutputConfigBuilder.newInstance(pi4j0)
-            .pin(4)
+            .pin(6)
             .initial(DigitalState.HIGH)
             .build();
         var output = pi4j0.digitalOutput().create(config);
         assertEquals(DigitalState.HIGH, output.config().initialState());
-        assertEquals(4, output.pin());
+        assertEquals(6, output.pin());
     }
 }

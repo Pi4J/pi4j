@@ -160,7 +160,7 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
         try {
             long start = System.currentTimeMillis();
 
-            instance.shutdown(runtime.context());
+            instance.shutdownInternal(runtime.context());
             long took = System.currentTimeMillis() - start;
             if (took > 10)
                 logger.info("Shutting down of IO {} took {}ms", instance.getId(), took);

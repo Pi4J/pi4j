@@ -60,7 +60,7 @@ public class GpioDPlugin implements Plugin {
     public void shutdown(Context context) throws ShutdownException {
         if (this.providers != null) {
             for (Provider<?, ?, ?> provider : providers) {
-                provider.shutdown(context);
+                provider.shutdownInternal(context);
             }
         }
     }

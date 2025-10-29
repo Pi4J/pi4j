@@ -32,6 +32,7 @@ import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.provider.Provider;
 
+import java.io.Closeable;
 
 /**
  * <p>Abstract IOBase class.</p>
@@ -43,11 +44,13 @@ import com.pi4j.provider.Provider;
  * @param <PROVIDER_TYPE>
  */
 public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, PROVIDER_TYPE extends Provider>
-        extends IdentityBase implements IO<IO_TYPE,CONFIG_TYPE, PROVIDER_TYPE> {
+        extends IdentityBase implements IO<IO_TYPE,CONFIG_TYPE, PROVIDER_TYPE>, Closeable {
 
     protected CONFIG_TYPE config;
     protected PROVIDER_TYPE provider;
     private Context context;
+    // close() requires idempotency.
+    private boolean closed = false;
 
     /** {@inheritDoc} */
     @Override
@@ -84,6 +87,26 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
         return (IO_TYPE)this;
     }
 
+    /**
+     * Closes the driver by calling this.context().shutdown(this.getId()), which in turn calls
+     * the local shutdown() method here via DefaultRuntimeRegistry.remove().
+     * <p>
+     * Basically, for Pi4J, this constitutes an idempotent user convenience method for
+     * this.context().shutdown(this.getId())
+     * <p>
+     * Subclasses should typically override the local shutdown method with implementation-specific shutdown
+     * behaviour. Behaviour added here will not be triggered by context.shutdown()
+     */
+    @Override
+    public void close() {
+        // The null check accounts for contextless tests or somehow just closing without initializing
+        // The closed check ensures idempotency, as required by the close method contract.
+        if (this.context != null && !closed) {
+            this.closed = true;
+            this.context.shutdown(getId());
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public CONFIG_TYPE config(){
@@ -103,7 +126,13 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
 
     /** {@inheritDoc} */
     @Override
-    public IO_TYPE shutdown(Context context) throws ShutdownException {
+    public IO_TYPE shutdownInternal(Context context) throws ShutdownException {
+        // Close is supposed to be idempotent. We interpret this here to include effective shutdowns by
+        // other means, i.e. the infrastructure calling this method.
+        this.closed = true;
+        if (context != this.context) {
+            throw new IllegalArgumentException("The context parameter and the local context don't match.");
+        }
         return (IO_TYPE) this;
     }
 

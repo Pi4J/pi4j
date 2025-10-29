@@ -64,9 +64,9 @@ public class LinuxFsI2CProviderImpl extends I2CProviderBase implements LinuxFsI2
     }
 
     @Override
-    public I2CProvider shutdown(Context context) throws ShutdownException {
+    public I2CProvider shutdownInternal(Context context) throws ShutdownException {
         this.i2CBusMap.forEach(((busNr, bus) -> bus.close()));
         this.i2CBusMap.clear();
-        return super.shutdown(context);
+        return super.shutdownInternal(context);
     }
 }

@@ -168,7 +168,7 @@ public class LinuxFsDigitalInput extends DigitalInputBase implements DigitalInpu
      * {@inheritDoc}
      */
     @Override
-    public DigitalInput shutdown(Context context) throws ShutdownException {
+    public DigitalInput shutdownInternal(Context context) throws ShutdownException {
         logger.trace("shutdown GPIO [{}]; {}", this.config.pin(), gpio.getPinPath());
 
         // this line will execute immediately, not waiting for your task to complete
