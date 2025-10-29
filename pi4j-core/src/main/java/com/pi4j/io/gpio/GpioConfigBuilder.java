@@ -25,18 +25,18 @@ package com.pi4j.io.gpio;
  * #L%
  */
 
-import com.pi4j.io.IOAddressConfigBuilder;
+import com.pi4j.io.IOPinConfigBuilder;
 
 /**
  * <p>GpioConfigBuilder interface.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
+ * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
+ * @version $Id: $Id
  */
 public interface GpioConfigBuilder<BUILDER_TYPE extends GpioConfigBuilder, CONFIG_TYPE extends GpioConfig>
-        extends IOAddressConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+    extends IOPinConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
     // MARKER INTERFACE
 
     GpioConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> busNumber(int busNumber);

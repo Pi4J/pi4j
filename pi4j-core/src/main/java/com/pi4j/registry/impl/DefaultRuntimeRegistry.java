@@ -25,7 +25,7 @@ package com.pi4j.registry.impl;
  * #L%
  */
 
-import com.pi4j.config.AddressConfig;
+import com.pi4j.config.PinConfig;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.LifecycleException;
 import com.pi4j.io.IO;
@@ -59,7 +59,6 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
      * <p>newInstance.</p>
      *
      * @param runtime a {@link com.pi4j.runtime.Runtime} object.
-     *
      * @return a {@link com.pi4j.registry.impl.RuntimeRegistry} object.
      */
     public static RuntimeRegistry newInstance(Runtime runtime) {
@@ -83,13 +82,13 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
         // first test to make sure this id does not already exist in the registry
         if (instances.containsKey(_id))
             throw new IOAlreadyExistsException(_id);
-        if (instance.config() instanceof AddressConfig<?> addressConfig) {
-            if (exists(instance.type(), addressConfig.address())) {
-                throw new IOAlreadyExistsException(addressConfig.address());
+        if (instance.config() instanceof PinConfig<?> addressConfig) {
+            if (exists(instance.type(), addressConfig.pin())) {
+                throw new IOAlreadyExistsException(addressConfig.pin());
             }
             Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
                 k -> new HashSet<>());
-            usedAddresses.add(addressConfig.address());
+            usedAddresses.add(addressConfig.pin());
         }
 
         // add the instance to the collection
@@ -177,12 +176,12 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
     }
 
     private <T extends IO> void removeFromMap(T instance) {
-        if (!(instance.config() instanceof AddressConfig<?> addressConfig))
+        if (!(instance.config() instanceof PinConfig<?> addressConfig))
             return;
         Set<Integer> usedAddresses = this.usedAddressesByIoType.get(instance.type());
         if (usedAddresses == null)
             return;
-        usedAddresses.remove(addressConfig.address());
+        usedAddresses.remove(addressConfig.pin());
         if (usedAddresses.isEmpty())
             this.usedAddressesByIoType.remove(instance.type());
     }

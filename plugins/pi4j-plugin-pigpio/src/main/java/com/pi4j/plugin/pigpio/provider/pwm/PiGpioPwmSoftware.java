@@ -50,15 +50,17 @@ public class PiGpioPwmSoftware extends PiGpioPwmBase implements Pwm {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     // fixed range for software PWM
-    /** Constant <code>RANGE=255</code> */
+    /**
+     * Constant <code>RANGE=255</code>
+     */
     public static int RANGE = 255;
 
     /**
      * <p>Constructor for PiGpioPwmSoftware.</p>
      *
-     * @param piGpio a {@link PiGpio} object.
+     * @param piGpio   a {@link PiGpio} object.
      * @param provider a {@link PwmProvider} object.
-     * @param config a {@link PwmConfig} object.
+     * @param config   a {@link PwmConfig} object.
      */
     public PiGpioPwmSoftware(PiGpio piGpio, PwmProvider provider, PwmConfig config) {
         super(piGpio, provider, config, RANGE);
@@ -72,19 +74,19 @@ public class PiGpioPwmSoftware extends PiGpioPwmBase implements Pwm {
         try {
             // inversed polarity is not supported
             if (config.polarity() != null) {
-                if(config.polarity() == PwmPolarity.INVERSED){
-                    throw new IOException("<PIGPIO> INVERSED POLARITY UNSUPPORTED; PWM PIN: " + this.address());
+                if (config.polarity() == PwmPolarity.INVERSED) {
+                    throw new IOException("<PIGPIO> INVERSED POLARITY UNSUPPORTED; PWM ADDRESS: " + this.getAddress());
                 }
             }
 
             // set pin mode to output
-            piGpio.gpioSetMode(this.address(), PiGpioMode.OUTPUT);
+            piGpio.gpioSetMode(this.getAddress(), PiGpioMode.OUTPUT);
 
             // set PWM range (to fixed range)
-            piGpio.gpioSetPWMrange(this.address(), RANGE);
+            piGpio.gpioSetPWMrange(this.getAddress(), RANGE);
 
             // get actual PWM frequency
-            this.actualFrequency = piGpio.gpioGetPWMfrequency(this.address());
+            this.actualFrequency = piGpio.gpioGetPWMfrequency(this.getAddress());
 
             // get current frequency from config or from actual PWM pin
             if (config.frequency() != null) {
@@ -102,9 +104,9 @@ public class PiGpioPwmSoftware extends PiGpioPwmBase implements Pwm {
             }
 
             // apply an initial value if configured
-            if(config.initialValue() != null){
+            if (config.initialValue() != null) {
                 try {
-                    if(this.config.initialValue() <= 0){
+                    if (this.config.initialValue() <= 0) {
                         this.off();
                     } else {
                         this.on(this.config.initialValue());
@@ -113,45 +115,46 @@ public class PiGpioPwmSoftware extends PiGpioPwmBase implements Pwm {
                     throw new InitializeException(e);
                 }
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             throw new InitializeException(e);
         }
 
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Pwm on() throws IOException{
+    public Pwm on() throws IOException {
         try {
             // set PWM frequency; return actual frequency
-            this.actualFrequency = piGpio.gpioSetPWMfrequency(this.address(), frequency);
+            this.actualFrequency = piGpio.gpioSetPWMfrequency(this.getAddress(), frequency);
 
             // set PWM duty-cycle and enable PWM
-            piGpio.gpioPWM(this.address(), calculateActualDutyCycle(this.dutyCycle));
+            piGpio.gpioPWM(this.getAddress(), calculateActualDutyCycle(this.dutyCycle));
 
             // update tracking state
             this.onState = (this.frequency > 0 && this.dutyCycle > 0);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new IOException(e);
         }
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Pwm off() throws IOException{
+    public Pwm off() throws IOException {
         try {
             // set PWM duty-cycle and enable PWM
-            piGpio.gpioPWM(this.address(), 0);
+            piGpio.gpioPWM(this.getAddress(), 0);
 
             // update tracking state
             this.onState = false;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new IOException(e);
         }

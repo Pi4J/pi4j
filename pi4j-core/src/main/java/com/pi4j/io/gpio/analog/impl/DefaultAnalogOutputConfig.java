@@ -38,8 +38,8 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public class DefaultAnalogOutputConfig
-        extends AnalogConfigBase<AnalogOutputConfig>
-        implements AnalogOutputConfig {
+    extends AnalogConfigBase<AnalogOutputConfig>
+    implements AnalogOutputConfig {
 
     // private configuration properties
     protected Integer busNumber = null;
@@ -50,7 +50,7 @@ public class DefaultAnalogOutputConfig
     /**
      * PRIVATE CONSTRUCTOR
      */
-    private DefaultAnalogOutputConfig(){
+    private DefaultAnalogOutputConfig() {
         super();
     }
 
@@ -59,50 +59,50 @@ public class DefaultAnalogOutputConfig
      *
      * @param properties a {@link java.util.Map} object.
      */
-    protected DefaultAnalogOutputConfig(Map<String,String> properties){
+    protected DefaultAnalogOutputConfig(Map<String, String> properties) {
         super(properties);
 
         // define default property values if any are missing (based on the required address value)
-        this.id = StringUtil.setIfNullOrEmpty(this.id, "AOUT-" + this.address, true);
-        this.name = StringUtil.setIfNullOrEmpty(this.name, "AOUT-" + this.address, true);
-        this.description = StringUtil.setIfNullOrEmpty(this.description, "AOUT-" + this.address, true);
+        this.id = StringUtil.setIfNullOrEmpty(this.id, "AOUT-" + this.pin, true);
+        this.name = StringUtil.setIfNullOrEmpty(this.name, "AOUT-" + this.pin, true);
+        this.description = StringUtil.setIfNullOrEmpty(this.description, "AOUT-" + this.pin, true);
 
-        if(properties.containsKey(BUS_NUMBER)){
+        if (properties.containsKey(BUS_NUMBER)) {
             this.busNumber = Integer.parseInt(properties.get(BUS_NUMBER));
         }
 
         // load initial value property
-        if(properties.containsKey(INITIAL_VALUE_KEY)){
+        if (properties.containsKey(INITIAL_VALUE_KEY)) {
             this.initialValue = Integer.parseInt(properties.get(INITIAL_VALUE_KEY));
         }
 
         // load shutdown value property
-        if(properties.containsKey(SHUTDOWN_VALUE_KEY)){
+        if (properties.containsKey(SHUTDOWN_VALUE_KEY)) {
             this.shutdownValue = Integer.parseInt(properties.get(SHUTDOWN_VALUE_KEY));
         }
 
         // load shutdown value property
-        if(properties.containsKey(STEP_VALUE_KEY)){
+        if (properties.containsKey(STEP_VALUE_KEY)) {
             this.stepValue = Integer.parseInt(properties.get(STEP_VALUE_KEY));
         }
 
         // load range value property
-        if(properties.containsKey(RANGE_MIN_KEY) || properties.containsKey(RANGE_MAX_KEY)){
+        if (properties.containsKey(RANGE_MIN_KEY) || properties.containsKey(RANGE_MAX_KEY)) {
             // load optional range properties
             Integer min = null;
             Integer max = null;
-            if(properties.containsKey(RANGE_MIN_KEY))
+            if (properties.containsKey(RANGE_MIN_KEY))
                 min = Integer.parseInt(properties.get(RANGE_MIN_KEY));
-            if(properties.containsKey( RANGE_MAX_KEY))
+            if (properties.containsKey(RANGE_MAX_KEY))
                 max = Integer.parseInt(properties.get(RANGE_MAX_KEY));
 
             // create new range from loaded properties
-            if(min != null || max != null)
+            if (min != null || max != null)
                 this.range = new DefaultAnalogRange(min, max);
         }
 
         // default values
-        if(this.stepValue == null) this.stepValue = 1;
+        if (this.stepValue == null) this.stepValue = 1;
     }
 
     @Override
@@ -110,38 +110,55 @@ public class DefaultAnalogOutputConfig
         return this.busNumber;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public Integer shutdownValue(){
+    public Integer pin() {
+        return this.pin;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Integer shutdownValue() {
         return this.shutdownValue;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public DefaultAnalogOutputConfig shutdownValue(Integer value){
+    public DefaultAnalogOutputConfig shutdownValue(Integer value) {
         this.shutdownValue = value;
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Integer stepValue() {
         return this.stepValue;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AnalogOutputConfig stepValue(Integer value) {
         return null;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Integer initialValue() {
         return this.initialValue;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AnalogRange range() {
         return this.range;

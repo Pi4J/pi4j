@@ -47,6 +47,7 @@ public class LinuxFsDigitalOutputProviderImpl extends DigitalOutputProviderBase
 
     /**
      * <p>Constructor for LinuxFsDigitalOutputProviderImpl.</p>
+     *
      * @param gpioFileSystemPath
      */
     public LinuxFsDigitalOutputProviderImpl(String gpioFileSystemPath) {
@@ -67,7 +68,7 @@ public class LinuxFsDigitalOutputProviderImpl extends DigitalOutputProviderBase
     @Override
     public DigitalOutput create(DigitalOutputConfig config) {
         // create filesystem based GPIO instance using instance address (GPIO NUMBER)
-        LinuxGpio gpio = new LinuxGpio(this.gpioFileSystemPath, config.address());
+        LinuxGpio gpio = new LinuxGpio(this.gpioFileSystemPath, config.pin());
         LinuxFsDigitalOutput digitalOutput = new LinuxFsDigitalOutput(gpio, this, config);
         this.context.registry().add(digitalOutput);
         return digitalOutput;

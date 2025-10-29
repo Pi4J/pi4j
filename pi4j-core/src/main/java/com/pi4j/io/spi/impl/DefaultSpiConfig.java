@@ -25,7 +25,7 @@ package com.pi4j.io.spi.impl;
  * #L%
  */
 
-import com.pi4j.io.impl.IOAddressConfigBase;
+import com.pi4j.io.impl.IOPinConfigBase;
 import com.pi4j.io.spi.*;
 import com.pi4j.util.StringUtil;
 
@@ -38,8 +38,8 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public class DefaultSpiConfig
-        extends IOAddressConfigBase<SpiConfig>
-        implements SpiConfig {
+    extends IOPinConfigBase<SpiConfig>
+    implements SpiConfig {
 
     // private configuration properties
     protected final Integer baud;
@@ -58,18 +58,18 @@ public class DefaultSpiConfig
      *
      * @param properties a {@link java.util.Map} object.
      */
-    protected DefaultSpiConfig(Map<String,String> properties){
+    protected DefaultSpiConfig(Map<String, String> properties) {
         super(properties);
 
         // load optional BAUD RATE from properties
-        if(properties.containsKey(BAUD_KEY)){
+        if (properties.containsKey(BAUD_KEY)) {
             this.baud = StringUtil.parseInteger(properties.get(BAUD_KEY), Spi.DEFAULT_BAUD);
         } else {
             this.baud = Spi.DEFAULT_BAUD;
         }
 
         // load optional BUS from properties
-        if(properties.containsKey(BUS_KEY)){
+        if (properties.containsKey(BUS_KEY)) {
             this.bus = SpiBus.parse(properties.get(BUS_KEY));
             this.busUserProvided = true;
         } else {
@@ -77,22 +77,22 @@ public class DefaultSpiConfig
             this.busUserProvided = false;
         }
 
-        if(properties.containsKey(WRITE_LSB_KEY)){
-            this.writeLsbFirst = StringUtil.parseInteger(properties.get(WRITE_LSB_KEY),Spi.DEFAULT_WRITE_LSB_FIRST);
+        if (properties.containsKey(WRITE_LSB_KEY)) {
+            this.writeLsbFirst = StringUtil.parseInteger(properties.get(WRITE_LSB_KEY), Spi.DEFAULT_WRITE_LSB_FIRST);
             this.writeLsbFirstUserProvided = true;
-        }else {
+        } else {
             this.writeLsbFirst = 0;
             this.writeLsbFirstUserProvided = false;
         }
-        if(properties.containsKey(READ_LSB_KEY)){
-            this.readLsbFirst = StringUtil.parseInteger(properties.get(READ_LSB_KEY),Spi.DEFAULT_READ_LSB_FIRST);
+        if (properties.containsKey(READ_LSB_KEY)) {
+            this.readLsbFirst = StringUtil.parseInteger(properties.get(READ_LSB_KEY), Spi.DEFAULT_READ_LSB_FIRST);
             this.readLsbFirstUserProvided = true;
-        }else {
+        } else {
             this.readLsbFirst = 0;
             this.readLsbFirstUserProvided = false;
         }
         // load optional MODE from properties
-        if(properties.containsKey(MODE_KEY)){
+        if (properties.containsKey(MODE_KEY)) {
             this.mode = SpiMode.parse(properties.get(MODE_KEY));
             this.modeUserProvided = true;
         } else {
@@ -101,19 +101,21 @@ public class DefaultSpiConfig
         }
 
         // load optional FLAGS BITS from properties
-        if(properties.containsKey(FLAGS_KEY)){
+        if (properties.containsKey(FLAGS_KEY)) {
             this.flags = StringUtil.parseLong(properties.get(FLAGS_KEY), null);
         } else {
             this.flags = null; // set null, same as parseLong would
         }
 
         // define default property values if any are missing (based on the required address value)
-        this.id = StringUtil.setIfNullOrEmpty(this.id, "SPI-" + this.address(), true);
-        this.name = StringUtil.setIfNullOrEmpty(this.name, "SPI-" + this.address(), true);
-        this.description = StringUtil.setIfNullOrEmpty(this.description, "SPI-" + this.address(), true);
+        this.id = StringUtil.setIfNullOrEmpty(this.id, "SPI-" + this.pin(), true);
+        this.name = StringUtil.setIfNullOrEmpty(this.name, "SPI-" + this.pin(), true);
+        this.description = StringUtil.setIfNullOrEmpty(this.description, "SPI-" + this.pin(), true);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Integer baud() {
         return this.baud;
@@ -129,57 +131,77 @@ public class DefaultSpiConfig
         return this.writeLsbFirst;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean busUserProvided() {
         return this.busUserProvided;
     }
 
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean writeLsbFirstUserProvided() {
         return this.writeLsbFirstUserProvided;
     }
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean readLsbFirstUserProvided() {
         return this.readLsbFirstUserProvided;
     }
 
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public boolean modeUserProvided()
-    {
+    public boolean modeUserProvided() {
         return this.modeUserProvided;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SpiBus bus() {
         return this.bus;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SpiMode mode() {
         return this.mode;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Long flags() { return this.flags; }
-
-    /** {@inheritDoc} */
-    @Override
-    public Integer channel() {
-        return this.address();
+    public Long flags() {
+        return this.flags;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Integer channel() {
+        return this.pin();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SpiChipSelect chipSelect() {
-        return SpiChipSelect.getByNumber(this.address());
+        return SpiChipSelect.getByNumber(this.pin());
     }
 }

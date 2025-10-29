@@ -25,10 +25,10 @@ package com.pi4j.io.impl;
  * #L%
  */
 
-import com.pi4j.config.AddressConfigBuilder;
 import com.pi4j.config.Config;
 import com.pi4j.config.ConfigBuilder;
-import com.pi4j.config.impl.AddressConfigBuilderBase;
+import com.pi4j.config.PinConfigBuilder;
+import com.pi4j.config.impl.PinConfigBuilderBase;
 import com.pi4j.context.Context;
 import com.pi4j.io.IOConfig;
 import com.pi4j.io.IOConfigBuilder;
@@ -38,47 +38,55 @@ import com.pi4j.provider.Provider;
 /**
  * <p>Abstract AddressConfigBuilderBase class.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
+ * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
+ * @version $Id: $Id
  */
-public abstract class IOAddressConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
-        extends AddressConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
-        implements IOConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,
-        AddressConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+public abstract class IOPinConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
+    extends PinConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
+    implements IOConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,
+    PinConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected IOAddressConfigBuilderBase(Context context){
+    protected IOPinConfigBuilderBase(Context context) {
         super(context);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public BUILDER_TYPE provider(String provider){
+    public BUILDER_TYPE provider(String provider) {
         this.properties.put(IOConfig.PROVIDER_KEY, provider);
         return (BUILDER_TYPE) this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public BUILDER_TYPE provider(Class<? extends Provider> providerClass){
+    public BUILDER_TYPE provider(Class<? extends Provider> providerClass) {
         this.properties.put(IOConfig.PROVIDER_KEY, providerClass.getName());
         return (BUILDER_TYPE) this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public BUILDER_TYPE platform(String platform){
+    public BUILDER_TYPE platform(String platform) {
         this.properties.put(IOConfig.PLATFORM_KEY, platform);
         return (BUILDER_TYPE) this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public BUILDER_TYPE platform(Class<? extends Platform> platformClass){
+    public BUILDER_TYPE platform(Class<? extends Platform> platformClass) {
         this.properties.put(IOConfig.PLATFORM_KEY, platformClass.getName());
         return (BUILDER_TYPE) this;
     }

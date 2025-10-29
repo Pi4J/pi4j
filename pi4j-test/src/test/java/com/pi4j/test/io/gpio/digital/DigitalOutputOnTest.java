@@ -65,10 +65,10 @@ public class DigitalOutputOnTest {
     public void testIsOnDefault() {
 
         // create GPIO digital output config
-        var config  = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder(pi4j)
             .id("test-output")
             .name("Test Digital Output")
-            .address(1)
+            .pin(1)
             .build();
 
         // create GPIO digital output instance
@@ -89,10 +89,10 @@ public class DigitalOutputOnTest {
     public void testIsOnHigh() {
 
         // create GPIO digital output config
-        var config  = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder(pi4j)
             .id("test-output")
             .name("Test Digital Output")
-            .address(1)
+            .pin(1)
             .onState(DigitalState.HIGH)
             .build();
 
@@ -114,11 +114,11 @@ public class DigitalOutputOnTest {
     public void testIsOnLow() {
 
         // create GPIO digital output config
-        var config  = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder(pi4j)
             .id("test-output")
             .name("Test Digital Output")
             .onState(DigitalState.LOW)
-            .address(1)
+            .pin(1)
             .build();
 
         // create GPIO digital output instance
@@ -139,10 +139,10 @@ public class DigitalOutputOnTest {
     public void testOnDefault() {
 
         // create GPIO digital output config
-        var config  = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder(pi4j)
             .id("test-output")
             .name("Test Digital Output")
-            .address(1)
+            .pin(1)
             .build();
 
         // create GPIO digital output instance
@@ -163,10 +163,10 @@ public class DigitalOutputOnTest {
     public void testOnHigh() {
 
         // create GPIO digital output config
-        var config  = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder(pi4j)
             .id("test-output")
             .name("Test Digital Output")
-            .address(1)
+            .pin(1)
             .onState(DigitalState.HIGH)
             .build();
 
@@ -188,10 +188,10 @@ public class DigitalOutputOnTest {
     public void testOnLow() {
 
         // create GPIO digital output config
-        var config  = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder(pi4j)
             .id("test-output")
             .name("Test Digital Output")
-            .address(1)
+            .pin(1)
             .onState(DigitalState.LOW)
             .build();
 

@@ -29,7 +29,7 @@ import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.digital.PullResistance;
-import com.pi4j.io.impl.IOAddressConfigBase;
+import com.pi4j.io.impl.IOPinConfigBase;
 import com.pi4j.util.StringUtil;
 
 import java.util.Map;
@@ -41,13 +41,13 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public class DefaultDigitalInputConfig
-        extends IOAddressConfigBase<DigitalInputConfig>
-        implements DigitalInputConfig {
+    extends IOPinConfigBase<DigitalInputConfig>
+    implements DigitalInputConfig {
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    private DefaultDigitalInputConfig(){
+    private DefaultDigitalInputConfig() {
         super();
     }
 
@@ -62,30 +62,30 @@ public class DefaultDigitalInputConfig
      *
      * @param properties a {@link java.util.Map} object.
      */
-    protected DefaultDigitalInputConfig(Map<String,String> properties){
+    protected DefaultDigitalInputConfig(Map<String, String> properties) {
         super(properties);
 
         // define default property values if any are missing (based on the required address value)
-        this.id = StringUtil.setIfNullOrEmpty(this.id, "DIN-" + this.address, true);
-        this.name = StringUtil.setIfNullOrEmpty(this.name, "DIN-" + this.address, true);
-        this.description = StringUtil.setIfNullOrEmpty(this.description, "DIN-" + this.address, true);
+        this.id = StringUtil.setIfNullOrEmpty(this.id, "DIN-" + this.pin, true);
+        this.name = StringUtil.setIfNullOrEmpty(this.name, "DIN-" + this.pin, true);
+        this.description = StringUtil.setIfNullOrEmpty(this.description, "DIN-" + this.pin, true);
 
-        if(properties.containsKey(BUS_NUMBER)){
+        if (properties.containsKey(BUS_NUMBER)) {
             this.busNumber = Integer.parseInt(properties.get(BUS_NUMBER));
         }
 
         // load optional pull resistance from properties
-        if(properties.containsKey(PULL_RESISTANCE_KEY)){
+        if (properties.containsKey(PULL_RESISTANCE_KEY)) {
             this.pullResistance = PullResistance.parse(properties.get(PULL_RESISTANCE_KEY));
         }
 
         // load optional pull resistance from properties
-        if(properties.containsKey(DEBOUNCE_RESISTANCE_KEY)){
+        if (properties.containsKey(DEBOUNCE_RESISTANCE_KEY)) {
             this.debounce = Long.parseLong(properties.get(DEBOUNCE_RESISTANCE_KEY));
         }
 
         // load on-state value property
-        if(properties.containsKey(ON_STATE_KEY)){
+        if (properties.containsKey(ON_STATE_KEY)) {
             this.onState = DigitalState.parse(properties.get(ON_STATE_KEY));
         }
     }
@@ -95,15 +95,26 @@ public class DefaultDigitalInputConfig
         return this.busNumber;
     }
 
-    /** {@inheritDoc} */
+    @Override
+    public Integer pin() {
+        return this.pin;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PullResistance pull() {
         return this.pullResistance;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Long debounce() { return this.debounce; }
+    public Long debounce() {
+        return this.debounce;
+    }
 
     @Override
     public DigitalState onState() {

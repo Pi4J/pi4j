@@ -27,7 +27,7 @@ package com.pi4j.io.gpio.digital.impl;
 
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.gpio.digital.DigitalState;
-import com.pi4j.io.impl.IOAddressConfigBase;
+import com.pi4j.io.impl.IOPinConfigBase;
 import com.pi4j.util.StringUtil;
 
 import java.util.Map;
@@ -39,7 +39,7 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public class DefaultDigitalOutputConfig
-    extends IOAddressConfigBase<DigitalOutputConfig>
+    extends IOPinConfigBase<DigitalOutputConfig>
     implements DigitalOutputConfig {
 
     // private configuration properties
@@ -64,9 +64,9 @@ public class DefaultDigitalOutputConfig
         super(properties);
 
         // define default property values if any are missing (based on the required address value)
-        this.id = StringUtil.setIfNullOrEmpty(this.id, "DOUT-" + this.address, true);
-        this.name = StringUtil.setIfNullOrEmpty(this.name, "DOUT-" + this.address, true);
-        this.description = StringUtil.setIfNullOrEmpty(this.description, "DOUT-" + this.address, true);
+        this.id = StringUtil.setIfNullOrEmpty(this.id, "DOUT-" + this.pin, true);
+        this.name = StringUtil.setIfNullOrEmpty(this.name, "DOUT-" + this.pin, true);
+        this.description = StringUtil.setIfNullOrEmpty(this.description, "DOUT-" + this.pin, true);
 
         if (properties.containsKey(BUS_NUMBER)) {
             this.busNumber = Integer.parseInt(properties.get(BUS_NUMBER));

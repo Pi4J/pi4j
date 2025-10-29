@@ -108,7 +108,7 @@ public class GPIOTest {
     @Test
     public void testInputCustomConfig() {
         var config = DigitalInputConfigBuilder.newInstance(pi4j0)
-            .address(3)
+            .pin(3)
             .debounce(99L, TimeUnit.MICROSECONDS)
             .pull(PullResistance.PULL_DOWN)
             .build();
@@ -136,7 +136,7 @@ public class GPIOTest {
     @Test
     public void testOutputCustomConfig() {
         var config = DigitalOutputConfigBuilder.newInstance(pi4j0)
-            .address(4)
+            .pin(4)
             .initial(DigitalState.HIGH)
             .build();
         var output = pi4j0.digitalOutput().create(config);

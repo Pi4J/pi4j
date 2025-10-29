@@ -61,7 +61,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
 
     public DigitalInputFFM(String chipName, DigitalInputProvider provider, DigitalInputConfig config) {
         super(provider, config);
-        this.pin = config.address();
+        this.pin = config.pin();
         this.deviceName = "/dev/gpiochip" + config.busNumber();
         this.debounce = config.debounce();
         this.pull = config.pull();
@@ -116,7 +116,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
 
     @Override
     public DigitalInput addListener(DigitalStateChangeListener... listener) {
-        var factory =  Thread.ofVirtual().name(deviceName + "-event-detection-pin-", pin)
+        var factory = Thread.ofVirtual().name(deviceName + "-event-detection-pin-", pin)
             .uncaughtExceptionHandler(((_, e) -> logger.error(e.getMessage(), e)))
             .factory();
         this.eventTaskProcessor = Executors.newSingleThreadExecutor(factory);

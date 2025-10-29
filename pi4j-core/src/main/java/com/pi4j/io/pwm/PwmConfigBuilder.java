@@ -25,8 +25,9 @@ package com.pi4j.io.pwm;
  * #L%
  */
 
+import com.pi4j.config.ConfigBuilder;
 import com.pi4j.context.Context;
-import com.pi4j.io.gpio.GpioConfigBuilder;
+import com.pi4j.io.IOConfigBuilder;
 import com.pi4j.io.pwm.impl.DefaultPwmConfigBuilder;
 
 /**
@@ -35,29 +36,33 @@ import com.pi4j.io.pwm.impl.DefaultPwmConfigBuilder;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public interface PwmConfigBuilder extends GpioConfigBuilder<PwmConfigBuilder, PwmConfig> {
+public interface PwmConfigBuilder extends
+    IOConfigBuilder<PwmConfigBuilder, PwmConfig>,
+    ConfigBuilder<PwmConfigBuilder, PwmConfig> {
     /**
      * <p>newInstance.</p>
      *
      * @param context {@link Context}
      * @return a {@link com.pi4j.io.pwm.PwmConfigBuilder} object.
      */
-    static PwmConfigBuilder newInstance(Context context)  {
+    static PwmConfigBuilder newInstance(Context context) {
         return DefaultPwmConfigBuilder.newInstance(context);
     }
 
-    PwmConfigBuilder busNumber(int busNumber);
+    PwmConfigBuilder bus(Integer bus);
+
+    PwmConfigBuilder address(Integer address);
 
     /**
-     *  Set the configured frequency value in Hertz (number of cycles per second)
-     *  that the PWM signal generator should attempt to output when the PWM state
-     *  is enabled.
+     * Set the configured frequency value in Hertz (number of cycles per second)
+     * that the PWM signal generator should attempt to output when the PWM state
+     * is enabled.
      * <p>
-     *  Please note that certain PWM signal generators may be limited to specific
-     *  frequency bands and may not generate all possible explicit frequency values.
-     *  After enabling the PWM signal using the 'on(...)' method, you can check the
-     *  'Pwm::frequency()' or 'Pwm::getFrequency()' properties to determine what
-     *  frequency the PWM generator actually applied.
+     * Please note that certain PWM signal generators may be limited to specific
+     * frequency bands and may not generate all possible explicit frequency values.
+     * After enabling the PWM signal using the 'on(...)' method, you can check the
+     * 'Pwm::frequency()' or 'Pwm::getFrequency()' properties to determine what
+     * frequency the PWM generator actually applied.
      *
      * @param frequency the number of cycles per second (Hertz)
      * @return this builder instance
@@ -65,14 +70,14 @@ public interface PwmConfigBuilder extends GpioConfigBuilder<PwmConfigBuilder, Pw
     PwmConfigBuilder frequency(Integer frequency);
 
     /**
-     *  Set the duty-cycle value as a decimal value that represents the
-     *  percentage of the ON vs OFF time of the PWM signal for each
-     *  period.  The duty-cycle range is valid from 0 to 100 including
-     *  factional values.  (Values above 50% mean the signal will
-     *  remain HIGH more time than LOW.)
+     * Set the duty-cycle value as a decimal value that represents the
+     * percentage of the ON vs OFF time of the PWM signal for each
+     * period.  The duty-cycle range is valid from 0 to 100 including
+     * factional values.  (Values above 50% mean the signal will
+     * remain HIGH more time than LOW.)
      * <p>
-     *  Example: A value of 50 represents a duty-cycle where half of
-     *  the time period the signal is LOW and the other half is HIGH.
+     * Example: A value of 50 represents a duty-cycle where half of
+     * the time period the signal is LOW and the other half is HIGH.
      *
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      * @return this builder instance
@@ -85,8 +90,8 @@ public interface PwmConfigBuilder extends GpioConfigBuilder<PwmConfigBuilder, Pw
      * PWM generators.  Please consult the documentation for your PWM provider
      * to determine what support is available and what limitations may apply.
      *
-     * @return this builder instance
      * @param pwmType a {@link com.pi4j.io.pwm.PwmType} object.
+     * @return this builder instance
      */
     PwmConfigBuilder pwmType(PwmType pwmType);
 
@@ -96,8 +101,8 @@ public interface PwmConfigBuilder extends GpioConfigBuilder<PwmConfigBuilder, Pw
      * consult the documentation for your PWM provider to determine
      * what support is available and what limitations may apply.
      *
-     * @return this builder instance
      * @param polarity a {@link com.pi4j.io.pwm.PwmPolarity} object.
+     * @return this builder instance
      */
     PwmConfigBuilder polarity(PwmPolarity polarity);
 
@@ -134,5 +139,5 @@ public interface PwmConfigBuilder extends GpioConfigBuilder<PwmConfigBuilder, Pw
      * @param preset one or more pre-configured PwmPreset instances
      * @return this builder instance
      */
-    PwmConfigBuilder preset(PwmPreset ... preset);
+    PwmConfigBuilder preset(PwmPreset... preset);
 }

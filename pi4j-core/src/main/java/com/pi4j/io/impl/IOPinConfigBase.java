@@ -1,11 +1,11 @@
-package com.pi4j.io.gpio.analog.impl;
+package com.pi4j.io.impl;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  DefaultAnalogInputConfig.java
+ * FILENAME      :  IOAddressConfigBase.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -25,55 +25,66 @@ package com.pi4j.io.gpio.analog.impl;
  * #L%
  */
 
-import com.pi4j.io.gpio.analog.AnalogInputConfig;
-import com.pi4j.util.StringUtil;
+import com.pi4j.config.Config;
+import com.pi4j.config.PinConfig;
+import com.pi4j.config.impl.PinConfigBase;
+import com.pi4j.io.IOConfig;
 
 import java.util.Map;
 
 /**
- * <p>DefaultAnalogInputConfig class.</p>
+ * <p>ConfigBase class.</p>
  *
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public class DefaultAnalogInputConfig
-    extends AnalogConfigBase<AnalogInputConfig>
-    implements AnalogInputConfig {
+public class IOPinConfigBase<CONFIG_TYPE extends Config>
+    extends PinConfigBase<CONFIG_TYPE>
+    implements IOConfig<CONFIG_TYPE>, PinConfig<CONFIG_TYPE> {
 
-    protected Integer busNumber = null;
+    // private configuration variables
+    protected String provider = null;
+    protected String platform = null;
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    private DefaultAnalogInputConfig() {
-        super();
+    protected IOPinConfigBase() {
     }
 
     /**
      * PRIVATE CONSTRUCTOR
      *
-     * @param properties a {@link java.util.Map} object.
+     * @param properties a {@link Map} object.
      */
-    protected DefaultAnalogInputConfig(Map<String, String> properties) {
+    protected IOPinConfigBase(Map<String, String> properties) {
         super(properties);
 
-        // define default property values if any are missing (based on the required address value)
-        this.id = StringUtil.setIfNullOrEmpty(this.id, "AIN-" + this.pin, true);
-        this.name = StringUtil.setIfNullOrEmpty(this.name, "AIN-" + this.pin, true);
-        this.description = StringUtil.setIfNullOrEmpty(this.description, "AIN-" + this.pin, true);
+        // load provider property
+        if (properties.containsKey(PROVIDER_KEY)) {
+            this.provider = properties.get(PROVIDER_KEY);
+        }
 
-        if (properties.containsKey(BUS_NUMBER)) {
-            this.busNumber = Integer.parseInt(properties.get(BUS_NUMBER));
+        // load platform property
+        if (properties.containsKey(PLATFORM_KEY)) {
+            this.platform = properties.get(PLATFORM_KEY);
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Integer busNumber() {
-        return busNumber;
+    public String platform() {
+        return this.platform;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Integer pin() {
-        return this.pin;
+    public String provider() {
+        return this.provider;
     }
 }

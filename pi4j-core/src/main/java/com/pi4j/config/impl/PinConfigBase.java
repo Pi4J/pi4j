@@ -1,11 +1,11 @@
-package com.pi4j.io.impl;
+package com.pi4j.config.impl;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  IOAddressConfigBase.java
+ * FILENAME      :  AddressConfigBase.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -25,63 +25,66 @@ package com.pi4j.io.impl;
  * #L%
  */
 
-import com.pi4j.config.AddressConfig;
 import com.pi4j.config.Config;
-import com.pi4j.config.impl.AddressConfigBase;
-import com.pi4j.io.IOConfig;
+import com.pi4j.config.ConfigBase;
+import com.pi4j.config.PinConfig;
+import com.pi4j.config.exception.ConfigMissingRequiredKeyException;
 
 import java.util.Map;
 
 /**
- * <p>ConfigBase class.</p>
+ * <p>Abstract AddressConfigBase class.</p>
  *
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
- * @param <CONFIG_TYPE>
  */
-public class IOAddressConfigBase<CONFIG_TYPE extends Config>
-        extends AddressConfigBase<CONFIG_TYPE>
-        implements IOConfig<CONFIG_TYPE>, AddressConfig<CONFIG_TYPE>
-{
+public abstract class PinConfigBase<CONFIG_TYPE extends Config>
+    extends ConfigBase<CONFIG_TYPE>
+    implements PinConfig<CONFIG_TYPE> {
 
-    // private configuration variables
-    protected String provider = null;
-    protected String platform = null;
+    // private configuration properties
+    protected Integer pin = null;
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected IOAddressConfigBase(){
+    protected PinConfigBase() {
+        super();
+    }
+
+    /**
+     * <p>Constructor for AddressConfigBase.</p>
+     *
+     * @param pin a {@link java.lang.Integer} object.
+     */
+    protected PinConfigBase(Integer pin) {
+        super();
+        this.pin = pin;
     }
 
     /**
      * PRIVATE CONSTRUCTOR
      *
-     * @param properties a {@link Map} object.
+     * @param properties a {@link java.util.Map} object.
      */
-    protected IOAddressConfigBase(Map<String,String> properties){
+    protected PinConfigBase(Map<String, String> properties) {
         super(properties);
 
-        // load provider property
-        if(properties.containsKey(PROVIDER_KEY)){
-            this.provider = properties.get(PROVIDER_KEY);
-        }
-
-        // load platform property
-        if(properties.containsKey(PLATFORM_KEY)){
-            this.platform = properties.get(PLATFORM_KEY);
+        // load address property
+        if (properties.containsKey(PIN_KEY)) {
+            this.pin = Integer.parseInt(properties.get(PIN_KEY));
+        } else {
+            throw new ConfigMissingRequiredKeyException(PIN_KEY);
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public String platform() {
-        return this.platform;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String provider() {
-        return this.provider;
+    /**
+     * <p>address.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
+    public Integer pin() {
+        return this.pin;
     }
 }

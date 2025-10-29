@@ -5,7 +5,7 @@ package com.pi4j.config;
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  AddressConfig.java
+ * FILENAME      :  AddressConfigBuilder.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -26,27 +26,19 @@ package com.pi4j.config;
  */
 
 /**
- * <p>AddressConfig interface.</p>
+ * <p>AddressConfigBuilder interface.</p>
  *
+ * @param <BUILDER_TYPE>
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
- * @param <CONFIG_TYPE>
  */
-public interface AddressConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
-    /** Constant <code>ADDRESS_KEY="address"</code> */
-    String ADDRESS_KEY = "address";
+public interface PinConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
     /**
-     * <p>address.</p>
+     * <p>pin.</p>
      *
-     * @return a {@link java.lang.Integer} object.
+     * @param pin a {@link java.lang.Integer} object.
+     * @return a BUILDER_TYPE object.
      */
-    Integer address();
-    /**
-     * <p>getAddress.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
-    default Integer getAddress(){
-        return this.address();
-    }
+    BUILDER_TYPE pin(Integer pin);
 }

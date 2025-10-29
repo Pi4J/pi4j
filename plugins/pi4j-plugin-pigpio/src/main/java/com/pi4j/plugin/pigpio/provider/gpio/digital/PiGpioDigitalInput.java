@@ -10,7 +10,7 @@ package com.pi4j.plugin.pigpio.provider.gpio.digital;
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
  * **********************************************************************
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the
@@ -55,14 +55,14 @@ public class PiGpioDigitalInput extends DigitalInputBase implements DigitalInput
     /**
      * Default Constructor
      *
-     * @param piGpio a {@link com.pi4j.library.pigpio.PiGpio} object.
+     * @param piGpio   a {@link com.pi4j.library.pigpio.PiGpio} object.
      * @param provider a {@link com.pi4j.io.gpio.digital.DigitalInputProvider} object.
-     * @param config a {@link com.pi4j.io.gpio.digital.DigitalInputConfig} object.
+     * @param config   a {@link com.pi4j.io.gpio.digital.DigitalInputConfig} object.
      */
     public PiGpioDigitalInput(PiGpio piGpio, DigitalInputProvider provider, DigitalInputConfig config) {
         super(provider, config);
         this.piGpio = piGpio;
-        this.pin = config.address().intValue();
+        this.pin = config.pin().intValue();
     }
 
     /**
@@ -72,9 +72,11 @@ public class PiGpioDigitalInput extends DigitalInputBase implements DigitalInput
      * to registered Pi4J 'DigitalChangeEvent' event listeners on this digital pin.
      */
     private PiGpioStateChangeListener piGpioPinListener =
-            event -> dispatch(new DigitalStateChangeEvent(PiGpioDigitalInput.this, DigitalState.getState(event.state().value())));
+        event -> dispatch(new DigitalStateChangeEvent(PiGpioDigitalInput.this, DigitalState.getState(event.state().value())));
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalInput initialize(Context context) throws InitializeException {
         super.initialize(context);
@@ -83,23 +85,23 @@ public class PiGpioDigitalInput extends DigitalInputBase implements DigitalInput
         this.piGpio.gpioSetMode(pin, PiGpioMode.INPUT);
 
         // if configured, set GPIO pin pull resistance
-        switch(config.pull()){
-            case PULL_DOWN:{
+        switch (config.pull()) {
+            case PULL_DOWN: {
                 this.piGpio.gpioSetPullUpDown(pin, PiGpioPud.DOWN);
                 break;
             }
-            case PULL_UP:{
+            case PULL_UP: {
                 this.piGpio.gpioSetPullUpDown(pin, PiGpioPud.UP);
                 break;
             }
         }
 
         // if configured, set GPIO debounce
-        if(this.config.debounce() != null) {
+        if (this.config.debounce() != null) {
             int steadyInterval = 0;
-            if(this.config.debounce() > 300000){
+            if (this.config.debounce() > 300000) {
                 steadyInterval = 300000;
-            } else{
+            } else {
                 steadyInterval = this.config.debounce().intValue();
             }
             this.piGpio.gpioNoiseFilter(pin, 0, 0);
@@ -111,7 +113,9 @@ public class PiGpioDigitalInput extends DigitalInputBase implements DigitalInput
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalState state() {
         try {
@@ -130,13 +134,15 @@ public class PiGpioDigitalInput extends DigitalInputBase implements DigitalInput
                 }
             }
             return this.state;
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return DigitalState.UNKNOWN;
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalInput shutdown(Context context) throws ShutdownException {
         // remove this pin listener

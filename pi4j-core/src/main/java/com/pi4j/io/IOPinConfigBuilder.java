@@ -25,23 +25,26 @@ package com.pi4j.io;
  * #L%
  */
 
-import com.pi4j.config.AddressConfigBuilder;
+import com.pi4j.config.PinConfigBuilder;
 import com.pi4j.platform.Platform;
 import com.pi4j.provider.Provider;
 
 /**
  * <p>IOConfigBuilder interface.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
+ * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
+ * @version $Id: $Id
  */
-public interface IOAddressConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>
-        extends IOConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,
-                AddressConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+public interface IOPinConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>
+    extends IOConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,
+    PinConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
     BUILDER_TYPE provider(String provider);
+
     BUILDER_TYPE provider(Class<? extends Provider> providerClass);
+
     BUILDER_TYPE platform(String platform);
+
     BUILDER_TYPE platform(Class<? extends Platform> platformClass);
 }

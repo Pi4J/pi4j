@@ -51,10 +51,6 @@ public interface DigitalConfig<CONFIG_TYPE extends Config> extends GpioConfig<CO
      */
     DigitalState onState();
 
-    default Integer pin() {
-        return this.getPin();
-    }
-
     /**
      * <p>getOnState.</p>
      *

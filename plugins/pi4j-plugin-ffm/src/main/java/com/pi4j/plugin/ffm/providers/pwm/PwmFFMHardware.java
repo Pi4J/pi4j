@@ -43,12 +43,14 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
 
     public PwmFFMHardware(PwmProvider provider, PwmConfig config) {
         super(provider, config);
-        this.pwmBusNumber = config.busNumber();
-        this.pwmChipNumber = config.address();
+        this.pwmBusNumber = config.bus();
+        this.pwmChipNumber = config.address(); // TODO is this correct?
         PermissionHelper.checkDevice(CHIP_PATH + pwmChipNumber);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Pwm initialize(Context context) throws InitializeException {
         var pwmChipFile = CHIP_PATH + pwmChipNumber;
