@@ -31,6 +31,9 @@ import com.pi4j.exception.LifecycleException;
 import com.pi4j.io.IO;
 import com.pi4j.io.IOType;
 import com.pi4j.io.exception.*;
+import com.pi4j.io.i2c.I2CConfig;
+import com.pi4j.io.pwm.PwmConfig;
+import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.runtime.Runtime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,15 +83,49 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
         String _id = validateId(instance.id());
 
         // first test to make sure this id does not already exist in the registry
-        if (instances.containsKey(_id))
+        if (instances.containsKey(_id)) {
             throw new IOAlreadyExistsException(_id);
-        if (instance.config() instanceof PinConfig<?> addressConfig) {
-            if (exists(instance.type(), addressConfig.pin())) {
-                throw new IOAlreadyExistsException(addressConfig.pin());
+        }
+
+        switch (instance.config()) {
+            case PinConfig<?> addressConfig: {
+                if (exists(instance.type(), addressConfig.pin())) {
+                    throw new IOAlreadyExistsException(addressConfig.pin());
+                }
+                Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
+                    k -> new HashSet<>());
+                usedAddresses.add(addressConfig.pin());
+                break;
             }
-            Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
-                k -> new HashSet<>());
-            usedAddresses.add(addressConfig.pin());
+            case PwmConfig pwmConfig: {
+                if (exists(instance.type(), pwmConfig.address())) {
+                    throw new IOAlreadyExistsException(pwmConfig.address());
+                }
+                Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
+                    k -> new HashSet<>());
+                usedAddresses.add(pwmConfig.address());
+                break;
+            }
+            case I2CConfig i2cConfig: {
+                if (exists(instance.type(), i2cConfig.device())) {
+                    throw new IOAlreadyExistsException(i2cConfig.device());
+                }
+                Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
+                    k -> new HashSet<>());
+                usedAddresses.add(i2cConfig.device());
+                break;
+            }
+            case SpiConfig spiConfig: {
+                if (exists(instance.type(), spiConfig.channel())) {
+                    throw new IOAlreadyExistsException(spiConfig.channel());
+                }
+                Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
+                    k -> new HashSet<>());
+                usedAddresses.add(spiConfig.channel());
+                break;
+            }
+            default: {
+            }
         }
 
         // add the instance to the collection
