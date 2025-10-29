@@ -30,9 +30,9 @@ public class I2CFFMProviderImpl extends I2CProviderBase implements I2CProvider {
         var bus = new I2CBusFFM(config);
 
         var functions = bus.getFunctionalityMap();
-        logger.trace("{} - bus I2C functions support:", bus.getBusName());
+        logger.debug("{} - bus I2C functions support:", bus.getBusName());
         for (var entry : functions.entrySet()) {
-            logger.trace("\t{} - {}", entry.getKey(), entry.getValue());
+            logger.debug("\t{} - {}", entry.getKey(), entry.getValue());
         }
 
         var impl = config.i2cImplementation();
