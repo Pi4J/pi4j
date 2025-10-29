@@ -46,7 +46,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
         super(provider, config);
         this.pwmBusNumber = config.bus();
         this.pwmChipNumber = config.address(); // TODO is this correct?
-        PermissionHelper.checkDevice(CHIP_PATH + pwmChipNumber);
+        PermissionHelper.checkDevicePermissions(CHIP_PATH + pwmChipNumber, config);
     }
 
     /**

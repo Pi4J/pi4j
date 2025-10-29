@@ -179,7 +179,7 @@ public class LinuxFsDigitalInput extends DigitalInputBase implements DigitalInpu
         }
 
         // perform any shutdown cleanup via superclass
-        super.shutdown(context);
+        super.shutdownInternal(context);
 
         // un-export the GPIO pin from the Linux file system impl
         try {
