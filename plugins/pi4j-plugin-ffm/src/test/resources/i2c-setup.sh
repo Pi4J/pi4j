@@ -5,4 +5,4 @@ insmod i2c-mock.ko
 sleep 10
 lsmod | grep i2c
 dmesg | tail -n 10
-journalctl -n 50
+journalctl -n 150
