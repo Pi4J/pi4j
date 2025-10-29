@@ -2,7 +2,6 @@ package com.pi4j.plugin.ffm.common.i2c.rdwr;
 
 import com.pi4j.plugin.ffm.common.Pi4JLayout;
 
-import java.lang.foreign.Arena;
 import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.SegmentAllocator;
@@ -23,8 +22,6 @@ public record RDWRData(I2CMessage[] msgs, int nmsgs) implements Pi4JLayout {
 
     private static final VarHandle VH_MSGS = LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("msgs"));
     private static final VarHandle VH_NMSGS = LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("nmsgs"));
-
-    private static final SegmentAllocator SEGMENT_ALLOCATOR = Arena.ofAuto();
 
     @Override
     public MemoryLayout getMemoryLayout() {
@@ -52,12 +49,17 @@ public record RDWRData(I2CMessage[] msgs, int nmsgs) implements Pi4JLayout {
 
     @Override
     public void to(MemorySegment buffer) throws Throwable {
+        throw new UnsupportedOperationException("RDWRDate needs to be called with external Segment Allocator");
+    }
+
+    @Override
+    public void to(MemorySegment buffer, SegmentAllocator allocator) throws Throwable {
         VH_NMSGS.set(buffer, 0L, nmsgs);
 
-        var bodySegment = SEGMENT_ALLOCATOR.allocate(msgs.length * I2CMessage.LAYOUT.byteSize());
+        var bodySegment = allocator.allocate(msgs.length * I2CMessage.LAYOUT.byteSize());
         for (int i = 0; i < msgs.length; i++) {
             var messageSlice = bodySegment.asSlice(i * I2CMessage.LAYOUT.byteSize(), I2CMessage.LAYOUT.byteSize());
-            msgs[i].to(messageSlice);
+            msgs[i].to(messageSlice, allocator);
             messageSlice.copyFrom(messageSlice);
         }
 
