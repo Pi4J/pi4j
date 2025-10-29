@@ -25,7 +25,7 @@ package com.pi4j.io.spi.impl;
  * #L%
  */
 
-import com.pi4j.io.impl.IOPinConfigBase;
+import com.pi4j.io.impl.IOConfigBase;
 import com.pi4j.io.spi.*;
 import com.pi4j.util.StringUtil;
 
@@ -38,10 +38,11 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public class DefaultSpiConfig
-    extends IOPinConfigBase<SpiConfig>
+    extends IOConfigBase<SpiConfig>
     implements SpiConfig {
 
     // private configuration properties
+    protected final Integer channel;
     protected final Integer baud;
     protected final SpiMode mode;
     protected boolean modeUserProvided = false;  // indicate user supplied the value
@@ -60,6 +61,13 @@ public class DefaultSpiConfig
      */
     protected DefaultSpiConfig(Map<String, String> properties) {
         super(properties);
+
+        // load channel from properties
+        if (properties.containsKey(CHANNEL_KEY)) {
+            this.channel = StringUtil.parseInteger(properties.get(CHANNEL_KEY), Spi.DEFAULT_CHANNEL);
+        } else {
+            this.channel = Spi.DEFAULT_CHANNEL;
+        }
 
         // load optional BAUD RATE from properties
         if (properties.containsKey(BAUD_KEY)) {
@@ -108,9 +116,17 @@ public class DefaultSpiConfig
         }
 
         // define default property values if any are missing (based on the required address value)
-        this.id = StringUtil.setIfNullOrEmpty(this.id, "SPI-" + this.pin(), true);
-        this.name = StringUtil.setIfNullOrEmpty(this.name, "SPI-" + this.pin(), true);
-        this.description = StringUtil.setIfNullOrEmpty(this.description, "SPI-" + this.pin(), true);
+        this.id = StringUtil.setIfNullOrEmpty(this.id, "SPI-" + this.channel(), true);
+        this.name = StringUtil.setIfNullOrEmpty(this.name, "SPI-" + this.channel(), true);
+        this.description = StringUtil.setIfNullOrEmpty(this.description, "SPI-" + this.channel(), true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Integer channel() {
+        return this.channel;
     }
 
     /**
@@ -121,11 +137,17 @@ public class DefaultSpiConfig
         return this.baud;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Integer readLsbFirst() {
         return this.readLsbFirst;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Integer writeLsbFirst() {
         return this.writeLsbFirst;
@@ -193,15 +215,7 @@ public class DefaultSpiConfig
      * {@inheritDoc}
      */
     @Override
-    public Integer channel() {
-        return this.pin();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public SpiChipSelect chipSelect() {
-        return SpiChipSelect.getByNumber(this.pin());
+        return SpiChipSelect.getByNumber(this.channel());
     }
 }

@@ -26,7 +26,7 @@ package com.pi4j.io.pwm.impl;
  */
 
 import com.pi4j.io.gpio.digital.PullResistance;
-import com.pi4j.io.impl.IOPinConfigBase;
+import com.pi4j.io.impl.IOConfigBase;
 import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.pwm.PwmPolarity;
 import com.pi4j.io.pwm.PwmPreset;
@@ -45,7 +45,7 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public class DefaultPwmConfig
-    extends IOPinConfigBase<PwmConfig>
+    extends IOConfigBase<PwmConfig>
     implements PwmConfig {
 
     protected Integer bus = null;
@@ -89,17 +89,12 @@ public class DefaultPwmConfig
     protected DefaultPwmConfig(Map<String, String> properties) {
         super(properties);
 
-        // define default property values if any are missing (based on the required address value)
-        this.id = StringUtil.setIfNullOrEmpty(this.id, "PWM-" + this.address, true);
-        this.name = StringUtil.setIfNullOrEmpty(this.name, "PWM-" + this.address, true);
-        this.description = StringUtil.setIfNullOrEmpty(this.description, "PWM-" + this.address, true);
-
         if (properties.containsKey(PWM_BUS)) {
-            this.bus = Integer.valueOf(properties.get(bus));
+            this.bus = Integer.valueOf(properties.get(PWM_BUS));
         }
 
         if (properties.containsKey(PWM_ADDRESS)) {
-            this.address = Integer.valueOf(properties.get(address));
+            this.address = Integer.valueOf(properties.get(PWM_ADDRESS));
         }
 
         // load optional pwm duty-cycle from properties
@@ -133,12 +128,19 @@ public class DefaultPwmConfig
         }
 
         // bounds checking
-        if (this.dutyCycle != null && this.dutyCycle > 100)
+        if (this.dutyCycle != null && this.dutyCycle > 100) {
             this.dutyCycle = 100;
+        }
 
         // bounds checking
-        if (this.dutyCycle != null && this.dutyCycle < 0)
+        if (this.dutyCycle != null && this.dutyCycle < 0) {
             this.dutyCycle = (int) 0;
+        }
+
+        // define default property values if any are missing (based on the required address value)
+        this.id = StringUtil.setIfNullOrEmpty(this.id, "PWM-" + this.address, true);
+        this.name = StringUtil.setIfNullOrEmpty(this.name, "PWM-" + this.address, true);
+        this.description = StringUtil.setIfNullOrEmpty(this.description, "PWM-" + this.address, true);
     }
 
     @Override
