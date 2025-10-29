@@ -2,6 +2,6 @@
 
 /bin/bash  ../native/pwm/build.sh
 insmod pwm-mock.ko
-sleep 10
 lsmod | grep pwm
 dmesg | tail -n 10
+ls -la /sys/class/pwm/pwmchip0/
