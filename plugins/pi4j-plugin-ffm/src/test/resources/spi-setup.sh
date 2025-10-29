@@ -2,6 +2,6 @@
 
 /bin/bash  ../native/spi/build.sh
 insmod spi-mock.ko
-sleep 1
-lsmod
-dmesg | tail -n 100
+sleep 10
+lsmod | grep spi
+dmesg | tail -n 10

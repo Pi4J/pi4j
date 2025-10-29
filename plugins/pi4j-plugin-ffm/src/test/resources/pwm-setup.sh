@@ -2,4 +2,6 @@
 
 /bin/bash  ../native/pwm/build.sh
 insmod pwm-mock.ko
-sleep 1
+sleep 10
+lsmod | grep pwm
+dmesg | tail -n 10
