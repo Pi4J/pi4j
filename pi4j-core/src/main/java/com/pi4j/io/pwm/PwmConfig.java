@@ -42,9 +42,9 @@ public interface PwmConfig extends IOConfig<PwmConfig> {
      */
     String PWM_BUS = "bus";
     /**
-     * Constant <code>PWM_ADDRESS="address"</code>
+     * Constant <code>PWM_ADDRESS="channel"</code>
      */
-    String PWM_ADDRESS = "address";
+    String PWM_CHANNEL = "channel";
     /**
      * Constant <code>PWM_TYPE_KEY="pwm-type"</code>
      */
@@ -91,15 +91,15 @@ public interface PwmConfig extends IOConfig<PwmConfig> {
      *
      * @return the address value as an Integer.
      */
-    Integer address();
+    Integer channel();
 
     /**
      * Retrieves the address associated with this PWM configuration.
      *
      * @return the address value as an Integer.
      */
-    default Integer getAddress() {
-        return this.address();
+    default Integer getChannel() {
+        return this.channel();
     }
 
     /**

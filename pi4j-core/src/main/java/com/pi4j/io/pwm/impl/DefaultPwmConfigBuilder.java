@@ -74,8 +74,8 @@ public class DefaultPwmConfigBuilder
      * {@inheritDoc}
      */
     @Override
-    public PwmConfigBuilder address(Integer address) {
-        this.properties.put(PwmConfig.PWM_ADDRESS, address.toString());
+    public PwmConfigBuilder channel(Integer channel) {
+        this.properties.put(PwmConfig.PWM_CHANNEL, channel.toString());
         return this;
     }
 

@@ -49,9 +49,24 @@ public interface PwmConfigBuilder extends
         return DefaultPwmConfigBuilder.newInstance(context);
     }
 
+    /**
+     * Sets the bus number for the PWM configuration.
+     *
+     * @param bus the bus number to be configured, typically used to identify
+     *            a specific hardware interface or connection point.
+     * @return the current PwmConfigBuilder instance for method chaining
+     */
     PwmConfigBuilder bus(Integer bus);
 
-    PwmConfigBuilder address(Integer address);
+    /**
+     * Sets the channel number for the PWM configuration.
+     *
+     * @param channel the channel number to be configured, typically used to
+     *                specify a particular hardware channel or output line
+     *                for the PWM signal.
+     * @return the current PwmConfigBuilder instance for method chaining
+     */
+    PwmConfigBuilder channel(Integer channel);
 
     /**
      * Set the configured frequency value in Hertz (number of cycles per second)

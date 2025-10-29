@@ -98,12 +98,12 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
                 break;
             }
             case PwmConfig pwmConfig: {
-                if (exists(instance.type(), pwmConfig.address())) {
-                    throw new IOAlreadyExistsException(pwmConfig.address());
+                if (exists(instance.type(), pwmConfig.channel())) {
+                    throw new IOAlreadyExistsException(pwmConfig.channel());
                 }
                 Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
                     k -> new HashSet<>());
-                usedAddresses.add(pwmConfig.address());
+                usedAddresses.add(pwmConfig.channel());
                 break;
             }
             case I2CConfig i2cConfig: {

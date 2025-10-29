@@ -95,10 +95,10 @@ public class LinuxFsPwmProviderImpl extends PwmProviderBase implements LinuxFsPw
         if (config.pwmType() != PwmType.HARDWARE)
             throw new IOException(format(
                 "The Linux file system PWM provider does not support software-emulated PWM pins; PIN BUS{0}= ADDRESS={0}",
-                config.bus(), config.address()));
+                config.bus(), config.channel()));
 
         // create filesystem based PWM instance using instance address (PWM PIN NUMBER)
-        LinuxPwm pwm = new LinuxPwm(this.pwmFileSystemPath, this.pwmChip, config.address());
+        LinuxPwm pwm = new LinuxPwm(this.pwmFileSystemPath, this.pwmChip, config.channel());
         LinuxFsPwm fsPwm = new LinuxFsPwm(pwm, this, config);
         this.context.registry().add(fsPwm);
         return fsPwm;

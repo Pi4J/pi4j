@@ -65,12 +65,12 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     }
 
     /**
-     * Get the GPIO pin number/address of this PWM instance.
+     * Get the GPIO channel of this PWM instance.
      *
-     * @return gpio pin number/address
+     * @return gpio channel
      */
-    default int getAddress() {
-        return config().getAddress();
+    default int getChannel() {
+        return config().getChannel();
     }
 
     /**

@@ -68,34 +68,34 @@ public class LinuxFsPwm extends PwmBase implements Pwm {
      */
     @Override
     public Pwm initialize(Context context) throws InitializeException {
-        logger.trace("initializing PWM [{},{}]; {}", this.config.bus(), this.config.address(), pwm.getPwmPath());
+        logger.trace("initializing PWM [{},{}]; {}", this.config.bus(), this.config.channel(), pwm.getPwmPath());
 
         // first determine if this PWM chipset supports this PWM channel/pin number
         try {
-            if (this.config.address() >= pwm.channels()) {
-                throw new InitializeException("Unsupported pin/channel by PWM chipset for PWM [" + config.address() + "] @ <" + pwm.systemPath() + ">");
+            if (this.config.channel() >= pwm.channels()) {
+                throw new InitializeException("Unsupported pin/channel by PWM chipset for PWM [" + config.channel() + "] @ <" + pwm.systemPath() + ">");
             }
         } catch (java.io.IOException e) {
             logger.error(e.getMessage(), e);
-            throw new InitializeException("Unable to get number of pins/channels supported by PWM chipset for PWM [" + config.address() + "] @ <" + pwm.systemPath() + ">; " + e.getMessage(), e);
+            throw new InitializeException("Unable to get number of pins/channels supported by PWM chipset for PWM [" + config.channel() + "] @ <" + pwm.systemPath() + ">; " + e.getMessage(), e);
         }
 
         // [EXPORT] requested PWM channel if its not already exported
         try {
             if (!pwm.isExported()) {
-                logger.trace("exporting PWM [{}]; {}", this.config.address(), pwm.getPwmPath());
+                logger.trace("exporting PWM [{}]; {}", this.config.channel(), pwm.getPwmPath());
                 pwm.export();
                 // Delay to allow the SSD to persist the new directory and device partitions
                 Thread.sleep(70);
             } else {
-                logger.trace("PWM [{}] is already exported; {}", this.config.address(), pwm.getPwmPath());
+                logger.trace("PWM [{}] is already exported; {}", this.config.channel(), pwm.getPwmPath());
             }
         } catch (java.io.IOException e) {
             logger.error(e.getMessage(), e);
-            throw new InitializeException("Unable to export PWM [" + config.address() + "] @ <" + pwm.systemPath() + ">; " + e.getMessage(), e);
+            throw new InitializeException("Unable to export PWM [" + config.channel() + "] @ <" + pwm.systemPath() + ">; " + e.getMessage(), e);
         } catch (InterruptedException e) {
             logger.error(e.getMessage(), e);
-            throw new InitializeException("Programmed delay failure, unable to export PWM [" + config.address() + "] @ <" + pwm.systemPath() + ">; " + e.getMessage(), e);
+            throw new InitializeException("Programmed delay failure, unable to export PWM [" + config.channel() + "] @ <" + pwm.systemPath() + ">; " + e.getMessage(), e);
         }
 
         // [INITIALIZE STATE] initialize PWM pin state (via superclass impl)
@@ -125,22 +125,22 @@ public class LinuxFsPwm extends PwmBase implements Pwm {
             long period = Frequency.nanoseconds(this.frequency);
 
             // set PWM period in nanoseconds based on configured frequency
-            logger.trace("set 'period' of PWM [{}] to [{}]; {}", this.config.address(), Long.toUnsignedString(period), pwm.getPwmPath());
+            logger.trace("set 'period' of PWM [{}] to [{}]; {}", this.config.channel(), Long.toUnsignedString(period), pwm.getPwmPath());
             pwm.period(period);
 
             // calculate duty cycle nanoseconds from configured duty cycle percentage
             long dcycle = Math.round(period * this.dutyCycle / 100);
 
             // set PWM duty-cycle nanoseconds
-            logger.trace("set 'duty_cycle' of PWM [{}] to [{}]; {}", this.config.address(), dcycle, pwm.getPwmPath());
+            logger.trace("set 'duty_cycle' of PWM [{}] to [{}]; {}", this.config.channel(), dcycle, pwm.getPwmPath());
             pwm.dutyCycle(dcycle);
 
             // set PWM polarity
-            logger.trace("set 'polarity' of PWM [{}] to [{}]; {}", this.config.address(), this.polarity.getName(), pwm.getPwmPath());
+            logger.trace("set 'polarity' of PWM [{}] to [{}]; {}", this.config.channel(), this.polarity.getName(), pwm.getPwmPath());
             pwm.polarity((this.polarity == PwmPolarity.INVERSED) ? LinuxPwm.Polarity.INVERSED : LinuxPwm.Polarity.NORMAL);
 
             // enable PWM signal
-            logger.trace("enable PWM [{}]; {}", this.config.address(), pwm.getPwmPath());
+            logger.trace("enable PWM [{}]; {}", this.config.channel(), pwm.getPwmPath());
             pwm.enable();
 
             // update tracking state
@@ -160,7 +160,7 @@ public class LinuxFsPwm extends PwmBase implements Pwm {
     public Pwm off() throws IOException {
         try {
             // disable PWM
-            logger.trace("disable PWM [{}]; {}", this.config.address(), pwm.getPwmPath());
+            logger.trace("disable PWM [{}]; {}", this.config.channel(), pwm.getPwmPath());
             if (pwm.enabled()) {
                 pwm.disable();
             }
@@ -169,7 +169,7 @@ public class LinuxFsPwm extends PwmBase implements Pwm {
             this.onState = false;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new IOException("Unable to disable (OFF) PWM [" + config.address() + "] @ <" + pwm.pwmPath() + ">; " + e.getMessage(), e);
+            throw new IOException("Unable to disable (OFF) PWM [" + config.channel() + "] @ <" + pwm.pwmPath() + ">; " + e.getMessage(), e);
         }
         return this;
     }
@@ -183,7 +183,7 @@ public class LinuxFsPwm extends PwmBase implements Pwm {
             return pwm.isEnabled();
         } catch (java.io.IOException e) {
             logger.error(e.getMessage(), e);
-            throw new IOException("Unable to get ON (enabled) state from PWM [" + config.address() + "] @ <" + pwm.pwmPath() + ">; " + e.getMessage(), e);
+            throw new IOException("Unable to get ON (enabled) state from PWM [" + config.channel() + "] @ <" + pwm.pwmPath() + ">; " + e.getMessage(), e);
         }
     }
 
@@ -201,7 +201,7 @@ public class LinuxFsPwm extends PwmBase implements Pwm {
             return this.actualFrequency;
         } catch (java.io.IOException e) {
             logger.error(e.getMessage(), e);
-            throw new IOException("Unable to read PWM [" + config.address() + "] period @ <" + pwm.pwmPath() + ">; " + e.getMessage(), e);
+            throw new IOException("Unable to read PWM [" + config.channel() + "] period @ <" + pwm.pwmPath() + ">; " + e.getMessage(), e);
         }
     }
 
@@ -210,7 +210,7 @@ public class LinuxFsPwm extends PwmBase implements Pwm {
      */
     @Override
     public Pwm shutdownInternal(Context context) throws ShutdownException {
-        logger.trace("shutdown PWM [{}]; {}", this.config.address(), pwm.getPwmPath());
+        logger.trace("shutdown PWM [{}]; {}", this.config.channel(), pwm.getPwmPath());
 
         // --------------------------------------------------------------------------
         // [ATTENTION]
@@ -233,13 +233,13 @@ public class LinuxFsPwm extends PwmBase implements Pwm {
 
         // otherwise ... un-export the GPIO pin from the Linux file system impl
         try {
-            logger.trace("un-exporting PWM [{}]; {}", this.config.address(), pwm.getPwmPath());
+            logger.trace("un-exporting PWM [{}]; {}", this.config.channel(), pwm.getPwmPath());
             if (pwm.isExported()) {
                 pwm.unexport();
             }
         } catch (java.io.IOException e) {
             logger.error(e.getMessage(), e);
-            throw new ShutdownException("Failed to UN-EXPORT PWM [" + config().address() + "] @ <" + pwm.systemPath() + ">; " + e.getMessage(), e);
+            throw new ShutdownException("Failed to UN-EXPORT PWM [" + config().channel() + "] @ <" + pwm.systemPath() + ">; " + e.getMessage(), e);
         }
 
         // return this PWM instance

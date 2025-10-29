@@ -96,7 +96,7 @@ public class RegistryTest {
     public void testCreateMultipleSameAddress() throws Pi4JException {
         var inputConfig = DigitalInput.newConfigBuilder(pi4j).id("DIN-3").name("DIN-3").pin(3);
         var outputConfig = DigitalOutput.newConfigBuilder(pi4j).id("DOUT-3").name("DOUT-3").pin(3);
-        var pwmConfig = Pwm.newConfigBuilder(pi4j).id("PWM-3").name("PWM-3").address(3);
+        var pwmConfig = Pwm.newConfigBuilder(pi4j).id("PWM-3").name("PWM-3").channel(3);
 
         // create I/O instances
         var input = pi4j.create(inputConfig);
@@ -106,7 +106,7 @@ public class RegistryTest {
         Registry registry = pi4j.registry();
         assertAll(
             // Test that we can find them by address
-            () -> assertTrue(registry.exists(IOType.PWM, pwm.getAddress()), "Should exist: PWM by address"),
+            () -> assertTrue(registry.exists(IOType.PWM, pwm.getChannel()), "Should exist: PWM by address"),
             () -> assertTrue(registry.exists(IOType.DIGITAL_INPUT, input.pin()), "Should exist: Digital Input by pin"),
             () -> assertTrue(registry.exists(IOType.DIGITAL_OUTPUT, output.pin()), "Should exist: Digital Output by pin"),
 
@@ -123,12 +123,11 @@ public class RegistryTest {
         // now shutdown all I/O instances by closing them.
         input.close();
         output.close();
-        pwm.close();
 
         // The test PWM has no context here; assuming mock/fake incompleteness.
         // First guess was that this is because TestPwmProvider returns null from the create method, but this would
         // mean that pwm.id() above would fail already.
-        pi4j.shutdown(pwm);
+        registry.remove(pwm.id());
 
         assertAll(
             // and now we shouldn't find them by address

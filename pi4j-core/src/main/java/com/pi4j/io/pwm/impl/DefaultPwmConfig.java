@@ -49,7 +49,7 @@ public class DefaultPwmConfig
     implements PwmConfig {
 
     protected Integer bus = null;
-    protected Integer address = null;
+    protected Integer channel = null;
 
     // private configuration properties
     protected Integer dutyCycle = null;
@@ -93,8 +93,8 @@ public class DefaultPwmConfig
             this.bus = Integer.valueOf(properties.get(PWM_BUS));
         }
 
-        if (properties.containsKey(PWM_ADDRESS)) {
-            this.address = Integer.valueOf(properties.get(PWM_ADDRESS));
+        if (properties.containsKey(PWM_CHANNEL)) {
+            this.channel = Integer.valueOf(properties.get(PWM_CHANNEL));
         }
 
         // load optional pwm duty-cycle from properties
@@ -138,9 +138,9 @@ public class DefaultPwmConfig
         }
 
         // define default property values if any are missing (based on the required address value)
-        this.id = StringUtil.setIfNullOrEmpty(this.id, "PWM-" + this.address, true);
-        this.name = StringUtil.setIfNullOrEmpty(this.name, "PWM-" + this.address, true);
-        this.description = StringUtil.setIfNullOrEmpty(this.description, "PWM-" + this.address, true);
+        this.id = StringUtil.setIfNullOrEmpty(this.id, "PWM-" + this.channel, true);
+        this.name = StringUtil.setIfNullOrEmpty(this.name, "PWM-" + this.channel, true);
+        this.description = StringUtil.setIfNullOrEmpty(this.description, "PWM-" + this.channel, true);
     }
 
     @Override
@@ -149,8 +149,8 @@ public class DefaultPwmConfig
     }
 
     @Override
-    public Integer address() {
-        return this.address;
+    public Integer channel() {
+        return this.channel;
     }
 
     /**
