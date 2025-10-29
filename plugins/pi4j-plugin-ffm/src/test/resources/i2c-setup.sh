@@ -5,3 +5,4 @@ insmod i2c-mock.ko
 sleep 10
 lsmod | grep i2c
 dmesg | tail -n 10
+ls -la /dev/i2c-0

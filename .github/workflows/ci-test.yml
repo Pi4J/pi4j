@@ -16,7 +16,7 @@ jobs:
       - name: Install JDK25
         uses: sfesenko/setup-sdkman@v1
         with:
-          deps: java:25-amzn
+          deps: java:25-zulu
       - name: Create and add current user to suitable groups
         run: |
           sudo addgroup spi
