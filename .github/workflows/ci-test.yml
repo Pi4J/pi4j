@@ -14,11 +14,11 @@ jobs:
         # run: sudo apt-get install --yes build-essential linux-headers-$(uname -r) sudo libi2c-dev gcc-arm-linux-gnueabihf  gcc-aarch64-linux-gnu libtool tree
         run: |
           sudo apt-get remove --purge man-db
-          sudo apt-get install --yes sudo libi2c-dev
-#      - name: Install JDK25
-#        uses: sfesenko/setup-sdkman@v1
-#        with:
-#          deps: java:25-zulu
+          sudo apt-get install --yes build-essential linux-headers-$(uname -r) sudo libi2c-dev
+      - name: Install JDK25
+        uses: sfesenko/setup-sdkman@v1
+        with:
+          deps: java:25-zulu
       - name: Create and add current user to suitable groups
         run: |
           sudo addgroup spi
@@ -30,8 +30,8 @@ jobs:
         run: |
           sudo cp udev.rules /etc/udev/rules.d/99-pi4j-io.rules
           sudo udevadm control --reload-rules && sudo udevadm trigger
-#      - name: Build entire Pi4J Project
-#        run: |
-#          source ~/.sdkman/bin/sdkman-init.sh
-#          ./mvnw clean install -Pnative,cross-compile --batch-mode
+      - name: Build entire Pi4J Project
+        run: |
+          sudo -u $USER bash -c 'source ~/.sdkman/bin/sdkman-init.sh'
+          sudo -u $USER bash -c './mvnw clean install -Pnative,cross-compile --batch-mode'
 
