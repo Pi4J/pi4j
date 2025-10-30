@@ -50,7 +50,7 @@ public class I2CBusFFM extends I2CBusBase {
                 throw new InitializeException("Device '" + busName + "' cannot be accessed with current user.");
             }
             logger.debug("{} - opening device file.", busName);
-            this.i2cFileDescriptor = file.open(busName, FileFlag.O_RDONLY);
+            this.i2cFileDescriptor = file.open(busName, FileFlag.O_RDWR);
             logger.debug("{} - loading supported functionalities.", busName);
             var i2cFunctions = ioctl.call(i2cFileDescriptor, Command.getI2CFuncs(), 0);
             for (I2CFunctionality i2CFunctionality : I2CFunctionality.values()) {

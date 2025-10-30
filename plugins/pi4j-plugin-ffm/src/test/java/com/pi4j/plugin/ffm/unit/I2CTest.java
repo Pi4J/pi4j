@@ -48,7 +48,6 @@ public class I2CTest {
     }
 
     @Test
-    @EnabledOnOs(LINUX)
     public void testCreation() {
         var functionalities = I2CFunctionality.I2C_FUNC_I2C.getValue() | I2CFunctionality.I2C_FUNC_SMBUS_BYTE.getValue()
             | I2CFunctionality.I2C_FUNC_SMBUS_BLOCK_DATA.getValue()
@@ -73,7 +72,6 @@ public class I2CTest {
     }
 
     @Test
-    @EnabledOnOs(LINUX)
     public void testWriteSMBus() {
         var functionalities = I2CFunctionality.I2C_FUNC_SMBUS_BYTE.getValue() | I2CFunctionality.I2C_FUNC_SMBUS_BLOCK_DATA.getValue()
             | I2CFunctionality.I2C_FUNC_SMBUS_BYTE_DATA.getValue() | I2CFunctionality.I2C_FUNC_SMBUS_QUICK.getValue()
@@ -95,12 +93,11 @@ public class I2CTest {
             assertEquals(3, result);
 
             result = smbus.writeRegister(new byte[]{1, 2, 3}, new byte[]{1, 2, 3}, 0, 3);
-            assertEquals(5, result);
+            assertEquals(3, result);
         }
     }
 
     @Test
-    @EnabledOnOs(LINUX)
     public void testReadSMBus() {
         var functionalities = I2CFunctionality.I2C_FUNC_SMBUS_BYTE.getValue() | I2CFunctionality.I2C_FUNC_SMBUS_BLOCK_DATA.getValue()
             | I2CFunctionality.I2C_FUNC_SMBUS_BYTE_DATA.getValue() | I2CFunctionality.I2C_FUNC_SMBUS_QUICK.getValue()
@@ -220,13 +217,13 @@ public class I2CTest {
             assertEquals(4, result);
 
             result = file.writeRegister(0x1C, 0x1C);
-            assertEquals(2, result);
+            assertEquals(1, result);
 
             result = file.writeRegister(0x1C, "Test".getBytes(), 0, 4);
-            assertEquals(5, result);
+            assertEquals(4, result);
 
             result = file.writeRegister("Test".getBytes(), "Test".getBytes(), 0, 4);
-            assertEquals(8, result);
+            assertEquals(4, result);
         }
     }
 

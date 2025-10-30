@@ -18,7 +18,11 @@ import com.pi4j.plugin.ffm.common.spi.SpiTransferBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SpiFFM extends SpiBase implements Spi {
     private static final Logger logger = LoggerFactory.getLogger(SpiFFM.class);
@@ -87,8 +91,10 @@ public class SpiFFM extends SpiBase implements Spi {
         if (read != null) {
             ByteBuffer.wrap(read).put(readBytes);
             logger.trace("{} - Read buffer: {}", path, HexFormatter.format(read));
+            return readBytes.length;
+        } else {
+            return spiTransfer.getTxBuffer().length;
         }
-        return readBytes.length;
     }
 
     @Override
@@ -98,7 +104,7 @@ public class SpiFFM extends SpiBase implements Spi {
 
     @Override
     public int write(byte[] data, int offset, int length) {
-        return transfer(data, offset, new byte[data.length], 0, length);
+        return transfer(data, offset, null, 0, length);
     }
 
     @Override
@@ -126,5 +132,22 @@ public class SpiFFM extends SpiBase implements Spi {
         if (!isOpen) {
             throw new Pi4JException("SPI bus  '" + path + "' is closed");
         }
+    }
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+        List<String> command = new ArrayList<>();
+        //command.add("/bin/bash");
+        command.add("./test.sh");
+
+        var scriptPath = Paths.get("plugins/pi4j-plugin-ffm/src/main/resources/").toFile().getAbsoluteFile();
+
+        ProcessBuilder pb = new ProcessBuilder(command);
+        pb.directory(scriptPath);
+        Process p = pb.start();
+        p.waitFor();
+        var errorOutput = new String(p.getErrorStream().readAllBytes());
+        var output = new String(p.getInputStream().readAllBytes());
+        System.out.println(errorOutput);
+        System.out.println(output);
     }
 }
