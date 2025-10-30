@@ -32,6 +32,5 @@ jobs:
           sudo udevadm control --reload-rules && sudo udevadm trigger
       - name: Build entire Pi4J Project
         run: |
-          sudo -u $USER bash -c 'source ~/.sdkman/bin/sdkman-init.sh'
-          sudo -u $USER bash -c './mvnw clean install -Pnative,cross-compile --batch-mode'
+          sudo -u $USER bash -c 'source ~/.sdkman/bin/sdkman-init.sh && ./mvnw clean install -Pnative,cross-compile --batch-mode'
 
