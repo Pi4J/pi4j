@@ -23,6 +23,7 @@ jobs:
           sudo adduser $USER spi
           sudo adduser $USER i2c
           sudo adduser $USER dialout
+          source ~/.bashrc
       - name: Add proper udev rules and trigger udevadm
         run: |
           sudo cp udev.rules /etc/udev/rules.d/99-pi4j-io.rules
