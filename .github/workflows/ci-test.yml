@@ -25,7 +25,7 @@ jobs:
           sudo adduser $USER spi
           sudo adduser $USER i2c
           sudo adduser $USER dialout
-          sudo su -l $USER
+          exec sudo su -l $USER
           groups
       - name: Add proper udev rules and trigger udevadm
         run: |
