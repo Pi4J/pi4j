@@ -35,6 +35,15 @@ package com.pi4j.config;
  */
 public interface PinConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
     /**
+     * <p>address.</p>
+     *
+     * @param address a {@link java.lang.Integer} object.
+     * @return a BUILDER_TYPE object.
+     */
+    @Deprecated(forRemoval = true)
+    BUILDER_TYPE address(Integer address);
+
+    /**
      * <p>pin.</p>
      *
      * @param pin a {@link java.lang.Integer} object.

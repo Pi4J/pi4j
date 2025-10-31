@@ -25,6 +25,8 @@ package com.pi4j.io.pwm;
  * #L%
  */
 
+import com.pi4j.config.BusConfig;
+import com.pi4j.config.ChannelConfig;
 import com.pi4j.io.IOConfig;
 
 import java.util.Collection;
@@ -35,8 +37,13 @@ import java.util.Collection;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public interface PwmConfig extends IOConfig<PwmConfig> {
+public interface PwmConfig extends BusConfig<PwmConfig>, ChannelConfig<PwmConfig>, IOConfig<PwmConfig> {
 
+    /**
+     * Constant <code>PWM_ADDRESS="address"</code>
+     */
+    @Deprecated(forRemoval = true)
+    String PWM_ADDRESS = "address";
     /**
      * Constant <code>PWM_BUS="buss"</code>
      */
@@ -69,38 +76,6 @@ public interface PwmConfig extends IOConfig<PwmConfig> {
      * Constant <code>INITIAL_VALUE_KEY="initial"</code>
      */
     String INITIAL_VALUE_KEY = "initial";
-
-    /**
-     * Get the bus associated with this PWM configuration.
-     *
-     * @return the bus value as an Integer.
-     */
-    Integer bus();
-
-    /**
-     * Retrieves the bus associated with this PWM configuration.
-     *
-     * @return the bus value as an Integer.
-     */
-    default Integer getBus() {
-        return this.bus();
-    }
-
-    /**
-     * Get the address associated with this PWM configuration.
-     *
-     * @return the address value as an Integer.
-     */
-    Integer channel();
-
-    /**
-     * Retrieves the address associated with this PWM configuration.
-     *
-     * @return the address value as an Integer.
-     */
-    default Integer getChannel() {
-        return this.channel();
-    }
 
     /**
      * Get the configured duty-cycle value as a decimal value that represents

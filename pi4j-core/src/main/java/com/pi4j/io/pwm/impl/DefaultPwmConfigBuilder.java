@@ -65,6 +65,16 @@ public class DefaultPwmConfigBuilder
      * {@inheritDoc}
      */
     @Override
+    @Deprecated(forRemoval = true)
+    public PwmConfigBuilder address(Integer address) {
+        this.properties.put(PwmConfig.PWM_ADDRESS, address.toString());
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public PwmConfigBuilder bus(Integer bus) {
         this.properties.put(PwmConfig.PWM_BUS, bus.toString());
         return this;

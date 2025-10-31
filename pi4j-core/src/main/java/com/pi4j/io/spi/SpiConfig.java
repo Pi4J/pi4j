@@ -39,6 +39,11 @@ public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig>
     /**
      * Constant <code>BAUD_KEY="baud"</code>
      */
+    @Deprecated(forRemoval = true)
+    String ADDRESS_KEY = "address";
+    /**
+     * Constant <code>BAUD_KEY="baud"</code>
+     */
     String BAUD_KEY = "baud";
     /**
      * Constant <code>BUS_KEY="bus"</code>
@@ -60,7 +65,6 @@ public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig>
      * Constant <code>READ_LSB_KEY="baud"</code>
      */
     String READ_LSB_KEY = "read_lsb";
-
 
     /**
      * <p>newBuilder.</p>

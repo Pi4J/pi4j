@@ -40,7 +40,7 @@ public class DefaultAnalogInputConfig
     extends AnalogConfigBase<AnalogInputConfig>
     implements AnalogInputConfig {
 
-    protected Integer busNumber = null;
+    protected Integer bus = null;
 
     /**
      * PRIVATE CONSTRUCTOR
@@ -62,14 +62,20 @@ public class DefaultAnalogInputConfig
         this.name = StringUtil.setIfNullOrEmpty(this.name, "AIN-" + this.pin, true);
         this.description = StringUtil.setIfNullOrEmpty(this.description, "AIN-" + this.pin, true);
 
-        if (properties.containsKey(BUS_NUMBER)) {
-            this.busNumber = Integer.parseInt(properties.get(BUS_NUMBER));
+        if (properties.containsKey(BUS_KEY)) {
+            this.bus = Integer.parseInt(properties.get(BUS_KEY));
         }
     }
 
     @Override
-    public Integer busNumber() {
-        return busNumber;
+    @Deprecated(forRemoval = true)
+    public Integer address() {
+        return this.pin;
+    }
+
+    @Override
+    public Integer bus() {
+        return bus;
     }
 
     @Override

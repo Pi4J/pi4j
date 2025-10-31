@@ -84,6 +84,16 @@ public abstract class PinConfigBase<CONFIG_TYPE extends Config>
      *
      * @return a {@link java.lang.Integer} object.
      */
+    @Deprecated(forRemoval = true)
+    public Integer address() {
+        return this.pin;
+    }
+
+    /**
+     * <p>address.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
     public Integer pin() {
         return this.pin;
     }

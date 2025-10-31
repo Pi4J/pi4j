@@ -43,7 +43,7 @@ public class DefaultDigitalOutputConfig
     implements DigitalOutputConfig {
 
     // private configuration properties
-    protected Integer busNumber = null;
+    protected Integer bus = null;
     protected DigitalState shutdownState = null;
     protected DigitalState initialState = null;
     protected DigitalState onState = DigitalState.HIGH;
@@ -68,11 +68,11 @@ public class DefaultDigitalOutputConfig
         this.name = StringUtil.setIfNullOrEmpty(this.name, "DOUT-" + this.pin, true);
         this.description = StringUtil.setIfNullOrEmpty(this.description, "DOUT-" + this.pin, true);
 
-        if (properties.containsKey(BUS_NUMBER)) {
-            this.busNumber = Integer.parseInt(properties.get(BUS_NUMBER));
+        if (properties.containsKey(BUS_KEY)) {
+            this.bus = Integer.parseInt(properties.get(BUS_KEY));
         } else {
             // this is essential for FFM Plugin if using pi4j autoContext
-            this.busNumber = 0;
+            this.bus = 0;
         }
 
         // load initial value property
@@ -91,11 +91,26 @@ public class DefaultDigitalOutputConfig
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Integer busNumber() {
-        return busNumber;
+    @Deprecated(forRemoval = true)
+    public Integer address() {
+        return this.pin;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Integer bus() {
+        return this.bus;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Integer pin() {
         return this.pin;

@@ -75,18 +75,18 @@ public class PiGpioPwmSoftware extends PiGpioPwmBase implements Pwm {
             // inversed polarity is not supported
             if (config.polarity() != null) {
                 if (config.polarity() == PwmPolarity.INVERSED) {
-                    throw new IOException("<PIGPIO> INVERSED POLARITY UNSUPPORTED; PWM ADDRESS: " + this.getAddress());
+                    throw new IOException("<PIGPIO> INVERSED POLARITY UNSUPPORTED; PWM CHANNEL: " + this.getChannel());
                 }
             }
 
             // set pin mode to output
-            piGpio.gpioSetMode(this.getAddress(), PiGpioMode.OUTPUT);
+            piGpio.gpioSetMode(this.getChannel(), PiGpioMode.OUTPUT);
 
             // set PWM range (to fixed range)
-            piGpio.gpioSetPWMrange(this.getAddress(), RANGE);
+            piGpio.gpioSetPWMrange(this.getChannel(), RANGE);
 
             // get actual PWM frequency
-            this.actualFrequency = piGpio.gpioGetPWMfrequency(this.getAddress());
+            this.actualFrequency = piGpio.gpioGetPWMfrequency(this.getChannel());
 
             // get current frequency from config or from actual PWM pin
             if (config.frequency() != null) {
@@ -129,10 +129,10 @@ public class PiGpioPwmSoftware extends PiGpioPwmBase implements Pwm {
     public Pwm on() throws IOException {
         try {
             // set PWM frequency; return actual frequency
-            this.actualFrequency = piGpio.gpioSetPWMfrequency(this.getAddress(), frequency);
+            this.actualFrequency = piGpio.gpioSetPWMfrequency(this.getChannel(), frequency);
 
             // set PWM duty-cycle and enable PWM
-            piGpio.gpioPWM(this.getAddress(), calculateActualDutyCycle(this.dutyCycle));
+            piGpio.gpioPWM(this.getChannel(), calculateActualDutyCycle(this.dutyCycle));
 
             // update tracking state
             this.onState = (this.frequency > 0 && this.dutyCycle > 0);
@@ -150,7 +150,7 @@ public class PiGpioPwmSoftware extends PiGpioPwmBase implements Pwm {
     public Pwm off() throws IOException {
         try {
             // set PWM duty-cycle and enable PWM
-            piGpio.gpioPWM(this.getAddress(), 0);
+            piGpio.gpioPWM(this.getChannel(), 0);
 
             // update tracking state
             this.onState = false;

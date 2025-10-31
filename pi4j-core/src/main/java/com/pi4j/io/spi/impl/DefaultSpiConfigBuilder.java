@@ -81,6 +81,16 @@ public class DefaultSpiConfigBuilder
      * {@inheritDoc}
      */
     @Override
+    @Deprecated(forRemoval = true)
+    public SpiConfigBuilder address(Integer address) {
+        this.properties.put(SpiConfig.ADDRESS_KEY, address.toString());
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public SpiConfigBuilder bus(SpiBus bus) {
         this.properties.put(SpiConfig.BUS_KEY, Integer.toString(bus.getBus()));
         return this;

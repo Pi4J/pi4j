@@ -1,11 +1,11 @@
-package com.pi4j.io.gpio;
+package com.pi4j.config;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  GpioConfigBuilder.java
+ * FILENAME      :  AddressConfig.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -25,19 +25,32 @@ package com.pi4j.io.gpio;
  * #L%
  */
 
-import com.pi4j.io.IOPinConfigBuilder;
-
 /**
- * <p>GpioConfigBuilder interface.</p>
+ * <p>ChannelConfig interface.</p>
  *
- * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public interface GpioConfigBuilder<BUILDER_TYPE extends GpioConfigBuilder, CONFIG_TYPE extends GpioConfig>
-    extends IOPinConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
-    // MARKER INTERFACE
+public interface BusConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
+    /**
+     * Constant <code>BUS_KEY="bus"</code>
+     */
+    String BUS_KEY = "bus";
 
-    GpioConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> bus(int bus);
+    /**
+     * <p>bus.</p>
+     *
+     * @return a {@link Integer} object.
+     */
+    Integer bus();
+
+    /**
+     * <p>getBus.</p>
+     *
+     * @return a {@link Integer} object.
+     */
+    default Integer getBus() {
+        return this.bus();
+    }
 }
