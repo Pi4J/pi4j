@@ -84,13 +84,13 @@ public class SerialFFM extends SerialBase implements Serial {
             iflag &= ~(InputMode.IXON.value() | InputMode.IXOFF.value() | InputMode.IXANY.value());
         }
         if (config.baud() != null) {
-               cflag &= ~ControlMode.CBAUD.value();
-               cflag |= ControlMode.CBAUDEX.value();
-               ospeed = config.baud();
+            cflag &= ~ControlMode.CBAUD.value();
+            cflag |= ControlMode.CBAUDEX.value();
+            ospeed = config.baud();
 
-               cflag &= ~(ControlMode.CBAUD.value() << ControlMode.IBSHIFT.value());
-               cflag |= ControlMode.CBAUDEX.value() << ControlMode.IBSHIFT.value();
-               ispeed = config.baud();
+            cflag &= ~(ControlMode.CBAUD.value() << ControlMode.IBSHIFT.value());
+            cflag |= ControlMode.CBAUDEX.value() << ControlMode.IBSHIFT.value();
+            ispeed = config.baud();
         }
 
         cflag |= ControlMode.CREAD.value() | ControlMode.CLOCAL.value();
@@ -103,14 +103,14 @@ public class SerialFFM extends SerialBase implements Serial {
 
         lflag &= ~LocalMode.ISIG.value();
 
-        iflag &= ~(InputMode.IGNBRK.value()|InputMode.BRKINT.value()|InputMode.PARMRK.value()|InputMode.ISTRIP.value()|InputMode.INLCR.value()|InputMode.IGNCR.value()|InputMode.ICRNL.value());
+        iflag &= ~(InputMode.IGNBRK.value() | InputMode.BRKINT.value() | InputMode.PARMRK.value() | InputMode.ISTRIP.value() | InputMode.INLCR.value() | InputMode.IGNCR.value() | InputMode.ICRNL.value());
 
         oflag &= ~OutputMode.OPOST.value();
         oflag &= ~OutputMode.ONLCR.value();
 
         termios = new Termios2(iflag, oflag, cflag, lflag, termios.c_line(), termios.c_cc(), ispeed, ospeed);
 
-  //      System.out.println("Prepared: " + termios);
+        //      System.out.println("Prepared: " + termios);
 
         IOCTL.call(fd, Command.getTermiosSet(), termios);
 
@@ -148,7 +148,7 @@ public class SerialFFM extends SerialBase implements Serial {
      */
     @Override
     public int write(byte b) {
-        return FILE.write(fd, new byte[] { b });
+        return FILE.write(fd, new byte[]{b});
     }
 
     /**

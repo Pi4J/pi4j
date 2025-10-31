@@ -54,7 +54,7 @@ public abstract class PinConfigBase<CONFIG_TYPE extends Config>
     }
 
     /**
-     * <p>Constructor for AddressConfigBase.</p>
+     * <p>Constructor for PinConfigBase.</p>
      *
      * @param pin a {@link java.lang.Integer} object.
      */
@@ -84,7 +84,6 @@ public abstract class PinConfigBase<CONFIG_TYPE extends Config>
      *
      * @return a {@link java.lang.Integer} object.
      */
-    @Deprecated(forRemoval = true)
     public Integer address() {
         return this.pin;
     }

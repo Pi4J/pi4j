@@ -10,7 +10,7 @@ package com.pi4j.plugin.mock.provider.serial;
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
  * **********************************************************************
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the
@@ -52,9 +52,9 @@ public class MockSerial extends SerialBase implements Serial {
 
     /**
      * ATTENTION:  The storage and management of the byte arrays
-     *  are terribly inefficient and not intended for real-world
-     *  usage.  These are only intended to unit testing the
-     *  Pi4J SERIAL APIs.
+     * are terribly inefficient and not intended for real-world
+     * usage.  These are only intended to unit testing the
+     * Pi4J SERIAL APIs.
      */
     protected ArrayDeque<Byte> raw = new ArrayDeque<>();
 
@@ -62,9 +62,9 @@ public class MockSerial extends SerialBase implements Serial {
      * <p>Constructor for MockSerial.</p>
      *
      * @param provider a {@link com.pi4j.io.serial.SerialProvider} object.
-     * @param config a {@link com.pi4j.io.serial.SerialConfig} object.
+     * @param config   a {@link com.pi4j.io.serial.SerialConfig} object.
      */
-    public MockSerial(SerialProvider provider, SerialConfig config){
+    public MockSerial(SerialProvider provider, SerialConfig config) {
         super(provider, config);
         logger.info(" [");
         logger.info(Mock.SERIAL_PROVIDER_NAME);
@@ -74,13 +74,17 @@ public class MockSerial extends SerialBase implements Serial {
         logger.info("");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int available() {
         return raw.size();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() {
         logger.info(" [");
@@ -92,7 +96,9 @@ public class MockSerial extends SerialBase implements Serial {
         super.close();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int write(byte b) {
         raw.add(b);
@@ -106,11 +112,13 @@ public class MockSerial extends SerialBase implements Serial {
         return 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int write(byte[] data, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, data.length);
-        for(int p = offset; p-offset < length; p++){
+        for (int p = offset; p - offset < length; p++) {
             raw.add(data[p]); // add to internal buffer
         }
         logger.info(" [");
@@ -123,11 +131,13 @@ public class MockSerial extends SerialBase implements Serial {
         return length;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int write(Charset charset, CharSequence data) {
         byte[] buffer = data.toString().getBytes(charset);
-        for(int p = 0; p < buffer.length; p++){
+        for (int p = 0; p < buffer.length; p++) {
             raw.add(buffer[p]); // add to internal buffer
         }
         logger.info(" [");
@@ -140,10 +150,12 @@ public class MockSerial extends SerialBase implements Serial {
         return data.length();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read() {
-        if(raw.isEmpty()) return -1;
+        if (raw.isEmpty()) return -1;
         byte b = raw.pop();
         logger.info(" [");
         logger.info(Mock.SERIAL_PROVIDER_NAME);
@@ -155,16 +167,18 @@ public class MockSerial extends SerialBase implements Serial {
         return b;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read(byte[] buffer, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, buffer.length);
 
-        if(raw.isEmpty()) return -1;
+        if (raw.isEmpty()) return -1;
         int counter = 0;
-        for(int p = 0; p < length; p++) {
-            if(p+offset > buffer.length) break;
-            if(raw.isEmpty()) break;
+        for (int p = 0; p < length; p++) {
+            if (p + offset > buffer.length) break;
+            if (raw.isEmpty()) break;
             buffer[offset + p] = raw.pop();
             counter++;
         }

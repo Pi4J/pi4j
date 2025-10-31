@@ -1,11 +1,11 @@
-package com.pi4j.config.impl;
+package com.pi4j.config;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  DeviceConfigBase.java
+ * FILENAME      :  DeviceConfig.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -25,55 +25,33 @@ package com.pi4j.config.impl;
  * #L%
  */
 
-import com.pi4j.config.Config;
-import com.pi4j.config.ConfigBase;
-import com.pi4j.config.DeviceConfig;
-import com.pi4j.config.exception.ConfigMissingRequiredKeyException;
-
-import java.util.Map;
-
 /**
- * <p>Abstract DeviceConfigBase class.</p>
+ * <p>PortConfig interface.</p>
  *
  * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public abstract class DeviceConfigBase<CONFIG_TYPE extends Config<CONFIG_TYPE>>
-    extends ConfigBase<CONFIG_TYPE>
-    implements DeviceConfig<CONFIG_TYPE> {
-
-    // private configuration variables
-    protected Integer device = null;
+public interface PortConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
 
     /**
-     * PRIVATE CONSTRUCTOR
+     * Constant <code>PORT_KEY="port"</code>
      */
-    protected DeviceConfigBase() {
-    }
+    String PORT_KEY = "port";
 
     /**
-     * PRIVATE CONSTRUCTOR
+     * <p>port.</p>
      *
-     * @param properties a {@link java.util.Map} object.
+     * @return a {@link String} object.
      */
-    protected DeviceConfigBase(Map<String, String> properties) {
-        super(properties);
-
-        // load address property
-        if (properties.containsKey(DEVICE_KEY)) {
-            this.device = Integer.parseInt(properties.get(DEVICE_KEY));
-        } else {
-            throw new ConfigMissingRequiredKeyException(DEVICE_KEY);
-        }
-    }
+    String port();
 
     /**
-     * <p>device.</p>
+     * <p>getPort.</p>
      *
-     * @return a {@link java.lang.Integer} object.
+     * @return a {@link String} object.
      */
-    public Integer device() {
-        return this.device;
+    default String getPort() {
+        return this.port();
     }
 }

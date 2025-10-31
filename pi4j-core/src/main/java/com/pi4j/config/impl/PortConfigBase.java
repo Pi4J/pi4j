@@ -5,7 +5,7 @@ package com.pi4j.config.impl;
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  DeviceConfigBase.java
+ * FILENAME      :  AddressConfigBase.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -27,53 +27,64 @@ package com.pi4j.config.impl;
 
 import com.pi4j.config.Config;
 import com.pi4j.config.ConfigBase;
-import com.pi4j.config.DeviceConfig;
+import com.pi4j.config.PortConfig;
 import com.pi4j.config.exception.ConfigMissingRequiredKeyException;
 
 import java.util.Map;
 
 /**
- * <p>Abstract DeviceConfigBase class.</p>
+ * <p>Abstract AddressConfigBase class.</p>
  *
  * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public abstract class DeviceConfigBase<CONFIG_TYPE extends Config<CONFIG_TYPE>>
+public abstract class PortConfigBase<CONFIG_TYPE extends Config>
     extends ConfigBase<CONFIG_TYPE>
-    implements DeviceConfig<CONFIG_TYPE> {
+    implements PortConfig<CONFIG_TYPE> {
 
-    // private configuration variables
-    protected Integer device = null;
+    // private configuration properties
+    protected String port = null;
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DeviceConfigBase() {
+    protected PortConfigBase() {
+        super();
+    }
+
+    /**
+     * <p>Constructor for PortConfigBase.</p>
+     *
+     * @param port a {@link String} object.
+     */
+    protected PortConfigBase(String port) {
+        super();
+        this.port = port;
     }
 
     /**
      * PRIVATE CONSTRUCTOR
      *
-     * @param properties a {@link java.util.Map} object.
+     * @param properties a {@link Map} object.
      */
-    protected DeviceConfigBase(Map<String, String> properties) {
+    protected PortConfigBase(Map<String, String> properties) {
         super(properties);
 
         // load address property
-        if (properties.containsKey(DEVICE_KEY)) {
-            this.device = Integer.parseInt(properties.get(DEVICE_KEY));
+        if (properties.containsKey(PORT_KEY)) {
+            this.port = properties.get(PORT_KEY);
         } else {
-            throw new ConfigMissingRequiredKeyException(DEVICE_KEY);
+            throw new ConfigMissingRequiredKeyException(PORT_KEY);
         }
     }
 
     /**
-     * <p>device.</p>
+     * <p>port.</p>
      *
-     * @return a {@link java.lang.Integer} object.
+     * @return a {@link String} object.
      */
-    public Integer device() {
-        return this.device;
+    public String port() {
+        return this.port;
     }
 }

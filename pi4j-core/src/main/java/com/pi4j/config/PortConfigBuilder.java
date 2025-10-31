@@ -1,11 +1,11 @@
-package com.pi4j.config.impl;
+package com.pi4j.config;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  DeviceConfigBuilderBase.java
+ * FILENAME      :  DeviceConfigBuilder.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -25,37 +25,20 @@ package com.pi4j.config.impl;
  * #L%
  */
 
-import com.pi4j.config.Config;
-import com.pi4j.config.ConfigBuilder;
-import com.pi4j.config.DeviceConfig;
-import com.pi4j.config.DeviceConfigBuilder;
-import com.pi4j.context.Context;
-
 /**
- * <p>Abstract DeviceConfigBuilderBase class.</p>
+ * <p>PortConfigBuilder interface.</p>
  *
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public abstract class DeviceConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
-    extends ConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
-    implements DeviceConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
-
+public interface PortConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
     /**
-     * PRIVATE CONSTRUCTOR
+     * <p>port.</p>
+     *
+     * @param port a {@link String} object.
+     * @return a BUILDER_TYPE object.
      */
-    protected DeviceConfigBuilderBase(Context context) {
-        super(context);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BUILDER_TYPE device(Integer device) {
-        this.properties.put(DeviceConfig.DEVICE_KEY, device.toString());
-        return (BUILDER_TYPE) this;
-    }
+    BUILDER_TYPE port(String port);
 }

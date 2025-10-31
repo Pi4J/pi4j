@@ -10,7 +10,7 @@ package com.pi4j.config;
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
  * **********************************************************************
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,27 +28,30 @@ package com.pi4j.config;
 /**
  * <p>DeviceConfig interface.</p>
  *
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
- * @param <CONFIG_TYPE>
  */
 public interface DeviceConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
 
-    /** Constant <code>DEVICE_KEY="device"</code> */
+    /**
+     * Constant <code>DEVICE_KEY="device"</code>
+     */
     String DEVICE_KEY = "device";
+
     /**
      * <p>device.</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link java.lang.Integer} object.
      */
-    String device();
+    Integer device();
 
     /**
      * <p>getDevice.</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link java.lang.Integer} object.
      */
-    default String getDevice(){
+    default Integer getDevice() {
         return this.device();
     }
 }
