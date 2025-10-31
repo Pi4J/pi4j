@@ -144,6 +144,12 @@ public class DefaultPwmConfig
     }
 
     @Override
+    @Deprecated(forRemoval = true)
+    public Integer address() {
+        return this.channel;
+    }
+
+    @Override
     public Integer bus() {
         return this.bus;
     }

@@ -77,6 +77,9 @@ public interface PwmConfig extends BusConfig<PwmConfig>, ChannelConfig<PwmConfig
      */
     String INITIAL_VALUE_KEY = "initial";
 
+    @Deprecated(forRemoval = true)
+    Integer address();
+
     /**
      * Get the configured duty-cycle value as a decimal value that represents
      * the percentage of the ON vs OFF time of the PWM signal for each period.
