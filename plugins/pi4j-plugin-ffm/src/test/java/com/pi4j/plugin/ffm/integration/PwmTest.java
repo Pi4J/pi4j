@@ -32,7 +32,7 @@ public class PwmTest {
             .build();
         pwm = pi4j.pwm().create(PwmConfigBuilder.newInstance(pi4j)
             .bus(1)
-            .address(0)
+            .channel(0)
             .pwmType(PwmType.HARDWARE)
             .build());
     }

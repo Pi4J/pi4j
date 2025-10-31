@@ -91,7 +91,7 @@ public class GPIOTest {
         try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE);
              var _ = IoctlNativeMock.echo(lineInfoNonExistent)) {
 
-            var builder = DigitalInputConfigBuilder.newInstance(pi4jNonExistent).busNumber(-1)
+            var builder = DigitalInputConfigBuilder.newInstance(pi4jNonExistent).bus(-1)
                 .pin(0).build();
             assertThrows(IllegalStateException.class, () -> pi4jNonExistent.digitalInput().create(builder));
         }

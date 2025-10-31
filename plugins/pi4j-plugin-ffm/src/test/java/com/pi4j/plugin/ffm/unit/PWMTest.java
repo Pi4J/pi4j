@@ -44,7 +44,7 @@ public class PWMTest {
 
             pi4j.pwm().create(PwmConfigBuilder.newInstance(pi4j)
                 .bus(0)
-                .address(0)
+                .channel(0)
                 .pwmType(PwmType.HARDWARE)
                 .build());
         }
@@ -60,7 +60,7 @@ public class PWMTest {
 
             var pwm = pi4j.pwm().create(PwmConfigBuilder.newInstance(pi4j)
                 .bus(0)
-                .address(1)
+                .channel(1)
                 .pwmType(PwmType.HARDWARE)
                 .build());
             pwm.on();
@@ -80,7 +80,7 @@ public class PWMTest {
 
             var pwm = pi4j.pwm().create(PwmConfigBuilder.newInstance(pi4j)
                 .bus(0)
-                .address(2)
+                .channel(2)
                 .pwmType(PwmType.HARDWARE)
                 .build());
             pwm.on();

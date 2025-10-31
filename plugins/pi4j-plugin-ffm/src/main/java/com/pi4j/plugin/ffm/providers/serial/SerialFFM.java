@@ -28,7 +28,7 @@ public class SerialFFM extends SerialBase implements Serial {
     @Override
     public Serial initialize(Context context) throws InitializeException {
 
-        this.fd = FILE.open(config.device(), FileFlag.O_RDWR);
+        this.fd = FILE.open(config.port(), FileFlag.O_RDWR);
         FILE.flock(fd, FileFlag.LOCK_EX);
 
         var termios = IOCTL.call(fd, Command.getTermiosGet(), Termios2.createEmpty());
