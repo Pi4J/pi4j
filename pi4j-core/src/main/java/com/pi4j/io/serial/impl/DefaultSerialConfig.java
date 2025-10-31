@@ -25,8 +25,8 @@ package com.pi4j.io.serial.impl;
  * #L%
  */
 
-import com.pi4j.config.impl.PortConfigBase;
 import com.pi4j.io.gpio.digital.PullResistance;
+import com.pi4j.io.impl.IOPortConfigBase;
 import com.pi4j.io.serial.*;
 import com.pi4j.util.StringUtil;
 
@@ -39,7 +39,7 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public class DefaultSerialConfig
-    extends PortConfigBase<SerialConfig>
+    extends IOPortConfigBase<SerialConfig>
     implements SerialConfig {
 
     // private configuration properties
@@ -140,4 +140,5 @@ public class DefaultSerialConfig
     public FlowControl flowControl() {
         return this.flowControl;
     }
+
 }
