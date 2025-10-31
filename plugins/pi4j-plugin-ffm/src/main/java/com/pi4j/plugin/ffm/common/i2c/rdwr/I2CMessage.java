@@ -2,7 +2,6 @@ package com.pi4j.plugin.ffm.common.i2c.rdwr;
 
 import com.pi4j.plugin.ffm.common.Pi4JLayout;
 
-import java.lang.foreign.Arena;
 import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.SegmentAllocator;
@@ -80,8 +79,6 @@ public record I2CMessage(int address, int flags, int len, byte[] buf) implements
     private static final VarHandle VH_LEN = LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("len"));
     private static final VarHandle VH_BUFFER = LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("buf"));
 
-    private static final SegmentAllocator SEGMENT_ALLOCATOR = Arena.ofAuto();
-
     /**
      * Creates empty I2CMessage object.
      *
@@ -103,21 +100,28 @@ public record I2CMessage(int address, int flags, int len, byte[] buf) implements
         var flags = (int) VH_FLAGS.get(buffer, 0L);
         var len = (int) VH_LEN.get(buffer, 0L);
 
-        var bufferSegment = (MemorySegment)VH_BUFFER.get(buffer, 0L);
-        var bytes = new byte[len];
-        bufferSegment.reinterpret(len).asByteBuffer().get(bytes, 0, len);
+        var bufferAddress = (MemorySegment) VH_BUFFER.get(buffer, 0L);
+        var bufferSegment = bufferAddress.reinterpret(len);
+        var buf = new byte[len];
+        for (int i = 0; i < buf.length; i++) {
+            buf[i] = bufferSegment.getAtIndex(ValueLayout.JAVA_BYTE, i);
+        }
 
-        return new I2CMessage(address, flags, len, bytes);
+        return new I2CMessage(address, flags, len, buf);
     }
 
     @Override
     public void to(MemorySegment buffer) throws Throwable {
+        throw new UnsupportedOperationException("I2CMessage needs to be called with external Segment Allocator");
+    }
+
+    @Override
+    public void to(MemorySegment buffer, SegmentAllocator allocator) throws Throwable {
         VH_ADDRESS.set(buffer, 0L, (short) address);
         VH_FLAGS.set(buffer, 0L, (short) flags);
         VH_LEN.set(buffer, 0L, (short) len);
 
-        var bufferSegment = SEGMENT_ALLOCATOR.allocate(buf.length);
-        bufferSegment.asByteBuffer().put(buf);
+        var bufferSegment = allocator.allocateFrom(ValueLayout.JAVA_BYTE, buf);
         VH_BUFFER.set(buffer, 0L, bufferSegment);
     }
 

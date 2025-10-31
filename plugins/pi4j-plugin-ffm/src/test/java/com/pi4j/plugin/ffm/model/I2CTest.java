@@ -19,7 +19,7 @@ public class I2CTest {
             var bytes = "Test".getBytes();
             var message = new I2CMessage(1, 2, bytes.length, bytes);
             var buffer = offheap.allocate(I2CMessage.LAYOUT);
-            message.to(buffer);
+            message.to(buffer, offheap);
             var message2 = message.from(buffer);
             assertTrue(new ReflectionEquals(message2).matches(message));
         }
@@ -32,7 +32,7 @@ public class I2CTest {
             var message = new I2CMessage(1, 2, bytes.length, bytes);
             var rdwrData = new RDWRData(new I2CMessage[]{message}, 1);
             var buffer = offheap.allocate(RDWRData.LAYOUT);
-            rdwrData.to(buffer);
+            rdwrData.to(buffer, offheap);
             var rdwrData2 = rdwrData.from(buffer);
             assertEquals(rdwrData.nmsgs(), rdwrData2.nmsgs());
             assertTrue(new ReflectionEquals(rdwrData2.msgs()).matches(rdwrData.msgs()));
