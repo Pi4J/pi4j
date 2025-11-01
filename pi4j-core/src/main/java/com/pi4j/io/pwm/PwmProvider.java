@@ -10,7 +10,7 @@ package com.pi4j.io.pwm;
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
  * **********************************************************************
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -39,78 +39,85 @@ public interface PwmProvider extends Provider<PwmProvider, Pwm, PwmConfig> {
      * <p>create.</p>
      *
      * @param builder a {@link com.pi4j.io.pwm.PwmConfigBuilder} object.
-     * @param <T> a T object.
+     * @param <T>     a T object.
      * @return a T object.
      */
     default <T extends Pwm> T create(PwmConfigBuilder builder) {
-        return (T)create(builder.build());
+        return (T) create(builder.build());
     }
 
     /**
      * <p>create.</p>
      *
-     * @param address a {@link java.lang.Integer} object.
-     * @param <T> a T object.
+     * @param channel a {@link java.lang.Integer} object.
+     * @param <T>     a T object.
      * @return a T object.
      */
-    default <T extends Pwm> T create(Integer address) {
+    default <T extends Pwm> T create(Integer bus, Integer channel) {
         var config = Pwm.newConfigBuilder(context())
-                .address(address)
-                .build();
-        return (T)create(config);
+            .bus(bus)
+            .channel(channel)
+            .build();
+        return (T) create(config);
     }
 
     /**
      * <p>create.</p>
      *
-     * @param address a {@link java.lang.Integer} object.
-     * @param id a {@link java.lang.String} object.
-     * @param <T> a T object.
+     * @param bus     a {@link java.lang.Integer} object.
+     * @param channel a {@link java.lang.Integer} object.
+     * @param id      a {@link java.lang.String} object.
+     * @param <T>     a T object.
      * @return a T object.
      */
-    default <T extends Pwm> T create(Integer address, String id) {
+    default <T extends Pwm> T create(Integer bus, Integer channel, String id) {
         var config = Pwm.newConfigBuilder(context())
-                .address(address)
-                .id(id)
-                .build();
-        return (T)create(config);
+            .bus(bus)
+            .channel(channel)
+            .id(id)
+            .build();
+        return (T) create(config);
     }
 
     /**
      * <p>create.</p>
      *
-     * @param address a {@link java.lang.Integer} object.
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     * @param <T> a T object.
+     * @param bus     a {@link java.lang.Integer} object.
+     * @param channel a {@link java.lang.Integer} object.
+     * @param id      a {@link java.lang.String} object.
+     * @param name    a {@link java.lang.String} object.
+     * @param <T>     a T object.
      * @return a T object.
      */
-    default <T extends Pwm> T create(Integer address, String id, String name) {
+    default <T extends Pwm> T create(Integer bus, Integer channel, String id, String name) {
         var config = Pwm.newConfigBuilder(context())
-                .address(address)
-                .id(id)
-                .name(name)
-                .build();
-        return (T)create(config);
+            .bus(bus)
+            .channel(channel)
+            .id(id)
+            .name(name)
+            .build();
+        return (T) create(config);
     }
 
     /**
      * <p>create.</p>
      *
-     * @param address a {@link java.lang.Integer} object.
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
+     * @param bus         a {@link java.lang.Integer} object.
+     * @param channel     a {@link java.lang.Integer} object.
+     * @param id          a {@link java.lang.String} object.
+     * @param name        a {@link java.lang.String} object.
      * @param description a {@link java.lang.String} object.
-     * @param <T> a T object.
+     * @param <T>         a T object.
      * @return a T object.
      */
-    default <T extends Pwm> T create(Integer address, String id, String name, String description) {
+    default <T extends Pwm> T create(Integer bus, Integer channel, String id, String name, String description) {
         var config = Pwm.newConfigBuilder(context())
-                .address(address)
-                .id(id)
-                .name(name)
-                .description(description)
-                .build();
-        return (T)create(config);
+            .bus(bus)
+            .channel(channel)
+            .id(id)
+            .name(name)
+            .description(description)
+            .build();
+        return (T) create(config);
     }
 }

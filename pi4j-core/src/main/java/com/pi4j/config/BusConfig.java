@@ -1,11 +1,11 @@
-package com.pi4j.io;
+package com.pi4j.config;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  IOAddressConfigBuilder.java
+ * FILENAME      :  AddressConfig.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -25,23 +25,32 @@ package com.pi4j.io;
  * #L%
  */
 
-import com.pi4j.config.AddressConfigBuilder;
-import com.pi4j.platform.Platform;
-import com.pi4j.provider.Provider;
-
 /**
- * <p>IOConfigBuilder interface.</p>
+ * <p>ChannelConfig interface.</p>
  *
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
- * @param <BUILDER_TYPE>
- * @param <CONFIG_TYPE>
  */
-public interface IOAddressConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>
-        extends IOConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,
-                AddressConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
-    BUILDER_TYPE provider(String provider);
-    BUILDER_TYPE provider(Class<? extends Provider> providerClass);
-    BUILDER_TYPE platform(String platform);
-    BUILDER_TYPE platform(Class<? extends Platform> platformClass);
+public interface BusConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
+    /**
+     * Constant <code>BUS_KEY="bus"</code>
+     */
+    String BUS_KEY = "bus";
+
+    /**
+     * <p>bus.</p>
+     *
+     * @return a {@link Integer} object.
+     */
+    Integer bus();
+
+    /**
+     * <p>getBus.</p>
+     *
+     * @return a {@link Integer} object.
+     */
+    default Integer getBus() {
+        return this.bus();
+    }
 }

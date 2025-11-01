@@ -40,25 +40,42 @@ import java.nio.ByteBuffer;
  * @version $Id: $Id
  */
 public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IODataWriter, IODataReader {
-    /** Constant <code>DEFAULT_BUS</code> */
+    /**
+     * Constant <code>DEFAULT_BUS</code>
+     */
     SpiBus DEFAULT_BUS = SpiBus.BUS_0;
-    /** Constant <code>DEFAULT_MODE</code> */
+    /**
+     * Constant <code>DEFAULT_CHANNEL</code>
+     */
+    int DEFAULT_CHANNEL = 0;
+    /**
+     * Constant <code>DEFAULT_MODE</code>
+     */
     SpiMode DEFAULT_MODE = SpiMode.MODE_0;
-    /** Constant <code>DEFAULT_CHIP_SELECT</code> */
+    /**
+     * Constant <code>DEFAULT_CHIP_SELECT</code>
+     */
     SpiChipSelect DEFAULT_CHIP_SELECT = SpiChipSelect.CS_0;
-    /** Constant <code>DEFAULT_BAUD=1000000</code> */
+    /**
+     * Constant <code>DEFAULT_BAUD=1000000</code>
+     */
     int DEFAULT_BAUD = 1000000; // 1MHz (range is 500kHz - 32MHz)
-    /** Constant <code>DEFAULT_WRITE_LSB_FIRST</code> */
+    /**
+     * Constant <code>DEFAULT_WRITE_LSB_FIRST</code>
+     */
     int DEFAULT_WRITE_LSB_FIRST = 0;
-    /** Constant <code>DEFAULT_READ_LSB_FIRST</code> */
+    /**
+     * Constant <code>DEFAULT_READ_LSB_FIRST</code>
+     */
     int DEFAULT_READ_LSB_FIRST = 0;
+
     /**
      * <p>newConfigBuilder.</p>
      *
      * @param context {@link Context}
      * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
      */
-    static SpiConfigBuilder newConfigBuilder(Context context){
+    static SpiConfigBuilder newConfigBuilder(Context context) {
         return SpiConfigBuilder.newInstance(context);
     }
 
@@ -89,14 +106,14 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * If no data is ready PI_SER_READ_NO_DATA is returned.
      *
      * @param handle the open serial device handle; (&gt;=0, as returned by a call to serOpen)
+     * @param value  a byte.
      * @return Returns the read byte (&gt;=0) if OK, otherwise PI_BAD_HANDLE, PI_SER_READ_NO_DATA, or PI_SER_READ_FAILED.
      * @see "http://abyz.me.uk/rpi/pigpio/cif.html#serReadByte"
-     * @param value a byte.
      */
     default int transferByte(int handle, byte value) {
-        byte[] temp = new byte[] { value } ;
+        byte[] temp = new byte[]{value};
         int result = transfer(temp);
-        if(result <= 0) return result;
+        if (result <= 0) return result;
 
         // we must convert the raw byte to an unsigned int for the return value
         // otherwise, anything higher than 0x80 may result in a negative int value
@@ -115,12 +132,12 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * using the same length ('numberOfBytes').  Both the 'write' and 'read' byte arrays must
      * be at least the size of the defined 'numberOfBytes' + their corresponding offsets.
      *
-     * @param write the array of bytes to write to the SPI device
-     * @param writeOffset the starting offset position in the provided 'write' buffer to
-     *                    start writing to the SPI device from.
-     * @param read the array of bytes to store read data in from the SPI device
-     * @param readOffset the starting offset position in the provided 'read' buffer to place
-     *                   data bytes read from the SPI device.
+     * @param write         the array of bytes to write to the SPI device
+     * @param writeOffset   the starting offset position in the provided 'write' buffer to
+     *                      start writing to the SPI device from.
+     * @param read          the array of bytes to store read data in from the SPI device
+     * @param readOffset    the starting offset position in the provided 'read' buffer to place
+     *                      data bytes read from the SPI device.
      * @param numberOfBytes the number of bytes to transfer/exchange (read &amp; read))
      * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
      * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
@@ -136,8 +153,8 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * byte arrays must be at least the size of the defined 'numberOfBytes' + their corresponding
      * offsets.
      *
-     * @param write the array of bytes to write to the SPI device
-     * @param read the array of bytes to store read data in from the SPI device
+     * @param write         the array of bytes to write to the SPI device
+     * @param read          the array of bytes to store read data in from the SPI device
      * @param numberOfBytes the number of bytes to transfer/exchange (read &amp; read))
      * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
      * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
@@ -155,7 +172,7 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * The 'read' byte array must be at least the size of the defined 'write' byte array.
      *
      * @param write the array of bytes to write to the SPI device
-     * @param read the array of bytes to store read data in from the SPI device
+     * @param read  the array of bytes to store read data in from the SPI device
      * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
      * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
      */
@@ -228,38 +245,38 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * offsets.
      * <p>
      * NOTE:  The buffer's internal position tracking is not
-     *        used but rather only the explicit offset and
-     *        length provided.  If the requested length is
-     *        greater than the buffers capacity (minus offset)
-     *        then the specified length will be ignored and
-     *        this function will only read the number of
-     *        bytes up to the buffers' available space.
+     * used but rather only the explicit offset and
+     * length provided.  If the requested length is
+     * greater than the buffers capacity (minus offset)
+     * then the specified length will be ignored and
+     * this function will only read the number of
+     * bytes up to the buffers' available space.
      *
-     * @param write the ByteBuffer to write to the SPI device
-     * @param writeOffset the starting offset position in the provided 'write' buffer to
-     *                    start writing to the SPI device from.
-     * @param read the ByteBuffer to store read data in from the SPI device
-     * @param readOffset the starting offset position in the provided 'read' buffer to place
-     *                   data bytes read from the SPI device.
+     * @param write         the ByteBuffer to write to the SPI device
+     * @param writeOffset   the starting offset position in the provided 'write' buffer to
+     *                      start writing to the SPI device from.
+     * @param read          the ByteBuffer to store read data in from the SPI device
+     * @param readOffset    the starting offset position in the provided 'read' buffer to place
+     *                      data bytes read from the SPI device.
      * @param numberOfBytes the number of bytes to transfer/exchange (read &amp; read))
      * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
      * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
      */
     default int transfer(ByteBuffer write, int writeOffset, ByteBuffer read, int readOffset, int numberOfBytes) {
         // perform bounds checking on requested length versus total remaining size available
-        if(numberOfBytes > (write.capacity()-writeOffset)){
-            numberOfBytes = write.capacity()-writeOffset;
+        if (numberOfBytes > (write.capacity() - writeOffset)) {
+            numberOfBytes = write.capacity() - writeOffset;
         }
 
         // create a temporary byte array to read in the length of data bytes
         byte[] temp = new byte[numberOfBytes];
-        int actualLength =transfer(write.array(), 0 , temp, 0, numberOfBytes);
+        int actualLength = transfer(write.array(), 0, temp, 0, numberOfBytes);
 
         // return any error codes ( < 0)
-        if(actualLength < 0) return actualLength;
+        if (actualLength < 0) return actualLength;
 
         // perform bounds checking on number of bytes read versus the length requested
-        if(actualLength < numberOfBytes) numberOfBytes = actualLength;
+        if (actualLength < numberOfBytes) numberOfBytes = actualLength;
 
         // copy the data from the temporary byte array into the return buffer at the given offset
         read.position(readOffset);
@@ -279,24 +296,24 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * their corresponding current positions.
      * <p>
      * NOTE:  The contents from the 'write' byte buffer is read
-     *        from the current position index up to the length
-     *        requested or up to the buffer's remaining limit;
-     *        whichever is is lower .  If the buffer's current
-     *        position is already at the buffer's limit, then we
-     *        will automatically flip the buffer to begin reading
-     *        data from the zero position up to the buffer's limit     *
+     * from the current position index up to the length
+     * requested or up to the buffer's remaining limit;
+     * whichever is is lower .  If the buffer's current
+     * position is already at the buffer's limit, then we
+     * will automatically flip the buffer to begin reading
+     * data from the zero position up to the buffer's limit     *
      * <p>
      * NOTE:  The data bytes read from the SPI device are copied/
-     *        inserted into the 'read' byte buffer starting at the current
-     *        position index up to the length requested or up to the
-     *        buffer's remaining limit; whichever is is lower .  If
-     *        the buffer's current position is already at the buffer's
-     *        limit, then we will automatically rewind the buffer to
-     *        begin writing data from the zero position up to the
-     *        buffer's limit.
+     * inserted into the 'read' byte buffer starting at the current
+     * position index up to the length requested or up to the
+     * buffer's remaining limit; whichever is is lower .  If
+     * the buffer's current position is already at the buffer's
+     * limit, then we will automatically rewind the buffer to
+     * begin writing data from the zero position up to the
+     * buffer's limit.
      *
-     * @param write the ByteBuffer to write to the SPI device
-     * @param read the ByteBuffer to store read data in from the SPI device
+     * @param write         the ByteBuffer to write to the SPI device
+     * @param read          the ByteBuffer to store read data in from the SPI device
      * @param numberOfBytes the number of bytes to transfer/exchange (read &amp; read))
      * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
      * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
@@ -304,14 +321,14 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
     default int transfer(ByteBuffer write, ByteBuffer read, int numberOfBytes) {
         // if the 'write' buffer position is already at the buffer limit, then flip the buffer for
         //reading data from the buffer at the starting position to write to the I/O device
-        if(write.position() == write.limit()) write.flip();
+        if (write.position() == write.limit()) write.flip();
 
         // if the 'read' buffer position is already at the buffer limit, then rewind the buffer for
         // writing new data into the buffer read from the I/O device
-        if(read.position() == read.limit()) read.rewind();
+        if (read.position() == read.limit()) read.rewind();
 
         // bounds check the requested length; only allow reading up to the remaining space in the buffer
-        if(numberOfBytes > write.remaining()) numberOfBytes = write.remaining();
+        if (numberOfBytes > write.remaining()) numberOfBytes = write.remaining();
 
         // write contents from the buffer starting at the current position up to the specified length
         return transfer(write, write.position(), read, read.position(), numberOfBytes);
@@ -326,12 +343,12 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * available capacity of the defined 'length' + 'offset'.
      * <p>
      * NOTE:  The buffer's internal position tracking is not
-     *        used but rather only the explicit offset and
-     *        length provided.  If the requested length is
-     *        greater than the buffers capacity (minus offset)
-     *        then the specified length will be ignored and
-     *        this function will only read the number of
-     *        bytes up to the buffers' available space.
+     * used but rather only the explicit offset and
+     * length provided.  If the requested length is
+     * greater than the buffers capacity (minus offset)
+     * then the specified length will be ignored and
+     * this function will only read the number of
+     * bytes up to the buffers' available space.
      *
      * @param buffer the byte buffer to write to the SPI device and to store read data
      *               back from the SPI device
@@ -345,19 +362,19 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      */
     default int transfer(ByteBuffer buffer, int offset, int length) {
         // perform bounds checking on requested length versus total remaining size available
-        if(length > (buffer.capacity()-offset)){
-            length = buffer.capacity()-offset;
+        if (length > (buffer.capacity() - offset)) {
+            length = buffer.capacity() - offset;
         }
 
         // create a temporary byte array to read in the length of data bytes
         byte[] temp = new byte[length];
-        int actualLength =transfer(buffer.array(), 0 , temp, 0, length);
+        int actualLength = transfer(buffer.array(), 0, temp, 0, length);
 
         // return any error codes ( < 0)
-        if(actualLength < 0) return actualLength;
+        if (actualLength < 0) return actualLength;
 
         // perform bounds checking on number of bytes read versus the length requested
-        if(actualLength < length) length = actualLength;
+        if (actualLength < length) length = actualLength;
 
         // copy the data from the temporary byte array into the return buffer at the given offset
         buffer.position(offset);

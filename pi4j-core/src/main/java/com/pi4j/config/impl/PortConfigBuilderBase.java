@@ -1,11 +1,11 @@
-package com.pi4j.io.gpio.analog;
+package com.pi4j.config.impl;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  AnalogInputBase.java
+ * FILENAME      :  AddressConfigBuilderBase.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -25,23 +25,37 @@ package com.pi4j.io.gpio.analog;
  * #L%
  */
 
+import com.pi4j.config.Config;
+import com.pi4j.config.ConfigBuilder;
+import com.pi4j.config.PortConfig;
+import com.pi4j.config.PortConfigBuilder;
+import com.pi4j.context.Context;
+
 /**
- * <p>Abstract AnalogInputBase class.</p>
+ * <p>Abstract AddressConfigBuilderBase class.</p>
  *
+ * @param <BUILDER_TYPE>
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public abstract class AnalogInputBase extends AnalogBase<AnalogInput, AnalogInputConfig, AnalogInputProvider> implements AnalogInput {
+public abstract class PortConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
+    extends ConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
+    implements PortConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+
     /**
-     * <p>Constructor for AnalogInputBase.</p>
-     *
-     * @param provider a {@link com.pi4j.io.gpio.analog.AnalogInputProvider} object.
-     * @param config   a {@link com.pi4j.io.gpio.analog.AnalogInputConfig} object.
+     * PRIVATE CONSTRUCTOR
      */
-    public AnalogInputBase(AnalogInputProvider provider, AnalogInputConfig config) {
-        super(provider, config);
-        if (this.id == null) this.id = "AIN-" + config.pin();
-        if (this.name == null) this.name = "AIN-" + config.pin();
+    protected PortConfigBuilderBase(Context context) {
+        super(context);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BUILDER_TYPE port(String port) {
+        this.properties.put(PortConfig.PORT_KEY, port);
+        return (BUILDER_TYPE) this;
     }
 }
-

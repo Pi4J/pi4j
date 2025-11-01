@@ -35,13 +35,13 @@ import java.util.Map;
 /**
  * <p>ConfigBase class.</p>
  *
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
- * @param <CONFIG_TYPE>
  */
 public class IODeviceConfigBase<CONFIG_TYPE extends Config<CONFIG_TYPE>>
-        extends DeviceConfigBase<CONFIG_TYPE>
-        implements IOConfig<CONFIG_TYPE>, DeviceConfig<CONFIG_TYPE> {
+    extends DeviceConfigBase<CONFIG_TYPE>
+    implements IOConfig<CONFIG_TYPE>, DeviceConfig<CONFIG_TYPE> {
 
     // private configuration variables
     protected String provider = null;
@@ -50,7 +50,7 @@ public class IODeviceConfigBase<CONFIG_TYPE extends Config<CONFIG_TYPE>>
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected IODeviceConfigBase(){
+    protected IODeviceConfigBase() {
     }
 
     /**
@@ -58,26 +58,30 @@ public class IODeviceConfigBase<CONFIG_TYPE extends Config<CONFIG_TYPE>>
      *
      * @param properties a {@link Map} object.
      */
-    protected IODeviceConfigBase(Map<String,String> properties){
+    protected IODeviceConfigBase(Map<String, String> properties) {
         super(properties);
 
         // load provider property
-        if(properties.containsKey(PROVIDER_KEY)){
+        if (properties.containsKey(PROVIDER_KEY)) {
             this.provider = properties.get(PROVIDER_KEY);
         }
         // load platform property
-        if(properties.containsKey(PLATFORM_KEY)){
+        if (properties.containsKey(PLATFORM_KEY)) {
             this.platform = properties.get(PLATFORM_KEY);
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String platform() {
         return this.platform;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String provider() {
         return this.provider;

@@ -26,7 +26,7 @@ package com.pi4j.io.serial.impl;
  */
 
 import com.pi4j.io.gpio.digital.PullResistance;
-import com.pi4j.io.impl.IODeviceConfigBase;
+import com.pi4j.io.impl.IOPortConfigBase;
 import com.pi4j.io.serial.*;
 import com.pi4j.util.StringUtil;
 
@@ -39,7 +39,7 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public class DefaultSerialConfig
-    extends IODeviceConfigBase<SerialConfig>
+    extends IOPortConfigBase<SerialConfig>
     implements SerialConfig {
 
     // private configuration properties
@@ -61,9 +61,9 @@ public class DefaultSerialConfig
         super(properties);
 
         // define default property values if any are missing (based on the required address value)
-        this.id = StringUtil.setIfNullOrEmpty(this.id, "SERIAL-" + this.device, true);
-        this.name = StringUtil.setIfNullOrEmpty(this.name, "SERIAL-" + this.device, true);
-        this.description = StringUtil.setIfNullOrEmpty(this.description, "SERIAL-" + this.device, true);
+        this.id = StringUtil.setIfNullOrEmpty(this.id, "SERIAL-" + this.port, true);
+        this.name = StringUtil.setIfNullOrEmpty(this.name, "SERIAL-" + this.port, true);
+        this.description = StringUtil.setIfNullOrEmpty(this.description, "SERIAL-" + this.port, true);
 
         // load optional BAUD RATE from properties
         if (properties.containsKey(BAUD_KEY)) {
@@ -140,4 +140,5 @@ public class DefaultSerialConfig
     public FlowControl flowControl() {
         return this.flowControl;
     }
+
 }

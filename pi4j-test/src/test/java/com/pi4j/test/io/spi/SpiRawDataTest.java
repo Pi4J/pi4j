@@ -55,8 +55,8 @@ public class SpiRawDataTest {
     private Context pi4j;
 
     private static byte SAMPLE_BYTE = 0x0d;
-    private static byte[] SAMPLE_BYTE_ARRAY = new byte[] { 0,1,2,3,4,5,6,7,8,9 };
-    private static byte[] SAMPLE_BUFFER_ARRAY = new byte[] { 10,11,12,13,14,15,16,17,18,19 };
+    private static byte[] SAMPLE_BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    private static byte[] SAMPLE_BUFFER_ARRAY = new byte[]{10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
     private static ByteBuffer SAMPLE_BUFFER = ByteBuffer.wrap(SAMPLE_BUFFER_ARRAY);
     private static String SAMPLE_STRING = "Hello World!";
 
@@ -80,13 +80,13 @@ public class SpiRawDataTest {
     public void testRawDataWriteRead() {
 
         // create SPI config
-        var config  = Spi.newConfigBuilder(pi4j)
-                .id("my-spi")
-                .name("My SPI")
-                .address(0x01)
-                .bus(SpiBus.BUS_1)
-                .mode(SpiMode.MODE_3)
-                .build();
+        var config = Spi.newConfigBuilder(pi4j)
+            .id("my-spi")
+            .name("My SPI")
+            .channel(0x01)
+            .bus(SpiBus.BUS_1)
+            .mode(SpiMode.MODE_3)
+            .build();
 
         // use try-with-resources to auto-close SPI when complete
         try (var spi = pi4j.spi().create(config)) {
@@ -107,7 +107,7 @@ public class SpiRawDataTest {
             spi.write(SAMPLE_STRING);
 
             // read single byte from the raw SPI device (not from a register)
-            byte b = (byte)spi.read();
+            byte b = (byte) spi.read();
             assertEquals(SAMPLE_BYTE, b);
 
             // read an array of data bytes from the raw SPI device (not from a register)
@@ -134,7 +134,7 @@ public class SpiRawDataTest {
         rand.nextBytes(sample);
 
         // create SPI config
-        var config  = Spi.newConfigBuilder(pi4j)
+        var config = Spi.newConfigBuilder(pi4j)
             .id("my-spi")
             .name("My SPI")
             .chipSelect(SpiChipSelect.CS_0)

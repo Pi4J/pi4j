@@ -62,7 +62,7 @@ public class MockSpi extends SpiBase implements Spi {
     public MockSpi(SpiProvider provider, SpiConfig config) {
         super(provider, config);
         logPreamble = "[" + Mock.SPI_PROVIDER_NAME + "::" + this.id + "] ::";
-        logger.info("{} OPEN(CHANNEL={}; BAUD={})", logPreamble, config.address(), config.baud());
+        logger.info("{} OPEN(CHANNEL={}; BAUD={})", logPreamble, config.channel(), config.baud());
     }
 
     /**
@@ -87,7 +87,7 @@ public class MockSpi extends SpiBase implements Spi {
      */
     @Override
     public void close() {
-        logger.info("{} CLOSE(CHANNEL={}; BAUD={})", logPreamble, config.address(), config.baud());
+        logger.info("{} CLOSE(CHANNEL={}; BAUD={})", logPreamble, config.channel(), config.baud());
         super.close();
     }
 

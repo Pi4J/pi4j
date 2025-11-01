@@ -50,7 +50,7 @@ public class PermissionHelper {
      * - presence of hardware related groups (gpio/dialout, input, i2c, spi). Throws an exception.
      * - current user is a member of hardware related groups. Throws an exception.
      */
-    public static void checkUserPermissions(ProviderBase<?,?, ?> provider) {
+    public static void checkUserPermissions(ProviderBase<?, ?, ?> provider) {
         // check if running with sudo
         // all access should be good, but this is not safe!
         if (RUN_AS_SUDO) {
@@ -96,7 +96,8 @@ public class PermissionHelper {
         }
         // checking groups existence and user belonging to the groups
         switch (provider) {
-            case DigitalInputFFMProviderImpl _, DigitalOutputFFMProviderImpl _, PwmFFMProviderImpl _ -> checkGroups(osGroups, userGroups, "gpio", "dialout");
+            case DigitalInputFFMProviderImpl _, DigitalOutputFFMProviderImpl _, PwmFFMProviderImpl _ ->
+                checkGroups(osGroups, userGroups, "gpio", "dialout");
             case I2CFFMProviderImpl _ -> checkGroups(osGroups, userGroups, "i2c");
             case SerialFFMProviderImpl _ -> checkGroups(osGroups, userGroups, "serial");
             case SpiFFMProviderImpl _ -> checkGroups(osGroups, userGroups, "spi");
@@ -166,7 +167,7 @@ public class PermissionHelper {
 
         // show warning, if any other permissions are set
         if (!otherPermissions.isEmpty()) {
-            logger.warn("Device '{}' has excessive permissions for others: {}", devicePath , otherPermissions);
+            logger.warn("Device '{}' has excessive permissions for others: {}", devicePath, otherPermissions);
         }
 
         // we need to check permissions of a device depending on hardware interface

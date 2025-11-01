@@ -37,15 +37,15 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public class DefaultAnalogInputConfig
-        extends AnalogConfigBase<AnalogInputConfig>
-        implements AnalogInputConfig {
+    extends AnalogConfigBase<AnalogInputConfig>
+    implements AnalogInputConfig {
 
-    protected Integer busNumber = null;
+    protected Integer bus = null;
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    private DefaultAnalogInputConfig(){
+    private DefaultAnalogInputConfig() {
         super();
     }
 
@@ -54,21 +54,32 @@ public class DefaultAnalogInputConfig
      *
      * @param properties a {@link java.util.Map} object.
      */
-    protected DefaultAnalogInputConfig(Map<String,String> properties){
+    protected DefaultAnalogInputConfig(Map<String, String> properties) {
         super(properties);
 
         // define default property values if any are missing (based on the required address value)
-        this.id = StringUtil.setIfNullOrEmpty(this.id, "AIN-" + this.address, true);
-        this.name = StringUtil.setIfNullOrEmpty(this.name, "AIN-" + this.address, true);
-        this.description = StringUtil.setIfNullOrEmpty(this.description, "AIN-" + this.address, true);
+        this.id = StringUtil.setIfNullOrEmpty(this.id, "AIN-" + this.pin, true);
+        this.name = StringUtil.setIfNullOrEmpty(this.name, "AIN-" + this.pin, true);
+        this.description = StringUtil.setIfNullOrEmpty(this.description, "AIN-" + this.pin, true);
 
-        if(properties.containsKey(BUS_NUMBER)){
-            this.busNumber = Integer.parseInt(properties.get(BUS_NUMBER));
+        if (properties.containsKey(BUS_KEY)) {
+            this.bus = Integer.parseInt(properties.get(BUS_KEY));
         }
     }
 
     @Override
-    public Integer busNumber() {
-        return busNumber;
+    @Deprecated(forRemoval = true)
+    public Integer address() {
+        return this.pin;
+    }
+
+    @Override
+    public Integer bus() {
+        return bus;
+    }
+
+    @Override
+    public Integer pin() {
+        return this.pin;
     }
 }

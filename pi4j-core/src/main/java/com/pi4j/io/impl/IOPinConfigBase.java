@@ -1,11 +1,11 @@
-package com.pi4j.config.impl;
+package com.pi4j.io.impl;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  DeviceConfigBase.java
+ * FILENAME      :  IOAddressConfigBase.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -26,54 +26,65 @@ package com.pi4j.config.impl;
  */
 
 import com.pi4j.config.Config;
-import com.pi4j.config.ConfigBase;
-import com.pi4j.config.DeviceConfig;
-import com.pi4j.config.exception.ConfigMissingRequiredKeyException;
+import com.pi4j.config.PinConfig;
+import com.pi4j.config.impl.PinConfigBase;
+import com.pi4j.io.IOConfig;
 
 import java.util.Map;
 
 /**
- * <p>Abstract DeviceConfigBase class.</p>
+ * <p>ConfigBase class.</p>
  *
  * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public abstract class DeviceConfigBase<CONFIG_TYPE extends Config<CONFIG_TYPE>>
-    extends ConfigBase<CONFIG_TYPE>
-    implements DeviceConfig<CONFIG_TYPE> {
+public class IOPinConfigBase<CONFIG_TYPE extends Config>
+    extends PinConfigBase<CONFIG_TYPE>
+    implements IOConfig<CONFIG_TYPE>, PinConfig<CONFIG_TYPE> {
 
     // private configuration variables
-    protected Integer device = null;
+    protected String provider = null;
+    protected String platform = null;
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DeviceConfigBase() {
+    protected IOPinConfigBase() {
     }
 
     /**
      * PRIVATE CONSTRUCTOR
      *
-     * @param properties a {@link java.util.Map} object.
+     * @param properties a {@link Map} object.
      */
-    protected DeviceConfigBase(Map<String, String> properties) {
+    protected IOPinConfigBase(Map<String, String> properties) {
         super(properties);
 
-        // load address property
-        if (properties.containsKey(DEVICE_KEY)) {
-            this.device = Integer.parseInt(properties.get(DEVICE_KEY));
-        } else {
-            throw new ConfigMissingRequiredKeyException(DEVICE_KEY);
+        // load provider property
+        if (properties.containsKey(PROVIDER_KEY)) {
+            this.provider = properties.get(PROVIDER_KEY);
+        }
+
+        // load platform property
+        if (properties.containsKey(PLATFORM_KEY)) {
+            this.platform = properties.get(PLATFORM_KEY);
         }
     }
 
     /**
-     * <p>device.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
+     * {@inheritDoc}
      */
-    public Integer device() {
-        return this.device;
+    @Override
+    public String platform() {
+        return this.platform;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String provider() {
+        return this.provider;
     }
 }

@@ -33,19 +33,18 @@ import com.pi4j.io.gpio.Gpio;
 /**
  * <p>Digital interface.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <CONFIG_TYPE>
  * @param <DIGITAL_TYPE>
  * @param <PROVIDER_TYPE>
+ * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
+ * @version $Id: $Id
  */
 public interface Digital<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
-        CONFIG_TYPE extends DigitalConfig<CONFIG_TYPE>,
-        PROVIDER_TYPE extends DigitalProvider>
-        extends Gpio<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
-        ListenableOnOffRead<DIGITAL_TYPE>,
-        Bindable<DIGITAL_TYPE, DigitalBinding>
-{
+    CONFIG_TYPE extends DigitalConfig<CONFIG_TYPE>,
+    PROVIDER_TYPE extends DigitalProvider>
+    extends Gpio<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
+    ListenableOnOffRead<DIGITAL_TYPE>,
+    Bindable<DIGITAL_TYPE, DigitalBinding> {
 
     /**
      * <p>state.</p>
@@ -53,6 +52,10 @@ public interface Digital<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE,
      * @return a {@link com.pi4j.io.gpio.digital.DigitalState} object.
      */
     DigitalState state();
+
+    default Integer pin() {
+        return config().pin();
+    }
 
     /**
      * <p>addListener.</p>
@@ -76,95 +79,105 @@ public interface Digital<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE,
      * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
      * @return a boolean.
      */
-    default boolean equals(DigitalState state){
+    default boolean equals(DigitalState state) {
         return this.state().equals(state);
     }
+
     /**
      * <p>equals.</p>
      *
      * @param state a {@link java.lang.Number} object.
      * @return a boolean.
      */
-    default boolean equals(Number state){
+    default boolean equals(Number state) {
         return equals(DigitalState.getState(state));
     }
+
     /**
      * <p>equals.</p>
      *
      * @param state a boolean.
      * @return a boolean.
      */
-    default boolean equals(boolean state){
+    default boolean equals(boolean state) {
         return equals(DigitalState.getState(state));
     }
+
     /**
      * <p>equals.</p>
      *
      * @param state a byte.
      * @return a boolean.
      */
-    default boolean equals(byte state){
+    default boolean equals(byte state) {
         return equals(DigitalState.getState(state));
     }
+
     /**
      * <p>equals.</p>
      *
      * @param state a short.
      * @return a boolean.
      */
-    default boolean equals(short state){
+    default boolean equals(short state) {
         return equals(DigitalState.getState(state));
     }
+
     /**
      * <p>equals.</p>
      *
      * @param state a int.
      * @return a boolean.
      */
-    default boolean equals(int state){
+    default boolean equals(int state) {
         return equals(DigitalState.getState(state));
     }
+
     /**
      * <p>equals.</p>
      *
      * @param state a long.
      * @return a boolean.
      */
-    default boolean equals(long state){
+    default boolean equals(long state) {
         return equals(DigitalState.getState(state));
     }
+
     /**
      * <p>equals.</p>
      *
      * @param state a float.
      * @return a boolean.
      */
-    default boolean equals(float state){
+    default boolean equals(float state) {
         return equals(DigitalState.getState(state));
     }
+
     /**
      * <p>equals.</p>
      *
      * @param state a double.
      * @return a boolean.
      */
-    default boolean equals(double state){
+    default boolean equals(double state) {
         return equals(DigitalState.getState(state));
     }
+
     /**
      * <p>isHigh.</p>
      *
      * @return a boolean.
      */
-    default boolean isHigh(){
+    default boolean isHigh() {
         return this.state().isHigh();
     }
+
     /**
      * <p>isLow.</p>
      *
      * @return a boolean.
      */
-    default boolean isLow(){
+    default boolean isLow() {
         return this.state().isLow();
     }
 }

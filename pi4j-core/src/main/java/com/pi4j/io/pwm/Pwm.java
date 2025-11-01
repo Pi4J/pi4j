@@ -51,7 +51,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * @param context {@link Context}
      * @return a {@link com.pi4j.io.pwm.PwmConfigBuilder} object.
      */
-    static PwmConfigBuilder newConfigBuilder(Context context){
+    static PwmConfigBuilder newConfigBuilder(Context context) {
         return PwmConfigBuilder.newInstance(context);
     }
 
@@ -60,17 +60,17 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      *
      * @return gpio pin number/address
      */
-    default int getAddress(){
-        return config().address();
+    default int getBus() {
+        return config().bus();
     }
 
     /**
-     * Get the GPIO pin number/address of this PWM instance.
+     * Get the GPIO channel of this PWM instance.
      *
-     * @return gpio pin number/address
+     * @return gpio channel
      */
-    default int address(){
-        return getAddress();
+    default int getChannel() {
+        return config().getChannel();
     }
 
     /**
@@ -87,7 +87,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * @return returns 'true' if the PWM signal is in the OFF state; else returns 'false'
      */
     @Override
-    default boolean isOff(){
+    default boolean isOff() {
         return !isOn();
     }
 
@@ -103,8 +103,8 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     /**
      * Turn the PWM signal [OFF] by applying a zero frequency and zero duty-cycle to the PWM pin.
      *
-     * @throws IOException if fails to communicate with the PWM pin
      * @return a {@link com.pi4j.io.pwm.Pwm} object.
+     * @throws IOException if fails to communicate with the PWM pin
      */
     @Override
     Pwm off() throws IOException;
@@ -114,7 +114,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      *
      * @return the PWM type of this PWM instance.
      */
-    default PwmType pwmType(){
+    default PwmType pwmType() {
         return config().getPwmType();
     }
 
@@ -123,17 +123,16 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      *
      * @return the PWM type of this PWM instance.
      */
-    default PwmType getPwmType(){
+    default PwmType getPwmType() {
         return pwmType();
     }
-
 
     /**
      * Get the polarity of this PWM instance. (Normal/Inversed)
      *
      * @return the polarity of this PWM instance.
      */
-    default PwmPolarity polarity(){
+    default PwmPolarity polarity() {
         return config().getPolarity();
     }
 
@@ -142,7 +141,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      *
      * @return the polarity of this PWM instance.
      */
-    default PwmPolarity getPolarity(){
+    default PwmPolarity getPolarity() {
         return polarity();
     }
 
@@ -150,22 +149,21 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * Turn the PWM signal [ON] using a specified duty-cycle (%)
      * at the pre-configured frequency (Hz).
      *
-     * @param dutyCycle  The duty-cycle value is an Integer value that represents the
-     *                   percentage of the ON vs OFF time of the PWM signal for each
-     *                   period.  A value of 50 represents a duty-cycle where half of
-     *                   the time period the signal is LOW and the other half is HIGH.
-     *                   The duty-cycle range is valid from 0 to 100.
-     *                   (Values above 50% mean the signal will remain HIGH more
-     *                   time than LOW.)
+     * @param dutyCycle The duty-cycle value is an Integer value that represents the
+     *                  percentage of the ON vs OFF time of the PWM signal for each
+     *                  period.  A value of 50 represents a duty-cycle where half of
+     *                  the time period the signal is LOW and the other half is HIGH.
+     *                  The duty-cycle range is valid from 0 to 100.
+     *                  (Values above 50% mean the signal will remain HIGH more
+     *                  time than LOW.)
      * @return returns this PWM instance
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default Pwm on(Integer dutyCycle) throws IOException{
-        if(dutyCycle > 0) {
-            setDutyCycle(dutyCycle) ;
+    default Pwm on(Integer dutyCycle) throws IOException {
+        if (dutyCycle > 0) {
+            setDutyCycle(dutyCycle);
             return on();
-        }
-        else{
+        } else {
             return off();
         }
     }
@@ -174,31 +172,30 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * Turn the PWM signal [ON] using a specified duty-cycle (%)
      * at the pre-configured frequency (Hz).
      *
-     * @param dutyCycle  The duty-cycle value is an Integer value that represents the
-     *                   percentage of the ON vs OFF time of the PWM signal for each
-     *                   period.  A value of 50 represents a duty-cycle where half of
-     *                   the time period the signal is LOW and the other half is HIGH.
-     *                   The duty-cycle range is valid from 0 to 100.
-     *                   (Values above 50% mean the signal will remain HIGH more
-     *                   time than LOW.)
-     * @param frequency  The desired frequency value in Hertz (number of cycles per second)
-     *                   that the PWM signal generator should attempt to output.  Please
-     *                   note that certain PWM signal generators may be limited to
-     *                   specific frequency bands and may not generate all possible explicit
-     *                   frequency values.  Immediately after calling this method, you can
-     *                   check the 'Pwm::actualFrequency()' or 'Pwm::getActualFrequency()'
-     *                   properties to determine what frequency the PWM generator actually
-     *                   applied.
+     * @param dutyCycle The duty-cycle value is an Integer value that represents the
+     *                  percentage of the ON vs OFF time of the PWM signal for each
+     *                  period.  A value of 50 represents a duty-cycle where half of
+     *                  the time period the signal is LOW and the other half is HIGH.
+     *                  The duty-cycle range is valid from 0 to 100.
+     *                  (Values above 50% mean the signal will remain HIGH more
+     *                  time than LOW.)
+     * @param frequency The desired frequency value in Hertz (number of cycles per second)
+     *                  that the PWM signal generator should attempt to output.  Please
+     *                  note that certain PWM signal generators may be limited to
+     *                  specific frequency bands and may not generate all possible explicit
+     *                  frequency values.  Immediately after calling this method, you can
+     *                  check the 'Pwm::actualFrequency()' or 'Pwm::getActualFrequency()'
+     *                  properties to determine what frequency the PWM generator actually
+     *                  applied.
      * @return returns this PWM instance
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default Pwm on(Integer dutyCycle, int frequency) throws IOException{
-        if(dutyCycle > 0 && frequency  > 0) {
+    default Pwm on(Integer dutyCycle, int frequency) throws IOException {
+        if (dutyCycle > 0 && frequency > 0) {
             setDutyCycle((Integer) dutyCycle);
             setFrequency(frequency);
             return on();
-        }
-        else{
+        } else {
             return off();
         }
     }
@@ -219,32 +216,34 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     Integer getDutyCycle() throws IOException;
 
     /**
-     *  Get the duty-cycle value as an Integer value that represents the
-     *  percentage of the ON vs OFF time of the PWM signal for each
-     *  period.  The duty-cycle range is valid from 0 to 100.
-     *  (Values above 50% mean the signal will remain
-     *  HIGH more time than LOW.)
+     * Get the duty-cycle value as an Integer value that represents the
+     * percentage of the ON vs OFF time of the PWM signal for each
+     * period.  The duty-cycle range is valid from 0 to 100.
+     * (Values above 50% mean the signal will remain
+     * HIGH more time than LOW.)
      * <p>
-     *  Example: A value of 50 represents a duty-cycle where half of
-     *  the time period the signal is LOW and the other half is HIGH.
+     * Example: A value of 50 represents a duty-cycle where half of
+     * the time period the signal is LOW and the other half is HIGH.
      *
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default Integer dutyCycle() throws IOException { return getDutyCycle();}
+    default Integer dutyCycle() throws IOException {
+        return getDutyCycle();
+    }
 
     /**
-     *  Set the duty-cycle value as an Integer value that represents the
-     *  percentage of the ON vs OFF time of the PWM signal for each
-     *  period.  The duty-cycle range is valid from 0 to 100.
-     *  This method will not update a live PWM signal, but rather stage
-     *  the duty-cycle value for subsequent call to the 'Pwm::On()' method.
-     *  Call 'Pwm::On()' if you wish to make a live/
-     *  immediate change to the duty-cycle on an existing PWM signal.
-     *  (Values above 50% mean the signal will remain HIGH more time than LOW.)
+     * Set the duty-cycle value as an Integer value that represents the
+     * percentage of the ON vs OFF time of the PWM signal for each
+     * period.  The duty-cycle range is valid from 0 to 100.
+     * This method will not update a live PWM signal, but rather stage
+     * the duty-cycle value for subsequent call to the 'Pwm::On()' method.
+     * Call 'Pwm::On()' if you wish to make a live/
+     * immediate change to the duty-cycle on an existing PWM signal.
+     * (Values above 50% mean the signal will remain HIGH more time than LOW.)
      * <p>
-     *  Example: A value of 50 represents a duty-cycle where half of
-     *  the time period the signal is LOW and the other half is HIGH.
+     * Example: A value of 50 represents a duty-cycle where half of
+     * the time period the signal is LOW and the other half is HIGH.
      *
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      * @throws IOException if fails to communicate with the PWM pin
@@ -252,96 +251,103 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     void setDutyCycle(Integer dutyCycle) throws IOException;
 
     /**
-     *  Set the duty-cycle value as an Integer value that represents the
-     *  percentage of the ON vs OFF time of the PWM signal for each
-     *  period.  The duty-cycle range is valid from 0 to 100 .
-     *  This method will not update a live PWM signal, but rather stage
-     *  the duty-cycle value for subsequent call to the 'Pwm::On()' method.
-     *  Call 'Pwm::On()' if you wish to make a live/
-     *  immediate change to the duty-cycle on an existing PWM signal.
-     *  (Values above 50% mean the signal will remain HIGH more time than LOW.)
+     * Set the duty-cycle value as an Integer value that represents the
+     * percentage of the ON vs OFF time of the PWM signal for each
+     * period.  The duty-cycle range is valid from 0 to 100 .
+     * This method will not update a live PWM signal, but rather stage
+     * the duty-cycle value for subsequent call to the 'Pwm::On()' method.
+     * Call 'Pwm::On()' if you wish to make a live/
+     * immediate change to the duty-cycle on an existing PWM signal.
+     * (Values above 50% mean the signal will remain HIGH more time than LOW.)
      * <p>
-     *  Example: A value of 50 represents a duty-cycle where half of
-     *  the time period the signal is LOW and the other half is HIGH.
+     * Example: A value of 50 represents a duty-cycle where half of
+     * the time period the signal is LOW and the other half is HIGH.
      *
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      * @return returns this PWM instance
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default Pwm dutyCycle(Integer dutyCycle) throws IOException { setDutyCycle(dutyCycle); return this; }
+    default Pwm dutyCycle(Integer dutyCycle) throws IOException {
+        setDutyCycle(dutyCycle);
+        return this;
+    }
 
     /**
-     *  Get the configured frequency value in Hertz (number of cycles per second)
-     *  that the PWM signal generator should attempt to output when the PWM signal
-     *  is turned 'ON'.
+     * Get the configured frequency value in Hertz (number of cycles per second)
+     * that the PWM signal generator should attempt to output when the PWM signal
+     * is turned 'ON'.
      * <p>
-     *  Please note that certain PWM signal generators may be limited to specific
-     *  frequency bands and may not generate all possible explicit frequency values.
-     *  After enabling the PWM signal using the 'on(..) method, you can check the
-     *  'Pwm::frequency()' or 'Pwm::getFrequency()' properties to determine what
-     *  frequency the PWM generator actually applied.
+     * Please note that certain PWM signal generators may be limited to specific
+     * frequency bands and may not generate all possible explicit frequency values.
+     * After enabling the PWM signal using the 'on(..) method, you can check the
+     * 'Pwm::frequency()' or 'Pwm::getFrequency()' properties to determine what
+     * frequency the PWM generator actually applied.
      *
      * @return the configured frequency (Hz) that is used when turning the
-     *         PWM signal to the 'ON' state.
+     * PWM signal to the 'ON' state.
      * @throws IOException if fails to communicate with the PWM pin
      */
     int getFrequency() throws IOException;
 
     /**
-     *  Get the configured frequency value in Hertz (number of cycles per second)
-     *  that the PWM signal generator should attempt to output when the PWM signal
-     *  is turned 'ON'.
+     * Get the configured frequency value in Hertz (number of cycles per second)
+     * that the PWM signal generator should attempt to output when the PWM signal
+     * is turned 'ON'.
      * <p>
-     *  Please note that certain PWM signal generators may be limited to specific
-     *  frequency bands and may not generate all possible explicit frequency values.
-     *  After enabling the PWM signal using the 'on(...)' method, you can check the
-     *  'Pwm::frequency()' or 'Pwm::getFrequency()' properties to determine what
-     *  frequency the PWM generator actually applied.
+     * Please note that certain PWM signal generators may be limited to specific
+     * frequency bands and may not generate all possible explicit frequency values.
+     * After enabling the PWM signal using the 'on(...)' method, you can check the
+     * 'Pwm::frequency()' or 'Pwm::getFrequency()' properties to determine what
+     * frequency the PWM generator actually applied.
      *
      * @return the configured frequency (Hz) that is used when turning the
-     *         PWM signal to the 'ON' state.
+     * PWM signal to the 'ON' state.
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default int frequency() throws IOException { return getFrequency();}
+    default int frequency() throws IOException {
+        return getFrequency();
+    }
 
     /**
-     *  Get the actual frequency value in Hertz (number of cycles per second)
-     *  applied by the PWM signal generator after the PWM signal is turned 'ON'.
+     * Get the actual frequency value in Hertz (number of cycles per second)
+     * applied by the PWM signal generator after the PWM signal is turned 'ON'.
      * <p>
-     *  Please note that certain PWM signal generators may be limited to specific
-     *  frequency bands and may not generate all possible explicit frequency values.
-     *  After enabling the PWM signal using the 'on(...)' method, you can call this
-     *  method to determine what frequency the PWM generator actually applied.
+     * Please note that certain PWM signal generators may be limited to specific
+     * frequency bands and may not generate all possible explicit frequency values.
+     * After enabling the PWM signal using the 'on(...)' method, you can call this
+     * method to determine what frequency the PWM generator actually applied.
      *
      * @return the actual frequency (Hz) applied by the PWM generator when the
-     *         PWM signal is set to the 'ON' state.
+     * PWM signal is set to the 'ON' state.
      * @throws IOException if fails to communicate with the PWM pin
      */
     int getActualFrequency() throws IOException;
 
     /**
-     *  Get the actual frequency value in Hertz (number of cycles per second)
-     *  applied by the PWM signal generator after the PWM signal is turned 'ON'.
+     * Get the actual frequency value in Hertz (number of cycles per second)
+     * applied by the PWM signal generator after the PWM signal is turned 'ON'.
      * <p>
-     *  Please note that certain PWM signal generators may be limited to specific
-     *  frequency bands and may not generate all possible explicit frequency values.
-     *  After enabling the PWM signal using the 'on(...)' method, you can call this
-     *  method to determine what frequency the PWM generator actually applied.
+     * Please note that certain PWM signal generators may be limited to specific
+     * frequency bands and may not generate all possible explicit frequency values.
+     * After enabling the PWM signal using the 'on(...)' method, you can call this
+     * method to determine what frequency the PWM generator actually applied.
      *
      * @return the actual frequency (Hz) applied by the PWM generator when the
-     *         PWM signal is set to the 'ON' state.
+     * PWM signal is set to the 'ON' state.
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default int actualFrequency() throws IOException { return getActualFrequency();}
+    default int actualFrequency() throws IOException {
+        return getActualFrequency();
+    }
 
     /**
-     *  Set the configured frequency value in Hertz (number of cycles per second)
-     *  that the PWM signal generator should use when the PWM signal is turned 'ON'.
+     * Set the configured frequency value in Hertz (number of cycles per second)
+     * that the PWM signal generator should use when the PWM signal is turned 'ON'.
      * <p>
-     *  Note: This method will not update a live PWM signal, but rather stage the
-     *  frequency value for subsequent call to the 'Pwm::On()' method.  Call 'Pwm::On()'
-     *  if you wish to make a live/immediate change to the duty-cycle on an existing
-     *  PWM signal.
+     * Note: This method will not update a live PWM signal, but rather stage the
+     * frequency value for subsequent call to the 'Pwm::On()' method.  Call 'Pwm::On()'
+     * if you wish to make a live/immediate change to the duty-cycle on an existing
+     * PWM signal.
      *
      * @param frequency the number of cycles per second (Hertz)
      * @throws IOException if fails to communicate with the PWM pin
@@ -349,19 +355,22 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     void setFrequency(int frequency) throws IOException;
 
     /**
-     *  Set the configured frequency value in Hertz (number of cycles per second)
-     *  that the PWM signal generator should use when the PWM signal is turned 'ON'.
+     * Set the configured frequency value in Hertz (number of cycles per second)
+     * that the PWM signal generator should use when the PWM signal is turned 'ON'.
      * <p>
-     *  Note: This method will not update a live PWM signal, but rather stage the
-     *  frequency value for subsequent call to the 'Pwm::On()' method.  Call 'Pwm::On()'
-     *  if you wish to make a live/immediate change to the duty-cycle on an existing
-     *  PWM signal.
+     * Note: This method will not update a live PWM signal, but rather stage the
+     * frequency value for subsequent call to the 'Pwm::On()' method.  Call 'Pwm::On()'
+     * if you wish to make a live/immediate change to the duty-cycle on an existing
+     * PWM signal.
      *
      * @param frequency the number of cycles per second (Hertz)
      * @return returns this PWM instance
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default Pwm frequency(int frequency) throws IOException { setFrequency(frequency); return this; }
+    default Pwm frequency(int frequency) throws IOException {
+        setFrequency(frequency);
+        return this;
+    }
 
     /**
      * Get all the PwmPreset instances assigned to this PWM instance.
@@ -375,7 +384,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      *
      * @return a map of PwmPreset indexed/cataloged by preset name.
      */
-    default Map<String, PwmPreset> presets(){
+    default Map<String, PwmPreset> presets() {
         return getPresets();
     }
 
@@ -393,7 +402,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * @param name preset name string
      * @return a single PwmPreset instance
      */
-    default PwmPreset preset(String name){
+    default PwmPreset preset(String name) {
         return getPreset(name);
     }
 

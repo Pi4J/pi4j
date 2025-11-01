@@ -40,58 +40,58 @@ public interface AnalogOutputProvider extends AnalogProvider<AnalogOutputProvide
     /**
      * <p>create.</p>
      *
-     * @param address a {@link java.lang.Integer} object.
+     * @param pin a {@link java.lang.Integer} object.
      * @param <T> a T object.
      * @return a T object.
      */
-    default <T extends AnalogOutput> T create(Integer address) {
+    default <T extends AnalogOutput> T create(Integer pin) {
         var builder = AnalogOutputConfigBuilder.newInstance(context());
-        builder.address(address);
-        return (T)create(builder.build());
+        builder.pin(pin);
+        return (T) create(builder.build());
     }
 
     /**
      * <p>create.</p>
      *
-     * @param address a {@link java.lang.Integer} object.
-     * @param id a {@link java.lang.String} object.
+     * @param pin a {@link java.lang.Integer} object.
+     * @param id  a {@link java.lang.String} object.
      * @param <T> a T object.
      * @return a T object.
      */
-    default <T extends AnalogOutput> T create(Integer address, String id) {
+    default <T extends AnalogOutput> T create(Integer pin, String id) {
         var builder = AnalogOutputConfigBuilder.newInstance(context());
-        builder.id(id).address(address).id(id);
-        return (T)create(builder.build());
+        builder.id(id).pin(pin).id(id);
+        return (T) create(builder.build());
     }
 
     /**
      * <p>create.</p>
      *
-     * @param address a {@link java.lang.Integer} object.
-     * @param id a {@link java.lang.String} object.
+     * @param pin  a {@link java.lang.Integer} object.
+     * @param id   a {@link java.lang.String} object.
      * @param name a {@link java.lang.String} object.
-     * @param <T> a T object.
+     * @param <T>  a T object.
      * @return a T object.
      */
-    default <T extends AnalogOutput> T create(Integer address, String id, String name) {
+    default <T extends AnalogOutput> T create(Integer pin, String id, String name) {
         var builder = AnalogOutputConfigBuilder.newInstance(context());
-        builder.id(id).address(address).id(id).name(name);
-        return (T)create(builder.build());
+        builder.id(id).pin(pin).id(id).name(name);
+        return (T) create(builder.build());
     }
 
     /**
      * <p>create.</p>
      *
-     * @param address a {@link java.lang.Integer} object.
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
+     * @param pin         a {@link java.lang.Integer} object.
+     * @param id          a {@link java.lang.String} object.
+     * @param name        a {@link java.lang.String} object.
      * @param description a {@link java.lang.String} object.
-     * @param <T> a T object.
+     * @param <T>         a T object.
      * @return a T object.
      */
-    default <T extends AnalogOutput> T create(Integer address, String id, String name, String description) {
+    default <T extends AnalogOutput> T create(Integer pin, String id, String name, String description) {
         var builder = AnalogOutputConfigBuilder.newInstance(context());
-        builder.id(id).address(address).id(id).name(name).description(description);
-        return (T)create(builder.build());
+        builder.id(id).pin(pin).id(id).name(name).description(description);
+        return (T) create(builder.build());
     }
 }

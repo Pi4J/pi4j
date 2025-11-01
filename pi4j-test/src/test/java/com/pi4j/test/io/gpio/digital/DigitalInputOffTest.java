@@ -67,17 +67,17 @@ public class DigitalInputOffTest {
     public void testIsOffDefault() {
 
         // create GPIO digital input config
-        var config  = DigitalInput.newConfigBuilder(pi4j)
+        var config = DigitalInput.newConfigBuilder(pi4j)
             .id("test-input")
             .name("Test Digital Input")
-            .address(1)
+            .pin(1)
             .build();
 
         // create GPIO digital input instance
         var input = pi4j.din().create(config);
 
         // set MOCK state to LOW
-        MockDigitalInput mockInput = (MockDigitalInput)input;
+        MockDigitalInput mockInput = (MockDigitalInput) input;
         mockInput.mockState(DigitalState.LOW);
 
         // ensure input is OFF and not ON
@@ -89,18 +89,18 @@ public class DigitalInputOffTest {
     public void testIsOffHigh() {
 
         // create GPIO digital input config
-        var config  = DigitalInput.newConfigBuilder(pi4j)
+        var config = DigitalInput.newConfigBuilder(pi4j)
             .id("test-input")
             .name("Test Digital Input")
             .onState(DigitalState.HIGH)
-            .address(1)
+            .pin(1)
             .build();
 
         // create GPIO digital input instance
         var input = pi4j.din().create(config);
 
         // set MOCK state to LOW
-        MockDigitalInput mockInput = (MockDigitalInput)input;
+        MockDigitalInput mockInput = (MockDigitalInput) input;
         mockInput.mockState(DigitalState.LOW);
 
         // ensure input is OFF and not ON
@@ -112,18 +112,18 @@ public class DigitalInputOffTest {
     public void testIsOffLow() {
 
         // create GPIO digital input config
-        var config  = DigitalInput.newConfigBuilder(pi4j)
+        var config = DigitalInput.newConfigBuilder(pi4j)
             .id("test-input")
             .name("Test Digital Input")
             .onState(DigitalState.LOW)
-            .address(1)
+            .pin(1)
             .build();
 
         // create GPIO digital input instance
         var input = pi4j.din().create(config);
 
         // set MOCK state to HIGH
-        MockDigitalInput mockInput = (MockDigitalInput)input;
+        MockDigitalInput mockInput = (MockDigitalInput) input;
         mockInput.mockState(DigitalState.HIGH);
 
         // ensure input is OFF and not ON

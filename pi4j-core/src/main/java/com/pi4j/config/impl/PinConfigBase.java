@@ -25,9 +25,9 @@ package com.pi4j.config.impl;
  * #L%
  */
 
-import com.pi4j.config.AddressConfig;
 import com.pi4j.config.Config;
 import com.pi4j.config.ConfigBase;
+import com.pi4j.config.PinConfig;
 import com.pi4j.config.exception.ConfigMissingRequiredKeyException;
 
 import java.util.Map;
@@ -35,32 +35,32 @@ import java.util.Map;
 /**
  * <p>Abstract AddressConfigBase class.</p>
  *
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
- * @param <CONFIG_TYPE>
  */
-public abstract class AddressConfigBase<CONFIG_TYPE extends Config>
-        extends ConfigBase<CONFIG_TYPE>
-        implements AddressConfig<CONFIG_TYPE> {
+public abstract class PinConfigBase<CONFIG_TYPE extends Config>
+    extends ConfigBase<CONFIG_TYPE>
+    implements PinConfig<CONFIG_TYPE> {
 
     // private configuration properties
-    protected Integer address = null;
+    protected Integer pin = null;
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected AddressConfigBase(){
+    protected PinConfigBase() {
         super();
     }
 
     /**
-     * <p>Constructor for AddressConfigBase.</p>
+     * <p>Constructor for PinConfigBase.</p>
      *
-     * @param address a {@link java.lang.Number} object.
+     * @param pin a {@link java.lang.Integer} object.
      */
-    protected AddressConfigBase(Number address){
+    protected PinConfigBase(Integer pin) {
         super();
-        this.address = address.intValue();
+        this.pin = pin;
     }
 
     /**
@@ -68,14 +68,14 @@ public abstract class AddressConfigBase<CONFIG_TYPE extends Config>
      *
      * @param properties a {@link java.util.Map} object.
      */
-    protected AddressConfigBase(Map<String,String> properties){
+    protected PinConfigBase(Map<String, String> properties) {
         super(properties);
 
         // load address property
-        if(properties.containsKey(ADDRESS_KEY)){
-            this.address = Integer.parseInt(properties.get(ADDRESS_KEY));
+        if (properties.containsKey(PIN_KEY)) {
+            this.pin = Integer.parseInt(properties.get(PIN_KEY));
         } else {
-            throw new ConfigMissingRequiredKeyException(ADDRESS_KEY);
+            throw new ConfigMissingRequiredKeyException(PIN_KEY);
         }
     }
 
@@ -85,6 +85,15 @@ public abstract class AddressConfigBase<CONFIG_TYPE extends Config>
      * @return a {@link java.lang.Integer} object.
      */
     public Integer address() {
-        return this.address;
-    };
+        return this.pin;
+    }
+
+    /**
+     * <p>address.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
+    public Integer pin() {
+        return this.pin;
+    }
 }

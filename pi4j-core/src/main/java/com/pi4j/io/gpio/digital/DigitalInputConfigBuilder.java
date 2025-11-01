@@ -37,6 +37,9 @@ import java.util.concurrent.TimeUnit;
  * @version $Id: $Id
  */
 public interface DigitalInputConfigBuilder extends DigitalConfigBuilder<DigitalInputConfigBuilder, DigitalInputConfig> {
+
+    DigitalInputConfigBuilder pin(Integer pin);
+
     /**
      * <p>pull.</p>
      *
@@ -53,12 +56,12 @@ public interface DigitalInputConfigBuilder extends DigitalConfigBuilder<DigitalI
      * @see com.pi4j.io.gpio.digital.DigitalInput#DEFAULT_DEBOUNCE DEFAULT_DEBOUNCE
      */
     DigitalInputConfigBuilder debounce(Long microseconds);
-   
+
     /**
      * <p>debounce.</p>
      *
      * @param interval a {@link java.lang.Long} object.
-     * @param units a {@link java.util.concurrent.TimeUnit} object.
+     * @param units    a {@link java.util.concurrent.TimeUnit} object.
      * @return a {@link com.pi4j.io.gpio.digital.DigitalInputConfigBuilder} object.
      */
     DigitalInputConfigBuilder debounce(Long interval, TimeUnit units);
@@ -69,7 +72,7 @@ public interface DigitalInputConfigBuilder extends DigitalConfigBuilder<DigitalI
      * @param context {@link Context}
      * @return a {@link com.pi4j.io.gpio.digital.DigitalInputConfigBuilder} object.
      */
-    static DigitalInputConfigBuilder newInstance(Context context)  {
+    static DigitalInputConfigBuilder newInstance(Context context) {
         return DefaultDigitalInputConfigBuilder.newInstance(context);
     }
 }

@@ -25,7 +25,7 @@ package com.pi4j.io.serial;
  * #L%
  */
 
-import com.pi4j.config.DeviceConfig;
+import com.pi4j.config.PortConfig;
 import com.pi4j.io.IOConfig;
 
 /**
@@ -34,7 +34,7 @@ import com.pi4j.io.IOConfig;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public interface SerialConfig extends DeviceConfig<SerialConfig>, IOConfig<SerialConfig> {
+public interface SerialConfig extends PortConfig<SerialConfig>, IOConfig<SerialConfig> {
     /**
      * Constant <code>BAUD_KEY="baud"</code>
      */

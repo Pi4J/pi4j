@@ -41,28 +41,32 @@ public class TestSerialProviderImpl extends SerialProviderBase implements TestSe
     /**
      * <p>Constructor for TestSerialProviderImpl.</p>
      */
-    public TestSerialProviderImpl(){ super(); }
+    public TestSerialProviderImpl() {
+        super();
+    }
 
     /**
      * <p>Constructor for TestSerialProviderImpl.</p>
      *
      * @param id a {@link java.lang.String} object.
      */
-    public TestSerialProviderImpl(String id){
+    public TestSerialProviderImpl(String id) {
         super(id);
     }
 
     /**
      * <p>Constructor for TestSerialProviderImpl.</p>
      *
-     * @param id a {@link java.lang.String} object.
+     * @param id   a {@link java.lang.String} object.
      * @param name a {@link java.lang.String} object.
      */
-    public TestSerialProviderImpl(String id, String name){
+    public TestSerialProviderImpl(String id, String name) {
         super(id, name);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Serial create(SerialConfig config) {
         return null;

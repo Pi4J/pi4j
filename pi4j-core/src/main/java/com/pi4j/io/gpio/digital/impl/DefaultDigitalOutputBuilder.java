@@ -10,7 +10,7 @@ package com.pi4j.io.gpio.digital.impl;
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
  * **********************************************************************
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -69,77 +69,99 @@ public class DefaultDigitalOutputBuilder implements DigitalOutputBuilder {
         this.builder = DigitalOutputConfigBuilder.newInstance(context);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutputBuilder id(String id) {
         this.builder.id(id);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutputBuilder name(String name) {
         this.builder.name(name);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutputBuilder description(String description) {
         this.builder.description(description);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public DigitalOutputBuilder address(Integer address) {
-        this.builder.address(address);
+    public DigitalOutputBuilder address(Integer pin) {
+        this.builder.pin(pin);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutputBuilder shutdown(DigitalState state) {
         this.builder.shutdown(state);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutputBuilder initial(DigitalState state) {
         this.builder.initial(state);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutputBuilder platform(String platformId) {
         this.platformId = platformId;
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutputBuilder platform(Class<? extends Platform> platformClass) {
         this.platformClass = platformClass;
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutputBuilder provider(String providerId) {
         this.providerId = providerId;
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutputBuilder provider(Class<? extends Provider> providerClass) {
         this.providerClass = providerClass;
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutput build() {
 

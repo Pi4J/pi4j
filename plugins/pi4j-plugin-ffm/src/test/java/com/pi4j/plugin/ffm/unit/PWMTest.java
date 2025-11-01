@@ -43,8 +43,8 @@ public class PWMTest {
         try (var _ = FileDescriptorNativeMock.echo(pwmEnable, pwmDutyCycle, pwmPolarity, pwmPeriod)) {
 
             pi4j.pwm().create(PwmConfigBuilder.newInstance(pi4j)
-                .busNumber(0)
-                .address(0)
+                .bus(0)
+                .channel(0)
                 .pwmType(PwmType.HARDWARE)
                 .build());
         }
@@ -59,8 +59,8 @@ public class PWMTest {
         try (var _ = FileDescriptorNativeMock.echo(pwmEnable, pwmDutyCycle, pwmPolarity, pwmPeriod)) {
 
             var pwm = pi4j.pwm().create(PwmConfigBuilder.newInstance(pi4j)
-                .busNumber(0)
-                .address(1)
+                .bus(0)
+                .channel(1)
                 .pwmType(PwmType.HARDWARE)
                 .build());
             pwm.on();
@@ -79,8 +79,8 @@ public class PWMTest {
         try (var _ = FileDescriptorNativeMock.echo(pwmEnable, pwmDutyCycle, pwmPolarity, pwmPeriod)) {
 
             var pwm = pi4j.pwm().create(PwmConfigBuilder.newInstance(pi4j)
-                .busNumber(0)
-                .address(2)
+                .bus(0)
+                .channel(2)
                 .pwmType(PwmType.HARDWARE)
                 .build());
             pwm.on();

@@ -1,11 +1,11 @@
-package com.pi4j.io.gpio.analog;
+package com.pi4j.config;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  AnalogInputBase.java
+ * FILENAME      :  AddressConfigBuilder.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -26,22 +26,19 @@ package com.pi4j.io.gpio.analog;
  */
 
 /**
- * <p>Abstract AnalogInputBase class.</p>
+ * <p>ChannelConfigBuilder interface.</p>
  *
+ * @param <BUILDER_TYPE>
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public abstract class AnalogInputBase extends AnalogBase<AnalogInput, AnalogInputConfig, AnalogInputProvider> implements AnalogInput {
+public interface ChannelConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
     /**
-     * <p>Constructor for AnalogInputBase.</p>
+     * <p>channel.</p>
      *
-     * @param provider a {@link com.pi4j.io.gpio.analog.AnalogInputProvider} object.
-     * @param config   a {@link com.pi4j.io.gpio.analog.AnalogInputConfig} object.
+     * @param channel a {@link Integer} object.
+     * @return a BUILDER_TYPE object.
      */
-    public AnalogInputBase(AnalogInputProvider provider, AnalogInputConfig config) {
-        super(provider, config);
-        if (this.id == null) this.id = "AIN-" + config.pin();
-        if (this.name == null) this.name = "AIN-" + config.pin();
-    }
+    BUILDER_TYPE channel(Integer channel);
 }
-

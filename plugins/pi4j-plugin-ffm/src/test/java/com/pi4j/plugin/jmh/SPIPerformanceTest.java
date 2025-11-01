@@ -56,7 +56,7 @@ public class SPIPerformanceTest {
         var pi4j = Pi4J.newContextBuilder()
             .add(new SpiFFMProviderImpl())
             .build();
-        var config = SpiConfigBuilder.newInstance(pi4j).bus(SpiBus.BUS_0).address(0).mode(0).baud(50_000).build();
+        var config = SpiConfigBuilder.newInstance(pi4j).bus(SpiBus.BUS_0).channel(0).mode(0).baud(50_000).build();
         var spi = pi4j.spi().create(config);
         spi.write("Test".getBytes());
         var buffer = new byte[4];
@@ -70,7 +70,7 @@ public class SPIPerformanceTest {
         var pi4j = Pi4J.newContextBuilder()
             .add(new LinuxFsSpiProviderImpl())
             .build();
-        var config = SpiConfigBuilder.newInstance(pi4j).bus(SpiBus.BUS_0).address(0).mode(0).baud(50_000).build();
+        var config = SpiConfigBuilder.newInstance(pi4j).bus(SpiBus.BUS_0).channel(0).mode(0).baud(50_000).build();
         var spi = pi4j.spi().create(config);
         spi.write("Test".getBytes());
         var buffer = new byte[4];

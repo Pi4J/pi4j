@@ -5,7 +5,7 @@ package com.pi4j.config;
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  AddressConfigBuilder.java
+ * FILENAME      :  DeviceConfigBuilder.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -26,19 +26,19 @@ package com.pi4j.config;
  */
 
 /**
- * <p>AddressConfigBuilder interface.</p>
+ * <p>PortConfigBuilder interface.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
+ * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
+ * @version $Id: $Id
  */
-public interface AddressConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+public interface PortConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
     /**
-     * <p>address.</p>
+     * <p>port.</p>
      *
-     * @param address a {@link java.lang.Integer} object.
+     * @param port a {@link String} object.
      * @return a BUILDER_TYPE object.
      */
-    BUILDER_TYPE address(Integer address);
+    BUILDER_TYPE port(String port);
 }

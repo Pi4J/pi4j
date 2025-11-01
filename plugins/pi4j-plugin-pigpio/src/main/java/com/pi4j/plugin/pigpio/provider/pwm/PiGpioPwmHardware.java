@@ -51,15 +51,17 @@ public class PiGpioPwmHardware extends PiGpioPwmBase implements Pwm {
     private boolean initializing = false;
 
     // fixed range for hardware PWM
-    /** Constant <code>RANGE=1000000</code> */
+    /**
+     * Constant <code>RANGE=1000000</code>
+     */
     public static int RANGE = 1000000;
 
     /**
      * <p>Constructor for PiGpioPwmHardware.</p>
      *
-     * @param piGpio a {@link com.pi4j.library.pigpio.PiGpio} object.
+     * @param piGpio   a {@link com.pi4j.library.pigpio.PiGpio} object.
      * @param provider a {@link com.pi4j.io.pwm.PwmProvider} object.
-     * @param config a {@link com.pi4j.io.pwm.PwmConfig} object.
+     * @param config   a {@link com.pi4j.io.pwm.PwmConfig} object.
      */
     public PiGpioPwmHardware(PiGpio piGpio, PwmProvider provider, PwmConfig config) {
         super(piGpio, provider, config, RANGE);
@@ -84,11 +86,10 @@ public class PiGpioPwmHardware extends PiGpioPwmBase implements Pwm {
             //  52  PWM channel 0  Compute module only
             //  53  PWM channel 1  Compute module only
 
-            if(this.address() == 12 || this.address() == 13 || this.address() == 41 || this.address() == 42 || this.address() == 45) {
-                piGpio.gpioSetMode(this.address(), PiGpioMode.ALT0);
-            }
-            else if(this.address() == 18 || this.address() == 19) {
-                piGpio.gpioSetMode(this.address(), PiGpioMode.ALT0);
+            if (this.config().address() == 12 || this.config().address() == 13 || this.config().address() == 41 || this.config().address() == 42 || this.config().address() == 45) {
+                piGpio.gpioSetMode(this.config().address(), PiGpioMode.ALT0);
+            } else if (this.config().address() == 18 || this.config().address() == 19) {
+                piGpio.gpioSetMode(this.config().address(), PiGpioMode.ALT0);
             }
 //            else{
 //                throw new IOException("<PIGPIO> UNSUPPORTED HARDWARE PWM PIN: " + this.address());
@@ -96,16 +97,16 @@ public class PiGpioPwmHardware extends PiGpioPwmBase implements Pwm {
 
             // inversed polarity is not supported
             if (config.polarity() != null) {
-                if(config.polarity() == PwmPolarity.INVERSED){
-                    throw new IOException("<PIGPIO> INVERSED POLARITY UNSUPPORTED; PWM PIN: " + this.address());
+                if (config.polarity() == PwmPolarity.INVERSED) {
+                    throw new IOException("<PIGPIO> INVERSED POLARITY UNSUPPORTED; PWM PIN: " + this.config().address());
                 }
             }
 
             // set pin mode to output
-            piGpio.gpioSetMode(this.address(), PiGpioMode.OUTPUT);
+            piGpio.gpioSetMode(this.config().address(), PiGpioMode.OUTPUT);
 
             // get actual PWM frequency
-            this.actualFrequency = piGpio.gpioGetPWMfrequency(this.address());
+            this.actualFrequency = piGpio.gpioGetPWMfrequency(this.config().address());
 
             // get current frequency from config or from actual PWM pin
             if (config.frequency() != null) {
@@ -123,9 +124,9 @@ public class PiGpioPwmHardware extends PiGpioPwmBase implements Pwm {
             }
 
             // apply an initial value if configured
-            if(config.initialValue() != null){
+            if (config.initialValue() != null) {
                 try {
-                    if(this.config.initialValue() <= 0){
+                    if (this.config.initialValue() <= 0) {
                         this.off();
                     } else {
                         this.on(this.config.initialValue());
@@ -137,28 +138,28 @@ public class PiGpioPwmHardware extends PiGpioPwmBase implements Pwm {
 
             // done initializing
             initializing = false;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             initializing = false;
             throw new InitializeException(e);
         }
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Pwm on() throws IOException {
         try {
             // set PWM frequency & duty-cycle; enable PWM signal
-            piGpio.gpioHardwarePWM(this.address(), this.frequency, calculateActualDutyCycle(this.dutyCycle));
+            piGpio.gpioHardwarePWM(this.config().address(), this.frequency, calculateActualDutyCycle(this.dutyCycle));
 
             // get actual PWM frequency
-            this.actualFrequency = piGpio.gpioGetPWMfrequency(this.address());
+            this.actualFrequency = piGpio.gpioGetPWMfrequency(this.config().address());
 
             // update tracking state
             this.onState = (this.frequency > 0 && this.dutyCycle > 0);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new IOException(e);
         }
@@ -166,25 +167,26 @@ public class PiGpioPwmHardware extends PiGpioPwmBase implements Pwm {
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Pwm off() throws IOException{
+    public Pwm off() throws IOException {
         try {
             // This is a hack to get the hardware PWM signal to stop if an initial
             // value was configured.  It seems PIPGIO must actually perform a
             // change value to apply a "ZERO" frequency & duty-cycle after
             // the library is first initialized and the PWM was not active
-            if(initializing) {
-                piGpio.gpioHardwarePWM(this.address(), 1, 1);
+            if (initializing) {
+                piGpio.gpioHardwarePWM(this.config().address(), 1, 1);
             }
 
             // set PWM duty-cycle and enable PWM
-            piGpio.gpioHardwarePWM(this.address(), 0, 0);
+            piGpio.gpioHardwarePWM(this.config().address(), 0, 0);
 
             // update tracking state
             this.onState = false;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new IOException(e);
         }

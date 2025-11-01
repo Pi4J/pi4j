@@ -40,13 +40,13 @@ import java.util.concurrent.TimeUnit;
  * @version $Id: $Id
  */
 public class DefaultDigitalInputConfigBuilder
-        extends DigitalConfigBuilderBase<DigitalInputConfigBuilder, DigitalInputConfig>
-        implements DigitalInputConfigBuilder {
+    extends DigitalConfigBuilderBase<DigitalInputConfigBuilder, DigitalInputConfig>
+    implements DigitalInputConfigBuilder {
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DefaultDigitalInputConfigBuilder(Context context){
+    protected DefaultDigitalInputConfigBuilder(Context context) {
         super(context);
     }
 
@@ -60,36 +60,57 @@ public class DefaultDigitalInputConfigBuilder
         return new DefaultDigitalInputConfigBuilder(context);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalInputConfig build() {
         DigitalInputConfig config = new DefaultDigitalInputConfig(getResolvedProperties());
         return config;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public DigitalInputConfigBuilder busNumber(int busNumber) {
-        this.properties.put(GpioConfig.BUS_NUMBER, String.valueOf(busNumber));
+    @Deprecated(forRemoval = true)
+    public DigitalInputConfigBuilder address(Integer address) {
+        this.properties.put(GpioConfig.BUS_KEY, String.valueOf(address));
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DigitalInputConfigBuilder bus(int bus) {
+        this.properties.put(GpioConfig.BUS_KEY, String.valueOf(bus));
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalInputConfigBuilder pull(PullResistance value) {
         this.properties.put(DigitalInputConfig.PULL_RESISTANCE_KEY, value.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalInputConfigBuilder debounce(Long microseconds) {
-        if(microseconds != null) {
+        if (microseconds != null) {
             this.properties.put(DigitalInputConfig.DEBOUNCE_RESISTANCE_KEY, microseconds.toString());
         }
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalInputConfigBuilder debounce(Long interval, TimeUnit units) {
         return debounce(units.toMicros(interval));

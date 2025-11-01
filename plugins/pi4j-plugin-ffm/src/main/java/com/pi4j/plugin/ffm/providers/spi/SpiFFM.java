@@ -32,7 +32,7 @@ public class SpiFFM extends SpiBase implements Spi {
 
     public SpiFFM(SpiProvider provider, SpiConfig config) {
         super(provider, config);
-        this.path = SPI_BUS + config.bus().getBus() + "." + config.address();
+        this.path = SPI_BUS + config.bus().getBus() + "." + config.channel();
         PermissionHelper.checkDevicePermissions(path, config);
     }
 
