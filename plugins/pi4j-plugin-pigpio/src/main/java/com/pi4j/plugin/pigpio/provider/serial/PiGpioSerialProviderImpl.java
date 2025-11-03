@@ -39,7 +39,6 @@ import com.pi4j.library.pigpio.PiGpio;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-@Deprecated(forRemoval = true)
 public class PiGpioSerialProviderImpl extends SerialProviderBase implements PiGpioSerialProvider {
 
     final PiGpio piGpio;

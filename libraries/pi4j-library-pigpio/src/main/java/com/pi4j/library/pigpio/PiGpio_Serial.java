@@ -37,7 +37,6 @@ import java.nio.charset.StandardCharsets;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-@Deprecated(forRemoval = true)
 public interface PiGpio_Serial {
 
     /**
