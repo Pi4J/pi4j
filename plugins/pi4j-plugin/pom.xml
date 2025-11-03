@@ -29,11 +29,11 @@
 
     <!-- PROJECT MODULES <Pi4J PLUGINS> -->
     <modules>
-        <module>../pi4j-plugin-mock</module>
+<!--        <module>../pi4j-plugin-mock</module>
         <module>../pi4j-plugin-pigpio</module>
         <module>../pi4j-plugin-raspberrypi</module>
         <module>../pi4j-plugin-linuxfs</module>
-        <module>../pi4j-plugin-gpiod</module>
+        <module>../pi4j-plugin-gpiod</module>-->
         <module>../pi4j-plugin-ffm</module>
     </modules>
 

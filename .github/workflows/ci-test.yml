@@ -1,0 +1,45 @@
+name: ci-test.yml
+on:
+  push:
+    branches:
+      - "test-framework"
+
+jobs:
+  Build:
+    name: Build Snapshot
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+#        run: sudo apt-get install --yes build-essential linux-headers-$(uname -r) linux-modules-extra-$(uname -r) sudo libi2c-dev gcc-arm-linux-gnueabihf  gcc-aarch64-linux-gnu libtool tree
+        run: |
+          sudo apt-get remove --purge man-db
+          sudo apt-get install --yes build-essential linux-headers-$(uname -r) sudo libi2c-dev linux-modules-extra-$(uname -r)
+      - name: Install JDK25
+        uses: sfesenko/setup-sdkman@v1
+        with:
+          deps: java:25-zulu
+      - name: Create and add current user to suitable groups
+        run: |
+          sudo addgroup spi
+          sudo adduser $USER spi
+          sudo adduser $USER i2c
+          sudo adduser $USER dialout
+      - name: Add proper udev rules and trigger udevadm
+        run: |
+          sudo cp udev.rules /etc/udev/rules.d/99-pi4j-io.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger
+      - name: Cache local Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+#      - name: Test
+#        run: |
+#          sudo -u $USER bash -c 'cd plugins/pi4j-plugin-ffm/src/test/resources/ && sudo ./i2c-setup.sh'
+      - name: Build entire Pi4J Project
+        run: |
+          sudo -u $USER bash -c 'source ~/.sdkman/bin/sdkman-init.sh && ./mvnw clean install -Pnative,cross-compile --batch-mode'
+

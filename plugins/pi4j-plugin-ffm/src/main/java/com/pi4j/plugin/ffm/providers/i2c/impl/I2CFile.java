@@ -82,7 +82,7 @@ public class I2CFile extends I2CBase<I2CBusFFM> {
 
     @Override
     public int writeRegister(int register, byte b) {
-        return i2CBus.execute(this, (i2cFileDescriptor) -> FILE.write(i2cFileDescriptor, new byte[]{(byte) register, b}));
+        return i2CBus.execute(this, (i2cFileDescriptor) -> FILE.write(i2cFileDescriptor, new byte[]{(byte) register, b})) - 1;
     }
 
     @Override
@@ -90,7 +90,7 @@ public class I2CFile extends I2CBase<I2CBusFFM> {
         var buffer = new byte[data.length + 1];
         buffer[0] = (byte) register;
         System.arraycopy(data, 0, buffer, 1, data.length);
-        return i2CBus.execute(this, (i2cFileDescriptor) -> FILE.write(i2cFileDescriptor, buffer));
+        return i2CBus.execute(this, (i2cFileDescriptor) -> FILE.write(i2cFileDescriptor, buffer)) - 1;
     }
 
     @Override
@@ -98,6 +98,12 @@ public class I2CFile extends I2CBase<I2CBusFFM> {
         var buffer = new byte[register.length + data.length];
         System.arraycopy(register, 0, buffer, 0, register.length);
         System.arraycopy(data, 0, buffer, register.length, data.length);
-        return i2CBus.execute(this, (i2cFileDescriptor) -> FILE.write(i2cFileDescriptor, buffer));
+        return i2CBus.execute(this, (i2cFileDescriptor) -> FILE.write(i2cFileDescriptor, buffer)) - register.length;
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        i2CBus.close();
     }
 }

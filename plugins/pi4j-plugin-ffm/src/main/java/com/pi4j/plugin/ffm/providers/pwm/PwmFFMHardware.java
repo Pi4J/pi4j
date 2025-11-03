@@ -74,6 +74,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
         }
         this.pwmPath = pwmFile;
 
+        // we have to wait sometime to udev can catch the rules and apply permissions
         waitForPermissions(this.pwmPath + ENABLE_PATH, 0);
         var stateFd = file.open(this.pwmPath + ENABLE_PATH, FileFlag.O_RDONLY);
         this.onState = getIntegerContent(file.read(stateFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE)) == 1;
@@ -121,6 +122,8 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
         this.period = (NANOS_IN_SECOND / frequency);
         logger.debug("{} - period is '{}', dutyCycle is '{}' and polarity '{}'.", pwmPath, period, dutyCycle, polarity);
 
+        // we have to wait sometime to udev can catch the rules and apply permissions
+        waitForPermissions(this.pwmPath + PERIOD_PATH, 0);
         var periodFd = file.open(this.pwmPath + PERIOD_PATH, FileFlag.O_WRONLY);
         var dutyCycleFd = file.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_WRONLY);
         var polarityFd = file.open(this.pwmPath + POLARITY_PATH, FileFlag.O_WRONLY);
@@ -204,7 +207,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
             throw new Pi4JException("Timeout occurred while waiting for permissions");
         }
         logger.trace("{} - Waiting for permissions '{}' for {}ms", pwmPath, path, timeout);
-        var access = file.access(path, FileFlag.R_OK);
+        var access = file.access(path, FileFlag.R_OK | FileFlag.W_OK);
         if (access != 0) {
             var deferredDelay = new DeferredDelay();
             deferredDelay.setDelayMillis(10);

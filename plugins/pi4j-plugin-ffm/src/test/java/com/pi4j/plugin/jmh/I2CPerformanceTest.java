@@ -2,7 +2,6 @@ package com.pi4j.plugin.jmh;
 
 import com.pi4j.Pi4J;
 import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
-import com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CProviderImpl;
 import org.openjdk.jmh.annotations.*;
 
 import java.io.IOException;

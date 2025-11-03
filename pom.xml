@@ -166,11 +166,11 @@
     <!-- PROJECT MODULES -->
     <modules>
         <!-- THE FOLLOWING ARE THE Pi4J MODULES -->
-        <module>libraries/pi4j-library</module>
+        <!--<module>libraries/pi4j-library</module>-->
         <module>pi4j-core</module>
         <module>plugins/pi4j-plugin</module>
-        <module>pi4j-test</module>
-        <module>pi4j-distribution</module>
+<!--        <module>pi4j-test</module>
+        <module>pi4j-distribution</module>-->
     </modules>
 
     <!-- BUILD PROPERTIES -->
