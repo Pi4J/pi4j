@@ -36,7 +36,6 @@ import com.pi4j.plugin.raspberrypi.RaspberryPi;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-@Deprecated(forRemoval = true)
 public interface RpiSerialProvider extends SerialProvider {
     /**
      * Constant <code>NAME="RaspberryPi.SERIAL_PROVIDER_NAME"</code>
