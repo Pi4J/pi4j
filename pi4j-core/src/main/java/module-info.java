@@ -31,7 +31,6 @@ module com.pi4j {
 
     // depends on SLF4J
     requires org.slf4j;
-    requires com.pi4j;
 
     // exposed interfaces/classes
     exports com.pi4j;
