@@ -59,17 +59,21 @@ static unsigned char * format_hex(const unsigned char *bin, unsigned int binsz, 
 // parsing i2c message and writing/reading into buffer
 static void i2c_parse_msg(struct i2c_adapter *adap, struct i2c_msg *msgs, unsigned char *data_buf)
 {
-	int j;
+	int j, start_index = 1;
 	unsigned char * message;
+	if (!data_buf) {
+		data_buf = internal_buf;
+		start_index = 0;
+	}
 	if (msgs->flags & I2C_M_RD) {
 		for (j = 0; j < msgs->len; j++)
 			msgs->buf[j] = data_buf[j];
-		dev_info(&adap->dev, "    Read data: %s", format_hex(data_buf, msgs->len, &message));
+		dev_info(&adap->dev, "    Read data: %s", format_hex(msgs->buf, msgs->len, &message));
 	} else {
 		// default is to save incoming buffer
-		for (j = 0; j < msgs->len; j++)
-			data_buf[j] = msgs->buf[j];
-		dev_info(&adap->dev, "    Write data: %s", format_hex(msgs->buf, msgs->len, &message));
+		for (j = start_index; j < msgs->len; j++)
+			data_buf[j - start_index] = msgs->buf[j];
+		dev_info(&adap->dev, "    Write data: %s", format_hex(data_buf, sizeof(data_buf), &message));
 	}
 
 	kfree(message);
@@ -100,22 +104,40 @@ static unsigned char * find_register(const ushort device_register, unsigned char
 	return NULL;
 }
 
+// special flag for handling non-register access
+static ushort last_reg;
+
 // main method to work with i2c within ioctl interface and file write/read
 static int i2c_mock_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
 {
 	if (num == 1) {
-		// no register provided or file write/read
-		dev_info(&adap->dev, "Accessing I2C device '%02X' without register", msgs->addr);
-		i2c_parse_msg(adap, msgs, internal_buf);
+		// we have only one message
+		struct i2c_msg * msg = &msgs[0];
+		ushort reg;
+		unsigned char *register_buf;
+		if (msgs->flags & I2C_M_RD && last_reg) {
+			// first, check if we want to read without register, grab last one
+			register_buf = find_register(last_reg, &register_buf);
+			dev_info(&adap->dev, "Accessing I2C deivce '%02X' with last register '%02X'", msg->addr, last_reg);
+		} else if (*msg->buf && msg->len > 1) {
+			// second, check if we want to access register with data, save current register as last one
+			reg = msg->buf[0];
+			last_reg = reg;
+			register_buf = find_register(reg, &register_buf);
+			dev_info(&adap->dev, "Accessing I2C deivce '%02X' with register '%02X'", msg->addr, reg);
+		} else {
+			// last, check if we want to access data with no register, drop last register
+			last_reg = 0;
+			dev_info(&adap->dev, "Accessing I2C device '%02X' without register", msg->addr);
+		}
+		i2c_parse_msg(adap, &msgs[0], register_buf);
 	} else if (num > 1) {
 		// we have a register with the first message and others are just data
-		unsigned char * message;
 		struct i2c_msg * register_msg = &msgs[0];
-		dev_info(&adap->dev, "Accessing I2C deivce '%02X' with register '%s'", msgs->addr, format_hex(register_msg->buf, msgs->len, &message));
-		kfree(message);
-
-		ushort reg = (register_msg->buf[0] << 8) | register_msg->buf[1];
+		
+		ushort reg = register_msg->buf[0];
 		unsigned char *register_buf = find_register(reg, &register_buf);
+		dev_info(&adap->dev, "Accessing I2C deivce '%02X' with register '%02X'", msgs->addr, reg);
 		if (register_buf == NULL) {
 			return -1;
 		}
@@ -123,6 +145,9 @@ static int i2c_mock_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num
 		for (i = 1; i < num; i++) {
 			i2c_parse_msg(adap, &msgs[i], register_buf);
 		}
+	} else {
+		dev_err(&adap->dev, "Unsupported type");
+		return -1;
 	}
     return num;
 }
