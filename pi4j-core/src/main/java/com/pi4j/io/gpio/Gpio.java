@@ -41,21 +41,4 @@ public interface Gpio<IO_TYPE extends IO<IO_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
     CONFIG_TYPE extends GpioConfig,
     PROVIDER_TYPE extends Provider>
     extends IO<IO_TYPE, CONFIG_TYPE, PROVIDER_TYPE> {
-    /**
-     * <p>address.</p>
-     *
-     * @return a {@link Integer} object.
-     */
-//    default Integer address() {
-//        return config().address();
-//    }
-
-    /**
-     * <p>getAddress.</p>
-     *
-     * @return a {@link Integer} object.
-     */
-//    default Integer getAddress() {
-//        return address();
-//    }
 }

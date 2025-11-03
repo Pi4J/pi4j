@@ -69,13 +69,6 @@ public abstract class GpioBase<IO_TYPE extends Gpio<IO_TYPE, CONFIG_TYPE, PROVID
             result.append(this.name());
         }
 
-        // include ADDRESS
-//        if(this.address() != null) {
-//            result.append("\" (#");
-//            result.append(this.address());
-//            result.append(")");
-//        }
-
         return result.toString();
     }
 }

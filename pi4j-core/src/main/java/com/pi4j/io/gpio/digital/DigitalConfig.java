@@ -42,6 +42,11 @@ public interface DigitalConfig<CONFIG_TYPE extends Config> extends GpioConfig<CO
      */
     String ON_STATE_KEY = "onstate";
 
+    /**
+     * <p>pin.</p>
+     *
+     * @return a {@link Integer} object.
+     */
     Integer pin();
 
     /**
