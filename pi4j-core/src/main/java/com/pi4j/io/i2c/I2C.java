@@ -30,6 +30,7 @@ import com.pi4j.io.IO;
 import com.pi4j.io.IODataReader;
 import com.pi4j.io.IODataWriter;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.Callable;
 
 /**
@@ -105,16 +106,85 @@ public interface I2C
         return device();
     }
 
+
     /**
-     * Method to perform a write of the given buffer, and then a read into the given buffer
+     * Method to perform a write of the writeBuffer, and then a read into the readBuffer
      *
      * @param writeBuffer the buffer to write
      * @param readBuffer  the buffer to read into
      *
      * @return the number of bytes read
+     *
+     * Note This method uses two atomic operations.  start write bytes stop  start read bytes stop
+     * To accomplish this work in a single atomic operation
+     * see {@link I2CRegisterDataReader#readRegister(byte[], ByteBuffer, int, int)}
+     *
+     */
+    default int writeThenRead(byte[] writeBuffer, byte[] readBuffer) {
+        return writeThenRead(writeBuffer, writeBuffer.length, 0, readBuffer, readBuffer.length, 0);
+    }
+
+
+    /**
+     * Method to perform a write of the writeBuffer, and then a read into the readBuffer
+     *
+     * @param writeSize   the number of bytes to write
+     * @param writeOffset the offset of the array to write
+     * @param writeBuffer the buffer to write respecting the given length and offset
+     * @param readSize    the number of bytes to read
+     * @param readOffset  the offset in the read buffer at which to insert the read bytes
+     * @param readBuffer  the buffer into which to read the bytes
+     *
+     * @return the number of bytes read
+     *
+     * Note This method uses two atomic operations.  start write bytes stop  start read bytes stop
+     * To accomplish this work in a single atomic operation
+     * see {@link I2CRegisterDataReader#readRegister(byte[], ByteBuffer, int, int)}
+     */
+    default int writeThenRead(byte[] writeBuffer, int writeSize, int writeOffset, byte[] readBuffer, int readSize,
+                          int readOffset) {
+        return internalWriteThenRead(writeBuffer,  writeSize,  writeOffset,  readBuffer, readSize, readOffset);
+    }
+
+
+    @Deprecated
+    /**
+     * Method to perform a write of the writeBuffer, and then a read into the readBuffer
+     *
+     * @param writeBuffer the buffer to write
+     * @param readBuffer  the buffer to read into
+     *
+     * @return the number of bytes read
+     *
+     * Note This method uses two atomic operations.  start write bytes stop  start read bytes stop
+     * To accomplish this work in a single atomic operation
+     * see {@link I2CRegisterDataReader#readRegister(byte[], ByteBuffer, int, int)}
+     *
      */
     default int writeRead(byte[] writeBuffer, byte[] readBuffer) {
         return writeRead(writeBuffer, writeBuffer.length, 0, readBuffer, readBuffer.length, 0);
+    }
+
+    @Deprecated
+    /**
+     * Method to perform a write of the writeBuffer, and then a read into the readBuffer
+     *
+     * @param writeSize   the number of bytes to write
+     * @param writeOffset the offset of the array to write
+     * @param writeBuffer the buffer to write respecting the given length and offset
+     * @param readSize    the number of bytes to read
+     * @param readOffset  the offset in the read buffer at which to insert the read bytes
+     * @param readBuffer  the buffer into which to read the bytes
+     *
+     * @return the number of bytes read
+     *
+     * Note This method uses two atomic operations.  start write bytes stop  start read bytes stop
+     * To accomplish this work in a single atomic operation
+     * see {@link I2CRegisterDataReader#readRegister(byte[], ByteBuffer, int, int)}
+     */
+    default int writeRead(byte[] writeBuffer, int writeSize, int writeOffset, byte[] readBuffer, int readSize,
+               int readOffset) {
+        return internalWriteThenRead(writeBuffer,  writeSize,  writeOffset,  readBuffer, readSize, readOffset);
     }
 
     /**
@@ -128,9 +198,13 @@ public interface I2C
      * @param readBuffer  the buffer into which to read the bytes
      *
      * @return the number of bytes read
+     *
+     * Note This method uses two atomic operations.  start write bytes stop  start read bytes stop
+     * To accomplish this work in a single atomic operation
+     * see {@link I2CRegisterDataReader#readRegister(byte[], ByteBuffer, int, int)}
      */
-    default int writeRead(byte[] writeBuffer, int writeSize, int writeOffset, byte[] readBuffer, int readSize,
-        int readOffset) {
+    default int internalWriteThenRead(byte[] writeBuffer, int writeSize, int writeOffset, byte[] readBuffer, int readSize,
+                                      int readOffset) {
 
         // Check bounds for writeBuffer
         if (writeOffset < 0) {
@@ -161,6 +235,7 @@ public interface I2C
             return read(readBuffer, readOffset, readSize);
         });
     }
+
 
     /**
      * Get an encapsulated interface for reading and writing to a specific I2C device register

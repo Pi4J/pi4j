@@ -242,11 +242,33 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         super.close();
     }
 
-    @Override
-    public int transfer(byte[] write, int writeOffset, byte[] read, int readOffset, int numberOfBytes) {
+
+   @Override
+    /**
+     * This function transfers (writes/reads simultaneously) multiple bytes with the SPI
+     * device associated with the handle.  Write data is taken from the 'write' byte array
+     * from the given 'writeOffset' index to the specified length ('numberOfBytes').  Data
+     * read from the SPI device is then copied to the 'read' byte array at the given 'readOffset'
+     * using the same length ('numberOfBytes').  Both the 'write' and 'read' byte arrays must
+     * be at least the size of the defined 'numberOfBytes' + their corresponding offsets.
+     *
+     * @param write the array of bytes to write to the SPI device
+     * @param writeOffset the starting offset position in the provided 'write' buffer to
+     *                    start writing to the SPI device from.
+     * @param read the array of bytes to store read data in from the SPI device
+     * @param readOffset the starting offset position in the provided 'read' buffer to place
+     *                   data bytes read from the SPI device.
+     * @param numberOfBytes the number of bytes to transfer/exchange (read &amp; read))
+     * @return Returns 0 if OK, -1 on error. Error details available in last errno or
+     *                   rerunning the program with log level "TRACE",
+     *                   See : https://www.pi4j.com/documentation/logging/
+     *
+     */
+     public int transfer(byte[] write, int writeOffset, byte[] read, int readOffset, int numberOfBytes) {
         PeerAccessibleMemory buf = new PeerAccessibleMemory(numberOfBytes);
         buf.write(0, write, writeOffset, numberOfBytes);
 
+        int rCode = 0 ;
         // According to the docs you can use the same buffer for tx/rx.
         spi_ioc_transfer transfer = new spi_ioc_transfer();
         transfer.tx_buf = buf.getPeer();
@@ -259,14 +281,14 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         int ret = libc.ioctl(fd, SPI_IOC_MESSAGE(1), transfer);
         if (ret < 0) {
             logger.error("Could not write SPI message. ret {}, error: {}", ret, Native.getLastError());
-            numberOfBytes = -1;
+            rCode  = -1;
         } else {
             buf.read(0, read, readOffset, numberOfBytes);
         }
 
         buf.close();
 
-        return numberOfBytes;
+        return rCode;
     }
 
     @Override
@@ -334,12 +356,16 @@ public class LinuxFsSpi extends SpiBase implements Spi {
      * @param data   data array of bytes to be written
      * @param offset offset in data buffer to start at
      * @param length number of bytes to be written
-     * @return
+     * @return Returns 0 if OK, -1 on error. Error details available in last errno or
+     *                   rerunning the program with log level "TRACE",
+     *                   See : https://www.pi4j.com/documentation/logging/
+     *
      */
     @Override
     public int write(byte[] data, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, data.length);
 
+        int rCode = 0;
         int position = offset;
         int dataEnd = offset + length;
         PeerAccessibleMemory buf = new PeerAccessibleMemory(SPI_BUFFSIZ);
@@ -361,22 +387,23 @@ public class LinuxFsSpi extends SpiBase implements Spi {
             logger.trace("[SPI::WRITE] <- Number bytes {} ", ret);
             if (ret < 0) {
                 logger.error("Could not write SPI message. ret {}, error: {}", ret, Native.getLastError());
-                length = 0;
+                rCode = -1;
                 break;
             }
             position += chunkLength;
         }
 
-        return length;
+        return rCode;
     }
 
     @Override
-    public int writeRead(byte[] write, int writeOffset, int writeNumberOfBytes, short writeDelayUsec, byte[] read, int readOffset, int readNumberOfBytes, short readDelayUsec) {
+    public void writeThenRead(byte[] write, int writeOffset, int writeLength, short writeDelayUsec, byte[] read, int readOffset, int readNumberOfBytes, short readDelayUsec) {
         final int firstRecord = 0;
         final int secondRecord = 1;
         final int totalRecords = 2;
 
-        Objects.checkFromIndexSize(writeOffset, writeNumberOfBytes, write.length);
+
+        Objects.checkFromIndexSize(writeOffset, writeLength, write.length);
         Objects.checkFromIndexSize(readOffset, readNumberOfBytes, read.length);
         spi_ioc_transfer[] transferArray = getTransferArray(totalRecords);
         PeerAccessibleMemory txBuf = new PeerAccessibleMemory(readNumberOfBytes);
@@ -384,7 +411,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
 
            //    PeerAccessible
       //  Memory writeBuf = peerArray[firstRecord];//new PeerAccessibleMemory(SPI_BUFFSIZ);
-        txBuf.write(0, write, 0, writeNumberOfBytes);
+        txBuf.write(0, write, 0, writeLength);
         spi_ioc_transfer txEntry = transferArray[firstRecord]; //new spi_ioc_transfer();
 
         // set fields in the tx transfer msg
@@ -394,10 +421,10 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         txEntry.speed_hz = config.baud();
         txEntry.delay_usecs = writeDelayUsec;
         txEntry.cs_change = 0;
-        txEntry.len = writeNumberOfBytes;
+        txEntry.len = writeLength;
 
           // RX entry
-        spi_ioc_transfer rxEntry = transferArray[1];
+        spi_ioc_transfer rxEntry = transferArray[secondRecord];
         rxEntry.rx_buf = rxBuf.getPeer();
         rxEntry.tx_buf = 0;
         rxEntry.bits_per_word = BITS8;
@@ -410,11 +437,13 @@ public class LinuxFsSpi extends SpiBase implements Spi {
 
         logger.trace("[SPI::RegRead] <- Number bytes read {} ", ret);
         if (ret < 0) {
-            logger.error("Failed ioctl SPI message. ret {}, error: {}", ret, Native.getLastError());
+            String errorMessage = String.format("Failed ioctl SPI message. ret %d, error: %s", ret, String.valueOf(Native.getLastError()));
+            // logger.error("Failed ioctl SPI message. ret {}, error: {}", ret, Native.getLastError());
+            logger.error(errorMessage);
+            throw new IOException(errorMessage);
         }
         rxBuf.read(0, read, readOffset, readNumberOfBytes);
 
-        return readNumberOfBytes;
     }
 
     @Structure.FieldOrder({"tx_buf", "rx_buf",
