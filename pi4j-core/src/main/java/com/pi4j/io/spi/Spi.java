@@ -368,21 +368,19 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
     }
 
     // ------------------------------------------------------------------------------------
-    //  writeRead
+    //  writeThenRead
     // ------------------------------------------------------------------------------------
     /**
      * This function writes bytes to the SPI device and then reads bytes from the device
      * Write data is taken from the 'buffer' byte array, data
      * read back from the SPI device is then copied to the 'read' byte array
      *
-     * @param buffer the array of bytes to write to the SPI device
+     * @param write the array of bytes to write to the SPI device
 
      * @param read   Buffer to contain read data
-     * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
-     * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
      */
-    default int writeRead(byte[] buffer,  byte[] read) {
-        return writeRead(buffer, 0, buffer.length, (short) 0, read, 0, read.length, (short) 0);
+    default void  writeThenRead(byte[] write,  byte[] read) {
+         writeThenRead(write, 0, write.length, (short) 0, read, 0, read.length, (short) 0);
     }
 
     /**
@@ -390,16 +388,14 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * Write data is taken from the 'buffer' byte array, data
      * read back from the SPI device is then copied to the 'read' byte array
      *
-     * @param buffer the array of bytes to write to the SPI device
+     * @param write the array of bytes to write to the SPI device
      * @param writeLength
      *               Number bytes written from buffer to the SPI
      * @param read   Buffer to contain read data
      * @param readlength the number of bytes to read (read &amp; read))
-     * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
-     * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
      */
-    default int writeRead(byte[] buffer, int writeLength,  byte[] read,  int readlength) {
-        return writeRead(buffer, 0, writeLength, (short) 0, read, 0, readlength, (short) 0);
+    default void writeThenRead(byte[] write, int writeLength,  byte[] read,  int readlength) {
+        writeThenRead(write, 0, writeLength, (short) 0, read, 0, readlength, (short) 0);
     }
 
 
@@ -421,19 +417,17 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      *                           start writing to the SPI device from and the position
      *                           used as the starting offset position to place data bytes
      *                           read back from the SPI device.
-     * @param writeNumberOfBytes Number of bytes written from write buffer
+     * @param writeLength        Number of bytes written from write buffer
      * @param writeDelayUsecs    Delay after SPI write record processed by kernel before the
      *                           read SPI record is processed. Value in usecs.
      * @param read               Buffer to contain read data
      * @param readOffset         Offset within the read buffer to begin placing read data
-     * @param readNumberOfBytes  the number of bytes to transfer/exchange (read &amp; read))
-     * @param readDelayUsecs    Delay after SPI read record processed by kernel before the
+     * @param readLength         The number of bytes to transfer/exchange (read &amp; read))
+     * @param readDelayUsecs     Delay after SPI read record processed by kernel before the
      *                           read SPI record is processed. Value in usecs.
-     * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
-     * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
      */
-    default int writeRead(byte[] write, int writeOffset, int writeNumberOfBytes,  short writeDelayUsecs, byte[] read, int readOffset, int readNumberOfBytes,  short readDelayUsecs) {
-        throw new IllegalStateException("writeRead Not supported in this provider. \n See https://www.pi4j.com/documentation/providers/");
+    default void writeThenRead(byte[] write, int writeOffset, int writeLength,  short writeDelayUsecs, byte[] read, int readOffset, int readLength,  short readDelayUsecs) {
+        throw new IllegalStateException("writeThenRead Not supported in this provider. \n See https://www.pi4j.com/documentation/providers/");
     }
 
 
