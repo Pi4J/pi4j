@@ -13,6 +13,7 @@ import org.junit.jupiter.api.condition.EnabledOnOs;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.condition.OS.LINUX;
@@ -85,18 +86,18 @@ public class I2CFileTest {
         var writeBuffer = new byte[] {0x0A, 0x0B, 0x0C};
         var write = i2c.writeRegister(0xFF, writeBuffer);
         assertEquals(3, write);
-        var readBuffer = new byte[4];
+        var readBuffer = new byte[3];
         var read = i2c.readRegister(0xFF, readBuffer);
-        assertEquals(4, read);
-        assertArrayEquals(new byte[] {(byte) 0xFF, 0x0A, 0x0B, 0x0C}, readBuffer);
+        assertEquals(3, read);
+        assertArrayEquals(writeBuffer, readBuffer);
 
         var writeBuffer2 = new byte[] {0x0D, 0x0E, 0x0F};
         var write2 = i2c.writeRegister(0x1F, writeBuffer2);
         assertEquals(3, write2);
-        var readBuffer2 = new byte[4];
+        var readBuffer2 = new byte[3];
         var read2 = i2c.readRegister(0x1F, readBuffer2);
-        assertEquals(4, read2);
-        assertArrayEquals(new byte[] {0x1F, 0x0D, 0x0E, 0x0F}, readBuffer2);
+        assertEquals(3, read2);
+        assertArrayEquals(writeBuffer2, readBuffer2);
     }
 
     @Test
