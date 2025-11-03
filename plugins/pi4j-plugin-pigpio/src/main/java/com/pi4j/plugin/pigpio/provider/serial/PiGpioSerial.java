@@ -43,7 +43,6 @@ import com.pi4j.library.pigpio.PiGpioMode;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-@Deprecated(forRemoval = true)
 public class PiGpioSerial extends SerialBase implements Serial {
 
     protected final PiGpio piGpio;
