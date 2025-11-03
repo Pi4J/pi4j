@@ -91,6 +91,8 @@ public class DefaultDigitalInputConfig
     }
 
     /**
+     * @deprecated use {@link #bus()} instead.
+     * <p>
      * {@inheritDoc}
      */
     @Override

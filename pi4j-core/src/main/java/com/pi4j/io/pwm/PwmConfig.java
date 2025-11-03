@@ -40,6 +40,8 @@ import java.util.Collection;
 public interface PwmConfig extends BusConfig<PwmConfig>, ChannelConfig<PwmConfig>, IOConfig<PwmConfig> {
 
     /**
+     * @deprecated use {@link #bus()} instead.
+     * <p>
      * Constant <code>PWM_ADDRESS="address"</code>
      */
     @Deprecated(forRemoval = true)
@@ -77,6 +79,9 @@ public interface PwmConfig extends BusConfig<PwmConfig>, ChannelConfig<PwmConfig
      */
     String INITIAL_VALUE_KEY = "initial";
 
+    /**
+     * @deprecated use {@link #bus()} instead.
+     */
     @Deprecated(forRemoval = true)
     Integer address();
 

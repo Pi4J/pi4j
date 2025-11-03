@@ -70,6 +70,8 @@ public class DefaultDigitalInputConfigBuilder
     }
 
     /**
+     * @deprecated use {@link #bus(int)} instead.
+     * <p>
      * {@inheritDoc}
      */
     @Override

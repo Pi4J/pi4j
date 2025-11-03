@@ -143,6 +143,9 @@ public class DefaultPwmConfig
         this.description = StringUtil.setIfNullOrEmpty(this.description, "PWM-" + this.channel, true);
     }
 
+    /**
+     * @deprecated use {@link #bus()} instead.
+     */
     @Override
     @Deprecated(forRemoval = true)
     public Integer address() {

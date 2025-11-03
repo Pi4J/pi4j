@@ -58,6 +58,8 @@ public class DefaultAnalogInputConfigBuilder
     }
 
     /**
+     * @deprecated use {@link #bus(int)} instead.
+     * <p>
      * {@inheritDoc}
      */
     @Override

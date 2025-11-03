@@ -62,6 +62,8 @@ public class DefaultPwmConfigBuilder
     }
 
     /**
+     * @deprecated use {@link #bus(Integer)} instead.
+     * <p>
      * {@inheritDoc}
      */
     @Override

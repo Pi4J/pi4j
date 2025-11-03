@@ -35,6 +35,10 @@ package com.pi4j.config;
 public interface PinConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
     /**
      * Constant <code>ADDRESS_KEY="address"</code>
+     * <p>
+     *
+     * @deprecated use {@link PinConfig#PIN_KEY} instead.
+     * <p>
      * Since "address" has lead to many confusions while configuring IOs,
      * this value is deprecated and will be removed in a future release.
      * Use the correct config related to the IO type.
@@ -44,22 +48,26 @@ public interface PinConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYP
 
     /**
      * <p>address.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     * @deprecated use {@link #pin()} instead.
+     * <p>
      * Since "address" has lead to many confusions while configuring IOs,
      * this value is deprecated and will be removed in a future release.
      * Use the correct config related to the IO type.
-     *
-     * @return a {@link java.lang.Integer} object.
      */
     @Deprecated(forRemoval = true)
     Integer address();
 
     /**
      * <p>getAddress.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     * @deprecated use {@link #getPin()} instead.
+     * <p>
      * Since "address" has lead to many confusions while configuring IOs,
      * this value is deprecated and will be removed in a future release.
      * Use the correct config related to the IO type.
-     *
-     * @return a {@link java.lang.Integer} object.
      */
     @Deprecated(forRemoval = true)
     default Integer getAddress() {

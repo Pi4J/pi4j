@@ -110,12 +110,18 @@ public class DefaultAnalogOutputConfig
         return this.bus;
     }
 
+    /**
+     * @deprecated use {@link #pin()} instead.
+     */
     @Override
     @Deprecated(forRemoval = true)
     public Integer address() {
         return this.pin;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Integer pin() {
         return this.pin;

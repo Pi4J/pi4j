@@ -67,6 +67,9 @@ public class DefaultAnalogInputConfig
         }
     }
 
+    /**
+     * @deprecated use {@link #bus()} instead.
+     */
     @Override
     @Deprecated(forRemoval = true)
     public Integer address() {

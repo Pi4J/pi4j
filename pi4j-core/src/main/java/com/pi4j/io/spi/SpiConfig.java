@@ -37,6 +37,8 @@ import com.pi4j.io.IOConfig;
  */
 public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig> {
     /**
+     * @deprecated use {@link #BUS_KEY} instead.
+     * <p>
      * Constant <code>BAUD_KEY="baud"</code>
      */
     @Deprecated(forRemoval = true)

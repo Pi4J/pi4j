@@ -39,6 +39,8 @@ public interface PinConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuild
      *
      * @param address a {@link java.lang.Integer} object.
      * @return a BUILDER_TYPE object.
+     * @deprecated use {@link #pin(Integer)} instead.
+     * <p>
      */
     @Deprecated(forRemoval = true)
     BUILDER_TYPE address(Integer address);

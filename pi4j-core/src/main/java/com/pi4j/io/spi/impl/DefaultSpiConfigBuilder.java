@@ -27,7 +27,10 @@ package com.pi4j.io.spi.impl;
 
 import com.pi4j.context.Context;
 import com.pi4j.io.impl.IOPinConfigBuilderBase;
-import com.pi4j.io.spi.*;
+import com.pi4j.io.spi.SpiChipSelect;
+import com.pi4j.io.spi.SpiConfig;
+import com.pi4j.io.spi.SpiConfigBuilder;
+import com.pi4j.io.spi.SpiMode;
 
 /**
  * <p>DefaultSpiConfigBuilder class.</p>
@@ -78,21 +81,14 @@ public class DefaultSpiConfigBuilder
     }
 
     /**
+     * @deprecated use {@link #bus(Integer)} instead.
+     * <p>
      * {@inheritDoc}
      */
     @Override
     @Deprecated(forRemoval = true)
     public SpiConfigBuilder address(Integer address) {
         this.properties.put(SpiConfig.ADDRESS_KEY, address.toString());
-        return this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public SpiConfigBuilder bus(SpiBus bus) {
-        this.properties.put(SpiConfig.BUS_KEY, Integer.toString(bus.getBus()));
         return this;
     }
 
