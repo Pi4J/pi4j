@@ -131,7 +131,6 @@ public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig>
         return writeLsbFirst();
     }
 
-
     /**
      * <p>bus.</p>
      * <p>If the Bus value is configured, that SpiBus
