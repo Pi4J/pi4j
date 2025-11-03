@@ -27,7 +27,6 @@ import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.io.IOType;
 import com.pi4j.io.binding.AnalogOutputBinding;
-import com.pi4j.io.gpio.analog.AnalogValueChangeListener;
 import com.pi4j.test.provider.TestAnalogInputProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,12 +71,6 @@ public class Main {
             about.enumerateProviders(pi4j, ioType);
         }
 
-//        Serial serial = Serial.instance("/dev/ttyUSB1");
-//        serial.open();
-//        serial.send("TEST DATA");
-//        serial.close();
-
-
         var din1 = pi4j.dout().create(11);
         var ain1 = pi4j.ain().create(21, "test-analog-input-provider");
         var input = pi4j.ain().create(98);
@@ -87,68 +80,34 @@ public class Main {
         var output1 = pi4j.aout().create(99);
         var output2 = pi4j.aout().create(100);
 
-        input.addListener((AnalogValueChangeListener) event -> {
+        input.addListener(event -> {
             logger.info("ANALOG INPUT [");
-//            logger.info(String.valueOf(event.source().address()));
+            logger.info(String.valueOf(event.source().value()));
             logger.info("] VALUE CHANGE: ");
             logger.info(event.value().toString());
         });
 
-        output1.addListener((AnalogValueChangeListener) event -> {
+        output1.addListener(event -> {
             logger.info("ANALOG OUTPUT [");
-//            logger.info(String.valueOf(event.source().address()));
+            logger.info(String.valueOf(event.source().value()));
             logger.info("] VALUE CHANGE: ");
             logger.info(event.value().toString());
         });
-        output2.addListener((AnalogValueChangeListener) event -> {
+        output2.addListener(event -> {
             logger.info("ANALOG OUTPUT [");
-//            logger.info(String.valueOf(event.source().address()));
+            logger.info(String.valueOf(event.source().value()));
             logger.info("] VALUE CHANGE: ");
             logger.info(event.value().toString());
         });
 
         input.bind(AnalogOutputBinding.newInstance(output1, output2));
 
-        logger.info("Inpur: {}", input.name());
-        //((TestAnalogInput)input).test(21).test(22).test(23);
-
-        //output.value(12);
-        //output.setValue(78);
-        //output.value(0x01);
-
-
-        //AnalogOutput aout1 = AnalogOutput.in
-//        DigitalOutput dout1 = DigitalOutput;
-
-
-//        Descriptor descriptor = Descriptor.create("1");
-//        var des1 = descriptor.add("1.1");
-//        des1.add("1.1.1");
-//        des1.add("1.1.2");
-//        var des2 = descriptor.add("1.2");
-//        des2.add("1.2.1");
-//        des2.add("1.2.2");
-//        descriptor.add("1.2--1");
-//        descriptor.add("1.2--2");
-//        descriptor.add("1.2--3");
-//        var des3 = descriptor.add("1.3");
-//        var des4 = des3.add("1.3.1");
-//        des4.add("1.3.1.1");
-//        des4.add("1.3.1.2");
-//        des4.add("1.3.1.3");
-//        des4.add("1.3.1.4");
-//        var des5 = des3.add("1.3.2");
-//        des5.add("1.3.2.1");
-//        des5.add("1.3.2.2");
-//        des5.add("1.3.2.3");
-//        des5.add("1.3.2.4");
-//        descriptor.print(System.out);
+        logger.info("Input: {}", input.name());
 
         logger.info("\r\n\r\n-----------------------------------\r\n" + "Pi4J - Runtime Information\r\n" + "-----------------------------------");
         pi4j.describe().print(System.out);
 
         // shutdown Pi4J
         pi4j.shutdown();
-
     }
 }
