@@ -40,18 +40,20 @@ import java.util.Arrays;
 
 /**
  *
- * typedef struct
- * {
- * uint32_t cmd;
- * uint32_t p1;
- * uint32_t p2;
- * union
- * {
- * uint32_t p3;
- * uint32_t ext_len;
- * uint32_t res;
- * };
- * } cmdCmd_t;
+ * <pre>
+ *     typedef struct
+ *      {
+ *          uint32_t cmd;
+ *          uint32_t p1;
+ *          uint32_t p2;
+ *          union
+ *          {
+ *              uint32_t p3;
+ *              uint32_t ext_len;
+ *              uint32_t res;
+ *          };
+ *      } cmdCmd_t;
+ * </pre>
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
