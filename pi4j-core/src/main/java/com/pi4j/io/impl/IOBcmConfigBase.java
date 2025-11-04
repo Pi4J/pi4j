@@ -1,11 +1,11 @@
-package com.pi4j.config.impl;
+package com.pi4j.io.impl;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  AddressConfigBuilderBase.java
+ * FILENAME      :  IOAddressConfigBase.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -25,37 +25,66 @@ package com.pi4j.config.impl;
  * #L%
  */
 
+import com.pi4j.config.BcmConfig;
 import com.pi4j.config.Config;
-import com.pi4j.config.ConfigBuilder;
-import com.pi4j.config.PinConfig;
-import com.pi4j.config.PinConfigBuilder;
-import com.pi4j.context.Context;
+import com.pi4j.config.impl.BcmConfigBase;
+import com.pi4j.io.IOConfig;
+
+import java.util.Map;
 
 /**
- * <p>Abstract AddressConfigBuilderBase class.</p>
+ * <p>ConfigBase class.</p>
  *
- * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public abstract class PinConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
-    extends ConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
-    implements PinConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+public class IOBcmConfigBase<CONFIG_TYPE extends Config>
+    extends BcmConfigBase<CONFIG_TYPE>
+    implements IOConfig<CONFIG_TYPE>, BcmConfig<CONFIG_TYPE> {
+
+    // private configuration variables
+    protected String provider = null;
+    protected String platform = null;
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected PinConfigBuilderBase(Context context) {
-        super(context);
+    protected IOBcmConfigBase() {
+    }
+
+    /**
+     * PRIVATE CONSTRUCTOR
+     *
+     * @param properties a {@link Map} object.
+     */
+    protected IOBcmConfigBase(Map<String, String> properties) {
+        super(properties);
+
+        // load provider property
+        if (properties.containsKey(PROVIDER_KEY)) {
+            this.provider = properties.get(PROVIDER_KEY);
+        }
+
+        // load platform property
+        if (properties.containsKey(PLATFORM_KEY)) {
+            this.platform = properties.get(PLATFORM_KEY);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public BUILDER_TYPE pin(Integer pin) {
-        this.properties.put(PinConfig.PIN_KEY, pin.toString());
-        return (BUILDER_TYPE) this;
+    public String platform() {
+        return this.platform;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String provider() {
+        return this.provider;
     }
 }

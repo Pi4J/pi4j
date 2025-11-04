@@ -26,7 +26,7 @@ package com.pi4j.io.pwm.impl;
  */
 
 import com.pi4j.context.Context;
-import com.pi4j.io.impl.IOPinConfigBuilderBase;
+import com.pi4j.io.impl.IOBcmConfigBuilderBase;
 import com.pi4j.io.pwm.*;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ import java.util.List;
  * @version $Id: $Id
  */
 public class DefaultPwmConfigBuilder
-    extends IOPinConfigBuilderBase<PwmConfigBuilder, PwmConfig>
+    extends IOBcmConfigBuilderBase<PwmConfigBuilder, PwmConfig>
     implements PwmConfigBuilder {
 
     protected List<PwmPreset> presets = new ArrayList<>();

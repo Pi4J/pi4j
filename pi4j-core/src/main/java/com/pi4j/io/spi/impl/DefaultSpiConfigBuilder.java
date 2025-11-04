@@ -26,7 +26,7 @@ package com.pi4j.io.spi.impl;
  */
 
 import com.pi4j.context.Context;
-import com.pi4j.io.impl.IOPinConfigBuilderBase;
+import com.pi4j.io.impl.IOBcmConfigBuilderBase;
 import com.pi4j.io.spi.*;
 
 /**
@@ -36,7 +36,7 @@ import com.pi4j.io.spi.*;
  * @version $Id: $Id
  */
 public class DefaultSpiConfigBuilder
-    extends IOPinConfigBuilderBase<SpiConfigBuilder, SpiConfig>
+    extends IOBcmConfigBuilderBase<SpiConfigBuilder, SpiConfig>
     implements SpiConfigBuilder {
 
     /**

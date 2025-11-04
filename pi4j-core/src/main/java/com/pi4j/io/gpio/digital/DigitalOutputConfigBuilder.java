@@ -36,7 +36,7 @@ import com.pi4j.io.gpio.digital.impl.DefaultDigitalOutputConfigBuilder;
  */
 public interface DigitalOutputConfigBuilder extends DigitalConfigBuilder<DigitalOutputConfigBuilder, DigitalOutputConfig> {
 
-    DigitalOutputConfigBuilder pin(Integer pin);
+    DigitalOutputConfigBuilder bcm(Integer bcm);
 
     /**
      * <p>shutdown.</p>

@@ -32,12 +32,12 @@ package com.pi4j.config;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public interface PinConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
+public interface BcmConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
     /**
      * Constant <code>ADDRESS_KEY="address"</code>
      * <p>
      *
-     * @deprecated use {@link PinConfig#PIN_KEY} instead.
+     * @deprecated use {@link BcmConfig#BCM_KEY} instead.
      * <p>
      * Since "address" has lead to many confusions while configuring IOs,
      * this value is deprecated and will be removed in a future release.
@@ -50,7 +50,7 @@ public interface PinConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYP
      * <p>address.</p>
      *
      * @return a {@link java.lang.Integer} object.
-     * @deprecated use {@link #pin()} instead.
+     * @deprecated use {@link #bcm()} instead.
      * <p>
      * Since "address" has lead to many confusions while configuring IOs,
      * this value is deprecated and will be removed in a future release.
@@ -63,7 +63,7 @@ public interface PinConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYP
      * <p>getAddress.</p>
      *
      * @return a {@link java.lang.Integer} object.
-     * @deprecated use {@link #getPin()} instead.
+     * @deprecated use {@link #getBcm()} instead.
      * <p>
      * Since "address" has lead to many confusions while configuring IOs,
      * this value is deprecated and will be removed in a future release.
@@ -75,23 +75,23 @@ public interface PinConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYP
     }
 
     /**
-     * Constant <code>PIN_KEY="pin"</code>
+     * Constant <code>BCM_KEY="bcm"</code>
      */
-    String PIN_KEY = "pin";
+    String BCM_KEY = "bcm";
 
     /**
      * <p>pin.</p>
      *
-     * @return a {@link java.lang.Integer} object.
+     * @return a {@link Integer} object.
      */
-    Integer pin();
+    Integer bcm();
 
     /**
-     * <p>getPin.</p>
+     * <p>getBcm.</p>
      *
-     * @return a {@link java.lang.Integer} object.
+     * @return a {@link Integer} object.
      */
-    default Integer getPin() {
-        return this.pin();
+    default Integer getBcm() {
+        return this.bcm();
     }
 }

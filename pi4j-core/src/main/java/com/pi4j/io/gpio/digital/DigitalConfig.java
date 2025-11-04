@@ -47,7 +47,7 @@ public interface DigitalConfig<CONFIG_TYPE extends Config> extends GpioConfig<CO
      *
      * @return a {@link Integer} object.
      */
-    Integer pin();
+    Integer bcm();
 
     /**
      * <p>onState.</p>

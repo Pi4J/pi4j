@@ -100,8 +100,8 @@ public class DefaultDigitalOutputBuilder implements DigitalOutputBuilder {
      * {@inheritDoc}
      */
     @Override
-    public DigitalOutputBuilder address(Integer pin) {
-        this.builder.pin(pin);
+    public DigitalOutputBuilder address(Integer bcm) {
+        this.builder.bcm(bcm);
         return this;
     }
 

@@ -47,13 +47,13 @@ public interface DigitalOutputProvider extends DigitalProvider<DigitalOutputProv
     /**
      * <p>create.</p>
      *
-     * @param pin a {@link java.lang.Integer} object.
+     * @param bcm a {@link java.lang.Integer} object.
      * @param <T> a T object.
      * @return a T object.
      */
-    default <T extends DigitalOutput> T create(Integer pin) {
+    default <T extends DigitalOutput> T create(Integer bcm) {
         var config = DigitalOutput.newConfigBuilder(context())
-            .pin(pin)
+            .bcm(bcm)
             .build();
         return (T) create(config);
     }
@@ -61,15 +61,15 @@ public interface DigitalOutputProvider extends DigitalProvider<DigitalOutputProv
     /**
      * <p>create.</p>
      *
-     * @param pin a {@link java.lang.Integer} object.
+     * @param bcm a {@link java.lang.Integer} object.
      * @param id  a {@link java.lang.String} object.
      * @param <T> a T object.
      * @return a T object.
      */
-    default <T extends DigitalOutput> T create(Integer pin, String id) {
+    default <T extends DigitalOutput> T create(Integer bcm, String id) {
         var config = DigitalOutput.newConfigBuilder(context())
             .id(id)
-            .pin(pin)
+            .bcm(bcm)
             .build();
         return (T) create(config);
     }
@@ -77,15 +77,15 @@ public interface DigitalOutputProvider extends DigitalProvider<DigitalOutputProv
     /**
      * <p>create.</p>
      *
-     * @param pin  a {@link java.lang.Integer} object.
+     * @param bcm  a {@link java.lang.Integer} object.
      * @param id   a {@link java.lang.String} object.
      * @param name a {@link java.lang.String} object.
      * @param <T>  a T object.
      * @return a T object.
      */
-    default <T extends DigitalOutput> T create(Integer pin, String id, String name) {
+    default <T extends DigitalOutput> T create(Integer bcm, String id, String name) {
         var config = DigitalOutput.newConfigBuilder(context())
-            .pin(pin)
+            .bcm(bcm)
             .id(id)
             .name(name)
             .build();
@@ -95,16 +95,16 @@ public interface DigitalOutputProvider extends DigitalProvider<DigitalOutputProv
     /**
      * <p>create.</p>
      *
-     * @param pin         a {@link java.lang.Integer} object.
+     * @param bcm         a {@link java.lang.Integer} object.
      * @param id          a {@link java.lang.String} object.
      * @param name        a {@link java.lang.String} object.
      * @param description a {@link java.lang.String} object.
      * @param <T>         a T object.
      * @return a T object.
      */
-    default <T extends DigitalOutput> T create(Integer pin, String id, String name, String description) {
+    default <T extends DigitalOutput> T create(Integer bcm, String id, String name, String description) {
         var config = DigitalOutput.newConfigBuilder(context())
-            .pin(pin)
+            .bcm(bcm)
             .id(id)
             .name(name)
             .description(description)

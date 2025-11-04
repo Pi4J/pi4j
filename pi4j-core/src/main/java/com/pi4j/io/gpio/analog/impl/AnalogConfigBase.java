@@ -27,7 +27,7 @@ package com.pi4j.io.gpio.analog.impl;
 
 import com.pi4j.io.gpio.analog.AnalogConfig;
 import com.pi4j.io.gpio.analog.AnalogRange;
-import com.pi4j.io.impl.IOPinConfigBase;
+import com.pi4j.io.impl.IOBcmConfigBase;
 
 import java.util.Map;
 
@@ -39,7 +39,7 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public abstract class AnalogConfigBase<CONFIG_TYPE extends AnalogConfig>
-    extends IOPinConfigBase<CONFIG_TYPE>
+    extends IOBcmConfigBase<CONFIG_TYPE>
     implements AnalogConfig<CONFIG_TYPE> {
 
     // private configuration properties

@@ -52,8 +52,8 @@ public abstract class AnalogOutputBase extends AnalogBase<AnalogOutput, AnalogOu
      */
     public AnalogOutputBase(AnalogOutputProvider provider, AnalogOutputConfig config) {
         super(provider, config);
-        if (this.id == null) this.id = "AOUT-" + config.pin();
-        if (this.name == null) this.name = "AOUT-" + config.pin();
+        if (this.id == null) this.id = "AOUT-" + config.bcm();
+        if (this.name == null) this.name = "AOUT-" + config.bcm();
 
         // update the analog value to the initial value if an initial value was configured
         if (config().initialValue() != null) {
@@ -146,7 +146,7 @@ public abstract class AnalogOutputBase extends AnalogBase<AnalogOutput, AnalogOu
      * {@inheritDoc}
      */
     @Override
-    public AnalogOutput shutdownInternal(Context context){
+    public AnalogOutput shutdownInternal(Context context) {
         // update the analog value to the shutdown value if a shutdown value is configured
         if (config().shutdownValue() != null) {
             try {

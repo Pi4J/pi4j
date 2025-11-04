@@ -68,7 +68,7 @@ public class DigitalOutputOnTest {
         var config = DigitalOutput.newConfigBuilder(pi4j)
             .id("test-output")
             .name("Test Digital Output")
-            .pin(1)
+            .bcm(1)
             .build();
 
         // create GPIO digital output instance
@@ -92,7 +92,7 @@ public class DigitalOutputOnTest {
         var config = DigitalOutput.newConfigBuilder(pi4j)
             .id("test-output")
             .name("Test Digital Output")
-            .pin(1)
+            .bcm(1)
             .onState(DigitalState.HIGH)
             .build();
 
@@ -118,7 +118,7 @@ public class DigitalOutputOnTest {
             .id("test-output")
             .name("Test Digital Output")
             .onState(DigitalState.LOW)
-            .pin(1)
+            .bcm(1)
             .build();
 
         // create GPIO digital output instance
@@ -142,7 +142,7 @@ public class DigitalOutputOnTest {
         var config = DigitalOutput.newConfigBuilder(pi4j)
             .id("test-output")
             .name("Test Digital Output")
-            .pin(1)
+            .bcm(1)
             .build();
 
         // create GPIO digital output instance
@@ -166,7 +166,7 @@ public class DigitalOutputOnTest {
         var config = DigitalOutput.newConfigBuilder(pi4j)
             .id("test-output")
             .name("Test Digital Output")
-            .pin(1)
+            .bcm(1)
             .onState(DigitalState.HIGH)
             .build();
 
@@ -191,7 +191,7 @@ public class DigitalOutputOnTest {
         var config = DigitalOutput.newConfigBuilder(pi4j)
             .id("test-output")
             .name("Test Digital Output")
-            .pin(1)
+            .bcm(1)
             .onState(DigitalState.LOW)
             .build();
 

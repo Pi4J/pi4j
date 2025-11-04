@@ -59,7 +59,7 @@ public class GpioDDigitalOutputProviderImpl extends DigitalOutputProviderBase im
     @Override
     public DigitalOutput create(DigitalOutputConfig config) {
         // create new I/O instance based on I/O config
-        GpioLine line = GpioDContext.getInstance().getOrOpenLine(config.pin());
+        GpioLine line = GpioDContext.getInstance().getOrOpenLine(config.bcm());
         GpioDDigitalOutput digitalOutput = new GpioDDigitalOutput(line, this, config);
         this.context.registry().add(digitalOutput);
         return digitalOutput;

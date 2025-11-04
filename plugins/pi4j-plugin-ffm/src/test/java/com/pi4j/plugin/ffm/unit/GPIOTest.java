@@ -78,7 +78,7 @@ public class GPIOTest {
              var _ = IoctlNativeMock.echo(lineInfoNonExistent)) {
 
             var builder = DigitalInputConfigBuilder.newInstance(pi4j1).bus(-1)
-                .pin(99).build();
+                .bcm(99).build();
             assertThrows(IllegalStateException.class, () -> pi4j1.digitalInput().create(builder));
         }
     }
@@ -92,7 +92,7 @@ public class GPIOTest {
              var _ = IoctlNativeMock.echo(lineInfoNonExistent)) {
 
             var builder = DigitalInputConfigBuilder.newInstance(pi4jNonExistent).bus(-1)
-                .pin(0).build();
+                .bcm(0).build();
             assertThrows(IllegalStateException.class, () -> pi4jNonExistent.digitalInput().create(builder));
         }
     }
@@ -110,9 +110,9 @@ public class GPIOTest {
              var _ = IoctlNativeMock.echo(lineInfoTestData)) {
 
             var builder = DigitalInputConfigBuilder.newInstance(pi4j0).bus(-1)
-                .pin(0).build();
+                .bcm(0).build();
             var pin = pi4j0.digitalInput().create(builder);
-            assertEquals(0, pin.pin());
+            assertEquals(0, pin.bcm());
         }
     }
 
@@ -129,7 +129,7 @@ public class GPIOTest {
              var _ = IoctlNativeMock.echo(lineInfoTestData)) {
 
             var builder = DigitalInputConfigBuilder.newInstance(pi4j0).bus(-1)
-                .pin(1).build();
+                .bcm(1).build();
             var pin = pi4j0.digitalInput().create(builder);
             assertEquals(DigitalState.LOW, pin.state());
         }
@@ -171,7 +171,7 @@ public class GPIOTest {
              var _ = PollNativeMock.echo(pollingCallback)) {
 
             var builder = DigitalInputConfigBuilder.newInstance(pi4j0).bus(-1)
-                .pin(7).build();
+                .bcm(7).build();
             var pin = pi4j0.digitalInput().create(builder);
             assertEquals(DigitalState.LOW, pin.state());
             var passed = new AtomicBoolean(false);
@@ -198,7 +198,7 @@ public class GPIOTest {
              var _ = IoctlNativeMock.echo(lineInfoOccupied)) {
 
             var builder = DigitalInputConfigBuilder.newInstance(pi4j0).bus(-1)
-                .pin(2).build();
+                .bcm(2).build();
             assertThrows(IllegalStateException.class, () -> pi4j0.digitalInput().create(builder));
         }
     }
@@ -217,13 +217,13 @@ public class GPIOTest {
 
             var config = DigitalInputConfigBuilder.newInstance(pi4j0)
                 .bus(-1)
-                .pin(3)
+                .bcm(3)
                 .debounce(99L, TimeUnit.MICROSECONDS)
                 .pull(PullResistance.PULL_DOWN)
                 .build();
             var pin = pi4j0.digitalInput().create(config);
             assertEquals(99, pin.config().debounce());
-            assertEquals(3, pin.pin());
+            assertEquals(3, pin.bcm());
             assertEquals(PullResistance.PULL_DOWN, pin.pull());
         }
     }
@@ -240,10 +240,12 @@ public class GPIOTest {
         try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE);
              var _ = IoctlNativeMock.echo(lineInfoTestData)) {
 
-            var builder = DigitalOutputConfigBuilder.newInstance(pi4j0).bus(-1)
-                .pin(4).build();
+            var builder = DigitalOutputConfigBuilder.newInstance(pi4j0)
+                .bus(-1)
+                .bcm(4)
+                .build();
             var pin = pi4j0.digitalOutput().create(builder);
-            assertEquals(4, pin.pin());
+            assertEquals(4, pin.bcm());
         }
     }
 
@@ -259,8 +261,10 @@ public class GPIOTest {
         try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE);
              var _ = IoctlNativeMock.echo(lineInfoTestData)) {
 
-            var builder = DigitalOutputConfigBuilder.newInstance(pi4j0).bus(-1)
-                .pin(5).build();
+            var builder = DigitalOutputConfigBuilder.newInstance(pi4j0)
+                .bus(-1)
+                .bcm(5)
+                .build();
             var pin = pi4j0.digitalOutput().create(builder);
             pin.state(DigitalState.HIGH);
             assertEquals(DigitalState.HIGH, pin.state());
@@ -285,8 +289,7 @@ public class GPIOTest {
             BoardInfoHelper.reinitialize();
             var mockingBoard = Pi4JApi.board(RaspberryPi.Model4B.class);
             var pin = mockingBoard.input(5);
-            assertEquals(5, pin.pin());
+            assertEquals(5, pin.bcm());
         }
     }
-
 }

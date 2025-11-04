@@ -78,7 +78,7 @@ public class RegistryTest {
 
     @Test
     public void testShutdownAndRecreate() throws Pi4JException {
-        var inputConfig = DigitalInput.newConfigBuilder(pi4j).id("DIN-3").name("DIN-3").pin(3);
+        var inputConfig = DigitalInput.newConfigBuilder(pi4j).id("DIN-3").name("DIN-3").bcm(3);
 
         // create a new input, then shutdown
         var input = pi4j.create(inputConfig);
@@ -94,8 +94,8 @@ public class RegistryTest {
 
     @Test
     public void testCreateMultipleSameAddress() throws Pi4JException {
-        var inputConfig = DigitalInput.newConfigBuilder(pi4j).id("DIN-3").name("DIN-3").pin(3);
-        var outputConfig = DigitalOutput.newConfigBuilder(pi4j).id("DOUT-3").name("DOUT-3").pin(3);
+        var inputConfig = DigitalInput.newConfigBuilder(pi4j).id("DIN-3").name("DIN-3").bcm(3);
+        var outputConfig = DigitalOutput.newConfigBuilder(pi4j).id("DOUT-3").name("DOUT-3").bcm(3);
         var pwmConfig = Pwm.newConfigBuilder(pi4j).id("PWM-3").name("PWM-3").channel(3);
 
         // create I/O instances
@@ -107,8 +107,8 @@ public class RegistryTest {
         assertAll(
             // Test that we can find them by address
             () -> assertTrue(registry.exists(IOType.PWM, pwm.getChannel()), "Should exist: PWM by address"),
-            () -> assertTrue(registry.exists(IOType.DIGITAL_INPUT, input.pin()), "Should exist: Digital Input by pin"),
-            () -> assertTrue(registry.exists(IOType.DIGITAL_OUTPUT, output.pin()), "Should exist: Digital Output by pin"),
+            () -> assertTrue(registry.exists(IOType.DIGITAL_INPUT, input.bcm()), "Should exist: Digital Input by pin"),
+            () -> assertTrue(registry.exists(IOType.DIGITAL_OUTPUT, output.bcm()), "Should exist: Digital Output by pin"),
 
             // and also by ID
             () -> assertTrue(registry.exists(pwm.id()), "Should exist: PWM by ID"),

@@ -25,7 +25,7 @@ package com.pi4j.io.gpio;
  * #L%
  */
 
-import com.pi4j.io.IOPinConfigBuilder;
+import com.pi4j.io.IOBcmConfigBuilder;
 
 /**
  * <p>GpioConfigBuilder interface.</p>
@@ -36,7 +36,7 @@ import com.pi4j.io.IOPinConfigBuilder;
  * @version $Id: $Id
  */
 public interface GpioConfigBuilder<BUILDER_TYPE extends GpioConfigBuilder, CONFIG_TYPE extends GpioConfig>
-    extends IOPinConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+    extends IOBcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
     // MARKER INTERFACE
 
     GpioConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> bus(int bus);

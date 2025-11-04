@@ -27,7 +27,7 @@ package com.pi4j.io.gpio.digital.impl;
 
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.gpio.digital.DigitalState;
-import com.pi4j.io.impl.IOPinConfigBase;
+import com.pi4j.io.impl.IOBcmConfigBase;
 import com.pi4j.util.StringUtil;
 
 import java.util.Map;
@@ -39,7 +39,7 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public class DefaultDigitalOutputConfig
-    extends IOPinConfigBase<DigitalOutputConfig>
+    extends IOBcmConfigBase<DigitalOutputConfig>
     implements DigitalOutputConfig {
 
     // private configuration properties
@@ -64,9 +64,9 @@ public class DefaultDigitalOutputConfig
         super(properties);
 
         // define default property values if any are missing (based on the required address value)
-        this.id = StringUtil.setIfNullOrEmpty(this.id, "DOUT-" + this.pin, true);
-        this.name = StringUtil.setIfNullOrEmpty(this.name, "DOUT-" + this.pin, true);
-        this.description = StringUtil.setIfNullOrEmpty(this.description, "DOUT-" + this.pin, true);
+        this.id = StringUtil.setIfNullOrEmpty(this.id, "DOUT-" + this.bcm, true);
+        this.name = StringUtil.setIfNullOrEmpty(this.name, "DOUT-" + this.bcm, true);
+        this.description = StringUtil.setIfNullOrEmpty(this.description, "DOUT-" + this.bcm, true);
 
         if (properties.containsKey(BUS_KEY)) {
             this.bus = Integer.parseInt(properties.get(BUS_KEY));
@@ -99,7 +99,7 @@ public class DefaultDigitalOutputConfig
     @Override
     @Deprecated(forRemoval = true)
     public Integer address() {
-        return this.pin;
+        return this.bcm;
     }
 
     /**
@@ -114,8 +114,8 @@ public class DefaultDigitalOutputConfig
      * {@inheritDoc}
      */
     @Override
-    public Integer pin() {
-        return this.pin;
+    public Integer bcm() {
+        return this.bcm;
     }
 
     /**

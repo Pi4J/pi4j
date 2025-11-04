@@ -60,7 +60,7 @@ public class PiGpioDigitalOutput extends DigitalOutputBase implements DigitalOut
     public PiGpioDigitalOutput(PiGpio piGpio, DigitalOutputProvider provider, DigitalOutputConfig config) {
         super(provider, config);
         this.piGpio = piGpio;
-        this.pin = config.pin().intValue();
+        this.pin = config.bcm().intValue();
     }
 
     /**

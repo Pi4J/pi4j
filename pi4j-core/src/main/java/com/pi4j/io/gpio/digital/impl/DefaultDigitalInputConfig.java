@@ -29,7 +29,7 @@ import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.digital.PullResistance;
-import com.pi4j.io.impl.IOPinConfigBase;
+import com.pi4j.io.impl.IOBcmConfigBase;
 import com.pi4j.util.StringUtil;
 
 import java.util.Map;
@@ -41,7 +41,7 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public class DefaultDigitalInputConfig
-    extends IOPinConfigBase<DigitalInputConfig>
+    extends IOBcmConfigBase<DigitalInputConfig>
     implements DigitalInputConfig {
 
     /**
@@ -66,9 +66,9 @@ public class DefaultDigitalInputConfig
         super(properties);
 
         // define default property values if any are missing (based on the required address value)
-        this.id = StringUtil.setIfNullOrEmpty(this.id, "DIN-" + this.pin, true);
-        this.name = StringUtil.setIfNullOrEmpty(this.name, "DIN-" + this.pin, true);
-        this.description = StringUtil.setIfNullOrEmpty(this.description, "DIN-" + this.pin, true);
+        this.id = StringUtil.setIfNullOrEmpty(this.id, "DIN-" + this.bcm, true);
+        this.name = StringUtil.setIfNullOrEmpty(this.name, "DIN-" + this.bcm, true);
+        this.description = StringUtil.setIfNullOrEmpty(this.description, "DIN-" + this.bcm, true);
 
         if (properties.containsKey(BUS_KEY)) {
             this.bus = Integer.parseInt(properties.get(BUS_KEY));
@@ -98,7 +98,7 @@ public class DefaultDigitalInputConfig
     @Override
     @Deprecated(forRemoval = true)
     public Integer address() {
-        return this.pin;
+        return this.bcm;
     }
 
     /**
@@ -113,8 +113,8 @@ public class DefaultDigitalInputConfig
      * {@inheritDoc}
      */
     @Override
-    public Integer pin() {
-        return this.pin;
+    public Integer bcm() {
+        return this.bcm;
     }
 
     /**

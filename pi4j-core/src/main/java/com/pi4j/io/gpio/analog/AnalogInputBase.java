@@ -40,8 +40,8 @@ public abstract class AnalogInputBase extends AnalogBase<AnalogInput, AnalogInpu
      */
     public AnalogInputBase(AnalogInputProvider provider, AnalogInputConfig config) {
         super(provider, config);
-        if (this.id == null) this.id = "AIN-" + config.pin();
-        if (this.name == null) this.name = "AIN-" + config.pin();
+        if (this.id == null) this.id = "AIN-" + config.bcm();
+        if (this.name == null) this.name = "AIN-" + config.bcm();
     }
 }
 

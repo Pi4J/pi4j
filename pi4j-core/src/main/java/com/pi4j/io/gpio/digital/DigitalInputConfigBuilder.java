@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
  */
 public interface DigitalInputConfigBuilder extends DigitalConfigBuilder<DigitalInputConfigBuilder, DigitalInputConfig> {
 
-    DigitalInputConfigBuilder pin(Integer pin);
+    DigitalInputConfigBuilder bcm(Integer bcm);
 
     /**
      * <p>pull.</p>

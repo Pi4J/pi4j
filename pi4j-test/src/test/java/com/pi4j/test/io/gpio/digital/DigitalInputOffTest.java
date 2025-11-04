@@ -70,7 +70,7 @@ public class DigitalInputOffTest {
         var config = DigitalInput.newConfigBuilder(pi4j)
             .id("test-input")
             .name("Test Digital Input")
-            .pin(1)
+            .bcm(1)
             .build();
 
         // create GPIO digital input instance
@@ -93,7 +93,7 @@ public class DigitalInputOffTest {
             .id("test-input")
             .name("Test Digital Input")
             .onState(DigitalState.HIGH)
-            .pin(1)
+            .bcm(1)
             .build();
 
         // create GPIO digital input instance
@@ -116,7 +116,7 @@ public class DigitalInputOffTest {
             .id("test-input")
             .name("Test Digital Input")
             .onState(DigitalState.LOW)
-            .pin(1)
+            .bcm(1)
             .build();
 
         // create GPIO digital input instance
@@ -130,5 +130,4 @@ public class DigitalInputOffTest {
         assertTrue(input.isOff());
         assertFalse(input.isOn());
     }
-
 }

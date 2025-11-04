@@ -66,19 +66,19 @@ public class LinuxFsDigitalInput extends DigitalInputBase implements DigitalInpu
 
     @Override
     public DigitalInput initialize(Context context) throws InitializeException {
-        logger.trace("initializing GPIO [{}]; {}", this.config.pin(), gpio.getPinPath());
+        logger.trace("initializing GPIO [{}]; {}", this.config.bcm(), gpio.getPinPath());
 
         // [EXPORT] requested GPIO pin if its not already exported
         try {
             if (!gpio.isExported()) {
-                logger.trace("exporting GPIO [{}]; {}", this.config.pin(), gpio.getPinPath());
+                logger.trace("exporting GPIO [{}]; {}", this.config.bcm(), gpio.getPinPath());
                 gpio.export();
             } else {
-                logger.trace("GPIO [{}] is already exported; {}", this.config.pin(), gpio.getPinPath());
+                logger.trace("GPIO [{}] is already exported; {}", this.config.bcm(), gpio.getPinPath());
             }
         } catch (java.io.IOException e) {
             logger.error(e.getMessage(), e);
-            throw new InitializeException("Unable to export GPIO [" + config.pin() + "] @ <" + gpio.systemPath() + ">; " + e.getMessage(), e);
+            throw new InitializeException("Unable to export GPIO [" + config.bcm() + "] @ <" + gpio.systemPath() + ">; " + e.getMessage(), e);
         }
 
         // [INPUT] configure GPIO pin direction as digital input
@@ -87,7 +87,7 @@ public class LinuxFsDigitalInput extends DigitalInputBase implements DigitalInpu
             gpio.direction(LinuxGpio.Direction.IN);
         } catch (java.io.IOException e) {
             logger.error(e.getMessage(), e);
-            throw new InitializeException("Unable to set GPIO [" + config.pin() + "] DIRECTION=[IN] @ <" + gpio.pinPath() + ">; " + e.getMessage(), e);
+            throw new InitializeException("Unable to set GPIO [" + config.bcm() + "] DIRECTION=[IN] @ <" + gpio.pinPath() + ">; " + e.getMessage(), e);
         }
 
         // GPIO PIN PULL UP/DOWN
@@ -104,7 +104,7 @@ public class LinuxFsDigitalInput extends DigitalInputBase implements DigitalInpu
             this.state = gpio.state();
         } catch (java.io.IOException e) {
             logger.error(e.getMessage(), e);
-            throw new InitializeException("Unable to get GPIO [" + config.pin() + "] state @ <" + gpio.pinPath() + ">; " + e.getMessage(), e);
+            throw new InitializeException("Unable to get GPIO [" + config.bcm() + "] state @ <" + gpio.pinPath() + ">; " + e.getMessage(), e);
         }
 
         // [INTERRUPT] enable GPIO interrupt via Linux File System (if supported)
@@ -112,19 +112,19 @@ public class LinuxFsDigitalInput extends DigitalInputBase implements DigitalInpu
             if (gpio.isInterruptSupported()) gpio.interruptEdge(LinuxGpio.Edge.BOTH);
         } catch (java.io.IOException e) {
             logger.error(e.getMessage(), e);
-            throw new InitializeException("Unable to set GPIO [" + config.pin() + "] INTERRUPT EDGE=[BOTH] @ <" + gpio.pinPath() + ">; " + e.getMessage(), e);
+            throw new InitializeException("Unable to set GPIO [" + config.bcm() + "] INTERRUPT EDGE=[BOTH] @ <" + gpio.pinPath() + ">; " + e.getMessage(), e);
         }
 
         // [INITIALIZE] perform any further initialization on GPIO  via superclass impl
         super.initialize(context);
 
         // [MONITOR] start background monitoring thread for GPIO state changes
-        logger.trace("start monitoring thread for GPIO [{}]; {}", this.config.pin(), gpio.getPinPath());
+        logger.trace("start monitoring thread for GPIO [{}]; {}", this.config.bcm(), gpio.getPinPath());
         Runnable monitorTask = () -> {
             try {
                 // create file system watcher
                 logger.trace("monitoring thread watching GPIO [{}]; {}",
-                    LinuxFsDigitalInput.this.config.pin(),
+                    LinuxFsDigitalInput.this.config.bcm(),
                     gpio.getPinPath());
                 WatchService watchService = FileSystems.getDefault().newWatchService();
                 WatchKey key;
@@ -169,10 +169,10 @@ public class LinuxFsDigitalInput extends DigitalInputBase implements DigitalInpu
      */
     @Override
     public DigitalInput shutdownInternal(Context context) throws ShutdownException {
-        logger.trace("shutdown GPIO [{}]; {}", this.config.pin(), gpio.getPinPath());
+        logger.trace("shutdown GPIO [{}]; {}", this.config.bcm(), gpio.getPinPath());
 
         // this line will execute immediately, not waiting for your task to complete
-        logger.trace("shutdown monitoring thread for GPIO [{}]; {}", this.config.pin(), gpio.getPinPath());
+        logger.trace("shutdown monitoring thread for GPIO [{}]; {}", this.config.bcm(), gpio.getPinPath());
         if (this.inputListener != null) {
             if (!this.inputListener.cancel(true))
                 logger.error("Failed to cancel input listener!");
@@ -183,11 +183,11 @@ public class LinuxFsDigitalInput extends DigitalInputBase implements DigitalInpu
 
         // un-export the GPIO pin from the Linux file system impl
         try {
-            logger.trace("un-exporting GPIO [{}]; {}", this.config.pin(), gpio.getPinPath());
+            logger.trace("un-exporting GPIO [{}]; {}", this.config.bcm(), gpio.getPinPath());
             gpio.unexport();
         } catch (java.io.IOException e) {
             logger.error(e.getMessage(), e);
-            throw new ShutdownException("Failed to UN-EXPORT GPIO [" + config().pin() + "] @ <" + gpio.systemPath() + ">; " + e.getMessage(), e);
+            throw new ShutdownException("Failed to UN-EXPORT GPIO [" + config().bcm() + "] @ <" + gpio.systemPath() + ">; " + e.getMessage(), e);
         }
 
         // return this digital input instance
@@ -196,7 +196,7 @@ public class LinuxFsDigitalInput extends DigitalInputBase implements DigitalInpu
 
     @Override
     public DigitalState state() {
-        logger.trace("get state on GPIO [{}]; {}", this.config.pin(), gpio.getPinPath());
+        logger.trace("get state on GPIO [{}]; {}", this.config.bcm(), gpio.getPinPath());
         try {
             // acquire actual GPIO state directly from Linux file system impl
             this.state = gpio.state();

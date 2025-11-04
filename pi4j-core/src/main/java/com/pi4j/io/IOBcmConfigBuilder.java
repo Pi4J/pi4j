@@ -1,11 +1,11 @@
-package com.pi4j.config;
+package com.pi4j.io;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  AddressConfigBuilder.java
+ * FILENAME      :  IOAddressConfigBuilder.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -25,31 +25,26 @@ package com.pi4j.config;
  * #L%
  */
 
+import com.pi4j.config.BcmConfigBuilder;
+import com.pi4j.platform.Platform;
+import com.pi4j.provider.Provider;
+
 /**
- * <p>AddressConfigBuilder interface.</p>
+ * <p>IOConfigBuilder interface.</p>
  *
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public interface PinConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
-    /**
-     * <p>address.</p>
-     *
-     * @param address a {@link java.lang.Integer} object.
-     * @return a BUILDER_TYPE object.
-     * @deprecated use {@link #pin(Integer)} instead.
-     * <p>
-     */
-    @Deprecated(forRemoval = true)
-    BUILDER_TYPE address(Integer address);
+public interface IOBcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>
+    extends IOConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,
+    BcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+    BUILDER_TYPE provider(String provider);
 
-    /**
-     * <p>pin.</p>
-     *
-     * @param pin a {@link java.lang.Integer} object.
-     * @return a BUILDER_TYPE object.
-     */
-    BUILDER_TYPE pin(Integer pin);
+    BUILDER_TYPE provider(Class<? extends Provider> providerClass);
+
+    BUILDER_TYPE platform(String platform);
+
+    BUILDER_TYPE platform(Class<? extends Platform> platformClass);
 }

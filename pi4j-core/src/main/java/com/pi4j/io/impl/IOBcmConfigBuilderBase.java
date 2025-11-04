@@ -25,10 +25,10 @@ package com.pi4j.io.impl;
  * #L%
  */
 
+import com.pi4j.config.BcmConfigBuilder;
 import com.pi4j.config.Config;
 import com.pi4j.config.ConfigBuilder;
-import com.pi4j.config.PinConfigBuilder;
-import com.pi4j.config.impl.PinConfigBuilderBase;
+import com.pi4j.config.impl.BcmConfigBuilderBase;
 import com.pi4j.context.Context;
 import com.pi4j.io.IOConfig;
 import com.pi4j.io.IOConfigBuilder;
@@ -43,15 +43,15 @@ import com.pi4j.provider.Provider;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public abstract class IOPinConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
-    extends PinConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
+public abstract class IOBcmConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
+    extends BcmConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
     implements IOConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,
-    PinConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+    BcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected IOPinConfigBuilderBase(Context context) {
+    protected IOBcmConfigBuilderBase(Context context) {
         super(context);
     }
 

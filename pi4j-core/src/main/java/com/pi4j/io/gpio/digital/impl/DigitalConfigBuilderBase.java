@@ -29,7 +29,7 @@ import com.pi4j.context.Context;
 import com.pi4j.io.gpio.digital.DigitalConfig;
 import com.pi4j.io.gpio.digital.DigitalConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
-import com.pi4j.io.impl.IOPinConfigBuilderBase;
+import com.pi4j.io.impl.IOBcmConfigBuilderBase;
 
 /**
  * <p>Abstract AnalogConfigBuilderBase class.</p>
@@ -40,7 +40,7 @@ import com.pi4j.io.impl.IOPinConfigBuilderBase;
  * @version $Id: $Id
  */
 public abstract class DigitalConfigBuilderBase<BUILDER_TYPE extends DigitalConfigBuilder, CONFIG_TYPE extends DigitalConfig>
-    extends IOPinConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
+    extends IOBcmConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
     implements DigitalConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
     /**

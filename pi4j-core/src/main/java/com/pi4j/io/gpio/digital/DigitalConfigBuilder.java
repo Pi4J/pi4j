@@ -41,10 +41,10 @@ public interface DigitalConfigBuilder<BUILDER_TYPE extends DigitalConfigBuilder,
     /**
      * <p>pin.</p>
      *
-     * @param pin a {@link java.lang.Integer} object.
+     * @param bcm a {@link java.lang.Integer} object.
      * @return a BUILDER_TYPE object.
      */
-    BUILDER_TYPE pin(Integer pin);
+    BUILDER_TYPE bcm(Integer bcm);
 
     /**
      * <p>pull.</p>

@@ -25,7 +25,7 @@ package com.pi4j.registry.impl;
  * #L%
  */
 
-import com.pi4j.config.PinConfig;
+import com.pi4j.config.BcmConfig;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.LifecycleException;
 import com.pi4j.io.IO;
@@ -88,13 +88,13 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
         }
 
         switch (instance.config()) {
-            case PinConfig<?> addressConfig: {
-                if (exists(instance.type(), addressConfig.pin())) {
-                    throw new IOAlreadyExistsException(addressConfig.pin());
+            case BcmConfig<?> addressConfig: {
+                if (exists(instance.type(), addressConfig.bcm())) {
+                    throw new IOAlreadyExistsException(addressConfig.bcm());
                 }
                 Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
                     k -> new HashSet<>());
-                usedAddresses.add(addressConfig.pin());
+                usedAddresses.add(addressConfig.bcm());
                 break;
             }
             case PwmConfig pwmConfig: {
@@ -213,12 +213,12 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
     }
 
     private <T extends IO> void removeFromMap(T instance) {
-        if (!(instance.config() instanceof PinConfig<?> addressConfig))
+        if (!(instance.config() instanceof BcmConfig<?> addressConfig))
             return;
         Set<Integer> usedAddresses = this.usedAddressesByIoType.get(instance.type());
         if (usedAddresses == null)
             return;
-        usedAddresses.remove(addressConfig.pin());
+        usedAddresses.remove(addressConfig.bcm());
         if (usedAddresses.isEmpty())
             this.usedAddressesByIoType.remove(instance.type());
     }

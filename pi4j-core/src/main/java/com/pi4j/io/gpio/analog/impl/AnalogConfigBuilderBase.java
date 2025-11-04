@@ -29,7 +29,7 @@ import com.pi4j.context.Context;
 import com.pi4j.io.gpio.analog.AnalogConfig;
 import com.pi4j.io.gpio.analog.AnalogConfigBuilder;
 import com.pi4j.io.gpio.analog.AnalogOutputConfig;
-import com.pi4j.io.impl.IOPinConfigBuilderBase;
+import com.pi4j.io.impl.IOBcmConfigBuilderBase;
 
 /**
  * <p>Abstract AnalogConfigBuilderBase class.</p>
@@ -40,7 +40,7 @@ import com.pi4j.io.impl.IOPinConfigBuilderBase;
  * @version $Id: $Id
  */
 public abstract class AnalogConfigBuilderBase<BUILDER_TYPE extends AnalogConfigBuilder, CONFIG_TYPE extends AnalogConfig>
-    extends IOPinConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
+    extends IOBcmConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
     implements AnalogConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
     /**

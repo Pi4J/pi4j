@@ -118,7 +118,7 @@ public interface RaspberryPi extends Pi4JApi.API {
 
         public DigitalInput input(int pin) {
             var config = DigitalInputConfig.newBuilder(context)
-                .pin(pin)
+                .bcm(pin)
                 .build();
             return context.create(config);
         }
@@ -129,7 +129,7 @@ public interface RaspberryPi extends Pi4JApi.API {
 
         public DigitalOutput output(int pin) {
             var config = DigitalOutputConfig.newBuilder(context)
-                .pin(pin)
+                .bcm(pin)
                 .build();
             return context.create(config);
         }

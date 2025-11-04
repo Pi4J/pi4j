@@ -62,7 +62,7 @@ public class PiGpioDigitalInput extends DigitalInputBase implements DigitalInput
     public PiGpioDigitalInput(PiGpio piGpio, DigitalInputProvider provider, DigitalInputConfig config) {
         super(provider, config);
         this.piGpio = piGpio;
-        this.pin = config.pin().intValue();
+        this.pin = config.bcm().intValue();
     }
 
     /**

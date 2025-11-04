@@ -67,7 +67,7 @@ public class LinuxFsDigitalInputProviderImpl extends DigitalInputProviderBase im
     @Override
     public DigitalInput create(DigitalInputConfig config) {
         // create filesystem based GPIO instance using instance address (GPIO NUMBER)
-        LinuxGpio gpio = new LinuxGpio(this.gpioFileSystemPath, config.pin());
+        LinuxGpio gpio = new LinuxGpio(this.gpioFileSystemPath, config.bcm());
         LinuxFsDigitalInput digitalInput = new LinuxFsDigitalInput(gpio, this, config);
         this.context.registry().add(digitalInput);
         return digitalInput;

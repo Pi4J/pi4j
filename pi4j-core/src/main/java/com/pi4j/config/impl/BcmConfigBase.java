@@ -25,9 +25,9 @@ package com.pi4j.config.impl;
  * #L%
  */
 
+import com.pi4j.config.BcmConfig;
 import com.pi4j.config.Config;
 import com.pi4j.config.ConfigBase;
-import com.pi4j.config.PinConfig;
 import com.pi4j.config.exception.ConfigMissingRequiredKeyException;
 
 import java.util.Map;
@@ -39,28 +39,28 @@ import java.util.Map;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public abstract class PinConfigBase<CONFIG_TYPE extends Config>
+public abstract class BcmConfigBase<CONFIG_TYPE extends Config>
     extends ConfigBase<CONFIG_TYPE>
-    implements PinConfig<CONFIG_TYPE> {
+    implements BcmConfig<CONFIG_TYPE> {
 
     // private configuration properties
-    protected Integer pin = null;
+    protected Integer bcm = null;
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected PinConfigBase() {
+    protected BcmConfigBase() {
         super();
     }
 
     /**
-     * <p>Constructor for PinConfigBase.</p>
+     * <p>Constructor for BcmConfigBase.</p>
      *
-     * @param pin a {@link java.lang.Integer} object.
+     * @param bcm a {@link java.lang.Integer} object.
      */
-    protected PinConfigBase(Integer pin) {
+    protected BcmConfigBase(Integer bcm) {
         super();
-        this.pin = pin;
+        this.bcm = bcm;
     }
 
     /**
@@ -68,14 +68,14 @@ public abstract class PinConfigBase<CONFIG_TYPE extends Config>
      *
      * @param properties a {@link java.util.Map} object.
      */
-    protected PinConfigBase(Map<String, String> properties) {
+    protected BcmConfigBase(Map<String, String> properties) {
         super(properties);
 
         // load address property
-        if (properties.containsKey(PIN_KEY)) {
-            this.pin = Integer.parseInt(properties.get(PIN_KEY));
+        if (properties.containsKey(BCM_KEY)) {
+            this.bcm = Integer.parseInt(properties.get(BCM_KEY));
         } else {
-            throw new ConfigMissingRequiredKeyException(PIN_KEY);
+            throw new ConfigMissingRequiredKeyException(BCM_KEY);
         }
     }
 
@@ -85,15 +85,15 @@ public abstract class PinConfigBase<CONFIG_TYPE extends Config>
      * @return a {@link java.lang.Integer} object.
      */
     public Integer address() {
-        return this.pin;
+        return this.bcm;
     }
 
     /**
-     * <p>address.</p>
+     * <p>bcm.</p>
      *
      * @return a {@link java.lang.Integer} object.
      */
-    public Integer pin() {
-        return this.pin;
+    public Integer bcm() {
+        return this.bcm;
     }
 }

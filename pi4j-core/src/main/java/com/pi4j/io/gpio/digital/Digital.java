@@ -53,8 +53,8 @@ public interface Digital<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE,
      */
     DigitalState state();
 
-    default Integer pin() {
-        return config().pin();
+    default Integer bcm() {
+        return config().bcm();
     }
 
     /**

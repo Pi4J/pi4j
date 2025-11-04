@@ -62,7 +62,7 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
 
     public DigitalInputFFM(String chipName, DigitalInputProvider provider, DigitalInputConfig config) {
         super(provider, config);
-        this.pin = config.pin();
+        this.pin = config.bcm();
         this.deviceName = "/dev/gpiochip" + config.bus();
         this.debounce = config.debounce();
         this.pull = config.pull();

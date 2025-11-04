@@ -1,11 +1,11 @@
-package com.pi4j.io.impl;
+package com.pi4j.config.impl;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  IOAddressConfigBase.java
+ * FILENAME      :  AddressConfigBuilderBase.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -25,66 +25,37 @@ package com.pi4j.io.impl;
  * #L%
  */
 
+import com.pi4j.config.BcmConfig;
+import com.pi4j.config.BcmConfigBuilder;
 import com.pi4j.config.Config;
-import com.pi4j.config.PinConfig;
-import com.pi4j.config.impl.PinConfigBase;
-import com.pi4j.io.IOConfig;
-
-import java.util.Map;
+import com.pi4j.config.ConfigBuilder;
+import com.pi4j.context.Context;
 
 /**
- * <p>ConfigBase class.</p>
+ * <p>Abstract AddressConfigBuilderBase class.</p>
  *
+ * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public class IOPinConfigBase<CONFIG_TYPE extends Config>
-    extends PinConfigBase<CONFIG_TYPE>
-    implements IOConfig<CONFIG_TYPE>, PinConfig<CONFIG_TYPE> {
-
-    // private configuration variables
-    protected String provider = null;
-    protected String platform = null;
+public abstract class BcmConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
+    extends ConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
+    implements BcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected IOPinConfigBase() {
-    }
-
-    /**
-     * PRIVATE CONSTRUCTOR
-     *
-     * @param properties a {@link Map} object.
-     */
-    protected IOPinConfigBase(Map<String, String> properties) {
-        super(properties);
-
-        // load provider property
-        if (properties.containsKey(PROVIDER_KEY)) {
-            this.provider = properties.get(PROVIDER_KEY);
-        }
-
-        // load platform property
-        if (properties.containsKey(PLATFORM_KEY)) {
-            this.platform = properties.get(PLATFORM_KEY);
-        }
+    protected BcmConfigBuilderBase(Context context) {
+        super(context);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String platform() {
-        return this.platform;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String provider() {
-        return this.provider;
+    public BUILDER_TYPE bcm(Integer bcm) {
+        this.properties.put(BcmConfig.BCM_KEY, bcm.toString());
+        return (BUILDER_TYPE) this;
     }
 }

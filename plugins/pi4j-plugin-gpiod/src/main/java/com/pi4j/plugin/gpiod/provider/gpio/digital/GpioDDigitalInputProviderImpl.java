@@ -27,7 +27,7 @@ public class GpioDDigitalInputProviderImpl extends DigitalInputProviderBase impl
     @Override
     public DigitalInput create(DigitalInputConfig config) {
         // create new I/O instance based on I/O config
-        GpioLine line = GpioDContext.getInstance().getOrOpenLine(config.pin());
+        GpioLine line = GpioDContext.getInstance().getOrOpenLine(config.bcm());
         GpioDDigitalInput digitalInput = new GpioDDigitalInput(line, this, config);
         this.context.registry().add(digitalInput);
         return digitalInput;
