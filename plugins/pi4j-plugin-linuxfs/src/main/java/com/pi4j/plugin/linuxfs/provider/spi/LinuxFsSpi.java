@@ -438,7 +438,6 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         logger.trace("[SPI::RegRead] <- Number bytes read {} ", ret);
         if (ret < 0) {
             String errorMessage = String.format("Failed ioctl SPI message. ret %d, error: %s", ret, String.valueOf(Native.getLastError()));
-            // logger.error("Failed ioctl SPI message. ret {}, error: {}", ret, Native.getLastError());
             logger.error(errorMessage);
             throw new IOException(errorMessage);
         }
