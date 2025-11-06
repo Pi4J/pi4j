@@ -86,7 +86,7 @@ public class I2CBusFFM extends I2CBusBase {
     public boolean supportsSMBus() {
         return hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_QUICK) || hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_BYTE)
             || hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_BYTE_DATA) || hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_WORD_DATA)
-            || hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_I2C_BLOCK);
+            || hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_BLOCK_DATA);
     }
 
     public boolean hasFunctionality(I2CFunctionality functionality) {

@@ -25,9 +25,9 @@ package com.pi4j.io.impl;
  * #L%
  */
 
-import com.pi4j.config.AddressConfig;
 import com.pi4j.config.Config;
-import com.pi4j.config.impl.AddressConfigBase;
+import com.pi4j.config.PortConfig;
+import com.pi4j.config.impl.PortConfigBase;
 import com.pi4j.io.IOConfig;
 
 import java.util.Map;
@@ -35,14 +35,13 @@ import java.util.Map;
 /**
  * <p>ConfigBase class.</p>
  *
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
- * @param <CONFIG_TYPE>
  */
-public class IOAddressConfigBase<CONFIG_TYPE extends Config>
-        extends AddressConfigBase<CONFIG_TYPE>
-        implements IOConfig<CONFIG_TYPE>, AddressConfig<CONFIG_TYPE>
-{
+public class IOPortConfigBase<CONFIG_TYPE extends Config>
+    extends PortConfigBase<CONFIG_TYPE>
+    implements PortConfig<CONFIG_TYPE>, IOConfig<CONFIG_TYPE> {
 
     // private configuration variables
     protected String provider = null;
@@ -51,7 +50,7 @@ public class IOAddressConfigBase<CONFIG_TYPE extends Config>
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected IOAddressConfigBase(){
+    protected IOPortConfigBase() {
     }
 
     /**
@@ -59,27 +58,31 @@ public class IOAddressConfigBase<CONFIG_TYPE extends Config>
      *
      * @param properties a {@link Map} object.
      */
-    protected IOAddressConfigBase(Map<String,String> properties){
+    protected IOPortConfigBase(Map<String, String> properties) {
         super(properties);
 
         // load provider property
-        if(properties.containsKey(PROVIDER_KEY)){
+        if (properties.containsKey(PROVIDER_KEY)) {
             this.provider = properties.get(PROVIDER_KEY);
         }
 
         // load platform property
-        if(properties.containsKey(PLATFORM_KEY)){
+        if (properties.containsKey(PLATFORM_KEY)) {
             this.platform = properties.get(PLATFORM_KEY);
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String platform() {
         return this.platform;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String provider() {
         return this.provider;

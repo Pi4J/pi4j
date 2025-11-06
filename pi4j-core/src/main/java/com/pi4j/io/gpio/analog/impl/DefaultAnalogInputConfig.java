@@ -37,15 +37,15 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public class DefaultAnalogInputConfig
-        extends AnalogConfigBase<AnalogInputConfig>
-        implements AnalogInputConfig {
+    extends AnalogConfigBase<AnalogInputConfig>
+    implements AnalogInputConfig {
 
-    protected Integer busNumber = null;
+    protected Integer bus = null;
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    private DefaultAnalogInputConfig(){
+    private DefaultAnalogInputConfig() {
         super();
     }
 
@@ -54,21 +54,35 @@ public class DefaultAnalogInputConfig
      *
      * @param properties a {@link java.util.Map} object.
      */
-    protected DefaultAnalogInputConfig(Map<String,String> properties){
+    protected DefaultAnalogInputConfig(Map<String, String> properties) {
         super(properties);
 
         // define default property values if any are missing (based on the required address value)
-        this.id = StringUtil.setIfNullOrEmpty(this.id, "AIN-" + this.address, true);
-        this.name = StringUtil.setIfNullOrEmpty(this.name, "AIN-" + this.address, true);
-        this.description = StringUtil.setIfNullOrEmpty(this.description, "AIN-" + this.address, true);
+        this.id = StringUtil.setIfNullOrEmpty(this.id, "AIN-" + this.bcm, true);
+        this.name = StringUtil.setIfNullOrEmpty(this.name, "AIN-" + this.bcm, true);
+        this.description = StringUtil.setIfNullOrEmpty(this.description, "AIN-" + this.bcm, true);
 
-        if(properties.containsKey(BUS_NUMBER)){
-            this.busNumber = Integer.parseInt(properties.get(BUS_NUMBER));
+        if (properties.containsKey(BUS_KEY)) {
+            this.bus = Integer.parseInt(properties.get(BUS_KEY));
         }
     }
 
+    /**
+     * @deprecated use {@link #bus()} instead.
+     */
     @Override
-    public Integer busNumber() {
-        return busNumber;
+    @Deprecated(forRemoval = true)
+    public Integer address() {
+        return this.bcm;
+    }
+
+    @Override
+    public Integer bus() {
+        return bus;
+    }
+
+    @Override
+    public Integer bcm() {
+        return this.bcm;
     }
 }

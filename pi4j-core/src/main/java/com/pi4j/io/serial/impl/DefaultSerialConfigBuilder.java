@@ -60,6 +60,15 @@ public class DefaultSerialConfigBuilder
      * {@inheritDoc}
      */
     @Override
+    public SerialConfigBuilder port(String port) {
+        this.properties.put(SerialConfig.PORT_KEY, port);
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public SerialConfigBuilder baud(Integer rate) {
         this.properties.put(SerialConfig.BAUD_KEY, rate.toString());
         return this;

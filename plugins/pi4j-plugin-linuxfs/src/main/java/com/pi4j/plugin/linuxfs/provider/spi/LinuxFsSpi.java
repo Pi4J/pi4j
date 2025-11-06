@@ -152,8 +152,8 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         // /dev/spidevB.C ...
         //    character special device, major number 153 with a dynamically chosen minor device number.
         //    This is the node that userspace programs will open, created by “udev” or “mdev”.
-        String spiDev = SPI_DEVICE_BASE + config().bus().getBus() + "." + config().address();
-        logger.info("Opening SPI bus {}, address {}", config().bus().getBus(), config().address());
+        String spiDev = SPI_DEVICE_BASE + config().bus().getBus() + "." + config().channel();
+        logger.info("Opening SPI bus {}, channel {}", config().bus().getBus(), config().channel());
         fd = libc.open(spiDev, LinuxLibC.O_RDWR);
         if (fd < 0) {
             throw new RuntimeException("Failed to open SPI device " + spiDev);

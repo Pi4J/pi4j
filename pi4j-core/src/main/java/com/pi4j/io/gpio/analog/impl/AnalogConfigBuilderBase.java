@@ -29,38 +29,42 @@ import com.pi4j.context.Context;
 import com.pi4j.io.gpio.analog.AnalogConfig;
 import com.pi4j.io.gpio.analog.AnalogConfigBuilder;
 import com.pi4j.io.gpio.analog.AnalogOutputConfig;
-import com.pi4j.io.impl.IOAddressConfigBuilderBase;
+import com.pi4j.io.impl.IOBcmConfigBuilderBase;
 
 /**
  * <p>Abstract AnalogConfigBuilderBase class.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
+ * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
+ * @version $Id: $Id
  */
 public abstract class AnalogConfigBuilderBase<BUILDER_TYPE extends AnalogConfigBuilder, CONFIG_TYPE extends AnalogConfig>
-        extends IOAddressConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
-        implements AnalogConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+    extends IOBcmConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
+    implements AnalogConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected AnalogConfigBuilderBase(Context context){
+    protected AnalogConfigBuilderBase(Context context) {
         super(context);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BUILDER_TYPE min(Integer value) {
         this.properties.put(AnalogOutputConfig.RANGE_MIN_KEY, value.toString());
-        return (BUILDER_TYPE)this;
+        return (BUILDER_TYPE) this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BUILDER_TYPE max(Integer value) {
         this.properties.put(AnalogOutputConfig.RANGE_MAX_KEY, value.toString());
-        return (BUILDER_TYPE)this;
+        return (BUILDER_TYPE) this;
     }
 }

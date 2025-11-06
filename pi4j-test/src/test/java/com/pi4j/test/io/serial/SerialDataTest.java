@@ -25,10 +25,6 @@ package com.pi4j.test.io.serial;
  * #L%
  */
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.io.serial.Serial;
@@ -41,6 +37,8 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SerialDataTest {
 
@@ -49,9 +47,9 @@ public class SerialDataTest {
     private static String SERIAL_DEVICE = "mock-serial-port";
 
     private static byte SAMPLE_BYTE = 0x0d;
-    private static byte[] SAMPLE_BYTE_ARRAY = new byte[] { 0,1,2,3,4,5,6,7,8,9 };
-    private static char[] SAMPLE_CHAR_ARRAY = new char[] { '0','1','2','3','4','5','6','7','8','9' };
-    private static byte[] SAMPLE_BUFFER_ARRAY = new byte[] { 10,11,12,13,14,15,16,17,18,19 };
+    private static byte[] SAMPLE_BYTE_ARRAY = new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    private static char[] SAMPLE_CHAR_ARRAY = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    private static byte[] SAMPLE_BUFFER_ARRAY = new byte[]{10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
     private static ByteBuffer SAMPLE_BUFFER = ByteBuffer.wrap(SAMPLE_BUFFER_ARRAY);
     private static String SAMPLE_STRING = "Hello World!";
 
@@ -59,23 +57,23 @@ public class SerialDataTest {
     public static void beforeAllTests() {
         // Initialize Pi4J with Mock Serial Provider only
         pi4j = Pi4J.newContextBuilder()
-                .add(MockSerialProvider.newInstance())
-                .build();
+            .add(MockSerialProvider.newInstance())
+            .build();
 
         // create serial instance
         serial = pi4j.create(Serial.newConfigBuilder(pi4j)
-                .id("my-i2c-bus")
-                .device(SERIAL_DEVICE)
-                .build());
+            .id("my-i2c-bus")
+            .port(SERIAL_DEVICE)
+            .build());
     }
 
     @AfterAll
     public static void afterAllTests() {
-            // close serial port
-            if(serial.isOpen()) serial.close();
+        // close serial port
+        if (serial.isOpen()) serial.close();
 
-            // shutdown Pi4J context
-            pi4j.shutdown();
+        // shutdown Pi4J context
+        pi4j.shutdown();
     }
 
     // --------------------------------------------------------------------
@@ -157,7 +155,7 @@ public class SerialDataTest {
     @Test
     public void readByte() {
         // read single byte from serial device and check for expected value
-        byte b = (byte)serial.read();
+        byte b = (byte) serial.read();
         assertEquals(SAMPLE_BYTE, b);
     }
 
@@ -312,15 +310,15 @@ public class SerialDataTest {
         serial.drain();
 
         // create a byte buffer for the sample data array
-        byte[] byteArray = new byte[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
-        ByteBuffer writeBuffer  = ByteBuffer.wrap(byteArray);
+        byte[] byteArray = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
+        ByteBuffer writeBuffer = ByteBuffer.wrap(byteArray);
 
         // change byte at explicit index; this should not change buffer position
-        writeBuffer.put(5, (byte)99);
+        writeBuffer.put(5, (byte) 99);
 
         // write 3 bytes nto the buffer from position 0
         // this will offset the buffer position by 3
-        writeBuffer.put(new byte[] { (byte)0, (byte)0, (byte)0});
+        writeBuffer.put(new byte[]{(byte) 0, (byte) 0, (byte) 0});
 
         // write sample data; should be "4,5,99,7,8,9,10,11,12,13,14,15"
         serial.write(writeBuffer);
@@ -329,15 +327,15 @@ public class SerialDataTest {
         ByteBuffer readBuffer = ByteBuffer.allocate(12);
 
         // add some initial bytes to the buffer which will create an offset of 2
-        readBuffer.put((byte)0xFF);
-        readBuffer.put((byte)0xFF);
+        readBuffer.put((byte) 0xFF);
+        readBuffer.put((byte) 0xFF);
 
         // read data into char buffer using explicit offset in data
         serial.read(readBuffer);
 
         assertArrayEquals(
-                new byte[]{ (byte)0xFF, (byte)0xFF, (byte)4, (byte)5, (byte)99, (byte)7, (byte)8, (byte)9, (byte)10, (byte)11, (byte)12, (byte)13 },
-                readBuffer.array());
+            new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 4, (byte) 5, (byte) 99, (byte) 7, (byte) 8, (byte) 9, (byte) 10, (byte) 11, (byte) 12, (byte) 13},
+            readBuffer.array());
     }
 
 //    @Test
