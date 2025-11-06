@@ -38,13 +38,13 @@ import com.pi4j.io.gpio.digital.DigitalState;
  * @version $Id: $Id
  */
 public class DefaultDigitalOutputConfigBuilder
-        extends DigitalConfigBuilderBase<DigitalOutputConfigBuilder, DigitalOutputConfig>
-        implements DigitalOutputConfigBuilder {
+    extends DigitalConfigBuilderBase<DigitalOutputConfigBuilder, DigitalOutputConfig>
+    implements DigitalOutputConfigBuilder {
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DefaultDigitalOutputConfigBuilder(Context context){
+    protected DefaultDigitalOutputConfigBuilder(Context context) {
         super(context);
     }
 
@@ -58,27 +58,45 @@ public class DefaultDigitalOutputConfigBuilder
         return new DefaultDigitalOutputConfigBuilder(context);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public DigitalOutputConfigBuilder busNumber(int busNumber) {
-        this.properties.put(GpioConfig.BUS_NUMBER, String.valueOf(busNumber));
+    public DigitalOutputConfigBuilder address(Integer address) {
+        this.properties.put(GpioConfig.ADDRESS_KEY, String.valueOf(address));
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DigitalOutputConfigBuilder bus(int bus) {
+        this.properties.put(GpioConfig.BUS_KEY, String.valueOf(bus));
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutputConfigBuilder shutdown(DigitalState state) {
         this.properties.put(DigitalOutputConfig.SHUTDOWN_STATE_KEY, state.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutputConfigBuilder initial(DigitalState state) {
         this.properties.put(DigitalOutputConfig.INITIAL_STATE_KEY, state.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutputConfig build() {
         DigitalOutputConfig config = new DefaultDigitalOutputConfig(getResolvedProperties());

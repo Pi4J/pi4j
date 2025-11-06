@@ -25,12 +25,15 @@ package com.pi4j.registry.impl;
  * #L%
  */
 
-import com.pi4j.config.AddressConfig;
+import com.pi4j.config.BcmConfig;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.LifecycleException;
 import com.pi4j.io.IO;
 import com.pi4j.io.IOType;
 import com.pi4j.io.exception.*;
+import com.pi4j.io.i2c.I2CConfig;
+import com.pi4j.io.pwm.PwmConfig;
+import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.runtime.Runtime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +62,6 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
      * <p>newInstance.</p>
      *
      * @param runtime a {@link com.pi4j.runtime.Runtime} object.
-     *
      * @return a {@link com.pi4j.registry.impl.RuntimeRegistry} object.
      */
     public static RuntimeRegistry newInstance(Runtime runtime) {
@@ -81,15 +83,49 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
         String _id = validateId(instance.id());
 
         // first test to make sure this id does not already exist in the registry
-        if (instances.containsKey(_id))
+        if (instances.containsKey(_id)) {
             throw new IOAlreadyExistsException(_id);
-        if (instance.config() instanceof AddressConfig<?> addressConfig) {
-            if (exists(instance.type(), addressConfig.address())) {
-                throw new IOAlreadyExistsException(addressConfig.address());
+        }
+
+        switch (instance.config()) {
+            case BcmConfig<?> addressConfig: {
+                if (exists(instance.type(), addressConfig.bcm())) {
+                    throw new IOAlreadyExistsException(addressConfig.bcm());
+                }
+                Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
+                    k -> new HashSet<>());
+                usedAddresses.add(addressConfig.bcm());
+                break;
             }
-            Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
-                k -> new HashSet<>());
-            usedAddresses.add(addressConfig.address());
+            case PwmConfig pwmConfig: {
+                if (exists(instance.type(), pwmConfig.channel())) {
+                    throw new IOAlreadyExistsException(pwmConfig.channel());
+                }
+                Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
+                    k -> new HashSet<>());
+                usedAddresses.add(pwmConfig.channel());
+                break;
+            }
+            case I2CConfig i2cConfig: {
+                if (exists(instance.type(), i2cConfig.bus())) {
+                    throw new IOAlreadyExistsException(i2cConfig.bus());
+                }
+                Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
+                    k -> new HashSet<>());
+                usedAddresses.add(i2cConfig.bus());
+                break;
+            }
+            case SpiConfig spiConfig: {
+                if (exists(instance.type(), spiConfig.channel())) {
+                    throw new IOAlreadyExistsException(spiConfig.channel());
+                }
+                Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
+                    k -> new HashSet<>());
+                usedAddresses.add(spiConfig.channel());
+                break;
+            }
+            default: {
+            }
         }
 
         // add the instance to the collection
@@ -177,12 +213,12 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
     }
 
     private <T extends IO> void removeFromMap(T instance) {
-        if (!(instance.config() instanceof AddressConfig<?> addressConfig))
+        if (!(instance.config() instanceof BcmConfig<?> addressConfig))
             return;
         Set<Integer> usedAddresses = this.usedAddressesByIoType.get(instance.type());
         if (usedAddresses == null)
             return;
-        usedAddresses.remove(addressConfig.address());
+        usedAddresses.remove(addressConfig.bcm());
         if (usedAddresses.isEmpty())
             this.usedAddressesByIoType.remove(instance.type());
     }

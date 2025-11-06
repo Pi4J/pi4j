@@ -25,7 +25,7 @@ package com.pi4j.config.impl;
  * #L%
  */
 
-import com.pi4j.config.AddressConfig;
+import com.pi4j.config.BcmConfig;
 import com.pi4j.config.Config;
 import com.pi4j.config.ConfigBase;
 import com.pi4j.config.exception.ConfigMissingRequiredKeyException;
@@ -35,32 +35,32 @@ import java.util.Map;
 /**
  * <p>Abstract AddressConfigBase class.</p>
  *
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
- * @param <CONFIG_TYPE>
  */
-public abstract class AddressConfigBase<CONFIG_TYPE extends Config>
-        extends ConfigBase<CONFIG_TYPE>
-        implements AddressConfig<CONFIG_TYPE> {
+public abstract class BcmConfigBase<CONFIG_TYPE extends Config>
+    extends ConfigBase<CONFIG_TYPE>
+    implements BcmConfig<CONFIG_TYPE> {
 
     // private configuration properties
-    protected Integer address = null;
+    protected Integer bcm = null;
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected AddressConfigBase(){
+    protected BcmConfigBase() {
         super();
     }
 
     /**
-     * <p>Constructor for AddressConfigBase.</p>
+     * <p>Constructor for BcmConfigBase.</p>
      *
-     * @param address a {@link java.lang.Number} object.
+     * @param bcm a {@link java.lang.Integer} object.
      */
-    protected AddressConfigBase(Number address){
+    protected BcmConfigBase(Integer bcm) {
         super();
-        this.address = address.intValue();
+        this.bcm = bcm;
     }
 
     /**
@@ -68,14 +68,14 @@ public abstract class AddressConfigBase<CONFIG_TYPE extends Config>
      *
      * @param properties a {@link java.util.Map} object.
      */
-    protected AddressConfigBase(Map<String,String> properties){
+    protected BcmConfigBase(Map<String, String> properties) {
         super(properties);
 
         // load address property
-        if(properties.containsKey(ADDRESS_KEY)){
-            this.address = Integer.parseInt(properties.get(ADDRESS_KEY));
+        if (properties.containsKey(BCM_KEY)) {
+            this.bcm = Integer.parseInt(properties.get(BCM_KEY));
         } else {
-            throw new ConfigMissingRequiredKeyException(ADDRESS_KEY);
+            throw new ConfigMissingRequiredKeyException(BCM_KEY);
         }
     }
 
@@ -85,6 +85,15 @@ public abstract class AddressConfigBase<CONFIG_TYPE extends Config>
      * @return a {@link java.lang.Integer} object.
      */
     public Integer address() {
-        return this.address;
-    };
+        return this.bcm;
+    }
+
+    /**
+     * <p>bcm.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     */
+    public Integer bcm() {
+        return this.bcm;
+    }
 }

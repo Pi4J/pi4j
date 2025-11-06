@@ -26,7 +26,7 @@ package com.pi4j.io.pwm.impl;
  */
 
 import com.pi4j.context.Context;
-import com.pi4j.io.impl.IOAddressConfigBuilderBase;
+import com.pi4j.io.impl.IOBcmConfigBuilderBase;
 import com.pi4j.io.pwm.*;
 
 import java.util.ArrayList;
@@ -39,15 +39,15 @@ import java.util.List;
  * @version $Id: $Id
  */
 public class DefaultPwmConfigBuilder
-        extends IOAddressConfigBuilderBase<PwmConfigBuilder, PwmConfig>
-        implements PwmConfigBuilder {
+    extends IOBcmConfigBuilderBase<PwmConfigBuilder, PwmConfig>
+    implements PwmConfigBuilder {
 
     protected List<PwmPreset> presets = new ArrayList<>();
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DefaultPwmConfigBuilder(Context context){
+    protected DefaultPwmConfigBuilder(Context context) {
         super(context);
     }
 
@@ -61,79 +61,119 @@ public class DefaultPwmConfigBuilder
         return new DefaultPwmConfigBuilder(context);
     }
 
+    /**
+     * @deprecated use {@link #bus(Integer)} instead.
+     * <p>
+     * {@inheritDoc}
+     */
     @Override
-    public PwmConfigBuilder busNumber(int busNumber) {
-        this.properties.put(PwmConfig.PWM_BUS_NUMBER, String.valueOf(busNumber));
+    @Deprecated(forRemoval = true)
+    public PwmConfigBuilder address(Integer address) {
+        this.properties.put(PwmConfig.PWM_ADDRESS, address.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PwmConfigBuilder bus(Integer bus) {
+        this.properties.put(PwmConfig.PWM_BUS, bus.toString());
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PwmConfigBuilder channel(Integer channel) {
+        this.properties.put(PwmConfig.PWM_CHANNEL, channel.toString());
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PwmConfigBuilder frequency(Integer frequency) {
         this.properties.put(PwmConfig.FREQUENCY_KEY, frequency.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PwmConfigBuilder dutyCycle(Integer dutyCycle) {
         // bounds check the duty-cycle value
-        Integer dc = dutyCycle ;
-        if(dc < 0) dc = 0;
-        if(dc > 100) dc = 100;
+        Integer dc = dutyCycle;
+        if (dc < 0) dc = 0;
+        if (dc > 100) dc = 100;
 
         this.properties.put(PwmConfig.DUTY_CYCLE_KEY, Integer.toString(dc));
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PwmConfigBuilder pwmType(PwmType pwmType) {
         this.properties.put(PwmConfig.PWM_TYPE_KEY, pwmType.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PwmConfigBuilder polarity(PwmPolarity polarity) {
         this.properties.put(PwmConfig.POLARITY_KEY, polarity.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PwmConfigBuilder shutdown(Integer dutyCycle) {
         // bounds check the duty-cycle value
-        Integer dc = dutyCycle ;
-        if(dc < 0) dc = 0;
-        if(dc > 100) dc = 100;
+        Integer dc = dutyCycle;
+        if (dc < 0) dc = 0;
+        if (dc > 100) dc = 100;
 
         this.properties.put(PwmConfig.SHUTDOWN_VALUE_KEY, Integer.toString(dc));
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PwmConfigBuilder initial(Integer dutyCycle) {
         // bounds check the duty-cycle value
         Integer dc = dutyCycle;
-        if(dc < 0) dc = 0;
-        if(dc > 100) dc = 100;
+        if (dc < 0) dc = 0;
+        if (dc > 100) dc = 100;
 
-        this.properties.put(PwmConfig.INITIAL_VALUE_KEY,Integer.toString(dc));
+        this.properties.put(PwmConfig.INITIAL_VALUE_KEY, Integer.toString(dc));
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public PwmConfigBuilder preset(PwmPreset ... preset){
-        for(PwmPreset p : preset) {
+    public PwmConfigBuilder preset(PwmPreset... preset) {
+        for (PwmPreset p : preset) {
             this.presets.add(p);
         }
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PwmConfig build() {
         PwmConfig config = new DefaultPwmConfig(getResolvedProperties(), this.presets);

@@ -53,8 +53,7 @@ import static com.pi4j.plugin.linuxfs.internal.LinuxLibC.*;
  * it works to drive an SSD1306 OLED display.
  *
  * @author mpilone
- * @see
- * <a href="https://github.com/sckulkarni246/ke-rpi-samples/blob/main/spi-c-ioctl/oled_functions.c#L157">spi-c-ioctl</a>
+ * @see <a href="https://github.com/sckulkarni246/ke-rpi-samples/blob/main/spi-c-ioctl/oled_functions.c#L157">spi-c-ioctl</a>
  * @see <a href="https://github.com/torvalds/linux/blob/master/include/uapi/linux/spi/spidev.h">spidev.h</a>
  * @see <a href="https://github.com/torvalds/linux/blob/master/include/uapi/linux/spi/spi.h">spi.h</a>
  * @see <a href="https://github.com/torvalds/linux/blob/master/tools/spi/spidev_fdx.c">spidev_fdx.c</a>
@@ -65,7 +64,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
 
     private static final Logger logger = LoggerFactory.getLogger(LinuxFsSpi.class);
 
-    ///////////////////////////////////
+    /// ////////////////////////////////
     // From spidev.h
     private final static byte SPI_IOC_MAGIC = 'k';
     private final static byte SIZE_OF_BYTE = 1;
@@ -77,34 +76,34 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         // the actual size of the structure (i.e. sizeof). Therefore, we use the ByValue interface
         // when getting the struct size.
         int structSize = Native.getNativeSize(spi_ioc_transfer.ByValue.class);
-        int msgSize = ((((n)*(structSize)) < (1 << _IOC_SIZEBITS))
-            ? ((n)*(structSize)) : 0);
+        int msgSize = ((((n) * (structSize)) < (1 << _IOC_SIZEBITS))
+            ? ((n) * (structSize)) : 0);
 
-        return _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte)0, msgSize);
+        return _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte) 0, msgSize);
     }
 
     // These could be replaced with the specific values generated from the _IOC method (a macro in the native C),
     // but I think it is useful to see where the values come from.
 
     /* Read / Write of SPI mode (SPI_MODE_0..SPI_MODE_3) (limited to 8 bits) */
-    private final static int SPI_IOC_RD_MODE = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte)1, SIZE_OF_BYTE);
-    private final static int SPI_IOC_WR_MODE = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte)1, SIZE_OF_BYTE);
+    private final static int SPI_IOC_RD_MODE = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte) 1, SIZE_OF_BYTE);
+    private final static int SPI_IOC_WR_MODE = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte) 1, SIZE_OF_BYTE);
 
     /* Read / Write SPI bit justification */
-    private final static int SPI_IOC_RD_LSB_FIRST = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte)2, SIZE_OF_BYTE);
-    private final static int SPI_IOC_WR_LSB_FIRST = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte)2, SIZE_OF_BYTE);
+    private final static int SPI_IOC_RD_LSB_FIRST = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte) 2, SIZE_OF_BYTE);
+    private final static int SPI_IOC_WR_LSB_FIRST = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte) 2, SIZE_OF_BYTE);
 
     /* Read / Write SPI device word length (1..N) */
-    private final static int SPI_IOC_RD_BITS_PER_WORD = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte)3, SIZE_OF_BYTE);
-    private final static int SPI_IOC_WR_BITS_PER_WORD = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte)3, SIZE_OF_BYTE);
+    private final static int SPI_IOC_RD_BITS_PER_WORD = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte) 3, SIZE_OF_BYTE);
+    private final static int SPI_IOC_WR_BITS_PER_WORD = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte) 3, SIZE_OF_BYTE);
 
     /* Read / Write SPI device default max speed hz */
-    private final static int SPI_IOC_RD_MAX_SPEED_HZ = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte)4, SIZE_OF_INT);
-    private final static int SPI_IOC_WR_MAX_SPEED_HZ = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte)4, SIZE_OF_INT);
+    private final static int SPI_IOC_RD_MAX_SPEED_HZ = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte) 4, SIZE_OF_INT);
+    private final static int SPI_IOC_WR_MAX_SPEED_HZ = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte) 4, SIZE_OF_INT);
 
     /* Read / Write of the SPI mode field */
-    private final static int SPI_IOC_RD_MODE32 = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte)5, SIZE_OF_INT);
-    private final static int SPI_IOC_WR_MODE32 = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte)5, SIZE_OF_INT);
+    private final static int SPI_IOC_RD_MODE32 = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte) 5, SIZE_OF_INT);
+    private final static int SPI_IOC_WR_MODE32 = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte) 5, SIZE_OF_INT);
 
     @Structure.FieldOrder({"tx_buf", "rx_buf",
         "len", "speed_hz",
@@ -113,32 +112,33 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         public long tx_buf;
         public long rx_buf;
 
-        public int		len;
-        public int		speed_hz;
+        public int len;
+        public int speed_hz;
 
-        public short	delay_usecs;
-        public byte		bits_per_word;
-        public byte		cs_change;
-        public byte		tx_nbits;
-        public byte		rx_nbits;
-        public byte		word_delay_usecs;
-        public byte		pad;
+        public short delay_usecs;
+        public byte bits_per_word;
+        public byte cs_change;
+        public byte tx_nbits;
+        public byte rx_nbits;
+        public byte word_delay_usecs;
+        public byte pad;
 
-        public static class ByValue extends spi_ioc_transfer implements Structure.ByValue {}
+        public static class ByValue extends spi_ioc_transfer implements Structure.ByValue {
+        }
     }
 
-    ///////////////////////////////////
+    /// ////////////////////////////////
     // spi.h
-    private final byte 	SPI_CPHA	=	1;	/* clock phase */
-    private final byte 	SPI_CPOL	=	1 << 1;	/* clock polarity */
+    private final byte SPI_CPHA = 1;    /* clock phase */
+    private final byte SPI_CPOL = 1 << 1;    /* clock polarity */
 
-    private final byte 	SPI_MODE_0	=	(0|0);		/* (original MicroWire) */
-    private final byte 	SPI_MODE_1	=	(0|SPI_CPHA);
-    private final byte 	SPI_MODE_2	=	(SPI_CPOL|0);
-    private final byte 	SPI_MODE_3	=	(SPI_CPOL|SPI_CPHA);
+    private final byte SPI_MODE_0 = (0 | 0);        /* (original MicroWire) */
+    private final byte SPI_MODE_1 = (0 | SPI_CPHA);
+    private final byte SPI_MODE_2 = (SPI_CPOL | 0);
+    private final byte SPI_MODE_3 = (SPI_CPOL | SPI_CPHA);
 
 
-    private final byte  BITS8 = 8;
+    private final byte BITS8 = 8;
 
     private final static String SPI_DEVICE_BASE = "/dev/spidev";
     private final LinuxLibC libc = LinuxLibC.INSTANCE;
@@ -171,8 +171,8 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         // /dev/spidevB.C ...
         //    character special device, major number 153 with a dynamically chosen minor device number.
         //    This is the node that userspace programs will open, created by “udev” or “mdev”.
-        String spiDev = SPI_DEVICE_BASE + config().bus().getBus() + "." + config().address();
-        logger.info("Opening SPI bus {}, address {}", config().bus().getBus(), config().address());
+        String spiDev = SPI_DEVICE_BASE + config().bus().getBus() + "." + config().channel();
+        logger.info("Opening SPI bus {}, channel {}", config().bus().getBus(), config().channel());
         fd = libc.open(spiDev, LinuxLibC.O_RDWR);
         if (fd < 0) {
             throw new RuntimeException("Failed to open SPI device " + spiDev);
@@ -180,14 +180,14 @@ public class LinuxFsSpi extends SpiBase implements Spi {
 
         IntByReference intPtr = new IntByReference();
         int ret = libc.ioctl(fd, SPI_IOC_RD_MODE32, intPtr);
-        if(ret != 0) {
+        if (ret != 0) {
             libc.close(fd);
             throw new RuntimeException("Could not read SPI mode.");
         }
 
         // if 'flags' were provided error
-        if(config().flags() != null){
-            throw new IOException("Unsupported SPI Pi5 parameter flags" );
+        if (config().flags() != null) {
+            throw new IOException("Unsupported SPI Pi5 parameter flags");
         }
         switch (config().mode()) {
             case MODE_0:
@@ -205,21 +205,21 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         }
 
         ret = libc.ioctl(fd, SPI_IOC_WR_MODE32, intPtr);
-        if(ret != 0) {
+        if (ret != 0) {
             libc.close(fd);
             throw new RuntimeException("Could not write SPI mode..");
         }
 
         intPtr.setValue(config().baud());
         ret = libc.ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, intPtr);
-        if(ret != 0) {
+        if (ret != 0) {
             libc.close(fd);
             throw new RuntimeException("Could not read the SPI max speed.");
         }
 
         intPtr.setValue(config().baud());
         ret = libc.ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, intPtr);
-        if(ret != 0) {
+        if (ret != 0) {
             libc.close(fd);
             throw new RuntimeException("Could not write the SPI max speed.");
         }
@@ -227,14 +227,14 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         // Bits per word
         intPtr.setValue(BITS8);
         ret = libc.ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, intPtr);
-        if(ret != 0) {
+        if (ret != 0) {
             libc.close(fd);
             throw new RuntimeException("Could not write the SPI BITS per write.");
         }
         // Bits per word
         intPtr.setValue(BITS8);
         ret = libc.ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, intPtr);
-        if(ret != 0) {
+        if (ret != 0) {
             libc.close(fd);
             throw new RuntimeException("Could not write the SPI BITS per read.");
         }
@@ -242,17 +242,17 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         // BIT shift direction
         intPtr.setValue(config().readLsbFirst());
         ret = libc.ioctl(fd, SPI_IOC_RD_LSB_FIRST, intPtr);
-        if(ret != 0) {
+        if (ret != 0) {
             libc.close(fd);
             throw new RuntimeException("Could not write the SPI SHIFT read.");
         }
         intPtr.setValue(config().writeLsbFirst());
         ret = libc.ioctl(fd, SPI_IOC_WR_LSB_FIRST, intPtr);
-        if(ret != 0) {
+        if (ret != 0) {
             libc.close(fd);
             throw new RuntimeException("Could not write the SPI SHIFT write.");
         }
-   }
+    }
 
     @Override
     public void close() {
@@ -279,8 +279,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         if (ret < 0) {
             logger.error("Could not write SPI message. ret {}, error: {}", ret, Native.getLastError());
             numberOfBytes = -1;
-        }
-        else {
+        } else {
             buf.read(0, read, readOffset, numberOfBytes);
         }
 
@@ -294,8 +293,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         byte[] buf = new byte[1];
         if (read(buf, 0, 1) == 1) {
             return buf[0];
-        }
-        else {
+        } else {
             return -1;
         }
     }
@@ -316,7 +314,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         if (ret < 0) {
             logger.error("Could not write SPIIOC  message. ret {}, error: {}", ret, Native.getLastError());
             length = -1;
-        }else{
+        } else {
             buf.read(0, read, offset, length);
         }
 
@@ -327,22 +325,22 @@ public class LinuxFsSpi extends SpiBase implements Spi {
 
     @Override
     public int write(byte b) {
-        return write(new byte[] {b}, 0, 1);
+        return write(new byte[]{b}, 0, 1);
     }
 
 
     /**
      * {@inheritDoc}
      * write
-     *
-     *   SPI_BUFFSIZ most often is set to 4096.  See initialize()
+     * <p>
+     * SPI_BUFFSIZ most often is set to 4096.  See initialize()
      * This implementation can write blocks greater than 4096 byte
      * 'however', read and understand how this is accomplished.
-     *
+     * <p>
      * A write of data no greater than 4096 bytes is accomplished with
      * a single SPI write operation.
      * So CE line low, write bytes, CE line high
-     *
+     * <p>
      * A write greater than 4096 bytes will be segmented to multiple writes
      * each 4096  bytes in length, the last write is the MOD value.
      * So, CE line low, write first 4096 bytes CE line high.  This
@@ -353,8 +351,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
      * application keep the CE pin low during the duration of the call to
      * spi,write.
      *
-     *
-     * @param data data array of bytes to be written
+     * @param data   data array of bytes to be written
      * @param offset offset in data buffer to start at
      * @param length number of bytes to be written
      * @return

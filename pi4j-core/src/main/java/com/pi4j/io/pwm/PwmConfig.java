@@ -25,8 +25,9 @@ package com.pi4j.io.pwm;
  * #L%
  */
 
-import com.pi4j.config.AddressConfig;
-import com.pi4j.io.gpio.GpioConfig;
+import com.pi4j.config.BusConfig;
+import com.pi4j.config.ChannelConfig;
+import com.pi4j.io.IOConfig;
 
 import java.util.Collection;
 
@@ -36,50 +37,75 @@ import java.util.Collection;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfig> {
-
-    String PWM_BUS_NUMBER = "bus-number";
-
-    /** Constant <code>PWM_TYPE_KEY="pwm-type"</code> */
-    String PWM_TYPE_KEY = "pwm-type";
-    /** Constant <code>POLARITY_KEY="polarity"</code> */
-    String POLARITY_KEY = "polarity";
-    /** Constant <code>FREQUENCY_KEY="frequency"</code> */
-    String FREQUENCY_KEY = "frequency";
-    /** Constant <code>DUTY_CYCLE_KEY="duty-cycle"</code> */
-    String DUTY_CYCLE_KEY = "duty-cycle";
-    /** Constant <code>SHUTDOWN_VALUE_KEY="shutdown"</code> */
-    String SHUTDOWN_VALUE_KEY = "shutdown";
-    /** Constant <code>INITIAL_VALUE_KEY="initial"</code> */
-    String INITIAL_VALUE_KEY = "initial";
-
-    Integer busNumber();
-
-    default Integer getBusNumber() {
-        return this.busNumber();
-    }
+public interface PwmConfig extends BusConfig<PwmConfig>, ChannelConfig<PwmConfig>, IOConfig<PwmConfig> {
 
     /**
-     *  Get the configured duty-cycle value as a decimal value that represents
-     *  the percentage of the ON vs OFF time of the PWM signal for each period.
-     *  The duty-cycle range is valid from 0 to 100 including factional values.
-     *  (Values above 50% mean the signal will remain HIGH more time than LOW.)
+     * @deprecated use {@link #bus()} instead.
      * <p>
-     *  Example: A value of 50 represents a duty-cycle where half of
-     *  the time period the signal is LOW and the other half is HIGH.
+     * Constant <code>PWM_ADDRESS="address"</code>
+     */
+    @Deprecated(forRemoval = true)
+    String PWM_ADDRESS = "address";
+    /**
+     * Constant <code>PWM_BUS="buss"</code>
+     */
+    String PWM_BUS = "bus";
+    /**
+     * Constant <code>PWM_ADDRESS="channel"</code>
+     */
+    String PWM_CHANNEL = "channel";
+    /**
+     * Constant <code>PWM_TYPE_KEY="pwm-type"</code>
+     */
+    String PWM_TYPE_KEY = "pwm-type";
+    /**
+     * Constant <code>POLARITY_KEY="polarity"</code>
+     */
+    String POLARITY_KEY = "polarity";
+    /**
+     * Constant <code>FREQUENCY_KEY="frequency"</code>
+     */
+    String FREQUENCY_KEY = "frequency";
+    /**
+     * Constant <code>DUTY_CYCLE_KEY="duty-cycle"</code>
+     */
+    String DUTY_CYCLE_KEY = "duty-cycle";
+    /**
+     * Constant <code>SHUTDOWN_VALUE_KEY="shutdown"</code>
+     */
+    String SHUTDOWN_VALUE_KEY = "shutdown";
+    /**
+     * Constant <code>INITIAL_VALUE_KEY="initial"</code>
+     */
+    String INITIAL_VALUE_KEY = "initial";
+
+    /**
+     * @deprecated use {@link #bus()} instead.
+     */
+    @Deprecated(forRemoval = true)
+    Integer address();
+
+    /**
+     * Get the configured duty-cycle value as a decimal value that represents
+     * the percentage of the ON vs OFF time of the PWM signal for each period.
+     * The duty-cycle range is valid from 0 to 100 including factional values.
+     * (Values above 50% mean the signal will remain HIGH more time than LOW.)
+     * <p>
+     * Example: A value of 50 represents a duty-cycle where half of
+     * the time period the signal is LOW and the other half is HIGH.
      *
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      */
-     Integer dutyCycle();
+    Integer dutyCycle();
 
     /**
-     *  Get the configured duty-cycle value as a decimal value that represents
-     *  the percentage of the ON vs OFF time of the PWM signal for each period.
-     *  The duty-cycle range is valid from 0 to 100 including factional values.
-     *  (Values above 50% mean the signal will remain HIGH more time than LOW.)
+     * Get the configured duty-cycle value as a decimal value that represents
+     * the percentage of the ON vs OFF time of the PWM signal for each period.
+     * The duty-cycle range is valid from 0 to 100 including factional values.
+     * (Values above 50% mean the signal will remain HIGH more time than LOW.)
      * <p>
-     *  Example: A value of 50 represents a duty-cycle where half of
-     *  the time period the signal is LOW and the other half is HIGH.
+     * Example: A value of 50 represents a duty-cycle where half of
+     * the time period the signal is LOW and the other half is HIGH.
      *
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      */
@@ -88,18 +114,18 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
     }
 
     /**
-     *  Get the configured frequency value in Hertz (number of cycles per second)
-     *  that the PWM signal generator should attempt to output when the PWM state is
-     *  enabled.
+     * Get the configured frequency value in Hertz (number of cycles per second)
+     * that the PWM signal generator should attempt to output when the PWM state is
+     * enabled.
      *
      * @return frequency value in Hz (number of cycles per second)
      */
     Integer frequency();
 
     /**
-     *  Get the configured frequency value in Hertz (number of cycles per second)
-     *  that the PWM signal generator should attempt to output when the PWM state is
-     *  enabled.
+     * Get the configured frequency value in Hertz (number of cycles per second)
+     * that the PWM signal generator should attempt to output when the PWM state is
+     * enabled.
      *
      * @return frequency value in Hz (number of cycles per second)
      */
@@ -125,7 +151,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      *
      * @return the PwmType for this PWM instance
      */
-    default PwmType getPwmType(){
+    default PwmType getPwmType() {
         return pwmType();
     }
 
@@ -147,7 +173,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      *
      * @return the PwmPolarity for this PWM instance
      */
-    default PwmPolarity getPolarity(){
+    default PwmPolarity getPolarity() {
         return polarity();
     }
 
@@ -160,7 +186,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      * is terminated an Pi4J is shutdown.
      *
      * @return optional duty-cycle value expressed as a percentage (rage: 0-100)
-     *         that is applied when shutting down the Pi4J context.
+     * that is applied when shutting down the Pi4J context.
      */
     Integer shutdownValue();
 
@@ -173,9 +199,9 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      * is terminated an Pi4J is shutdown.
      *
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
-     *         that is applied when shutting down the Pi4J context.
+     * that is applied when shutting down the Pi4J context.
      */
-    default Integer getShutdownValue(){
+    default Integer getShutdownValue() {
         return shutdownValue();
     }
 
@@ -200,7 +226,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      *
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      */
-    default void setShutdownValue(Integer dutyCycle){
+    default void setShutdownValue(Integer dutyCycle) {
         this.shutdownValue(dutyCycle);
     }
 
@@ -214,7 +240,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      * to manually start the PWM signal for cases where you prefer it is auto-started.
      *
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
-     *         that is applied when creating and initializing the PWM instance.
+     * that is applied when creating and initializing the PWM instance.
      */
     Integer initialValue();
 
@@ -228,9 +254,9 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      * to manually start the PWM signal for cases where you prefer it is auto-started.
      *
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
-     *         that is applied when creating and initializing the PWM instance.
+     * that is applied when creating and initializing the PWM instance.
      */
-    default Integer getInitialValue(){
+    default Integer getInitialValue() {
         return initialValue();
     }
 
@@ -246,7 +272,7 @@ public interface PwmConfig extends GpioConfig<PwmConfig>, AddressConfig<PwmConfi
      *
      * @return collection of PwmPresets
      */
-    default Collection<PwmPreset> getPresets(){
+    default Collection<PwmPreset> getPresets() {
         return presets();
     }
 }

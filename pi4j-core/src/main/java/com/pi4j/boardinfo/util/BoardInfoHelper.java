@@ -34,6 +34,9 @@ import com.pi4j.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+import java.util.Optional;
+
 import static com.pi4j.boardinfo.util.Command.*;
 import static com.pi4j.boardinfo.util.PwmChipUtil.DEFAULT_LEGACY_PWM_CHIP;
 import static com.pi4j.boardinfo.util.PwmChipUtil.DEFAULT_PWM_SYSTEM_PATH;
@@ -96,6 +99,38 @@ public class BoardInfoHelper {
      */
     public static BoardInfo current() {
         return SingletonHelper.INSTANCE.boardInfo;
+    }
+
+    /**
+     * Retrieves the BCM (Broadcom) number corresponding to a given physical pin number on the board header.
+     * This method navigates through the board's header configuration to find the associated BCM number.
+     *
+     * @param value the physical pin number to search for
+     * @return an {@code Optional<Integer>} containing the BCM number if found, otherwise an empty {@code Optional}
+     */
+    public static Optional<Integer> getBcmFromPhysical(int value) {
+        return current().getBoardModel().getHeaderVersion().getHeaderTypes().stream()
+            .flatMap(headerType -> headerType.getPins().stream())
+            .filter(pin -> pin.getPinNumber() == value)
+            .map(HeaderPin::getBcmNumber)
+            .filter(Objects::nonNull)
+            .findFirst();
+    }
+
+    /**
+     * Retrieves the BCM (Broadcom) number corresponding to a given WiringPi pin number on the board header.
+     * This method navigates through the board's header configuration to find the associated BCM number.
+     *
+     * @param value the WiringPi pin number to search for
+     * @return an {@code Optional<Integer>} containing the BCM number if found, otherwise an empty {@code Optional}
+     */
+    public static Optional<Integer> getBcmFromWiringPi(int value) {
+        return current().getBoardModel().getHeaderVersion().getHeaderTypes().stream()
+            .flatMap(headerType -> headerType.getPins().stream())
+            .filter(pin -> pin.getWiringPiNumber() != null && pin.getWiringPiNumber() == value)
+            .map(HeaderPin::getBcmNumber)
+            .filter(Objects::nonNull)
+            .findFirst();
     }
 
     /**

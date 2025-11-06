@@ -27,20 +27,20 @@ package com.pi4j.io.gpio.analog.impl;
 
 import com.pi4j.io.gpio.analog.AnalogConfig;
 import com.pi4j.io.gpio.analog.AnalogRange;
-import com.pi4j.io.impl.IOAddressConfigBase;
+import com.pi4j.io.impl.IOBcmConfigBase;
 
 import java.util.Map;
 
 /**
  * <p>Abstract AnalogConfigBase class.</p>
  *
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
- * @param <CONFIG_TYPE>
  */
 public abstract class AnalogConfigBase<CONFIG_TYPE extends AnalogConfig>
-        extends IOAddressConfigBase<CONFIG_TYPE>
-        implements AnalogConfig<CONFIG_TYPE> {
+    extends IOBcmConfigBase<CONFIG_TYPE>
+    implements AnalogConfig<CONFIG_TYPE> {
 
     // private configuration properties
     protected AnalogRange range = new DefaultAnalogRange();
@@ -48,7 +48,7 @@ public abstract class AnalogConfigBase<CONFIG_TYPE extends AnalogConfig>
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected AnalogConfigBase(){
+    protected AnalogConfigBase() {
         super();
     }
 
@@ -57,26 +57,28 @@ public abstract class AnalogConfigBase<CONFIG_TYPE extends AnalogConfig>
      *
      * @param properties a {@link java.util.Map} object.
      */
-    protected AnalogConfigBase(Map<String,String> properties){
+    protected AnalogConfigBase(Map<String, String> properties) {
         super(properties);
 
         // load range value property
-        if(properties.containsKey(RANGE_MIN_KEY) || properties.containsKey(RANGE_MAX_KEY)){
+        if (properties.containsKey(RANGE_MIN_KEY) || properties.containsKey(RANGE_MAX_KEY)) {
             // load optional range properties
             Integer min = null;
             Integer max = null;
-            if(properties.containsKey(RANGE_MIN_KEY))
+            if (properties.containsKey(RANGE_MIN_KEY))
                 min = Integer.parseInt(properties.get(RANGE_MIN_KEY));
-            if(properties.containsKey( RANGE_MAX_KEY))
+            if (properties.containsKey(RANGE_MAX_KEY))
                 max = Integer.parseInt(properties.get(RANGE_MAX_KEY));
 
             // create new range from loaded properties
-            if(min != null || max != null)
+            if (min != null || max != null)
                 this.range = new DefaultAnalogRange(min, max);
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AnalogRange range() {
         return this.range;

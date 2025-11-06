@@ -55,7 +55,7 @@ public class GPIOPerformanceTest {
     public void testFFMInputRoundTrip() {
         var pi4j = Pi4J.newContextBuilder().add(new DigitalInputFFMProviderImpl()).setGpioChipName("gpiochip0").build();
         var config = DigitalInputConfigBuilder.newInstance(pi4j)
-            .address(0)
+            .bcm(0)
             .debounce(99L, TimeUnit.MICROSECONDS)
             .pull(PullResistance.PULL_DOWN)
             .build();
@@ -69,7 +69,7 @@ public class GPIOPerformanceTest {
     public void testFFMInputWithListenerRoundTrip() {
         var pi4j = Pi4J.newContextBuilder().add(new DigitalInputFFMProviderImpl()).setGpioChipName("gpiochip0").build();
         var config = DigitalInputConfigBuilder.newInstance(pi4j)
-            .address(0)
+            .bcm(0)
             .debounce(99L, TimeUnit.MICROSECONDS)
             .pull(PullResistance.PULL_DOWN)
             .build();
@@ -84,7 +84,7 @@ public class GPIOPerformanceTest {
     public void testFFMOutputRoundTrip() {
         var pi4j = Pi4J.newContextBuilder().add(new DigitalOutputFFMProviderImpl()).setGpioChipName("gpiochip0").build();
         var config = DigitalOutputConfigBuilder.newInstance(pi4j)
-            .address(0)
+            .bcm(0)
             .build();
         var pin = pi4j.digitalOutput().create(config);
         pin.state();
@@ -96,7 +96,7 @@ public class GPIOPerformanceTest {
     public void testLinuxFsInputRoundTrip() {
         var pi4j = Pi4J.newContextBuilder().add(new LinuxFsDigitalInputProviderImpl("/sys/class/gpio/")).setGpioChipName("gpiochip0").build();
         var config = DigitalInputConfigBuilder.newInstance(pi4j)
-            .address(512)
+            .bcm(512)
             .debounce(99L, TimeUnit.MICROSECONDS)
             .pull(PullResistance.PULL_DOWN)
             .build();
@@ -110,7 +110,7 @@ public class GPIOPerformanceTest {
     public void testLinuxFsInputWithListenerRoundTrip() {
         var pi4j = Pi4J.newContextBuilder().add(new LinuxFsDigitalInputProviderImpl("/sys/class/gpio/")).setGpioChipName("gpiochip0").build();
         var config = DigitalInputConfigBuilder.newInstance(pi4j)
-            .address(512)
+            .bcm(512)
             .debounce(99L, TimeUnit.MICROSECONDS)
             .pull(PullResistance.PULL_DOWN)
             .build();
@@ -125,7 +125,7 @@ public class GPIOPerformanceTest {
     public void testLinuxFsOutputRoundTrip() {
         var pi4j = Pi4J.newContextBuilder().add(new LinuxFsDigitalOutputProviderImpl("/sys/class/gpio/")).setGpioChipName("gpiochip0").build();
         var config = DigitalOutputConfigBuilder.newInstance(pi4j)
-            .address(512)
+            .bcm(512)
             .build();
         var pin = pi4j.digitalOutput().create(config);
         pin.state();
@@ -137,7 +137,7 @@ public class GPIOPerformanceTest {
     public void testGpioDInputRoundTrip() throws InterruptedException {
         var pi4j = Pi4J.newContextBuilder().add(new GpioDDigitalInputProviderImpl()).setGpioChipName("gpiochip0").build();
         var config = DigitalInputConfigBuilder.newInstance(pi4j)
-            .address(0)
+            .bcm(0)
             .debounce(99L, TimeUnit.MICROSECONDS)
             .pull(PullResistance.PULL_DOWN)
             .build();
@@ -151,7 +151,7 @@ public class GPIOPerformanceTest {
     public void testGpioDInputWithListenerRoundTrip() {
         var pi4j = Pi4J.newContextBuilder().add(new GpioDDigitalInputProviderImpl()).setGpioChipName("gpiochip0").build();
         var config = DigitalInputConfigBuilder.newInstance(pi4j)
-            .address(0)
+            .bcm(0)
             .debounce(99L, TimeUnit.MICROSECONDS)
             .pull(PullResistance.PULL_DOWN)
             .build();
@@ -166,7 +166,7 @@ public class GPIOPerformanceTest {
     public void testGpioDOutputRoundTrip() {
         var pi4j = Pi4J.newContextBuilder().add(new GpioDDigitalOutputProviderImpl()).setGpioChipName("gpiochip0").build();
         var config = DigitalOutputConfigBuilder.newInstance(pi4j)
-            .address(0)
+            .bcm(0)
             .build();
         var pin = pi4j.create(config);
         pin.state();

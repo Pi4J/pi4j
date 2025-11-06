@@ -88,8 +88,8 @@ public interface RaspberryPi extends Pi4JApi.API {
 
         public Pwm pwm0(PwmPolarity pwmPolarity, int frequency, int dutyCycle) {
             var config = PwmConfigBuilder.newInstance(context)
-                .busNumber(0)
-                .address(0)
+                .bus(0)
+                .channel(0)
                 .polarity(pwmPolarity)
                 .frequency(frequency)
                 .dutyCycle(dutyCycle)
@@ -103,8 +103,8 @@ public interface RaspberryPi extends Pi4JApi.API {
 
         public Pwm pwm1(PwmPolarity pwmPolarity, int frequency, int dutyCycle) {
             var config = PwmConfigBuilder.newInstance(context)
-                .busNumber(0)
-                .address(1)
+                .bus(0)
+                .channel(1)
                 .polarity(pwmPolarity)
                 .frequency(frequency)
                 .dutyCycle(dutyCycle)
@@ -118,7 +118,7 @@ public interface RaspberryPi extends Pi4JApi.API {
 
         public DigitalInput input(int pin) {
             var config = DigitalInputConfig.newBuilder(context)
-                .address(pin)
+                .bcm(pin)
                 .build();
             return context.create(config);
         }
@@ -129,7 +129,7 @@ public interface RaspberryPi extends Pi4JApi.API {
 
         public DigitalOutput output(int pin) {
             var config = DigitalOutputConfig.newBuilder(context)
-                .address(pin)
+                .bcm(pin)
                 .build();
             return context.create(config);
         }

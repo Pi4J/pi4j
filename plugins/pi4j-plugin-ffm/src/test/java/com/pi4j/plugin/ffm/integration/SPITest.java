@@ -43,7 +43,7 @@ public class SPITest {
         pi4j = Pi4J.newContextBuilder()
             .add(new SpiFFMProviderImpl())
             .build();
-        var config = SpiConfigBuilder.newInstance(pi4j).bus(SpiBus.BUS_0).address(0).mode(0).baud(50_000).build();
+        var config = SpiConfigBuilder.newInstance(pi4j).bus(SpiBus.BUS_0).channel(0).mode(0).baud(50_000).build();
         spi = pi4j.spi().create(config);
     }
 
@@ -68,7 +68,7 @@ public class SPITest {
     @Test
     public void testSPITransfer() {
         var buffer = new byte[4];
-        spi.transfer("Test".getBytes(), 0, buffer, 0, 4 );
+        spi.transfer("Test".getBytes(), 0, buffer, 0, 4);
         assertEquals("Test", new String(buffer));
     }
 
@@ -82,6 +82,6 @@ public class SPITest {
     public void testSPIRead() {
         var buffer = new byte[4];
         spi.read(buffer);
-        assertArrayEquals(new byte[] {1, 1, 1, 1}, buffer);
+        assertArrayEquals(new byte[]{1, 1, 1, 1}, buffer);
     }
 }

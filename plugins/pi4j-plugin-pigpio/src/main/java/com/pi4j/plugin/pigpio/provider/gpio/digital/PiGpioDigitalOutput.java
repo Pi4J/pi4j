@@ -10,7 +10,7 @@ package com.pi4j.plugin.pigpio.provider.gpio.digital;
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
  * **********************************************************************
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the
@@ -53,17 +53,19 @@ public class PiGpioDigitalOutput extends DigitalOutputBase implements DigitalOut
     /**
      * <p>Constructor for PiGpioDigitalOutput.</p>
      *
-     * @param piGpio a {@link com.pi4j.library.pigpio.PiGpio} object.
+     * @param piGpio   a {@link com.pi4j.library.pigpio.PiGpio} object.
      * @param provider a {@link com.pi4j.io.gpio.digital.DigitalOutputProvider} object.
-     * @param config a {@link com.pi4j.io.gpio.digital.DigitalOutputConfig} object.
+     * @param config   a {@link com.pi4j.io.gpio.digital.DigitalOutputConfig} object.
      */
     public PiGpioDigitalOutput(PiGpio piGpio, DigitalOutputProvider provider, DigitalOutputConfig config) {
         super(provider, config);
         this.piGpio = piGpio;
-        this.pin = config.address().intValue();
+        this.pin = config.bcm().intValue();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutput initialize(Context context) throws InitializeException {
         super.initialize(context);
@@ -77,7 +79,9 @@ public class PiGpioDigitalOutput extends DigitalOutputBase implements DigitalOut
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutput state(DigitalState state) throws IOException {
         try {

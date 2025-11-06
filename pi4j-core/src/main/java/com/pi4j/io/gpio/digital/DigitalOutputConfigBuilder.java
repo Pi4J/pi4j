@@ -35,6 +35,9 @@ import com.pi4j.io.gpio.digital.impl.DefaultDigitalOutputConfigBuilder;
  * @version $Id: $Id
  */
 public interface DigitalOutputConfigBuilder extends DigitalConfigBuilder<DigitalOutputConfigBuilder, DigitalOutputConfig> {
+
+    DigitalOutputConfigBuilder bcm(Integer bcm);
+
     /**
      * <p>shutdown.</p>
      *
@@ -42,6 +45,7 @@ public interface DigitalOutputConfigBuilder extends DigitalConfigBuilder<Digital
      * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder} object.
      */
     DigitalOutputConfigBuilder shutdown(DigitalState state);
+
     /**
      * <p>initial.</p>
      *
@@ -56,7 +60,7 @@ public interface DigitalOutputConfigBuilder extends DigitalConfigBuilder<Digital
      * @param context {@link Context}
      * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder} object.
      */
-    static DigitalOutputConfigBuilder newInstance(Context context)  {
+    static DigitalOutputConfigBuilder newInstance(Context context) {
         return DefaultDigitalOutputConfigBuilder.newInstance(context);
     }
 
