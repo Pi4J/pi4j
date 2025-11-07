@@ -1,11 +1,11 @@
-package com.pi4j.config;
+package com.pi4j.io;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  AddressConfig.java
+ * FILENAME      :  IOAddressConfigBuilder.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -25,28 +25,26 @@ package com.pi4j.config;
  * #L%
  */
 
+import com.pi4j.config.BcmConfigBuilder;
+import com.pi4j.platform.Platform;
+import com.pi4j.provider.Provider;
+
 /**
- * <p>AddressConfig interface.</p>
+ * <p>IOConfigBuilder interface.</p>
  *
+ * @param <BUILDER_TYPE>
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
- * @param <CONFIG_TYPE>
  */
-public interface AddressConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
-    /** Constant <code>ADDRESS_KEY="address"</code> */
-    String ADDRESS_KEY = "address";
-    /**
-     * <p>address.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
-    Integer address();
-    /**
-     * <p>getAddress.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
-    default Integer getAddress(){
-        return this.address();
-    }
+public interface IOBcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>
+    extends IOConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,
+    BcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+    BUILDER_TYPE provider(String provider);
+
+    BUILDER_TYPE provider(Class<? extends Provider> providerClass);
+
+    BUILDER_TYPE platform(String platform);
+
+    BUILDER_TYPE platform(Class<? extends Platform> platformClass);
 }

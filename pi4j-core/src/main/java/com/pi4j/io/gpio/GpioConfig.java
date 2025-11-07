@@ -25,22 +25,18 @@ package com.pi4j.io.gpio;
  * #L%
  */
 
-import com.pi4j.config.AddressConfig;
+import com.pi4j.config.BcmConfig;
+import com.pi4j.config.BusConfig;
 import com.pi4j.config.Config;
 import com.pi4j.io.IOConfig;
 
 /**
  * <p>GpioConfig interface.</p>
  *
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
- * @param <CONFIG_TYPE>
  */
-public interface GpioConfig<CONFIG_TYPE extends Config>
-        extends AddressConfig<CONFIG_TYPE>, IOConfig<CONFIG_TYPE> {
-
-    String BUS_NUMBER = "bus-number";
-
-    Integer busNumber();
+public interface GpioConfig<CONFIG_TYPE extends Config> extends BusConfig<CONFIG_TYPE>, BcmConfig<CONFIG_TYPE>, IOConfig<CONFIG_TYPE> {
 
 }

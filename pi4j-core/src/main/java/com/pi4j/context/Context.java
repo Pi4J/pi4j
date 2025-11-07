@@ -247,23 +247,39 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     // PROVIDER ACCESSOR METHODS
     // ------------------------------------------------------------------------
 
+
     /**
-     * {@inheritDoc}
+     * <p>provider.</p>
+     *
+     * @param providerId a {@link java.lang.String} object.
+     * @param <T>
+     * @return
+     * @throws ProviderNotFoundException
      */
     default <T extends Provider> T provider(String providerId) throws ProviderNotFoundException {
         return (T) providers().get(providerId);
     }
 
     /**
-     * {@inheritDoc}
+     * <p>provider.</p>
+     *
+     * @param providerId    a {@link java.lang.String} object.
+     * @param providerClass a T object.
+     * @param <T>
+     * @return
+     * @throws ProviderNotFoundException
      */
     default <T extends Provider> T provider(String providerId, Class<T> providerClass)
         throws ProviderNotFoundException {
         return (T) providers().get(providerId);
     }
 
+
     /**
-     * {@inheritDoc}
+     * <p>Has providers.</p>
+     *
+     * @param providerId a {@link java.lang.String} object.
+     * @return
      */
     default boolean hasProvider(String providerId) {
         try {
@@ -273,22 +289,38 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         }
     }
 
+
     /**
-     * {@inheritDoc}
+     * <p>Has providers.</p>
+     *
+     * @param ioType a {@link com.pi4j.io.IOType} object.
+     * @param <T>
+     * @return
      */
     default <T extends Provider> boolean hasProvider(IOType ioType) {
         return providers().exists(ioType);
     }
 
     /**
-     * {@inheritDoc}
+     * <p>Has providers.</p>
+     *
+     * @param providerClass a {@link java.lang.Class} object.
+     * @param <T>
+     * @return
      */
     default <T extends Provider> boolean hasProvider(Class<T> providerClass) {
         return providers().exists(providerClass);
     }
 
+
     /**
-     * {@inheritDoc}
+     * <p>provider.</p>
+     *
+     * @param providerClass a {@link java.lang.Class} object.
+     * @param <T>
+     * @return
+     * @throws ProviderNotFoundException
+     * @throws ProviderInterfaceException
      */
     default <T extends Provider> T provider(Class<T> providerClass)
         throws ProviderNotFoundException, ProviderInterfaceException {
@@ -304,8 +336,14 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         throw new ProviderNotFoundException(providerClass);
     }
 
+
     /**
-     * {@inheritDoc}
+     * <p>provider.</p>
+     *
+     * @param ioType a {@link com.pi4j.io.IOType} object.
+     * @param <T>
+     * @return
+     * @throws ProviderNotFoundException
      */
     default <T extends Provider> T provider(IOType ioType) throws ProviderNotFoundException {
         // return the default provider for this type from the default platform
@@ -336,6 +374,9 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     // I/O INSTANCE ACCESSOR/CREATOR METHODS
     // ------------------------------------------------------------------------
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <I extends IO> I create(IOConfig config, IOType ioType) {
 
@@ -367,6 +408,9 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         throw new IOException("This IO instance [" + config.id() + "] could not be created because it does not define one of the following: 'PLATFORM', 'PROVIDER', or 'I/O TYPE'.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <T extends IO> T create(String id) {
         Provider provider = null;
@@ -410,6 +454,9 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         return (T) provider.create((Config) builder.build());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <T extends IO> T create(String id, IOType ioType) {
         Provider provider = null;
@@ -460,9 +507,7 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      *
      * @param <T> the IO Type
      * @param id  the IO id
-     *
      * @return the IO which was shutdown or null if it wasn't created/registered
-     *
      * @throws IONotFoundException  if the IO was not registered
      * @throws IOInvalidIDException if the ID is invalid
      * @throws IOShutdownException  if an error occured while shuting down the IO
@@ -474,7 +519,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      *
      * @param <T>      the IO Type
      * @param instance the IO to shutdown and unregister
-     *
      * @throws IONotFoundException  if the IO was not registered
      * @throws IOInvalidIDException if the ID is invalid
      * @throws IOShutdownException  if an error occured while shuting down the IO

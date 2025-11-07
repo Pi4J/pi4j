@@ -37,13 +37,13 @@ import com.pi4j.io.gpio.analog.AnalogOutputConfigBuilder;
  * @version $Id: $Id
  */
 public class DefaultAnalogOutputConfigBuilder
-        extends AnalogConfigBuilderBase<AnalogOutputConfigBuilder, AnalogOutputConfig>
-        implements AnalogOutputConfigBuilder {
+    extends AnalogConfigBuilderBase<AnalogOutputConfigBuilder, AnalogOutputConfig>
+    implements AnalogOutputConfigBuilder {
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    private DefaultAnalogOutputConfigBuilder(Context context){
+    private DefaultAnalogOutputConfigBuilder(Context context) {
         super(context);
     }
 
@@ -57,34 +57,57 @@ public class DefaultAnalogOutputConfigBuilder
         return new DefaultAnalogOutputConfigBuilder(context);
     }
 
+    /**
+     * @deprecated use {@link #bus(int)} instead.
+     * <p>
+     * {@inheritDoc}
+     */
     @Override
-    public AnalogOutputConfigBuilder busNumber(int busNumber) {
-        this.properties.put(GpioConfig.BUS_NUMBER, String.valueOf(busNumber));
+    @Deprecated(forRemoval = true)
+    public AnalogOutputConfigBuilder address(Integer address) {
+        this.properties.put(GpioConfig.ADDRESS_KEY, String.valueOf(address));
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AnalogOutputConfigBuilder bus(int bus) {
+        this.properties.put(GpioConfig.BUS_KEY, String.valueOf(bus));
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AnalogOutputConfigBuilder shutdown(Integer value) {
         this.properties.put(AnalogOutputConfig.SHUTDOWN_VALUE_KEY, value.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AnalogOutputConfigBuilder initial(Integer value) {
         this.properties.put(AnalogOutputConfig.INITIAL_VALUE_KEY, value.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AnalogOutputConfig build() {
         AnalogOutputConfig config = new DefaultAnalogOutputConfig(getResolvedProperties());
         return config;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AnalogOutputConfigBuilder step(Integer value) {
         this.properties.put(AnalogOutputConfig.STEP_VALUE_KEY, value.toString());

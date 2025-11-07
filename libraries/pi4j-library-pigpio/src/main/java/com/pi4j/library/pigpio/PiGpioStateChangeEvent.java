@@ -10,7 +10,7 @@ package com.pi4j.library.pigpio;
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
  * **********************************************************************
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the
@@ -43,12 +43,12 @@ public class PiGpioStateChangeEvent {
      * Default constructor
      *
      * @param state the value changed for this event instance
-     * @param pin a int.
-     * @param tick a long.
+     * @param pin   a int.
+     * @param tick  a long.
      */
     public PiGpioStateChangeEvent(final int pin,
                                   final PiGpioState state,
-                                  final long tick){
+                                  final long tick) {
         this.state = state;
         this.pin = pin;
         this.tick = tick;
@@ -81,9 +81,11 @@ public class PiGpioStateChangeEvent {
         return this.tick;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder result = new StringBuilder();
         result.append("<<STATE CHANGE EVENT>> PIN [");
         result.append(this.pin());

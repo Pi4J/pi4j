@@ -42,22 +42,22 @@ public enum HeaderVersion {
     /**
      * Header version type 1, used on the original Model B.
      */
-    TYPE_1("Type 1", "Used on original Model B", List.of(HeaderPins.HEADER_26_TYPE_1)),
+    TYPE_1("Type 1", "Used on original Model B", List.of(HeaderType.HEADER_26_TYPE_1)),
 
     /**
      * Header version type 2, used on Model A and Model B (revision 2).
      */
-    TYPE_2("Type 2", "Used on Model A and Model B (revision 2)", List.of(HeaderPins.HEADER_26_TYPE_2, HeaderPins.HEADER_8)),
+    TYPE_2("Type 2", "Used on Model A and Model B (revision 2)", List.of(HeaderType.HEADER_26_TYPE_2, HeaderType.HEADER_8)),
 
     /**
      * Header version type 3, used on various models including A+, B+, Pi Zero, and Pi5B.
      */
-    TYPE_3("Type 3", "Used on Model A+, B+, Pi Zero, Pi Zero W, Pi2B, Pi3B, Pi4B, Pi5B", List.of(HeaderPins.HEADER_40)),
+    TYPE_3("Type 3", "Used on Model A+, B+, Pi Zero, Pi Zero W, Pi2B, Pi3B, Pi4B, Pi5B", List.of(HeaderType.HEADER_40)),
 
     /**
      * Header version used for the Compute Module series with 54 GPIO pins.
      */
-    COMPUTE("Compute Module", "54 GPIO", List.of(HeaderPins.COMPUTE_J5, HeaderPins.COMPUTE_J6)),
+    COMPUTE("Compute Module", "54 GPIO", List.of(HeaderType.COMPUTE_J5, HeaderType.COMPUTE_J6)),
 
     /**
      * Unknown or unspecified header version.
@@ -66,19 +66,19 @@ public enum HeaderVersion {
 
     private final String label;
     private final String description;
-    private final List<HeaderPins> headerPins;
+    private final List<HeaderType> headerTypes;
 
     /**
      * Constructs a {@link HeaderVersion} enum constant.
      *
      * @param label       the label describing the header version.
      * @param description a brief description of the header version and its use.
-     * @param headerPins  the list of {@link HeaderPins} associated with this header version.
+     * @param headerTypes the list of {@link HeaderType} associated with this header version.
      */
-    HeaderVersion(String label, String description, List<HeaderPins> headerPins) {
+    HeaderVersion(String label, String description, List<HeaderType> headerTypes) {
         this.label = label;
         this.description = description;
-        this.headerPins = headerPins;
+        this.headerTypes = headerTypes;
     }
 
     /**
@@ -102,9 +102,9 @@ public enum HeaderVersion {
     /**
      * Retrieves the list of header pin configurations associated with the header version.
      *
-     * @return a list of {@link HeaderPins} for the header version.
+     * @return a list of {@link HeaderType} for the header version.
      */
-    public List<HeaderPins> getHeaderPins() {
-        return headerPins;
+    public List<HeaderType> getHeaderTypes() {
+        return headerTypes;
     }
 }

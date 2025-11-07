@@ -197,7 +197,6 @@ public class I2CTest {
             var count3 = direct.readRegister("Test".getBytes(), data3);
             assertEquals(4, count3);
             assertArrayEquals("Test".getBytes(), data3);
-
         }
     }
 

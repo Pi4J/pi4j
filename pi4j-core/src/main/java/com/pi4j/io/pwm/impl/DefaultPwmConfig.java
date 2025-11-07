@@ -26,7 +26,7 @@ package com.pi4j.io.pwm.impl;
  */
 
 import com.pi4j.io.gpio.digital.PullResistance;
-import com.pi4j.io.impl.IOAddressConfigBase;
+import com.pi4j.io.impl.IOConfigBase;
 import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.pwm.PwmPolarity;
 import com.pi4j.io.pwm.PwmPreset;
@@ -45,10 +45,11 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public class DefaultPwmConfig
-        extends IOAddressConfigBase<PwmConfig>
-        implements PwmConfig {
+    extends IOConfigBase<PwmConfig>
+    implements PwmConfig {
 
-    protected Integer busNumber = null;
+    protected Integer bus = null;
+    protected Integer channel = null;
 
     // private configuration properties
     protected Integer dutyCycle = null;
@@ -62,7 +63,7 @@ public class DefaultPwmConfig
     /**
      * PRIVATE CONSTRUCTOR
      */
-    private DefaultPwmConfig(){
+    private DefaultPwmConfig() {
         super();
     }
 
@@ -73,9 +74,9 @@ public class DefaultPwmConfig
      * PRIVATE CONSTRUCTOR
      *
      * @param properties a {@link java.util.Map} object.
-     * @param presets a {@link java.util.Collection} object.
+     * @param presets    a {@link java.util.Collection} object.
      */
-    protected DefaultPwmConfig(Map<String,String> properties, Collection<PwmPreset> presets){
+    protected DefaultPwmConfig(Map<String, String> properties, Collection<PwmPreset> presets) {
         this(properties);
         this.presets.addAll(presets);
     }
@@ -85,114 +86,150 @@ public class DefaultPwmConfig
      *
      * @param properties a {@link java.util.Map} object.
      */
-    protected DefaultPwmConfig(Map<String,String> properties){
+    protected DefaultPwmConfig(Map<String, String> properties) {
         super(properties);
 
-        // define default property values if any are missing (based on the required address value)
-        this.id = StringUtil.setIfNullOrEmpty(this.id, "PWM-" + this.address, true);
-        this.name = StringUtil.setIfNullOrEmpty(this.name, "PWM-" + this.address, true);
-        this.description = StringUtil.setIfNullOrEmpty(this.description, "PWM-" + this.address, true);
+        if (properties.containsKey(PWM_BUS)) {
+            this.bus = Integer.valueOf(properties.get(PWM_BUS));
+        }
 
-        if (properties.containsKey(PWM_BUS_NUMBER)) {
-            this.busNumber = Integer.valueOf(properties.get(PWM_BUS_NUMBER));
+        if (properties.containsKey(PWM_CHANNEL)) {
+            this.channel = Integer.valueOf(properties.get(PWM_CHANNEL));
         }
 
         // load optional pwm duty-cycle from properties
-        if(properties.containsKey(DUTY_CYCLE_KEY)){
+        if (properties.containsKey(DUTY_CYCLE_KEY)) {
             this.dutyCycle = Integer.parseInt(properties.get(DUTY_CYCLE_KEY));
         }
 
         // load optional pwm frequency from properties
-        if(properties.containsKey(FREQUENCY_KEY)){
+        if (properties.containsKey(FREQUENCY_KEY)) {
             this.frequency = Integer.parseInt(properties.get(FREQUENCY_KEY));
         }
 
         // load optional pwm type from properties
-        if(properties.containsKey(PWM_TYPE_KEY)){
+        if (properties.containsKey(PWM_TYPE_KEY)) {
             this.pwmType = PwmType.parse(properties.get(PWM_TYPE_KEY));
         }
 
         // load optional pwm type from properties
-        if(properties.containsKey(POLARITY_KEY)){
+        if (properties.containsKey(POLARITY_KEY)) {
             this.polarity = PwmPolarity.parse(properties.get(POLARITY_KEY));
         }
 
         // load initial value property
-        if(properties.containsKey(INITIAL_VALUE_KEY)){
+        if (properties.containsKey(INITIAL_VALUE_KEY)) {
             this.initialValue = Integer.parseInt(properties.get(INITIAL_VALUE_KEY));
         }
 
         // load shutdown value property
-        if(properties.containsKey(SHUTDOWN_VALUE_KEY)){
+        if (properties.containsKey(SHUTDOWN_VALUE_KEY)) {
             this.shutdownValue = Integer.parseInt(properties.get(SHUTDOWN_VALUE_KEY));
         }
 
         // bounds checking
-        if(this.dutyCycle != null && this.dutyCycle > 100)
+        if (this.dutyCycle != null && this.dutyCycle > 100) {
             this.dutyCycle = 100;
+        }
 
         // bounds checking
-        if(this.dutyCycle != null && this.dutyCycle < 0)
-            this.dutyCycle = (int) 0 ;
+        if (this.dutyCycle != null && this.dutyCycle < 0) {
+            this.dutyCycle = (int) 0;
+        }
+
+        // define default property values if any are missing (based on the required address value)
+        this.id = StringUtil.setIfNullOrEmpty(this.id, "PWM-" + this.channel, true);
+        this.name = StringUtil.setIfNullOrEmpty(this.name, "PWM-" + this.channel, true);
+        this.description = StringUtil.setIfNullOrEmpty(this.description, "PWM-" + this.channel, true);
+    }
+
+    /**
+     * @deprecated use {@link #bus()} instead.
+     */
+    @Override
+    @Deprecated(forRemoval = true)
+    public Integer address() {
+        return this.channel;
     }
 
     @Override
-    public Integer busNumber() {
-        return this.busNumber;
+    public Integer bus() {
+        return this.bus;
     }
 
-    /** {@inheritDoc} */
+    @Override
+    public Integer channel() {
+        return this.channel;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Integer dutyCycle() {
         return this.dutyCycle;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Integer frequency() {
         return this.frequency;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PwmType pwmType() {
         return this.pwmType;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PwmPolarity polarity() {
         return this.polarity;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Integer shutdownValue(){
+    public Integer shutdownValue() {
         return this.shutdownValue;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public PwmConfig shutdownValue(Integer dutyCycle){
+    public PwmConfig shutdownValue(Integer dutyCycle) {
 
         // bounds check the duty-cycle value
         Integer dc = dutyCycle;
-        if(dc < 0) dc = 0;
-        if(dc > 100) dc = 100;
+        if (dc < 0) dc = 0;
+        if (dc > 100) dc = 100;
 
         this.shutdownValue = dc;
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Integer initialValue() {
         return this.initialValue;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Collection<PwmPreset> presets(){
+    public Collection<PwmPreset> presets() {
         return this.presets;
     }
 }

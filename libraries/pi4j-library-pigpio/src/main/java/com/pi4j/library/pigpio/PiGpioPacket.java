@@ -40,18 +40,20 @@ import java.util.Arrays;
 
 /**
  *
- *  typedef struct
- *  {
- *      uint32_t cmd;
- *      uint32_t p1;
- *      uint32_t p2;
- *      union
+ * <pre>
+ *     typedef struct
  *      {
- *          uint32_t p3;
- *          uint32_t ext_len;
- *          uint32_t res;
- *      };
- *  } cmdCmd_t;
+ *          uint32_t cmd;
+ *          uint32_t p1;
+ *          uint32_t p2;
+ *          union
+ *          {
+ *              uint32_t p3;
+ *              uint32_t ext_len;
+ *              uint32_t res;
+ *          };
+ *      } cmdCmd_t;
+ * </pre>
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
@@ -69,7 +71,7 @@ public class PiGpioPacket {
     /**
      * <p>Constructor for PiGpioPacket.</p>
      */
-    public PiGpioPacket(){
+    public PiGpioPacket() {
     }
 
     /**
@@ -77,7 +79,7 @@ public class PiGpioPacket {
      *
      * @param cmd a {@link com.pi4j.library.pigpio.PiGpioCmd} object.
      */
-    public PiGpioPacket(PiGpioCmd cmd){
+    public PiGpioPacket(PiGpioCmd cmd) {
         this.cmd(cmd);
     }
 
@@ -85,9 +87,9 @@ public class PiGpioPacket {
      * <p>Constructor for PiGpioPacket.</p>
      *
      * @param cmd a {@link com.pi4j.library.pigpio.PiGpioCmd} object.
-     * @param p1 a int.
+     * @param p1  a int.
      */
-    public PiGpioPacket(PiGpioCmd cmd, int p1){
+    public PiGpioPacket(PiGpioCmd cmd, int p1) {
         this.cmd(cmd).p1(p1);
     }
 
@@ -95,22 +97,22 @@ public class PiGpioPacket {
      * <p>Constructor for PiGpioPacket.</p>
      *
      * @param cmd a {@link com.pi4j.library.pigpio.PiGpioCmd} object.
-     * @param p1 a int.
-     * @param p2 a int.
+     * @param p1  a int.
+     * @param p2  a int.
      */
-    public PiGpioPacket(PiGpioCmd cmd, int p1, int p2){
+    public PiGpioPacket(PiGpioCmd cmd, int p1, int p2) {
         this.cmd(cmd).p1(p1).p2(p2);
     }
 
     /**
      * <p>Constructor for PiGpioPacket.</p>
      *
-     * @param cmd a {@link com.pi4j.library.pigpio.PiGpioCmd} object.
-     * @param p1 a int.
-     * @param p2 a int.
-     * @param data an array of {@link byte} objects.
+     * @param cmd  a {@link com.pi4j.library.pigpio.PiGpioCmd} object.
+     * @param p1   a int.
+     * @param p2   a int.
+     * @param data an array of {@link Byte} objects.
      */
-    public PiGpioPacket(PiGpioCmd cmd, int p1, int p2, byte[] data){
+    public PiGpioPacket(PiGpioCmd cmd, int p1, int p2, byte[] data) {
         this.cmd(cmd).p1(p1).p2(p2).data(data);
     }
 
@@ -119,16 +121,17 @@ public class PiGpioPacket {
      *
      * @return a {@link com.pi4j.library.pigpio.PiGpioCmd} object.
      */
-    public PiGpioCmd cmd(){
+    public PiGpioCmd cmd() {
         return this.cmd;
     }
+
     /**
      * <p>cmd.</p>
      *
      * @param cmd a {@link com.pi4j.library.pigpio.PiGpioCmd} object.
      * @return a {@link com.pi4j.library.pigpio.PiGpioPacket} object.
      */
-    public PiGpioPacket cmd(PiGpioCmd cmd){
+    public PiGpioPacket cmd(PiGpioCmd cmd) {
         this.cmd = cmd;
         return this;
     }
@@ -138,16 +141,17 @@ public class PiGpioPacket {
      *
      * @return a int.
      */
-    public int p1(){
+    public int p1() {
         return this.p1;
     }
+
     /**
      * <p>p1.</p>
      *
      * @param p1 a int.
      * @return a {@link com.pi4j.library.pigpio.PiGpioPacket} object.
      */
-    public PiGpioPacket p1(int p1){
+    public PiGpioPacket p1(int p1) {
         this.p1 = p1;
         return this;
     }
@@ -157,16 +161,17 @@ public class PiGpioPacket {
      *
      * @return a int.
      */
-    public int p2(){
+    public int p2() {
         return this.p2;
     }
+
     /**
      * <p>p2.</p>
      *
      * @param p2 a int.
      * @return a {@link com.pi4j.library.pigpio.PiGpioPacket} object.
      */
-    public PiGpioPacket p2(int p2){
+    public PiGpioPacket p2(int p2) {
         this.p2 = p2;
         return this;
     }
@@ -176,36 +181,39 @@ public class PiGpioPacket {
      *
      * @return a int.
      */
-    public int p3(){
+    public int p3() {
         return this.p3;
     }
+
     /**
      * <p>p3.</p>
      *
      * @param p3 a int.
      * @return a {@link com.pi4j.library.pigpio.PiGpioPacket} object.
      */
-    protected PiGpioPacket p3(int p3){
+    protected PiGpioPacket p3(int p3) {
         this.p3 = p3;
         return this;
     }
 
     // the following methods are actaully returning the "P3" value as P3
     // is a C union and used for multiple purposes depending on context
+
     /**
      * <p>result.</p>
      *
      * @return a int.
      */
-    public int result(){
+    public int result() {
         return p3();
     }
+
     /**
      * <p>success.</p>
      *
      * @return a boolean.
      */
-    public boolean success(){
+    public boolean success() {
         return p3() >= 0;
     }
 
@@ -214,26 +222,27 @@ public class PiGpioPacket {
      *
      * @return a boolean.
      */
-    public boolean hasData(){
-        if(this.data == null) return false;
+    public boolean hasData() {
+        if (this.data == null) return false;
         return this.data.length > 0;
     }
+
     /**
      * <p>dataLength.</p>
      *
      * @return a int.
      */
-    public int dataLength(){
-        if(this.data == null) return 0;
+    public int dataLength() {
+        if (this.data == null) return 0;
         return this.data.length;
     }
 
     /**
      * <p>data.</p>
      *
-     * @return an array of {@link byte} objects.
+     * @return an array of {@link Byte} objects.
      */
-    public byte[] data(){
+    public byte[] data() {
         return this.data;
     }
 
@@ -243,14 +252,14 @@ public class PiGpioPacket {
      * @param data a {@link java.lang.CharSequence} object.
      * @return a {@link com.pi4j.library.pigpio.PiGpioPacket} object.
      */
-    public PiGpioPacket data(CharSequence data){
+    public PiGpioPacket data(CharSequence data) {
         return this.data(data.toString().getBytes(StandardCharsets.US_ASCII));
     }
 
     /**
      * <p>data.</p>
      *
-     * @param data an array of {@link byte} objects.
+     * @param data an array of {@link Byte} objects.
      * @return a {@link com.pi4j.library.pigpio.PiGpioPacket} object.
      */
     public PiGpioPacket data(byte[] data) {
@@ -260,7 +269,7 @@ public class PiGpioPacket {
     /**
      * <p>data.</p>
      *
-     * @param data an array of {@link byte} objects.
+     * @param data   an array of {@link Byte} objects.
      * @param length a int.
      * @return a {@link com.pi4j.library.pigpio.PiGpioPacket} object.
      */
@@ -271,18 +280,17 @@ public class PiGpioPacket {
     /**
      * <p>data.</p>
      *
-     * @param data an array of {@link byte} objects.
+     * @param data   an array of {@link Byte} objects.
      * @param offset a int.
      * @param length a int.
      * @return a {@link com.pi4j.library.pigpio.PiGpioPacket} object.
      */
-    public PiGpioPacket data(byte[] data, int offset, int length){
+    public PiGpioPacket data(byte[] data, int offset, int length) {
         // check for valid data
-        if(data != null && data.length > 0 && length > 0) {
+        if (data != null && data.length > 0 && length > 0) {
             this.p3 = length;
-            this.data = Arrays.copyOfRange(data, offset, offset+length);
-        }
-        else{
+            this.data = Arrays.copyOfRange(data, offset, offset + length);
+        } else {
             this.p3 = 0;
             this.data = new byte[0];
         }
@@ -295,16 +303,15 @@ public class PiGpioPacket {
      * @param value a int.
      * @return a {@link com.pi4j.library.pigpio.PiGpioPacket} object.
      */
-    public PiGpioPacket data(int value){
+    public PiGpioPacket data(int value) {
         // check for valid value
-        if(value > 0) {
+        if (value > 0) {
             this.p3 = 4; // 4 bytes length
             ByteBuffer buffer = ByteBuffer.allocate(4);
             buffer.order(ByteOrder.LITTLE_ENDIAN);
             buffer.putInt(value);
             this.data = buffer.array();
-        }
-        else{
+        } else {
             this.p3 = 0;
             this.data = new byte[0];
         }
@@ -318,13 +325,12 @@ public class PiGpioPacket {
      * @param value a byte.
      * @return a {@link com.pi4j.library.pigpio.PiGpioPacket} object.
      */
-    public PiGpioPacket data(byte value){
+    public PiGpioPacket data(byte value) {
         // check for valid value
-        if(value > 0) {
+        if (value > 0) {
             this.p3 = 4; // 4 bytes length
-            this.data = new byte[] { value, 0, 0, 0 }; // little endian
-        }
-        else{
+            this.data = new byte[]{value, 0, 0, 0}; // little endian
+        } else {
             this.p3 = 0;
             this.data = new byte[0];
         }
@@ -336,9 +342,9 @@ public class PiGpioPacket {
      *
      * @return a {@link java.lang.String} object.
      */
-    public String dataToString(){
-        if(data == null) return null;
-        if(data.length == 0) return "";
+    public String dataToString() {
+        if (data == null) return null;
+        if (data.length == 0) return "";
         return new String(data, StandardCharsets.US_ASCII);
     }
 
@@ -368,7 +374,7 @@ public class PiGpioPacket {
 
         int remaining = bytesToRead(packet, stream);
 
-        if(remaining > 0) {
+        if (remaining > 0) {
             var temp = stream.readNBytes(remaining);
             packet.data(temp);
         }
@@ -399,9 +405,9 @@ public class PiGpioPacket {
      * <p>encode.</p>
      *
      * @param packet a {@link com.pi4j.library.pigpio.PiGpioPacket} object.
-     * @return an array of {@link byte} objects.
+     * @return an array of {@link Byte} objects.
      */
-    public static byte[] encode(PiGpioPacket packet){
+    public static byte[] encode(PiGpioPacket packet) {
         // create byte array and byte buffer using LITTLE ENDIAN for the ARM platform
         byte[] bytes = new byte[16 + packet.dataLength()];
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
@@ -412,7 +418,7 @@ public class PiGpioPacket {
         buffer.putInt((packet.p1()));         // <P1>
         buffer.putInt((packet.p2()));         // <P2>
         buffer.putInt((packet.p3()));         // <P3>
-        if(packet.data != null && packet.data.length > 0) {
+        if (packet.data != null && packet.data.length > 0) {
             buffer.put(packet.data());        // <DATA>
         }
 
@@ -420,11 +426,13 @@ public class PiGpioPacket {
         return bytes;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String toString(){
+    public String toString() {
         //if(this.data != null && this.data.length > 0)
-        if(p3() > 0)
+        if (p3() > 0)
             return String.format("CMD=%s(%d); P1=%d; P2=%d; P3=%d; PAYLOAD=[0x%s]", cmd().name(), cmd().value(), p1(), p2(), p3(), StringUtil.toHexString(data()));
         else
             return String.format("CMD=%s(%d); P1=%d; P2=%d; P3=%d", cmd().name(), cmd().value(), p1(), p2(), p3());

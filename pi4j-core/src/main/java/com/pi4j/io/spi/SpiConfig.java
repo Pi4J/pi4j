@@ -25,7 +25,7 @@ package com.pi4j.io.spi;
  * #L%
  */
 
-import com.pi4j.config.AddressConfig;
+import com.pi4j.config.ChannelConfig;
 import com.pi4j.context.Context;
 import com.pi4j.io.IOConfig;
 
@@ -35,21 +35,38 @@ import com.pi4j.io.IOConfig;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public interface SpiConfig extends AddressConfig<SpiConfig>, IOConfig<SpiConfig> {
-    /** Constant <code>BAUD_KEY="baud"</code> */
+public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig> {
+    /**
+     * @deprecated use {@link #BUS_KEY} instead.
+     * <p>
+     * Constant <code>BAUD_KEY="baud"</code>
+     */
+    @Deprecated(forRemoval = true)
+    String ADDRESS_KEY = "address";
+    /**
+     * Constant <code>BAUD_KEY="baud"</code>
+     */
     String BAUD_KEY = "baud";
-    /** Constant <code>BUS_KEY="bus"</code> */
+    /**
+     * Constant <code>BUS_KEY="bus"</code>
+     */
     String BUS_KEY = "bus";
-    /** Constant <code>MODE_KEY="mode"</code> */
+    /**
+     * Constant <code>MODE_KEY="mode"</code>
+     */
     String MODE_KEY = "mode";
-    /** Constant <code>FLAGS_KEY="flags"</code> */
+    /**
+     * Constant <code>FLAGS_KEY="flags"</code>
+     */
     String FLAGS_KEY = "flags";
-    /** Constant <code>WRITE_LSB_KEY="baud"</code> */
+    /**
+     * Constant <code>WRITE_LSB_KEY="baud"</code>
+     */
     String WRITE_LSB_KEY = "write_lsb";
-    /** Constant <code>READ_LSB_KEY="baud"</code> */
+    /**
+     * Constant <code>READ_LSB_KEY="baud"</code>
+     */
     String READ_LSB_KEY = "read_lsb";
-
-
 
     /**
      * <p>newBuilder.</p>
@@ -57,7 +74,7 @@ public interface SpiConfig extends AddressConfig<SpiConfig>, IOConfig<SpiConfig>
      * @param context {@link Context}
      * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
      */
-    static SpiConfigBuilder newBuilder(Context context)  {
+    static SpiConfigBuilder newBuilder(Context context) {
         return SpiConfigBuilder.newInstance(context);
     }
 
@@ -67,12 +84,15 @@ public interface SpiConfig extends AddressConfig<SpiConfig>, IOConfig<SpiConfig>
      * @return a {@link java.lang.Integer} object.
      */
     Integer baud();
+
     /**
      * <p>getBaud.</p>
      *
      * @return a {@link java.lang.Integer} object.
      */
-    default Integer getBaud() { return baud(); }
+    default Integer getBaud() {
+        return baud();
+    }
 
     /**
      * <p>ReadLsbFirst.</p>
@@ -88,8 +108,9 @@ public interface SpiConfig extends AddressConfig<SpiConfig>, IOConfig<SpiConfig>
      *
      * @return a {@link java.lang.Integer} object.
      */
-    default Integer getReadLsbFirst() { return readLsbFirst(); }
-
+    default Integer getReadLsbFirst() {
+        return readLsbFirst();
+    }
 
 
     /**
@@ -106,9 +127,9 @@ public interface SpiConfig extends AddressConfig<SpiConfig>, IOConfig<SpiConfig>
      *
      * @return a {@link java.lang.Integer} object.
      */
-    default Integer getWriteLsbFirst() { return writeLsbFirst(); }
-
-
+    default Integer getWriteLsbFirst() {
+        return writeLsbFirst();
+    }
 
     /**
      * <p>bus.</p>
@@ -119,6 +140,7 @@ public interface SpiConfig extends AddressConfig<SpiConfig>, IOConfig<SpiConfig>
      * @return a {@link com.pi4j.io.spi.SpiBus} object.
      */
     SpiBus bus();
+
     /**
      * <p>getBus.</p>
      *
@@ -130,47 +152,51 @@ public interface SpiConfig extends AddressConfig<SpiConfig>, IOConfig<SpiConfig>
 
     /**
      * <p>busUserProvided.</p>
-     * @return  a boolean.
+     *
+     * @return a boolean.
      */
     boolean busUserProvided();
 
     /**
      * <p>getBusUserProvided.</p>
-     * @return  a {@link java.lang.Boolean} object.
+     *
+     * @return a {@link java.lang.Boolean} object.
      */
-    default boolean getBusUserProvided(){
+    default boolean getBusUserProvided() {
         return busUserProvided();
     }
 
     /**
      * <p>writeLsbFirstserProvided.</p>
-     * @return  a boolean.
+     *
+     * @return a boolean.
      */
     boolean writeLsbFirstUserProvided();
 
     /**
      * <p>getWriteLsbFirstUserProvided.</p>
-     * @return  a {@link java.lang.Boolean} object.
+     *
+     * @return a {@link java.lang.Boolean} object.
      */
-    default boolean getWriteLsbFIrstUserProvided(){
+    default boolean getWriteLsbFIrstUserProvided() {
         return writeLsbFirstUserProvided();
     }
 
     /**
      * <p>writeLsbFirstserProvided.</p>
-     * @return  a boolean.
+     *
+     * @return a boolean.
      */
     boolean readLsbFirstUserProvided();
 
     /**
      * <p>getReadLsbFirstUserProvided.</p>
-     * @return  a {@link java.lang.Boolean} object.
+     *
+     * @return a {@link java.lang.Boolean} object.
      */
-    default boolean getReadLsbFIrstUserProvided(){
+    default boolean getReadLsbFIrstUserProvided() {
         return readLsbFirstUserProvided();
     }
-
-
 
 
     /**
@@ -182,6 +208,7 @@ public interface SpiConfig extends AddressConfig<SpiConfig>, IOConfig<SpiConfig>
      * @return a {@link com.pi4j.io.spi.SpiMode} object.
      */
     SpiMode mode();
+
     /**
      * <p>getMode.</p>
      *
@@ -193,15 +220,17 @@ public interface SpiConfig extends AddressConfig<SpiConfig>, IOConfig<SpiConfig>
 
     /**
      * <p>modeUserProvided.</p>
-     * @return  a boolean.
+     *
+     * @return a boolean.
      */
     boolean modeUserProvided();
 
     /**
      * <p>bgetModeUserProvided.</p>
-     * @return  a {@link java.lang.Boolean} object.
+     *
+     * @return a {@link java.lang.Boolean} object.
      */
-    default boolean getModeUserProvided(){
+    default boolean getModeUserProvided() {
         return modeUserProvided();
     }
 

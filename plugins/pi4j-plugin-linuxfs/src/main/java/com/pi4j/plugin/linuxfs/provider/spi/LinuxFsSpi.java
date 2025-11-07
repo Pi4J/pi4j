@@ -152,8 +152,8 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         // /dev/spidevB.C ...
         //    character special device, major number 153 with a dynamically chosen minor device number.
         //    This is the node that userspace programs will open, created by “udev” or “mdev”.
-        String spiDev = SPI_DEVICE_BASE + config().bus().getBus() + "." + config().address();
-        logger.info("Opening SPI bus {}, address {}", config().bus().getBus(), config().address());
+        String spiDev = SPI_DEVICE_BASE + config().bus().getBus() + "." + config().channel();
+        logger.info("Opening SPI bus {}, address {}", config().bus().getBus(), config().channel());
         fd = libc.open(spiDev, LinuxLibC.O_RDWR);
         if (fd < 0) {
             throw new RuntimeException("Failed to open SPI device " + spiDev);
@@ -435,7 +435,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
 
         int ret = libc.ioctl(fd, SPI_IOC_MESSAGE(totalRecords), (Object) transferArray);
 
-        logger.trace("[SPI::RegRead] <- Number bytes read {} ", ret);
+        logger.trace("[SPI::writeThenRead] <- Number bytes read {} ", ret);
         if (ret < 0) {
             String errorMessage = String.format("Failed ioctl SPI message. ret %d, error: %s", ret, String.valueOf(Native.getLastError()));
             logger.error(errorMessage);

@@ -25,6 +25,8 @@ package com.pi4j.io.i2c;
  * #L%
  */
 
+import com.pi4j.config.BusConfig;
+import com.pi4j.config.DeviceConfig;
 import com.pi4j.context.Context;
 import com.pi4j.io.IOConfig;
 
@@ -34,44 +36,9 @@ import com.pi4j.io.IOConfig;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public interface I2CConfig extends IOConfig<I2CConfig> {
-
-    /** Constant <code>BUS_KEY="bus"</code> */
-    String BUS_KEY = "bus";
-    /** Constant <code>DEVICE_KEY="device"</code> */
-    String DEVICE_KEY = "device";
+public interface I2CConfig extends IOConfig<I2CConfig>, BusConfig<I2CConfig>, DeviceConfig<I2CConfig> {
 
     String I2C_IMPLEMENTATION = "i2c_implementation";
-
-    /**
-     * <p>bus.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
-    Integer bus();
-    /**
-     * <p>getBus.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
-    default Integer getBus() {
-        return bus();
-    }
-
-    /**
-     * <p>device.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
-    Integer device();
-    /**
-     * <p>getDevice.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
-    default Integer getDevice() {
-        return device();
-    }
 
     I2CImplementation i2cImplementation();
 
@@ -85,7 +52,7 @@ public interface I2CConfig extends IOConfig<I2CConfig> {
      * @param context {@link Context}
      * @return a {@link com.pi4j.io.i2c.I2CConfigBuilder} object.
      */
-    static I2CConfigBuilder newBuilder(Context context)  {
+    static I2CConfigBuilder newBuilder(Context context) {
         return I2CConfigBuilder.newInstance(context);
     }
 }
