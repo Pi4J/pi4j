@@ -69,7 +69,41 @@ public class LinuxFsSpi extends SpiBase implements Spi {
     private final static byte SPI_IOC_MAGIC = 'k';
     private final static byte SIZE_OF_BYTE = 1;
     private final static byte SIZE_OF_INT = 4;
+    /* Read / Write of SPI mode (SPI_MODE_0..SPI_MODE_3) (limited to 8 bits) */
+    private final static int SPI_IOC_RD_MODE = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte) 1, SIZE_OF_BYTE);
+    private final static int SPI_IOC_WR_MODE = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte) 1, SIZE_OF_BYTE);
+
+    // These could be replaced with the specific values generated from the _IOC method (a macro in the native C),
+    // but I think it is useful to see where the values come from.
+    /* Read / Write SPI bit justification */
+    private final static int SPI_IOC_RD_LSB_FIRST = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte) 2, SIZE_OF_BYTE);
+    private final static int SPI_IOC_WR_LSB_FIRST = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte) 2, SIZE_OF_BYTE);
+    /* Read / Write SPI device word length (1..N) */
+    private final static int SPI_IOC_RD_BITS_PER_WORD = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte) 3, SIZE_OF_BYTE);
+    private final static int SPI_IOC_WR_BITS_PER_WORD = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte) 3, SIZE_OF_BYTE);
+    /* Read / Write SPI device default max speed hz */
+    private final static int SPI_IOC_RD_MAX_SPEED_HZ = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte) 4, SIZE_OF_INT);
+    private final static int SPI_IOC_WR_MAX_SPEED_HZ = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte) 4, SIZE_OF_INT);
+    /* Read / Write of the SPI mode field */
+    private final static int SPI_IOC_RD_MODE32 = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte) 5, SIZE_OF_INT);
+    private final static int SPI_IOC_WR_MODE32 = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte) 5, SIZE_OF_INT);
+    private final static String SPI_DEVICE_BASE = "/dev/spidev";
+    /// ////////////////////////////////
+    // spi.h
+    private final byte SPI_CPHA = 1;    /* clock phase */
+    private final byte SPI_CPOL = 1 << 1;    /* clock polarity */
+    private final byte SPI_MODE_0 = (0 | 0);        /* (original MicroWire) */
+    private final byte SPI_MODE_1 = (0 | SPI_CPHA);
+    private final byte SPI_MODE_2 = (SPI_CPOL | 0);
+    private final byte SPI_MODE_3 = (SPI_CPOL | SPI_CPHA);
+    private final byte BITS8 = 8;
+    private final LinuxLibC libc = LinuxLibC.INSTANCE;
     private int SPI_BUFFSIZ = 4096;
+    private int fd;
+    public LinuxFsSpi(LinuxFsSpiProviderImpl provider, SpiConfig config) {
+        super(provider, config);
+        initialize();
+    }
 
     private static int SPI_IOC_MESSAGE(int n) {
         // Even though we will pass the structure to ioctl as a pointer, the command needs to know
@@ -82,71 +116,18 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         return _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte) 0, msgSize);
     }
 
-    // These could be replaced with the specific values generated from the _IOC method (a macro in the native C),
-    // but I think it is useful to see where the values come from.
-
-    /* Read / Write of SPI mode (SPI_MODE_0..SPI_MODE_3) (limited to 8 bits) */
-    private final static int SPI_IOC_RD_MODE = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte) 1, SIZE_OF_BYTE);
-    private final static int SPI_IOC_WR_MODE = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte) 1, SIZE_OF_BYTE);
-
-    /* Read / Write SPI bit justification */
-    private final static int SPI_IOC_RD_LSB_FIRST = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte) 2, SIZE_OF_BYTE);
-    private final static int SPI_IOC_WR_LSB_FIRST = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte) 2, SIZE_OF_BYTE);
-
-    /* Read / Write SPI device word length (1..N) */
-    private final static int SPI_IOC_RD_BITS_PER_WORD = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte) 3, SIZE_OF_BYTE);
-    private final static int SPI_IOC_WR_BITS_PER_WORD = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte) 3, SIZE_OF_BYTE);
-
-    /* Read / Write SPI device default max speed hz */
-    private final static int SPI_IOC_RD_MAX_SPEED_HZ = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte) 4, SIZE_OF_INT);
-    private final static int SPI_IOC_WR_MAX_SPEED_HZ = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte) 4, SIZE_OF_INT);
-
-    /* Read / Write of the SPI mode field */
-    private final static int SPI_IOC_RD_MODE32 = _IOC(_IOC_READ, SPI_IOC_MAGIC, (byte) 5, SIZE_OF_INT);
-    private final static int SPI_IOC_WR_MODE32 = _IOC(_IOC_WRITE, SPI_IOC_MAGIC, (byte) 5, SIZE_OF_INT);
-
-    @Structure.FieldOrder({"tx_buf", "rx_buf",
-        "len", "speed_hz",
-        "delay_usecs", "bits_per_word", "cs_change", "tx_nbits", "rx_nbits", "word_delay_usecs", "pad"})
-    public static class spi_ioc_transfer extends Structure {
-        public long tx_buf;
-        public long rx_buf;
-
-        public int len;
-        public int speed_hz;
-
-        public short delay_usecs;
-        public byte bits_per_word;
-        public byte cs_change;
-        public byte tx_nbits;
-        public byte rx_nbits;
-        public byte word_delay_usecs;
-        public byte pad;
-
-        public static class ByValue extends spi_ioc_transfer implements Structure.ByValue {
-        }
+    private static spi_ioc_transfer[] getTransferArray(int numberEntries) {
+        return (spi_ioc_transfer[]) new spi_ioc_transfer().toArray(numberEntries);
     }
 
-    /// ////////////////////////////////
-    // spi.h
-    private final byte SPI_CPHA = 1;    /* clock phase */
-    private final byte SPI_CPOL = 1 << 1;    /* clock polarity */
-
-    private final byte SPI_MODE_0 = (0 | 0);        /* (original MicroWire) */
-    private final byte SPI_MODE_1 = (0 | SPI_CPHA);
-    private final byte SPI_MODE_2 = (SPI_CPOL | 0);
-    private final byte SPI_MODE_3 = (SPI_CPOL | SPI_CPHA);
-
-
-    private final byte BITS8 = 8;
-
-    private final static String SPI_DEVICE_BASE = "/dev/spidev";
-    private final LinuxLibC libc = LinuxLibC.INSTANCE;
-    private int fd;
-
-    public LinuxFsSpi(LinuxFsSpiProviderImpl provider, SpiConfig config) {
-        super(provider, config);
-        initialize();
+    private static Memory[] getPeerMem(int numberEntries, int size) {
+        Memory[] memArray = new Memory[numberEntries];
+        ;
+        for (int i = 0; i < numberEntries; i++) {
+            PeerAccessibleMemory buf = new PeerAccessibleMemory(size);
+            memArray[i] = new Memory(size);
+        }
+        return memArray;
     }
 
     private void initialize() {
@@ -172,7 +153,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         //    character special device, major number 153 with a dynamically chosen minor device number.
         //    This is the node that userspace programs will open, created by “udev” or “mdev”.
         String spiDev = SPI_DEVICE_BASE + config().bus().getBus() + "." + config().channel();
-        logger.info("Opening SPI bus {}, channel {}", config().bus().getBus(), config().channel());
+        logger.info("Opening SPI bus {}, address {}", config().bus().getBus(), config().channel());
         fd = libc.open(spiDev, LinuxLibC.O_RDWR);
         if (fd < 0) {
             throw new RuntimeException("Failed to open SPI device " + spiDev);
@@ -261,11 +242,33 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         super.close();
     }
 
-    @Override
-    public int transfer(byte[] write, int writeOffset, byte[] read, int readOffset, int numberOfBytes) {
+
+   @Override
+    /**
+     * This function transfers (writes/reads simultaneously) multiple bytes with the SPI
+     * device associated with the handle.  Write data is taken from the 'write' byte array
+     * from the given 'writeOffset' index to the specified length ('numberOfBytes').  Data
+     * read from the SPI device is then copied to the 'read' byte array at the given 'readOffset'
+     * using the same length ('numberOfBytes').  Both the 'write' and 'read' byte arrays must
+     * be at least the size of the defined 'numberOfBytes' + their corresponding offsets.
+     *
+     * @param write the array of bytes to write to the SPI device
+     * @param writeOffset the starting offset position in the provided 'write' buffer to
+     *                    start writing to the SPI device from.
+     * @param read the array of bytes to store read data in from the SPI device
+     * @param readOffset the starting offset position in the provided 'read' buffer to place
+     *                   data bytes read from the SPI device.
+     * @param numberOfBytes the number of bytes to transfer/exchange (read &amp; read))
+     * @return Returns 0 if OK, -1 on error. Error details available in last errno or
+     *                   rerunning the program with log level "TRACE",
+     *                   See : https://www.pi4j.com/documentation/logging/
+     *
+     */
+     public int transfer(byte[] write, int writeOffset, byte[] read, int readOffset, int numberOfBytes) {
         PeerAccessibleMemory buf = new PeerAccessibleMemory(numberOfBytes);
         buf.write(0, write, writeOffset, numberOfBytes);
 
+        int rCode = 0 ;
         // According to the docs you can use the same buffer for tx/rx.
         spi_ioc_transfer transfer = new spi_ioc_transfer();
         transfer.tx_buf = buf.getPeer();
@@ -278,14 +281,14 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         int ret = libc.ioctl(fd, SPI_IOC_MESSAGE(1), transfer);
         if (ret < 0) {
             logger.error("Could not write SPI message. ret {}, error: {}", ret, Native.getLastError());
-            numberOfBytes = -1;
+            rCode  = -1;
         } else {
             buf.read(0, read, readOffset, numberOfBytes);
         }
 
         buf.close();
 
-        return numberOfBytes;
+        return rCode;
     }
 
     @Override
@@ -328,7 +331,6 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         return write(new byte[]{b}, 0, 1);
     }
 
-
     /**
      * {@inheritDoc}
      * write
@@ -354,12 +356,16 @@ public class LinuxFsSpi extends SpiBase implements Spi {
      * @param data   data array of bytes to be written
      * @param offset offset in data buffer to start at
      * @param length number of bytes to be written
-     * @return
+     * @return Returns 0 if OK, -1 on error. Error details available in last errno or
+     *                   rerunning the program with log level "TRACE",
+     *                   See : https://www.pi4j.com/documentation/logging/
+     *
      */
     @Override
     public int write(byte[] data, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, data.length);
 
+        int rCode = 0;
         int position = offset;
         int dataEnd = offset + length;
         PeerAccessibleMemory buf = new PeerAccessibleMemory(SPI_BUFFSIZ);
@@ -381,13 +387,84 @@ public class LinuxFsSpi extends SpiBase implements Spi {
             logger.trace("[SPI::WRITE] <- Number bytes {} ", ret);
             if (ret < 0) {
                 logger.error("Could not write SPI message. ret {}, error: {}", ret, Native.getLastError());
-                length = 0;
+                rCode = -1;
                 break;
             }
             position += chunkLength;
         }
 
-        return length;
+        return rCode;
+    }
+
+    @Override
+    public void writeThenRead(byte[] write, int writeOffset, int writeLength, short writeDelayUsec, byte[] read, int readOffset, int readNumberOfBytes, short readDelayUsec) {
+        final int firstRecord = 0;
+        final int secondRecord = 1;
+        final int totalRecords = 2;
+
+
+        Objects.checkFromIndexSize(writeOffset, writeLength, write.length);
+        Objects.checkFromIndexSize(readOffset, readNumberOfBytes, read.length);
+        spi_ioc_transfer[] transferArray = getTransferArray(totalRecords);
+        PeerAccessibleMemory txBuf = new PeerAccessibleMemory(readNumberOfBytes);
+        PeerAccessibleMemory rxBuf = new PeerAccessibleMemory(readNumberOfBytes);
+
+           //    PeerAccessible
+      //  Memory writeBuf = peerArray[firstRecord];//new PeerAccessibleMemory(SPI_BUFFSIZ);
+        txBuf.write(0, write, 0, writeLength);
+        spi_ioc_transfer txEntry = transferArray[firstRecord]; //new spi_ioc_transfer();
+
+        // set fields in the tx transfer msg
+        txEntry.tx_buf = txBuf.getPeer();
+        txEntry.rx_buf = 0;
+        txEntry.bits_per_word = BITS8;
+        txEntry.speed_hz = config.baud();
+        txEntry.delay_usecs = writeDelayUsec;
+        txEntry.cs_change = 0;
+        txEntry.len = writeLength;
+
+          // RX entry
+        spi_ioc_transfer rxEntry = transferArray[secondRecord];
+        rxEntry.rx_buf = rxBuf.getPeer();
+        rxEntry.tx_buf = 0;
+        rxEntry.bits_per_word = BITS8;
+        rxEntry.speed_hz = config.baud();
+        rxEntry.delay_usecs = readDelayUsec;
+        rxEntry.cs_change = 0;
+        rxEntry.len = readNumberOfBytes;
+
+        int ret = libc.ioctl(fd, SPI_IOC_MESSAGE(totalRecords), (Object) transferArray);
+
+        logger.trace("[SPI::writeThenRead] <- Number bytes read {} ", ret);
+        if (ret < 0) {
+            String errorMessage = String.format("Failed ioctl SPI message. ret %d, error: %s", ret, String.valueOf(Native.getLastError()));
+            logger.error(errorMessage);
+            throw new IOException(errorMessage);
+        }
+        rxBuf.read(0, read, readOffset, readNumberOfBytes);
+
+    }
+
+    @Structure.FieldOrder({"tx_buf", "rx_buf",
+        "len", "speed_hz",
+        "delay_usecs", "bits_per_word", "cs_change", "tx_nbits", "rx_nbits", "word_delay_usecs", "pad"})
+    public static class spi_ioc_transfer extends Structure {
+        public long tx_buf;
+        public long rx_buf;
+
+        public int len;
+        public int speed_hz;
+
+        public short delay_usecs;
+        public byte bits_per_word;
+        public byte cs_change;
+        public byte tx_nbits;
+        public byte rx_nbits;
+        public byte word_delay_usecs;
+        public byte pad;
+
+        public static class ByValue extends spi_ioc_transfer implements Structure.ByValue {
+        }
     }
 
     /**
