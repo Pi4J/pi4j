@@ -62,7 +62,8 @@ public interface I2CConfig extends IOConfig<I2CConfig>, BusConfig<I2CConfig>, De
      *
      * @return Unique I2C device identifier.
      */
-    default int getIdentifier() {
+    @Override
+    default int getUniqueIdentifier() {
         return (bus() << 8) + device();
     }
 }

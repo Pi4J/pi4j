@@ -86,6 +86,17 @@ public interface PwmConfig extends BusConfig<PwmConfig>, ChannelConfig<PwmConfig
     Integer address();
 
     /**
+     * PWM Device Identifier
+     * To be able to identify unique PWM devices, an identifier is available which is based on the channel value.
+     *
+     * @return Unique SPI device identifier.
+     */
+    @Override
+    default int getUniqueIdentifier() {
+        return (bus() == null ? 0 : (bus() << 8)) + channel();
+    }
+
+    /**
      * Get the configured duty-cycle value as a decimal value that represents
      * the percentage of the ON vs OFF time of the PWM signal for each period.
      * The duty-cycle range is valid from 0 to 100 including factional values.

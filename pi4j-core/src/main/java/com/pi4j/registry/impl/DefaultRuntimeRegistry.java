@@ -31,9 +31,6 @@ import com.pi4j.exception.LifecycleException;
 import com.pi4j.io.IO;
 import com.pi4j.io.IOType;
 import com.pi4j.io.exception.*;
-import com.pi4j.io.i2c.I2CConfig;
-import com.pi4j.io.pwm.PwmConfig;
-import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.runtime.Runtime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,59 +76,25 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
     @Override
     public synchronized RuntimeRegistry add(IO instance) throws IOInvalidIDException, IOAlreadyExistsException {
 
-        // validate target I/O instance id
-        String _id = validateId(instance.id());
+        // Validate target I/O instance id
+        String id = validateId(instance.id());
 
-        // first test to make sure this id does not already exist in the registry
-        if (instances.containsKey(_id)) {
-            throw new IOAlreadyExistsException(_id);
+        // First test to make sure this id does not already exist in the registry
+        if (instances.containsKey(id)) {
+            throw new IOAlreadyExistsException(id);
         }
 
-        switch (instance.config()) {
-            case BcmConfig<?> addressConfig: {
-                if (exists(instance.type(), addressConfig.bcm())) {
-                    throw new IOAlreadyExistsException(addressConfig.bcm());
-                }
-                Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
-                    k -> new HashSet<>());
-                usedAddresses.add(addressConfig.bcm());
-                break;
-            }
-            case PwmConfig pwmConfig: {
-                if (exists(instance.type(), pwmConfig.channel())) {
-                    throw new IOAlreadyExistsException(pwmConfig.channel());
-                }
-                Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
-                    k -> new HashSet<>());
-                usedAddresses.add(pwmConfig.channel());
-                break;
-            }
-            case I2CConfig i2cConfig: {
-                if (exists(instance.type(), i2cConfig.getIdentifier())) {
-                    throw new IOAlreadyExistsException("Bus " + i2cConfig.bus() + ", Device " + i2cConfig.device());
-                }
-                Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
-                    k -> new HashSet<>());
-                usedAddresses.add(i2cConfig.getIdentifier());
-                break;
-            }
-            case SpiConfig spiConfig: {
-                if (exists(instance.type(), spiConfig.getIdentifier())) {
-                    throw new IOAlreadyExistsException("Bus " + spiConfig.bus() + ", Channel " + spiConfig.channel());
-                }
-                Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
-                    k -> new HashSet<>());
-                usedAddresses.add(spiConfig.getIdentifier());
-                break;
-            }
-            default: {
-            }
+        // Second check by IO Type and the unique identifier
+        if (exists(instance.type(), instance.config().getUniqueIdentifier())) {
+            throw new IOAlreadyExistsException(instance.config().getUniqueIdentifier());
         }
+        Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(), _ -> new HashSet<>());
+        usedAddresses.add(instance.config().getUniqueIdentifier());
 
-        // add the instance to the collection
+        // Add the instance to the collection
         try {
             instance.initialize(this.runtime.context());
-            instances.put(_id, instance);
+            instances.put(id, instance);
         } catch (InitializeException e) {
             removeFromMap(instance);
             throw new IllegalStateException("Failed to initialize IO " + instance.getId(), e);
@@ -199,8 +162,9 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
 
             instance.shutdownInternal(runtime.context());
             long took = System.currentTimeMillis() - start;
-            if (took > 10)
+            if (took > 10) {
                 logger.info("Shutting down of IO {} took {}ms", instance.getId(), took);
+            }
         } catch (LifecycleException e) {
             logger.error(e.getMessage(), e);
             throw new IOShutdownException(instance, e);
@@ -240,9 +204,9 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
     }
 
     @Override
-    public synchronized boolean exists(IOType ioType, int address) {
+    public synchronized boolean exists(IOType ioType, int identifier) {
         Set<Integer> usedAddresses = this.usedAddressesByIoType.get(ioType);
-        return usedAddresses != null && usedAddresses.contains(address);
+        return usedAddresses != null && usedAddresses.contains(identifier);
     }
 
     /**

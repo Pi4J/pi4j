@@ -133,6 +133,14 @@ public class DefaultSpiConfig
      * {@inheritDoc}
      */
     @Override
+    public int getUniqueIdentifier() {
+        return (bus.getBus() << 8) + channel();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer baud() {
         return this.baud;
     }

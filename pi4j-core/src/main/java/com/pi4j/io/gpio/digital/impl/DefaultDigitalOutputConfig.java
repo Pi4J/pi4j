@@ -122,6 +122,14 @@ public class DefaultDigitalOutputConfig
      * {@inheritDoc}
      */
     @Override
+    public int getUniqueIdentifier() {
+        return bcm();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public DigitalState shutdownState() {
         return this.shutdownState;
     }

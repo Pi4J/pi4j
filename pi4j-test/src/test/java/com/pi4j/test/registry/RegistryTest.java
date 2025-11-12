@@ -80,15 +80,14 @@ class RegistryTest {
 
     @Test
     void testShutdownAndRecreate() throws Pi4JException {
-        var inputConfig = DigitalInput.newConfigBuilder(pi4j).id("DIN-3").name("DIN-3").bcm(3);
+        var config = DigitalInput.newConfigBuilder(pi4j).id("DIN-3").name("DIN-3").bcm(3);
 
         // create a new input, then shutdown
-        var input = pi4j.create(inputConfig);
-
+        var input = pi4j.create(config);
         input.close();
 
         // shouldn't fail when recreating
-        input = pi4j.create(inputConfig);
+        input = pi4j.create(config);
 
         // or shutting down
         input.close();
@@ -109,10 +108,12 @@ class RegistryTest {
         Registry registry = pi4j.registry();
         assertAll(
             // Test that we can find them by address
-            () -> assertTrue(registry.exists(IOType.PWM, pwm.getChannel()), "Should exist: PWM by address"),
-            () -> assertTrue(registry.exists(IOType.I2C, i2c.config().getIdentifier()), "Should exist: I2C by identifier"),
-            () -> assertTrue(registry.exists(IOType.DIGITAL_INPUT, input.bcm()), "Should exist: Digital Input by pin"),
-            () -> assertTrue(registry.exists(IOType.DIGITAL_OUTPUT, output.bcm()), "Should exist: Digital Output by pin"),
+            () -> assertTrue(registry.exists(IOType.PWM, pwm.config().getUniqueIdentifier()), "Should exist: PWM by unique identifier"),
+            () -> assertTrue(registry.exists(IOType.I2C, i2c.config().getUniqueIdentifier()), "Should exist: I2C by unique identifier"),
+            () -> assertTrue(registry.exists(IOType.DIGITAL_INPUT, input.config().getUniqueIdentifier()), "Should exist: Digital Input by unique identifier which should be identical to BCM"),
+            () -> assertTrue(registry.exists(IOType.DIGITAL_OUTPUT, output.config().getUniqueIdentifier()), "Should exist: Digital Output by unique identifier which should be identical to BCM"),
+            () -> assertTrue(registry.exists(IOType.DIGITAL_INPUT, input.bcm()), "Should exist: Digital Input by BCM"),
+            () -> assertTrue(registry.exists(IOType.DIGITAL_OUTPUT, output.bcm()), "Should exist: Digital Output by BCM"),
 
             // and also by ID
             () -> assertTrue(registry.exists(pwm.id()), "Should exist: PWM by ID"),

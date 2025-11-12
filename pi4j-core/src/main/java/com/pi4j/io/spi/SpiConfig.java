@@ -84,7 +84,8 @@ public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig>
      *
      * @return Unique SPI device identifier.
      */
-    default int getIdentifier() {
+    @Override
+    default int getUniqueIdentifier() {
         return (bus().getBus() << 8) + channel();
     }
 
