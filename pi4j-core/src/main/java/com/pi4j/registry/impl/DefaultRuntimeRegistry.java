@@ -107,13 +107,12 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
                 break;
             }
             case I2CConfig i2cConfig: {
-                var identifier = (i2cConfig.bus() << 8) + i2cConfig.device();
-                if (exists(instance.type(), identifier)) {
+                if (exists(instance.type(), i2cConfig.getIdentifier())) {
                     throw new IOAlreadyExistsException("Bus " + i2cConfig.bus() + ", Device " + i2cConfig.device());
                 }
                 Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
                     k -> new HashSet<>());
-                usedAddresses.add(identifier);
+                usedAddresses.add(i2cConfig.getIdentifier());
                 break;
             }
             case SpiConfig spiConfig: {
@@ -214,12 +213,12 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
     }
 
     private <T extends IO> void removeFromMap(T instance) {
-        if (!(instance.config() instanceof BcmConfig<?> addressConfig))
+        if (!(instance.config() instanceof BcmConfig<?> bcmConfig))
             return;
         Set<Integer> usedAddresses = this.usedAddressesByIoType.get(instance.type());
         if (usedAddresses == null)
             return;
-        usedAddresses.remove(addressConfig.bcm());
+        usedAddresses.remove(bcmConfig.bcm());
         if (usedAddresses.isEmpty())
             this.usedAddressesByIoType.remove(instance.type());
     }

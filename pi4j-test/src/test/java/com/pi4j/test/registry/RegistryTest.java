@@ -102,17 +102,20 @@ class RegistryTest {
         // create I/O instances
         var input = pi4j.create(inputConfig);
         var output = pi4j.create(outputConfig);
+        var i2c = pi4j.create(I2C.newConfigBuilder(pi4j).bus(0).device(0x70).build());
         var pwm = pi4j.create(pwmConfig);
 
         Registry registry = pi4j.registry();
         assertAll(
             // Test that we can find them by address
             () -> assertTrue(registry.exists(IOType.PWM, pwm.getChannel()), "Should exist: PWM by address"),
+            () -> assertTrue(registry.exists(IOType.I2C, i2c.config().getIdentifier()), "Should exist: I2C by identifier"),
             () -> assertTrue(registry.exists(IOType.DIGITAL_INPUT, input.bcm()), "Should exist: Digital Input by pin"),
             () -> assertTrue(registry.exists(IOType.DIGITAL_OUTPUT, output.bcm()), "Should exist: Digital Output by pin"),
 
             // and also by ID
             () -> assertTrue(registry.exists(pwm.id()), "Should exist: PWM by ID"),
+            () -> assertTrue(registry.exists(i2c.id()), "Should exist: I2C by ID"),
             () -> assertTrue(registry.exists(input.id()), "Should exist: Digital Input by ID"),
             () -> assertTrue(registry.exists(output.id()), "Should exist: Digital Output by ID")
         );
