@@ -31,6 +31,7 @@ import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.IOType;
 import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalOutput;
+import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.registry.Registry;
 import org.junit.jupiter.api.AfterEach;
@@ -44,14 +45,14 @@ import org.slf4j.LoggerFactory;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(Lifecycle.PER_CLASS)
-public class RegistryTest {
+class RegistryTest {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryTest.class);
 
     private Context pi4j;
 
     @BeforeEach
-    public void beforeTest() throws Pi4JException {
+    void beforeTest() throws Pi4JException {
         // initialize Pi4J with an auto context
         // An auto context includes AUTO-DETECT BINDINGS enabled
         // which will load all detected Pi4J extension libraries
@@ -60,14 +61,14 @@ public class RegistryTest {
     }
 
     @AfterEach
-    public void afterTest() {
+    void afterTest() {
         try {
             pi4j.shutdown();
         } catch (Pi4JException e) { /* do nothing */ }
     }
 
     @Test
-    public void testFactoryRegistryAcquisition() throws Pi4JException {
+    void testFactoryRegistryAcquisition() throws Pi4JException {
         Registry registry = pi4j.registry();
         assertNotNull(registry);
         logger.info("-------------------------------------------------");
@@ -77,7 +78,7 @@ public class RegistryTest {
     }
 
     @Test
-    public void testShutdownAndRecreate() throws Pi4JException {
+    void testShutdownAndRecreate() throws Pi4JException {
         var inputConfig = DigitalInput.newConfigBuilder(pi4j).id("DIN-3").name("DIN-3").bcm(3);
 
         // create a new input, then shutdown
@@ -93,7 +94,7 @@ public class RegistryTest {
     }
 
     @Test
-    public void testCreateMultipleSameAddress() throws Pi4JException {
+    void testCreateMultipleSameAddress() throws Pi4JException {
         var inputConfig = DigitalInput.newConfigBuilder(pi4j).id("DIN-3").name("DIN-3").bcm(3);
         var outputConfig = DigitalOutput.newConfigBuilder(pi4j).id("DOUT-3").name("DOUT-3").bcm(3);
         var pwmConfig = Pwm.newConfigBuilder(pi4j).id("PWM-3").name("PWM-3").channel(3);
@@ -145,5 +146,26 @@ public class RegistryTest {
         input.close();
         output.close();
         pwm.close();
+    }
+
+    @Test
+    void testCreateMultipleI2C() {
+        var i2c1 = pi4j.create(I2C.newConfigBuilder(pi4j).bus(0).device(0x21).build());
+        var i2c2 = pi4j.create(I2C.newConfigBuilder(pi4j).bus(0).device(0x70).build());
+        var i2c3 = pi4j.create(I2C.newConfigBuilder(pi4j).bus(1).device(0x21).build());
+        var i2c4 = pi4j.create(I2C.newConfigBuilder(pi4j).bus(3).device(0x70).build());
+        assertAll(
+            () -> assertNotNull(i2c1),
+            () -> assertNotNull(i2c2),
+            () -> assertNotNull(i2c3),
+            () -> assertNotNull(i2c4)
+        );
+    }
+
+    @Test
+    void testCreateMultipleI2CWithSameIdentifierShouldFail() {
+        var i2c1 = pi4j.create(I2C.newConfigBuilder(pi4j).bus(0).device(0x70).build());
+        assertNotNull(i2c1);
+        assertThrows(Pi4JException.class, () -> pi4j.create(I2C.newConfigBuilder(pi4j).bus(0).device(0x70).build()));
     }
 }

@@ -107,12 +107,13 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
                 break;
             }
             case I2CConfig i2cConfig: {
-                if (exists(instance.type(), i2cConfig.bus())) {
-                    throw new IOAlreadyExistsException(i2cConfig.bus());
+                var identifier = (i2cConfig.bus() << 8) + i2cConfig.device();
+                if (exists(instance.type(), identifier)) {
+                    throw new IOAlreadyExistsException("Bus " + i2cConfig.bus() + ", Device " + i2cConfig.device());
                 }
                 Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
                     k -> new HashSet<>());
-                usedAddresses.add(i2cConfig.bus());
+                usedAddresses.add(identifier);
                 break;
             }
             case SpiConfig spiConfig: {
