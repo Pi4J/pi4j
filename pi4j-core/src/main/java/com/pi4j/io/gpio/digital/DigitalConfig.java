@@ -43,6 +43,19 @@ public interface DigitalConfig<CONFIG_TYPE extends Config> extends GpioConfig<CO
     String ON_STATE_KEY = "onstate";
 
     /**
+     * <p>address.</p>
+     *
+     * @return a {@link java.lang.Integer} object.
+     * @deprecated use {@link #bcm()} instead.
+     * <p>
+     * Since "address" has lead to many confusions while configuring IOs,
+     * this value is deprecated and will be removed in a future release.
+     * Use the correct config related to the IO type.
+     */
+    @Deprecated(forRemoval = true)
+    Integer address();
+
+    /**
      * <p>pin.</p>
      *
      * @return a {@link Integer} object.
