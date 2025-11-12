@@ -55,4 +55,15 @@ public interface I2CConfig extends IOConfig<I2CConfig>, BusConfig<I2CConfig>, De
     static I2CConfigBuilder newBuilder(Context context) {
         return I2CConfigBuilder.newInstance(context);
     }
+
+    /**
+     * I2C Device Identifier
+     * To be able to identify unique I2C devices, an identifier is available which is based on the bus and device value.
+     *
+     * @return Unique I2C device identifier.
+     */
+    @Override
+    default int getUniqueIdentifier() {
+        return (bus() << 8) + device();
+    }
 }

@@ -45,7 +45,7 @@ import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.io.spi.SpiConfigBuilder;
 
 public interface IOCreator {
-    
+
     <I extends IO> I create(IOConfig config, IOType type);
 
     <I extends IO> I create(String id);
@@ -57,7 +57,7 @@ public interface IOCreator {
     }
 
     default <I extends IO> I create(IOConfig config, Class<I> ioClass) {
-        return (ioClass.cast(create((IOConfig) config, IOType.getByIOClass(ioClass))));
+        return (ioClass.cast(create(config, IOType.getByIOClass(ioClass))));
     }
 
     default <I extends IO> I create(IOConfigBuilder builder, IOType ioType) {

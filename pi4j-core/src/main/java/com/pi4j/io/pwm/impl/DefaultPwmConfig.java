@@ -166,6 +166,14 @@ public class DefaultPwmConfig
      * {@inheritDoc}
      */
     @Override
+    public int getUniqueIdentifier() {
+        return (bus == null ? 0 : (bus << 8)) + channel();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer dutyCycle() {
         return this.dutyCycle;
     }

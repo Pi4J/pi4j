@@ -116,9 +116,9 @@ public class DefaultSpiConfig
         }
 
         // define default property values if any are missing (based on the required address value)
-        this.id = StringUtil.setIfNullOrEmpty(this.id, "SPI-" + this.channel(), true);
-        this.name = StringUtil.setIfNullOrEmpty(this.name, "SPI-" + this.channel(), true);
-        this.description = StringUtil.setIfNullOrEmpty(this.description, "SPI-" + this.channel(), true);
+        this.id = StringUtil.setIfNullOrEmpty(this.id, "SPI-" + this.bus().getBus() + "." + this.channel(), true);
+        this.name = StringUtil.setIfNullOrEmpty(this.name, "SPI-" + this.bus().getBus() + "." + this.channel(), true);
+        this.description = StringUtil.setIfNullOrEmpty(this.description, "SPI-" + this.bus().getBus() + "." + this.channel(), true);
     }
 
     /**
@@ -127,6 +127,14 @@ public class DefaultSpiConfig
     @Override
     public Integer channel() {
         return this.channel;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getUniqueIdentifier() {
+        return (bus.getBus() << 8) + channel();
     }
 
     /**

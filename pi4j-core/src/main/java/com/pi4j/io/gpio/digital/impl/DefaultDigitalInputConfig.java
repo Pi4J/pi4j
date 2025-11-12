@@ -121,6 +121,14 @@ public class DefaultDigitalInputConfig
      * {@inheritDoc}
      */
     @Override
+    public int getUniqueIdentifier() {
+        return bcm();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public PullResistance pull() {
         return this.pullResistance;
     }

@@ -58,12 +58,11 @@ public interface Registry extends Describable {
     /**
      * <p>exists.</p>
      *
-     * @param ioType  a {@link com.pi4j.io.IOType} object.
-     * @param address an int.
-     *
+     * @param ioType     a {@link com.pi4j.io.IOType} object.
+     * @param identifier an int. Depending on the type of device: bcm (GPIO), identifier (I2C), channel (PWM and SPI)
      * @return a boolean.
      */
-    boolean exists(IOType ioType, int address);
+    boolean exists(IOType ioType, int identifier);
 
     /**
      * <p>all.</p>
@@ -75,22 +74,23 @@ public interface Registry extends Describable {
     /**
      * <p>get.</p>
      *
-     * @param id a {@link java.lang.String} object.
+     * @param id  a {@link java.lang.String} object.
      * @param <T> a T object.
      * @return a T object.
      * @throws com.pi4j.io.exception.IOInvalidIDException if any.
-     * @throws com.pi4j.io.exception.IONotFoundException if any.
+     * @throws com.pi4j.io.exception.IONotFoundException  if any.
      */
     <T extends IO> T get(String id) throws IOInvalidIDException, IONotFoundException;
+
     /**
      * <p>get.</p>
      *
-     * @param id a {@link java.lang.String} object.
+     * @param id   a {@link java.lang.String} object.
      * @param type a {@link java.lang.Class} object.
-     * @param <T> a T object.
+     * @param <T>  a T object.
      * @return a T object.
      * @throws com.pi4j.io.exception.IOInvalidIDException if any.
-     * @throws com.pi4j.io.exception.IONotFoundException if any.
+     * @throws com.pi4j.io.exception.IONotFoundException  if any.
      */
     <T extends IO> T get(String id, Class<T> type) throws IOInvalidIDException, IONotFoundException;
 
@@ -98,10 +98,10 @@ public interface Registry extends Describable {
      * <p>allByType.</p>
      *
      * @param ioClass a {@link java.lang.Class} object.
-     * @param <T> a T object.
+     * @param <T>     a T object.
      * @return a {@link java.util.Map} object.
      */
-    default <T extends IO> Map<String, T> allByType(Class<T> ioClass){
+    default <T extends IO> Map<String, T> allByType(Class<T> ioClass) {
         // create a map <io-id, io-instance> of I/O instances that extend of the given IO class
         var result = new ConcurrentHashMap<String, T>();
         this.all().values().stream().filter(ioClass::isInstance).forEach(p -> {
@@ -114,10 +114,10 @@ public interface Registry extends Describable {
      * <p>allByIoType.</p>
      *
      * @param ioType a {@link com.pi4j.io.IOType} object.
-     * @param <P> a P object.
+     * @param <P>    a P object.
      * @return a {@link java.util.Map} object.
      */
-    default <P extends Provider> Map<String, ? extends IO> allByIoType(IOType ioType){
+    default <P extends Provider> Map<String, ? extends IO> allByIoType(IOType ioType) {
         return allByType(ioType.getIOClass());
     }
 
@@ -125,10 +125,10 @@ public interface Registry extends Describable {
      * <p>allByProvider.</p>
      *
      * @param providerClass a {@link java.lang.Class} object.
-     * @param <P> a P object.
+     * @param <P>           a P object.
      * @return a {@link java.util.Map} object.
      */
-    default <P extends Provider> Map<String, ? extends IO> allByProvider(Class<P> providerClass){
+    default <P extends Provider> Map<String, ? extends IO> allByProvider(Class<P> providerClass) {
         return allByIoType(IOType.getByProviderClass(providerClass));
     }
 
@@ -136,15 +136,15 @@ public interface Registry extends Describable {
      * <p>allByProvider.</p>
      *
      * @param providerId a {@link java.lang.String} object.
-     * @param <P> a P object.
+     * @param <P>        a P object.
      * @return a {@link java.util.Map} object.
      */
-    default <P extends Provider> Map<String, ? extends IO> allByProvider(String providerId){
+    default <P extends Provider> Map<String, ? extends IO> allByProvider(String providerId) {
 
         // create a map <io-id, io-instance> of providers that extend of the given io class
         var result = this.all().values().stream()
-                .filter(instance -> providerId.equalsIgnoreCase(((IO) instance).provider().id()))
-                .collect(Collectors.toMap(IO::id, c->c));
+            .filter(instance -> providerId.equalsIgnoreCase(((IO) instance).provider().id()))
+            .collect(Collectors.toMap(IO::id, c -> c));
 
         return Collections.unmodifiableMap(result);
     }
@@ -153,19 +153,19 @@ public interface Registry extends Describable {
      * <p>allByProvider.</p>
      *
      * @param providerId a {@link java.lang.String} object.
-     * @param ioClass a {@link java.lang.Class} object.
-     * @param <P> a P object.
-     * @param <T> a T object.
+     * @param ioClass    a {@link java.lang.Class} object.
+     * @param <P>        a P object.
+     * @param <T>        a T object.
      * @return a {@link java.util.Map} object.
      */
-    default <P extends Provider, T extends IO> Map<String, T> allByProvider(String providerId, Class<T> ioClass){
+    default <P extends Provider, T extends IO> Map<String, T> allByProvider(String providerId, Class<T> ioClass) {
         // create a map <io-id, io-instance> of providers that extend of the given io class
         var result = new ConcurrentHashMap<String, T>();
         this.all().values().stream()
-                .filter(instance -> providerId.equalsIgnoreCase(((IO) instance).provider().id()))
-                .filter(ioClass::isInstance).forEach(p -> {
-            result.put(p.id(), ioClass.cast(p));
-        });
+            .filter(instance -> providerId.equalsIgnoreCase(((IO) instance).provider().id()))
+            .filter(ioClass::isInstance).forEach(p -> {
+                result.put(p.id(), ioClass.cast(p));
+            });
         return Collections.unmodifiableMap(result);
     }
 
@@ -175,18 +175,19 @@ public interface Registry extends Describable {
      * @param instance a {@link com.pi4j.io.IO} object.
      * @return this
      * @throws com.pi4j.io.exception.IOAlreadyExistsException if any.
-     * @throws com.pi4j.io.exception.IOInvalidIDException if any.
+     * @throws com.pi4j.io.exception.IOInvalidIDException     if any.
      */
     Registry add(IO instance) throws IOAlreadyExistsException, IOInvalidIDException;
+
     /**
      * <p>remove.</p>
      *
-     * @param id a {@link java.lang.String} object.
+     * @param id  a {@link java.lang.String} object.
      * @param <T> a T object.
      * @return a T object.
-     * @throws com.pi4j.io.exception.IONotFoundException if any.
+     * @throws com.pi4j.io.exception.IONotFoundException  if any.
      * @throws com.pi4j.io.exception.IOInvalidIDException if any.
-     * @throws com.pi4j.io.exception.IOShutdownException if any.
+     * @throws com.pi4j.io.exception.IOShutdownException  if any.
      */
     <T extends IO> T remove(String id) throws IONotFoundException, IOInvalidIDException, IOShutdownException;
 
@@ -199,12 +200,12 @@ public interface Registry extends Describable {
 
         Map<String, ? extends IO> instances = all();
         Descriptor descriptor = Descriptor.create()
-                .category("REGISTRY")
-                .name("I/O Registered Instances")
-                .quantity((instances == null) ? 0 : instances.size())
-                .type(this.getClass());
+            .category("REGISTRY")
+            .name("I/O Registered Instances")
+            .quantity((instances == null) ? 0 : instances.size())
+            .type(this.getClass());
 
-        if(instances != null && !instances.isEmpty()) {
+        if (instances != null && !instances.isEmpty()) {
             instances.forEach((id, instance) -> {
                 descriptor.add(instance.describe());
             });
