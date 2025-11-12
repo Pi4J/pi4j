@@ -44,7 +44,9 @@ public interface DigitalConfigBuilder<BUILDER_TYPE extends DigitalConfigBuilder,
      * @deprecated use {@link #bcm(Integer)} bcm} instead.
      */
     @Deprecated(forRemoval = true)
-    BUILDER_TYPE address(Integer address);
+    default BUILDER_TYPE address(Integer address) {
+        return bcm(address);
+    }
 
     /**
      * <p>bcm.</p>
