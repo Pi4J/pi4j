@@ -116,12 +116,12 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
                 break;
             }
             case SpiConfig spiConfig: {
-                if (exists(instance.type(), spiConfig.channel())) {
-                    throw new IOAlreadyExistsException(spiConfig.channel());
+                if (exists(instance.type(), spiConfig.getIdentifier())) {
+                    throw new IOAlreadyExistsException("Bus " + spiConfig.bus() + ", Channel " + spiConfig.channel());
                 }
                 Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(),
                     k -> new HashSet<>());
-                usedAddresses.add(spiConfig.channel());
+                usedAddresses.add(spiConfig.getIdentifier());
                 break;
             }
             default: {

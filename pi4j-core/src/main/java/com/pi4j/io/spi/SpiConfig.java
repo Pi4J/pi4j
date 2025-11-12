@@ -79,6 +79,16 @@ public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig>
     }
 
     /**
+     * SPI Device Identifier
+     * To be able to identify unique SPI devices, an identifier is available which is based on the bus and channel value.
+     *
+     * @return Unique SPI device identifier.
+     */
+    default int getIdentifier() {
+        return (bus().getBus() << 8) + channel();
+    }
+
+    /**
      * <p>baud.</p>
      *
      * @return a {@link java.lang.Integer} object.

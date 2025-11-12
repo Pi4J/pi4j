@@ -33,6 +33,7 @@ import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.pwm.Pwm;
+import com.pi4j.io.spi.Spi;
 import com.pi4j.registry.Registry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -170,5 +171,30 @@ class RegistryTest {
         var i2c1 = pi4j.create(I2C.newConfigBuilder(pi4j).bus(0).device(0x70).build());
         assertNotNull(i2c1);
         assertThrows(Pi4JException.class, () -> pi4j.create(I2C.newConfigBuilder(pi4j).bus(0).device(0x70).build()));
+    }
+
+    @Test
+    void testCreateMultipleSpi() {
+        var config1 = Spi.newConfigBuilder(pi4j).bus(1).channel(0x21).build();
+        var spi1 = pi4j.create(config1);
+        var config2 = Spi.newConfigBuilder(pi4j).bus(1).channel(0x70).build();
+        var spi2 = pi4j.create(config2);
+        var config3 = Spi.newConfigBuilder(pi4j).bus(2).channel(0x21).build();
+        var spi3 = pi4j.create(config3);
+        var config4 = Spi.newConfigBuilder(pi4j).bus(3).channel(0x70).build();
+        var spi4 = pi4j.create(config4);
+        assertAll(
+            () -> assertNotNull(spi1),
+            () -> assertNotNull(spi2),
+            () -> assertNotNull(spi3),
+            () -> assertNotNull(spi4)
+        );
+    }
+
+    @Test
+    void testCreateMultipleSpiWithSameIdentifierShouldFail() {
+        var spi1 = pi4j.create(Spi.newConfigBuilder(pi4j).bus(0).channel(0x70).build());
+        assertNotNull(spi1);
+        assertThrows(Pi4JException.class, () -> pi4j.create(Spi.newConfigBuilder(pi4j).bus(0).channel(0x70).build()));
     }
 }
