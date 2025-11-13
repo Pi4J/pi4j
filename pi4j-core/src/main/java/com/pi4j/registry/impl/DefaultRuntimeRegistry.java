@@ -25,7 +25,6 @@ package com.pi4j.registry.impl;
  * #L%
  */
 
-import com.pi4j.config.BcmConfig;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.LifecycleException;
 import com.pi4j.io.IO;
@@ -177,12 +176,10 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
     }
 
     private <T extends IO> void removeFromMap(T instance) {
-        if (!(instance.config() instanceof BcmConfig<?> bcmConfig))
-            return;
         Set<Integer> usedAddresses = this.usedAddressesByIoType.get(instance.type());
         if (usedAddresses == null)
             return;
-        usedAddresses.remove(bcmConfig.bcm());
+        usedAddresses.remove(instance.config().getUniqueIdentifier());
         if (usedAddresses.isEmpty())
             this.usedAddressesByIoType.remove(instance.type());
     }
