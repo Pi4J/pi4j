@@ -102,7 +102,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
         }
 
         // end the pulse state
-        toggle();
+        this.state(DigitalState.getInverseState(state));
 
         // invoke callback if one was defined
         if (callback != null) {
