@@ -77,7 +77,7 @@ public class DefaultDigitalInputConfigBuilder
     @Override
     @Deprecated(forRemoval = true)
     public DigitalInputConfigBuilder address(Integer address) {
-        this.properties.put(GpioConfig.BUS_KEY, String.valueOf(address));
+        this.properties.put(GpioConfig.BCM_KEY, String.valueOf(address));
         return this;
     }
 

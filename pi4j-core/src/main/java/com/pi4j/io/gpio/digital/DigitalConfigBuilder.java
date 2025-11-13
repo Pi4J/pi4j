@@ -39,7 +39,17 @@ public interface DigitalConfigBuilder<BUILDER_TYPE extends DigitalConfigBuilder,
     extends GpioConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
     /**
-     * <p>pin.</p>
+     * @param address a {@link java.lang.Integer} object.
+     * @return a BUILDER_TYPE object.
+     * @deprecated use {@link #bcm(Integer)} bcm} instead.
+     */
+    @Deprecated(forRemoval = true)
+    default BUILDER_TYPE address(Integer address) {
+        return bcm(address);
+    }
+
+    /**
+     * <p>bcm.</p>
      *
      * @param bcm a {@link java.lang.Integer} object.
      * @return a BUILDER_TYPE object.
