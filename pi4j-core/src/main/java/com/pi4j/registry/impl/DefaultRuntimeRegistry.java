@@ -177,12 +177,10 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
     }
 
     private <T extends IO> void removeFromMap(T instance) {
-        if (!(instance.config() instanceof BcmConfig<?> bcmConfig))
-            return;
         Set<Integer> usedAddresses = this.usedAddressesByIoType.get(instance.type());
         if (usedAddresses == null)
             return;
-        usedAddresses.remove(bcmConfig.bcm());
+        usedAddresses.remove(instance.config().getUniqueIdentifier());
         if (usedAddresses.isEmpty())
             this.usedAddressesByIoType.remove(instance.type());
     }
