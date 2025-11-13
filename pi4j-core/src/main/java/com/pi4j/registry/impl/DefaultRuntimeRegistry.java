@@ -25,7 +25,6 @@ package com.pi4j.registry.impl;
  * #L%
  */
 
-import com.pi4j.config.BcmConfig;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.LifecycleException;
 import com.pi4j.io.IO;
