@@ -1,0 +1,64 @@
+
+SmokeTest
+
+Testcase to verify the providers can be loaded and used.  The use is very simple, just enough to know it worked. The test
+uses the FFM providers.
+
+EQ.  I used a T-cobbler plugged into a prototype board, two BMP280 sensors, both mounted on individual breakout boards.
+Connections are M-M jumpers.  The I2C and SPI BMP280 charts refers to connection points on the breakout board but your sensor
+may use different letter designations. Also, the are BMP sensors available with I2C and SPI interfaces or only one of
+the interfaces, read the fine print if you order these sensors.
+
+The PWM, Input, output and Serial charts are M-M jumpers between T-cobbler pins.
+
+I2C   BMP280
+
+| RPi        | Color  | Sensor |
+|:-----------|:-------|:-------|
+| Pin1  3.3V | 	Red   | Vin    |
+| N/C        |        | 3v	    |
+| Pin6  Gnd  | Black  | Gnd    |
+| Pin5  SCL  | Yellow | SCK    |
+| N/C        |        | SDO    |
+| Pin3  SDA  | Orange | SDA    |
+| Pin17 3.3v | Red    | CS     |
+
+
+
+SPI BMP280
+connection using 4-wire SPI
+
+| RPi            | Color  | Sensor  |
+|:---------------|:-------|:--------|
+| Pin19 MOSI     | Blue   | SDA     |
+| Pin21 MISO     | Purple | SDO     |
+| Pin23 SCLK     | Green  | SCK/SCL |
+| Pin24 SPICE0   | Yellow | CS      |
+| Pin6  Gnd      | Black  | GND     |
+| Pin1  3.3V     | Red    | Vin/Vcc |
+
+
+
+PWM
+| RPi                | Color  |    Monitor     |
+|:-------------------|:-------|:---------------|
+| Pin12  GPIO18 PWM  | Green  | Pin16  GPIO23  |
+
+
+Output
+| RPi                   | Color  |     Monitor    |
+|:----------------------|:-------|:---------------|
+| Pin18  GPIO24 Output  | Blue   | Pin22  GPIO25  |
+
+Input
+| RPi                   | Color  |     Control    |
+|:----------------------|:-------|:---------------|
+| Pin36  GPIO16 Input   | Green  | Pin37  GPIO26  |
+
+
+Serial
+| RPi                   | Color  | Sensor  |
+|:----------------------|:-------|:--------|
+| Pin8   GPIO14 TX      | White  | loopback|
+| Pin10  GPIO15 RX      | White  | loopback|
++
