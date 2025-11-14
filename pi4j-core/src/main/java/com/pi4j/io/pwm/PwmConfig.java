@@ -100,7 +100,7 @@ public interface PwmConfig extends ChipConfig<PwmConfig>, ChannelConfig<PwmConfi
     default int getUniqueIdentifier() {
         return (chip() == null ? 0 : (chip() << 16))
             + (channel() == null ? 0 : (channel() << 8))
-            + bcm();
+            + (bcm() == null ? 0 : bcm());
     }
 
     /**

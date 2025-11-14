@@ -179,7 +179,7 @@ public class DefaultPwmConfig
     public int getUniqueIdentifier() {
         return (chip == null ? 0 : (chip << 16))
             + (channel == null ? 0 : (channel << 8))
-            + bcm;
+            + (bcm == null ? 0 : bcm);
     }
 
     /**
