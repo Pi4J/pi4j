@@ -69,8 +69,14 @@ public class PiGpioPwmProviderImpl extends PwmProviderBase implements PiGpioPwmP
     public Pwm create(PwmConfig config) {
         synchronized (this.piGpio) {
             // initialize the PIGPIO library
-            if (!piGpio.isInitialized())
+            if (!piGpio.isInitialized()) {
                 piGpio.initialize();
+            }
+
+            // validate the config
+            if (config.bcm() == null) {
+                throw new IllegalArgumentException("PWM BCM number is needed for both hardware and software PWM with the PiGpio I/O provider.");
+            }
 
             // create new I/O instance based on I/O config
             Pwm pwm;

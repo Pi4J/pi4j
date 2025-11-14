@@ -1,9 +1,7 @@
 package com.pi4j.plugin.ffm.providers.pwm;
 
-import com.pi4j.io.pwm.Pwm;
-import com.pi4j.io.pwm.PwmConfig;
-import com.pi4j.io.pwm.PwmProvider;
-import com.pi4j.io.pwm.PwmProviderBase;
+import com.pi4j.io.exception.IOException;
+import com.pi4j.io.pwm.*;
 import com.pi4j.plugin.ffm.common.PermissionHelper;
 
 public class PwmFFMProviderImpl extends PwmProviderBase implements PwmProvider {
@@ -24,6 +22,16 @@ public class PwmFFMProviderImpl extends PwmProviderBase implements PwmProvider {
      */
     @Override
     public Pwm create(PwmConfig config) {
+        // validate PWM type
+        if (config.pwmType() != PwmType.HARDWARE) {
+            throw new IOException("The FFM PWM provider only supports HARDWARE PWM");
+        }
+
+        // validate the config
+        if (config.chip() == null || config.channel() == null) {
+            throw new IllegalArgumentException("PWM Chip and Channel are needed for hardware PWM with the LinuxFS I/O provider");
+        }
+
         // create new I/O instance based on I/O config
         var pwm = new PwmFFMHardware(this, config);
         this.context.registry().add(pwm);

@@ -67,9 +67,14 @@ public class LinuxFsPwmProviderImpl extends PwmProviderBase implements LinuxFsPw
      */
     @Override
     public Pwm create(PwmConfig config) {
-        // create new I/O instance based on I/O config
+        // validate PWM type
         if (config.pwmType() != PwmType.HARDWARE) {
-            throw new IOException("The Linux file system PWM provider does not support software-PWM");
+            throw new IOException("The Linux file system PWM provider only supports HARDWARE PWM");
+        }
+
+        // validate the config
+        if (config.chip() == null || config.channel() == null) {
+            throw new IllegalArgumentException("PWM Chip and Channel are needed for hardware PWM with the LinuxFS I/O provider");
         }
 
         // create filesystem based PWM instance
