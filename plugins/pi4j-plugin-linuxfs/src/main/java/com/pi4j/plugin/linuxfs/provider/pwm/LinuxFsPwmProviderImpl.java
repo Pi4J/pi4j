@@ -77,6 +77,11 @@ public class LinuxFsPwmProviderImpl extends PwmProviderBase implements LinuxFsPw
             throw new IllegalArgumentException("PWM Chip and Channel are needed for hardware PWM with the LinuxFS I/O provider");
         }
 
+        // Warn for unneeded config
+        if (config.pwmType() == PwmType.HARDWARE && config.bcm() != null) {
+            logger.warn("You specified a bcm value for the PWM, but this is not needed for hardware PWM. Please specify chip and channel instead.");
+        }
+
         // create filesystem based PWM instance
         LinuxPwm pwm = new LinuxPwm(this.pwmFileSystemPath, config.chip(), config.channel());
         LinuxFsPwm fsPwm = new LinuxFsPwm(pwm, this, config);

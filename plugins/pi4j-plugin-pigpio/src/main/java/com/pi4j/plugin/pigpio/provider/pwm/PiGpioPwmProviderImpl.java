@@ -75,7 +75,12 @@ public class PiGpioPwmProviderImpl extends PwmProviderBase implements PiGpioPwmP
 
             // validate the config
             if (config.bcm() == null) {
-                throw new IllegalArgumentException("PWM BCM number is needed for both hardware and software PWM with the PiGpio I/O provider.");
+                throw new IllegalArgumentException("PWM bcm number is needed for both hardware and software PWM with the PiGpio I/O provider.");
+            }
+
+            // Warn for unneeded config
+            if (config.pwmType() == PwmType.HARDWARE && (config.chip() != null || config.channel() != null)) {
+                logger.warn("You specified a chip and/or channel value for the PWM, but this is not needed for PiGpio PWM. Please specify bcm instead.");
             }
 
             // create new I/O instance based on I/O config

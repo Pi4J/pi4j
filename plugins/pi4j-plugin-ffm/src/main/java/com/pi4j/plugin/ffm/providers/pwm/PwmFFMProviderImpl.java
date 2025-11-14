@@ -32,6 +32,11 @@ public class PwmFFMProviderImpl extends PwmProviderBase implements PwmProvider {
             throw new IllegalArgumentException("PWM Chip and Channel are needed for hardware PWM with the LinuxFS I/O provider");
         }
 
+        // Warn for unneeded config
+        if (config.pwmType() == PwmType.HARDWARE && config.bcm() != null) {
+            logger.warn("You specified a BCM value for the PWM, but this is not needed for hardware PWM. Please specify chip and channel instead.");
+        }
+
         // create new I/O instance based on I/O config
         var pwm = new PwmFFMHardware(this, config);
         this.context.registry().add(pwm);
