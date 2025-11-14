@@ -1,0 +1,54 @@
+
+SmokeTest
+
+I2C   BMP280
+
+| RPi        | Color  | Sensor |
+|:-----------|:-------|:-------|
+| Pin1  3.3V | 	Red   | Vin    |
+| N/C        |        | 3v	    |
+| Pin6  Gnd  | Black  | Gnd    |
+| Pin5  SCL  | Yellow | SCK    |
+| N/C        |        | SDO    |
+| Pin3  SDA  | Orange | SDA    |
+| Pin17 3.3v | Red    | CS     |
+
+
+
+SPI BMP280
+connection using 4-wire SPI
+
+| RPi            | Color  | Sensor  |
+|:---------------|:-------|:--------|
+| Pin19 MOSI     | Blue   | SDA     |
+| Pin21 MISO     | Purple | SDO     |
+| Pin23 SCLK     | Green  | SCK/SCL |
+| Pin24 SPICE0   | Yellow | CS      |
+| Pin6  Gnd      | Black  | GND     |
+| Pin1  3.3V     | Red    | Vin/Vcc |
+
+
+
+PWM
+| RPi                | Color  |    Monitor     |
+|:-------------------|:-------|:---------------|
+| Pin12  GPIO18 PWM  | Green  | Pin16  GPIO23  |
+
+
+Output
+| RPi                   | Color  |     Monitor    |
+|:----------------------|:-------|:---------------|
+| Pin18  GPIO24 Output  | Blue   | Pin22  GPIO25  |
+
+Input
+| RPi                   | Color  |     Control    |
+|:----------------------|:-------|:---------------|
+| Pin36  GPIO16 Input   | Green  | Pin37  GPIO26  |
+
+
+Serial
+| RPi                   | Color  | Sensor  |
+|:----------------------|:-------|:--------|
+| Pin8   GPIO14 TX      | White  | loopback|
+| Pin10  GPIO15 RX      | White  | loopback|
++
