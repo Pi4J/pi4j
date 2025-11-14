@@ -38,7 +38,7 @@ class MockPluginTest {
     @Test
     void canRecreatePwmDevice() {
         var config = PwmConfigBuilder.newInstance(pi4j)
-            .bus(0)
+            .chip(0)
             .channel(0)
             .build();
 

@@ -25,8 +25,9 @@ package com.pi4j.io.pwm;
  * #L%
  */
 
-import com.pi4j.config.BusConfig;
+import com.pi4j.config.BcmConfig;
 import com.pi4j.config.ChannelConfig;
+import com.pi4j.config.ChipConfig;
 import com.pi4j.io.IOConfig;
 
 import java.util.Collection;
@@ -37,23 +38,27 @@ import java.util.Collection;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public interface PwmConfig extends BusConfig<PwmConfig>, ChannelConfig<PwmConfig>, IOConfig<PwmConfig> {
+public interface PwmConfig extends ChipConfig<PwmConfig>, ChannelConfig<PwmConfig>, BcmConfig<PwmConfig>, IOConfig<PwmConfig> {
 
     /**
-     * @deprecated use {@link #bus()} instead.
+     * @deprecated use {@link #channel()} instead.
      * <p>
      * Constant <code>PWM_ADDRESS="address"</code>
      */
     @Deprecated(forRemoval = true)
     String PWM_ADDRESS = "address";
     /**
-     * Constant <code>PWM_BUS="buss"</code>
+     * Constant <code>PWM_CHIP="chip"</code>
      */
-    String PWM_BUS = "bus";
+    String PWM_CHIP = "chip";
     /**
      * Constant <code>PWM_ADDRESS="channel"</code>
      */
     String PWM_CHANNEL = "channel";
+    /**
+     * Constant <code>PWM_BCM="bcm"</code>
+     */
+    String PWM_BCM = "bcm";
     /**
      * Constant <code>PWM_TYPE_KEY="pwm-type"</code>
      */
@@ -80,7 +85,7 @@ public interface PwmConfig extends BusConfig<PwmConfig>, ChannelConfig<PwmConfig
     String INITIAL_VALUE_KEY = "initial";
 
     /**
-     * @deprecated use {@link #bus()} instead.
+     * @deprecated use {@link #channel()} ()} instead.
      */
     @Deprecated(forRemoval = true)
     Integer address();
@@ -93,7 +98,9 @@ public interface PwmConfig extends BusConfig<PwmConfig>, ChannelConfig<PwmConfig
      */
     @Override
     default int getUniqueIdentifier() {
-        return (bus() == null ? 0 : (bus() << 8)) + channel();
+        return (chip() == null ? 0 : (chip() << 16))
+            + (channel() == null ? 0 : (channel() << 8))
+            + bcm();
     }
 
     /**
