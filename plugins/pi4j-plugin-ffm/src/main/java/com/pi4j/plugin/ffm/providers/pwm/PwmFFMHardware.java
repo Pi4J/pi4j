@@ -162,8 +162,8 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
             return super.shutdownInternal(context);
         }
 
-        var exportFd = file.open(CHIP_PATH + bus + CHIP_UNEXPORT_PATH, FileFlag.O_WRONLY);
-        file.write(exportFd, getByteContent(channel));
+        var exportFd = file.open(CHIP_PATH + channel + CHIP_UNEXPORT_PATH, FileFlag.O_WRONLY);
+        file.write(exportFd, getByteContent(bus));
         file.close(exportFd);
 
         return this;
