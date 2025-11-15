@@ -26,7 +26,7 @@ package com.pi4j.config;
  */
 
 /**
- * <p>AddressConfigBuilder interface.</p>
+ * <p>BcmConfigBuilder interface.</p>
  *
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>

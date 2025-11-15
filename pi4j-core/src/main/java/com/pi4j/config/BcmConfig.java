@@ -26,7 +26,7 @@ package com.pi4j.config;
  */
 
 /**
- * <p>PinConfig interface.</p>
+ * <p>BcmConfig interface.</p>
  *
  * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)

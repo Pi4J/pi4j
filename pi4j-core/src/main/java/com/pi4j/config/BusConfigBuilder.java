@@ -26,7 +26,7 @@ package com.pi4j.config;
  */
 
 /**
- * <p>ChannelConfigBuilder interface.</p>
+ * <p>BusConfigBuilder interface.</p>
  *
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>

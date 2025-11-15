@@ -26,7 +26,7 @@ package com.pi4j.config;
  */
 
 /**
- * <p>ChannelConfig interface.</p>
+ * <p>BusConfig interface.</p>
  *
  * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
