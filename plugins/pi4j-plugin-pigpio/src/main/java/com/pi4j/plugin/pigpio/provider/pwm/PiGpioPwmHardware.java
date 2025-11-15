@@ -86,10 +86,10 @@ public class PiGpioPwmHardware extends PiGpioPwmBase implements Pwm {
             //  52  PWM channel 0  Compute module only
             //  53  PWM channel 1  Compute module only
 
-            if (this.config().address() == 12 || this.config().address() == 13 || this.config().address() == 41 || this.config().address() == 42 || this.config().address() == 45) {
-                piGpio.gpioSetMode(this.config().address(), PiGpioMode.ALT0);
-            } else if (this.config().address() == 18 || this.config().address() == 19) {
-                piGpio.gpioSetMode(this.config().address(), PiGpioMode.ALT0);
+            if (this.config().bcm() == 12 || this.config().bcm() == 13 || this.config().bcm() == 41 || this.config().bcm() == 42 || this.config().bcm() == 45) {
+                piGpio.gpioSetMode(this.config().bcm(), PiGpioMode.ALT0);
+            } else if (this.config().bcm() == 18 || this.config().address() == 19) {
+                piGpio.gpioSetMode(this.config().bcm(), PiGpioMode.ALT0);
             }
 //            else{
 //                throw new IOException("<PIGPIO> UNSUPPORTED HARDWARE PWM PIN: " + this.address());
@@ -98,15 +98,15 @@ public class PiGpioPwmHardware extends PiGpioPwmBase implements Pwm {
             // inversed polarity is not supported
             if (config.polarity() != null) {
                 if (config.polarity() == PwmPolarity.INVERSED) {
-                    throw new IOException("<PIGPIO> INVERSED POLARITY UNSUPPORTED; PWM PIN: " + this.config().address());
+                    throw new IOException("<PIGPIO> INVERSED POLARITY UNSUPPORTED; PWM PIN: " + this.config().bcm());
                 }
             }
 
             // set pin mode to output
-            piGpio.gpioSetMode(this.config().address(), PiGpioMode.OUTPUT);
+            piGpio.gpioSetMode(this.config().bcm(), PiGpioMode.OUTPUT);
 
             // get actual PWM frequency
-            this.actualFrequency = piGpio.gpioGetPWMfrequency(this.config().address());
+            this.actualFrequency = piGpio.gpioGetPWMfrequency(this.config().bcm());
 
             // get current frequency from config or from actual PWM pin
             if (config.frequency() != null) {
@@ -152,10 +152,10 @@ public class PiGpioPwmHardware extends PiGpioPwmBase implements Pwm {
     public Pwm on() throws IOException {
         try {
             // set PWM frequency & duty-cycle; enable PWM signal
-            piGpio.gpioHardwarePWM(this.config().address(), this.frequency, calculateActualDutyCycle(this.dutyCycle));
+            piGpio.gpioHardwarePWM(this.config().bcm(), this.frequency, calculateActualDutyCycle(this.dutyCycle));
 
             // get actual PWM frequency
-            this.actualFrequency = piGpio.gpioGetPWMfrequency(this.config().address());
+            this.actualFrequency = piGpio.gpioGetPWMfrequency(this.config().bcm());
 
             // update tracking state
             this.onState = (this.frequency > 0 && this.dutyCycle > 0);
@@ -178,11 +178,11 @@ public class PiGpioPwmHardware extends PiGpioPwmBase implements Pwm {
             // change value to apply a "ZERO" frequency & duty-cycle after
             // the library is first initialized and the PWM was not active
             if (initializing) {
-                piGpio.gpioHardwarePWM(this.config().address(), 1, 1);
+                piGpio.gpioHardwarePWM(this.config().bcm(), 1, 1);
             }
 
             // set PWM duty-cycle and enable PWM
-            piGpio.gpioHardwarePWM(this.config().address(), 0, 0);
+            piGpio.gpioHardwarePWM(this.config().bcm(), 0, 0);
 
             // update tracking state
             this.onState = false;

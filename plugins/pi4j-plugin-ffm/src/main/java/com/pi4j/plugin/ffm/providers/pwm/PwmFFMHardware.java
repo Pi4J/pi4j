@@ -39,12 +39,12 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
     private static final long NANOS_IN_SECOND = TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS);
 
     private String pwmPath;
-    private final int bus;
+    private final int chip;
     private final int channel;
 
     public PwmFFMHardware(PwmProvider provider, PwmConfig config) {
         super(provider, config);
-        this.bus = config.bus();
+        this.chip = config.chip();
         this.channel = config.channel();
         PermissionHelper.checkDevicePermissions(CHIP_PATH + channel, config);
     }
@@ -56,17 +56,17 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
     public Pwm initialize(Context context) throws InitializeException {
         var pwmChipFile = CHIP_PATH + channel;
 
-        var pwmFile = pwmChipFile + PWM_PATH + bus;
+        var pwmFile = pwmChipFile + PWM_PATH + chip;
         if (deviceNotExists(pwmFile)) {
             logger.trace("{} - no PWM Bus found... will try to export PWM Bus first.", pwmFile);
             var npwmFd = file.open(pwmChipFile + CHIP_NPWM_PATH, FileFlag.O_RDONLY);
             var maxChannel = getIntegerContent(file.read(npwmFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
             file.close(npwmFd);
-            if (bus > maxChannel - 1) {
+            if (chip > maxChannel - 1) {
                 throw new IllegalArgumentException("PWM Bus at path '" + pwmFile + "' cannot be exported! Max available channel is " + maxChannel);
             }
             var exportFd = file.open(pwmChipFile + CHIP_EXPORT_PATH, FileFlag.O_WRONLY);
-            file.write(exportFd, getByteContent(bus));
+            file.write(exportFd, getByteContent(chip));
             file.close(exportFd);
             if (deviceNotExists(pwmFile)) {
                 throw new IllegalArgumentException("PWM Bus at path '" + pwmFile + "' cannot be exported!");
@@ -162,7 +162,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
             return super.shutdownInternal(context);
         }
 
-        var exportFd = file.open(CHIP_PATH + bus + CHIP_UNEXPORT_PATH, FileFlag.O_WRONLY);
+        var exportFd = file.open(CHIP_PATH + chip + CHIP_UNEXPORT_PATH, FileFlag.O_WRONLY);
         file.write(exportFd, getByteContent(channel));
         file.close(exportFd);
 

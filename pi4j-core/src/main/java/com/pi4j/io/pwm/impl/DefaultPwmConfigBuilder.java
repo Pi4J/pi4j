@@ -62,7 +62,7 @@ public class DefaultPwmConfigBuilder
     }
 
     /**
-     * @deprecated use {@link #bus(Integer)} instead.
+     * @deprecated use {@link #channel(Integer)} instead.
      * <p>
      * {@inheritDoc}
      */
@@ -77,8 +77,8 @@ public class DefaultPwmConfigBuilder
      * {@inheritDoc}
      */
     @Override
-    public PwmConfigBuilder bus(Integer bus) {
-        this.properties.put(PwmConfig.PWM_BUS, bus.toString());
+    public PwmConfigBuilder chip(Integer chip) {
+        this.properties.put(PwmConfig.PWM_CHIP, chip.toString());
         return this;
     }
 
@@ -88,6 +88,15 @@ public class DefaultPwmConfigBuilder
     @Override
     public PwmConfigBuilder channel(Integer channel) {
         this.properties.put(PwmConfig.PWM_CHANNEL, channel.toString());
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PwmConfigBuilder bcm(Integer bcm) {
+        this.properties.put(PwmConfig.PWM_BCM, bcm.toString());
         return this;
     }
 

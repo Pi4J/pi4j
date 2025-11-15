@@ -49,13 +49,14 @@ public interface PwmProvider extends Provider<PwmProvider, Pwm, PwmConfig> {
     /**
      * <p>create.</p>
      *
-     * @param channel a {@link java.lang.Integer} object.
-     * @param <T>     a T object.
-     * @return a T object.
+     * @param chip
+     * @param channel
+     * @param <T>
+     * @return
      */
-    default <T extends Pwm> T create(Integer bus, Integer channel) {
+    default <T extends Pwm> T create(Integer chip, Integer channel) {
         var config = Pwm.newConfigBuilder(context())
-            .bus(bus)
+            .chip(chip)
             .channel(channel)
             .build();
         return (T) create(config);
@@ -64,15 +65,15 @@ public interface PwmProvider extends Provider<PwmProvider, Pwm, PwmConfig> {
     /**
      * <p>create.</p>
      *
-     * @param bus     a {@link java.lang.Integer} object.
+     * @param chip    a {@link java.lang.Integer} object.
      * @param channel a {@link java.lang.Integer} object.
      * @param id      a {@link java.lang.String} object.
      * @param <T>     a T object.
      * @return a T object.
      */
-    default <T extends Pwm> T create(Integer bus, Integer channel, String id) {
+    default <T extends Pwm> T create(Integer chip, Integer channel, String id) {
         var config = Pwm.newConfigBuilder(context())
-            .bus(bus)
+            .chip(chip)
             .channel(channel)
             .id(id)
             .build();
@@ -82,16 +83,16 @@ public interface PwmProvider extends Provider<PwmProvider, Pwm, PwmConfig> {
     /**
      * <p>create.</p>
      *
-     * @param bus     a {@link java.lang.Integer} object.
+     * @param chip    a {@link java.lang.Integer} object.
      * @param channel a {@link java.lang.Integer} object.
      * @param id      a {@link java.lang.String} object.
      * @param name    a {@link java.lang.String} object.
      * @param <T>     a T object.
      * @return a T object.
      */
-    default <T extends Pwm> T create(Integer bus, Integer channel, String id, String name) {
+    default <T extends Pwm> T create(Integer chip, Integer channel, String id, String name) {
         var config = Pwm.newConfigBuilder(context())
-            .bus(bus)
+            .chip(chip)
             .channel(channel)
             .id(id)
             .name(name)
@@ -102,7 +103,7 @@ public interface PwmProvider extends Provider<PwmProvider, Pwm, PwmConfig> {
     /**
      * <p>create.</p>
      *
-     * @param bus         a {@link java.lang.Integer} object.
+     * @param chip        a {@link java.lang.Integer} object.
      * @param channel     a {@link java.lang.Integer} object.
      * @param id          a {@link java.lang.String} object.
      * @param name        a {@link java.lang.String} object.
@@ -110,9 +111,9 @@ public interface PwmProvider extends Provider<PwmProvider, Pwm, PwmConfig> {
      * @param <T>         a T object.
      * @return a T object.
      */
-    default <T extends Pwm> T create(Integer bus, Integer channel, String id, String name, String description) {
+    default <T extends Pwm> T create(Integer chip, Integer channel, String id, String name, String description) {
         var config = Pwm.newConfigBuilder(context())
-            .bus(bus)
+            .chip(chip)
             .channel(channel)
             .id(id)
             .name(name)

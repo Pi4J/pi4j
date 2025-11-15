@@ -31,9 +31,9 @@ public class PwmTest {
             .add(new PwmFFMProviderImpl())
             .build();
         pwm = pi4j.pwm().create(PwmConfigBuilder.newInstance(pi4j)
-            .bus(1)
-            .channel(0)
             .pwmType(PwmType.HARDWARE)
+            .chip(1)
+            .channel(0)
             .build());
     }
 

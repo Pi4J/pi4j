@@ -27,6 +27,7 @@ package com.pi4j.plugin.linuxfs.provider.pwm;
  * #L%
  */
 
+import com.pi4j.boardinfo.util.PwmChipUtil;
 import com.pi4j.io.pwm.PwmProvider;
 import com.pi4j.plugin.linuxfs.LinuxFsPlugin;
 
@@ -37,29 +38,31 @@ import com.pi4j.plugin.linuxfs.LinuxFsPlugin;
  * @version $Id: $Id
  */
 public interface LinuxFsPwmProvider extends PwmProvider {
-    /** Constant <code>NAME="PiGpioPlugin.PWM_PROVIDER_NAME"</code> */
+    /**
+     * Constant <code>NAME="PiGpioPlugin.PWM_PROVIDER_NAME"</code>
+     */
     String NAME = LinuxFsPlugin.PWM_PROVIDER_NAME;
-    /** Constant <code>ID="PiGpioPlugin.PWM_PROVIDER_ID"</code> */
+    /**
+     * Constant <code>ID="PiGpioPlugin.PWM_PROVIDER_ID"</code>
+     */
     String ID = LinuxFsPlugin.PWM_PROVIDER_ID;
 
     /**
      * <p>newInstance.</p>
      *
-     * @param pwmFileSystemPath     Path to PWM device tree
-     * @param pwmChip               Number of PWM chip in device tree
      * @return a {@link LinuxFsPwmProvider} object.
      */
-    static LinuxFsPwmProvider newInstance(String pwmFileSystemPath, int pwmChip) {
-        return new LinuxFsPwmProviderImpl(pwmFileSystemPath, pwmChip);
+    static LinuxFsPwmProvider newInstance() {
+        return new LinuxFsPwmProviderImpl(PwmChipUtil.DEFAULT_PWM_SYSTEM_PATH);
     }
 
     /**
      * <p>newInstance.</p>
      *
-     * @param pwmChip    Number of PWM chip in device tree
+     * @param pwmFileSystemPath Path to PWM device tree
      * @return a {@link LinuxFsPwmProvider} object.
      */
-    static LinuxFsPwmProvider newInstance(int pwmChip) {
-        return new LinuxFsPwmProviderImpl(LinuxFsPlugin.DEFAULT_PWM_FILESYSTEM_PATH, pwmChip);
+    static LinuxFsPwmProvider newInstance(String pwmFileSystemPath) {
+        return new LinuxFsPwmProviderImpl(pwmFileSystemPath);
     }
 }

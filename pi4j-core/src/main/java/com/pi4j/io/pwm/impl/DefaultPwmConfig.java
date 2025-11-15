@@ -48,8 +48,9 @@ public class DefaultPwmConfig
     extends IOConfigBase<PwmConfig>
     implements PwmConfig {
 
-    protected Integer bus = null;
+    protected Integer chip = null;
     protected Integer channel = null;
+    protected Integer bcm = null;
 
     // private configuration properties
     protected Integer dutyCycle = null;
@@ -89,12 +90,16 @@ public class DefaultPwmConfig
     protected DefaultPwmConfig(Map<String, String> properties) {
         super(properties);
 
-        if (properties.containsKey(PWM_BUS)) {
-            this.bus = Integer.valueOf(properties.get(PWM_BUS));
+        if (properties.containsKey(PWM_CHIP)) {
+            this.chip = Integer.valueOf(properties.get(PWM_CHIP));
         }
 
         if (properties.containsKey(PWM_CHANNEL)) {
             this.channel = Integer.valueOf(properties.get(PWM_CHANNEL));
+        }
+
+        if (properties.containsKey(PWM_BCM)) {
+            this.bcm = Integer.valueOf(properties.get(PWM_BCM));
         }
 
         // load optional pwm duty-cycle from properties
@@ -144,7 +149,7 @@ public class DefaultPwmConfig
     }
 
     /**
-     * @deprecated use {@link #bus()} instead.
+     * @deprecated use {@link #channel()} ()} instead.
      */
     @Override
     @Deprecated(forRemoval = true)
@@ -153,8 +158,8 @@ public class DefaultPwmConfig
     }
 
     @Override
-    public Integer bus() {
-        return this.bus;
+    public Integer chip() {
+        return this.chip;
     }
 
     @Override
@@ -162,12 +167,19 @@ public class DefaultPwmConfig
         return this.channel;
     }
 
+    @Override
+    public Integer bcm() {
+        return this.bcm;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public int getUniqueIdentifier() {
-        return (bus == null ? 0 : (bus << 8)) + channel();
+        return (chip == null ? 0 : (chip << 16))
+            + (channel == null ? 0 : (channel << 8))
+            + (bcm == null ? 0 : bcm);
     }
 
     /**
