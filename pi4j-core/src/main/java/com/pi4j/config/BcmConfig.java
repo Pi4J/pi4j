@@ -5,7 +5,7 @@ package com.pi4j.config;
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  AddressConfig.java
+ * FILENAME      :  BcmConfig.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -26,7 +26,7 @@ package com.pi4j.config;
  */
 
 /**
- * <p>PinConfig interface.</p>
+ * <p>BcmConfig interface.</p>
  *
  * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)

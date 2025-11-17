@@ -68,7 +68,7 @@ public class LinuxFsPwm extends PwmBase implements Pwm {
      */
     @Override
     public Pwm initialize(Context context) throws InitializeException {
-        logger.trace("initializing PWM [{},{}]; {}", this.config.bus(), this.config.channel(), pwm.getPwmPath());
+        logger.trace("initializing PWM [{},{}]; {}", this.config.chip(), this.config.channel(), pwm.getPwmPath());
 
         // first determine if this PWM chipset supports this PWM channel/pin number
         try {

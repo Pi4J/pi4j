@@ -56,21 +56,30 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     }
 
     /**
-     * Get the GPIO pin number/address of this PWM instance.
+     * Get the chip of this PWM instance, for hardware PWM.
      *
-     * @return gpio pin number/address
+     * @return pwm chip
      */
-    default int getBus() {
-        return config().bus();
+    default int getChip() {
+        return config().chip();
     }
 
     /**
-     * Get the GPIO channel of this PWM instance.
+     * Get the channel of this PWM instance, for hardware PWM.
      *
-     * @return gpio channel
+     * @return pwm channel
      */
     default int getChannel() {
         return config().getChannel();
+    }
+
+    /**
+     * Get the bcm of this PWM instance, for software PWM.
+     *
+     * @return pwm bcm
+     */
+    default int getBcm() {
+        return config().getBcm();
     }
 
     /**

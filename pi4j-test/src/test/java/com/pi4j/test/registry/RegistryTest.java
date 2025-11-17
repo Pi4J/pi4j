@@ -108,43 +108,44 @@ class RegistryTest {
         Registry registry = pi4j.registry();
         assertAll(
             // Test that we can find them by address
-            () -> assertTrue(registry.exists(IOType.PWM, pwm.config().getUniqueIdentifier()), "Should exist: PWM by unique identifier"),
-            () -> assertTrue(registry.exists(IOType.I2C, i2c.config().getUniqueIdentifier()), "Should exist: I2C by unique identifier"),
             () -> assertTrue(registry.exists(IOType.DIGITAL_INPUT, input.config().getUniqueIdentifier()), "Should exist: Digital Input by unique identifier which should be identical to BCM"),
             () -> assertTrue(registry.exists(IOType.DIGITAL_OUTPUT, output.config().getUniqueIdentifier()), "Should exist: Digital Output by unique identifier which should be identical to BCM"),
             () -> assertTrue(registry.exists(IOType.DIGITAL_INPUT, input.bcm()), "Should exist: Digital Input by BCM"),
             () -> assertTrue(registry.exists(IOType.DIGITAL_OUTPUT, output.bcm()), "Should exist: Digital Output by BCM"),
 
             // and also by ID
-            () -> assertTrue(registry.exists(pwm.id()), "Should exist: PWM by ID"),
-            () -> assertTrue(registry.exists(i2c.id()), "Should exist: I2C by ID"),
             () -> assertTrue(registry.exists(input.id()), "Should exist: Digital Input by ID"),
-            () -> assertTrue(registry.exists(output.id()), "Should exist: Digital Output by ID")
+            () -> assertTrue(registry.exists(output.id()), "Should exist: Digital Output by ID"),
+            () -> assertTrue(registry.exists(pwm.id()), "Should exist: PWM by ID"),
+            () -> assertTrue(registry.exists(i2c.id()), "Should exist: I2C by ID")
         );
 
-        // but we shouldn't find them by other types
-//        assertFalse(registry.exists(IOType.ANALOG_INPUT, output.address()));
-//        assertFalse(registry.exists(IOType.ANALOG_OUTPUT, output.address()));
 
         // now shutdown all I/O instances by closing them.
         input.close();
         output.close();
+        //i2c.close();
+        //pwm.close();
 
         // The test PWM has no context here; assuming mock/fake incompleteness.
         // First guess was that this is because TestPwmProvider returns null from the create method, but this would
         // mean that pwm.id() above would fail already.
+        registry.remove(i2c.id());
         registry.remove(pwm.id());
 
         assertAll(
             // and now we shouldn't find them by address
             // TO FIX () -> assertFalse(registry.exists(IOType.PWM, 3), "Should not exist: PWM by address"),
-            () -> assertFalse(registry.exists(IOType.DIGITAL_INPUT, 3), "Should not exist: Digital Input by pin"),
-            () -> assertFalse(registry.exists(IOType.DIGITAL_OUTPUT, 3), "Should not exist: Digital Output by pin"),
+            () -> assertFalse(registry.exists(IOType.DIGITAL_INPUT, input.bcm()), "Should not exist: Digital Input by pin"),
+            () -> assertFalse(registry.exists(IOType.DIGITAL_OUTPUT, output.bcm()), "Should not exist: Digital Output by pin"),
+            () -> assertFalse(registry.exists(IOType.PWM, pwm.config().getUniqueIdentifier()), "Should not exist: PWM by unique identifier"),
+            () -> assertFalse(registry.exists(IOType.I2C, i2c.config().getUniqueIdentifier()), "Should not exist: I2C by unique identifier"),
 
             // or ID
-            () -> assertFalse(registry.exists(pwm.id()), "Should not exist: PWM by ID"),
             () -> assertFalse(registry.exists(input.id()), "Should not exist: Digital Input by ID"),
-            () -> assertFalse(registry.exists(output.id()), "Should not exist: Digital Output by ID")
+            () -> assertFalse(registry.exists(output.id()), "Should not exist: Digital Output by ID"),
+            () -> assertFalse(registry.exists(pwm.id()), "Should not exist: PWM by ID"),
+            () -> assertFalse(registry.exists(i2c.id()), "Should not exist: I2C by ID")
         );
 
         // Check close idempotency.
