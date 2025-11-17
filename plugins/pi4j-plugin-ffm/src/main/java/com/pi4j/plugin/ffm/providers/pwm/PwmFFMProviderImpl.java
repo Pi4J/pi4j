@@ -29,7 +29,7 @@ public class PwmFFMProviderImpl extends PwmProviderBase implements PwmProvider {
 
         // validate the config
         if (config.chip() == null || config.channel() == null) {
-            throw new IllegalArgumentException("PWM Chip and Channel are needed for hardware PWM with the LinuxFS I/O provider");
+            throw new IllegalArgumentException("PWM Chip and Channel are needed for hardware PWM with the FFM I/O provider");
         }
 
         // Warn for unneeded config
