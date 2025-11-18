@@ -63,7 +63,7 @@ public class DefaultDigitalOutputConfigBuilder
      */
     @Override
     public DigitalOutputConfigBuilder address(Integer address) {
-        this.properties.put(GpioConfig.BUS_KEY, String.valueOf(address));
+        this.properties.put(GpioConfig.BCM_KEY, String.valueOf(address));
         return this;
     }
 
