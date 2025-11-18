@@ -176,6 +176,9 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
      * @return integer representation of text byte array
      */
     private static int getIntegerContent(byte[] bytes) {
+        if (bytes == null) {
+            throw new IllegalArgumentException("bytes cannot be null");
+        }
         return Integer.parseInt(new String(bytes).trim());
     }
 
