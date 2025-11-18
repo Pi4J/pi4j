@@ -46,7 +46,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
         super(provider, config);
         this.chip = config.chip();
         this.channel = config.channel();
-        PermissionHelper.checkDevicePermissions(CHIP_PATH + channel, config);
+        PermissionHelper.checkDevicePermissions(CHIP_PATH + chip, config);
     }
 
     /**
@@ -54,9 +54,9 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
      */
     @Override
     public Pwm initialize(Context context) throws InitializeException {
-        var pwmChipFile = CHIP_PATH + channel;
+        var pwmChipFile = CHIP_PATH + chip;
 
-        var pwmFile = pwmChipFile + PWM_PATH + chip;
+        var pwmFile = pwmChipFile + PWM_PATH + channel;
         if (deviceNotExists(pwmFile)) {
             logger.trace("{} - no PWM Bus found... will try to export PWM Bus first.", pwmFile);
             var npwmFd = file.open(pwmChipFile + CHIP_NPWM_PATH, FileFlag.O_RDONLY);
