@@ -5,7 +5,7 @@ package com.pi4j.config;
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  BcmConfigBuilder.java
+ * FILENAME      :  ChipConfig.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -26,30 +26,31 @@ package com.pi4j.config;
  */
 
 /**
- * <p>BcmConfigBuilder interface.</p>
+ * <p>ChipConfig interface.</p>
  *
- * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public interface BcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+public interface ChipConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
     /**
-     * <p>address.</p>
-     *
-     * @param address a {@link java.lang.Integer} object.
-     * @return a BUILDER_TYPE object.
-     * @deprecated use {@link #bcm(Integer)} instead.
-     * <p>
+     * Constant <code>CHIP_KEY="chip"</code>
      */
-    @Deprecated(forRemoval = true)
-    BUILDER_TYPE address(Integer address);
+    String CHIP_KEY = "chip";
 
     /**
-     * <p>pin defined by BCM number.</p>
+     * <p>chip.</p>
      *
-     * @param bcm a {@link java.lang.Integer} object.
-     * @return a BUILDER_TYPE object.
+     * @return a {@link Integer} object.
      */
-    BUILDER_TYPE bcm(Integer bcm);
+    Integer chip();
+
+    /**
+     * <p>getChip.</p>
+     *
+     * @return a {@link Integer} object.
+     */
+    default Integer getChip() {
+        return this.chip();
+    }
 }
