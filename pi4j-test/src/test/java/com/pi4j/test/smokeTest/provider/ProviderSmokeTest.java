@@ -41,10 +41,7 @@ import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBus;
 import com.pi4j.io.spi.SpiChipSelect;
 import com.pi4j.io.spi.SpiMode;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
  /**
   * ProviderSmokeTest
@@ -57,9 +54,27 @@ import org.junit.jupiter.api.Test;
     static Context pi4j = null;
 
     static int pwmFlashes = 0 ;
+    static final int PWM_CHANNEL = 2;
+    static final int PIN_GPIO23 = 23;
+    static final int ID_VALUE_MSK_BMP = 0x58;   // expected chpId value BMP28
+    static final int ID_VALUE_MSK_BME = 0x60;   // expected chpId value BME280
+    static final int PIN_GPIO16 = 16;
+    static final int PIN_GPIO26 = 26;
+    static final int PIN_GPIO24 = 24;
+    static final int PIN_GPIO25 = 25;
+    static final int BMP_I2C_BUS = 1;
+    static final int BMP_I2C_ADDR = 0x76;
 
-    @BeforeAll
-    public static void beforeTest() {
+    static final String SPI_PROVIDER = "ffm-spi" ;
+    static final String GPIO_IN_PROVIDER = "ffm-digital-input" ;
+    static final String I2C_PROVIDER = "ffm-i2c";
+    static final String GPIO_OUT_PROVIDER = "ffm-digital-output" ;
+    static final String PWM_PROVIDER =  "ffm-pwm" ;
+    static final String SERIAL_PROVIDER =  "ffm-serial";
+
+
+     @BeforeEach
+    public void beforeTest() {
 
         System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
         pi4j = Pi4J.newAutoContext();
@@ -67,8 +82,8 @@ import org.junit.jupiter.api.Test;
     }
 
 
-    @AfterAll
-    public static void afterTest() {
+    @AfterEach
+    public void afterTest() {
         try {
             pi4j.shutdown();
         } catch (Pi4JException e) { /* do nothing */ }
@@ -77,20 +92,16 @@ import org.junit.jupiter.api.Test;
 
     @Test
     public void testI2c() {
-        final int idValueMskBMP = 0x58;   // expected chpId value BMP280
-        final int idValueMskBME = 0x60;   // expected chpId value BME280
-
+      
         I2C dev = createI2cBMPDevice();
         // read 0xD0 validate data equal 0x58 or 0x60
         int id = dev.readRegister(0xD0);
 
-        Assertions.assertTrue(id == idValueMskBMP || id ==idValueMskBME, "TestBMP and BME ID");
+        Assertions.assertTrue(id == ID_VALUE_MSK_BMP || id ==ID_VALUE_MSK_BME, "TestBMP and BME ID");
     }
 
     @Test
     public void testSpi() {
-        final int idValueMskBMP = 0x58;   // expected chpId value BMP280
-        final int idValueMskBME = 0x60;   // expected chpId value BME280
 
         Spi spi = createSPIDevice();
         final int chipId = 0xD0;
@@ -101,17 +112,15 @@ import org.junit.jupiter.api.Test;
         }
         int id = this.readSpiRegister(spi, chipId);
 
-        Assertions.assertTrue(id == idValueMskBMP || id ==idValueMskBME, "TestBMP and BME ID");
+        Assertions.assertTrue(id == ID_VALUE_MSK_BMP || id ==ID_VALUE_MSK_BME, "TestBMP and BME ID");
     }
 
     @Test
     public void testPWM() throws Exception {
-        final int PWM_CHANNEL = 2;
-        final int PIN_GPIO23 = 23;
         pwmFlashes = 0 ;
-        DigitalInput gpio23InMonitor = createDigitalInput(PIN_GPIO23);
+        DigitalInput gpio23InMonitor = createDigitalInput(PIN_GPIO23, PullResistance.PULL_DOWN);
         gpio23InMonitor.addListener(new ProviderSmokeTest.DataInGpioListener());
-        Pwm pwm = createPWM(PWM_CHANNEL);
+        Pwm pwm = createHwPwm(PWM_CHANNEL);
         pwm.on(50, 1) ;
         Thread.sleep(10000);  // wait 10 seconds while listener counts flashes
 
@@ -120,10 +129,8 @@ import org.junit.jupiter.api.Test;
 
     @Test
     public void testGpioIn() {
-          final int PIN_GPIO16 = 16;
-        final int PIN_GPIO26 = 26;
-        DigitalOutput gpio26OutControl = createDigitalOutput(PIN_GPIO26);
-        DigitalInput gpio16InTest = createDigitalInput(PIN_GPIO16);
+        DigitalOutput gpio26OutControl = createDigitalOutput(PIN_GPIO26, DigitalState.LOW, DigitalState.LOW);
+        DigitalInput gpio16InTest = createDigitalInput(PIN_GPIO16,PullResistance.PULL_DOWN);
         // Validate monitor is LOW, then set test control state HIGH
         if (gpio16InTest.state() == DigitalState.LOW) {
             gpio26OutControl.high();
@@ -135,36 +142,25 @@ import org.junit.jupiter.api.Test;
 
     @Test
     public void testGpioOut() {
-        final int PIN_GPIO24 = 24;
-        final int PIN_GPIO25 = 25;
 
-        DigitalOutput gpio24OutTest = createDigitalOutput(PIN_GPIO24);
+        DigitalOutput gpio24OutTest = createDigitalOutput(PIN_GPIO24, DigitalState.LOW, DigitalState.LOW);
 
-        DigitalInput gpio25InMonitor = createDigitalInput(PIN_GPIO25);
+        DigitalInput gpio25InMonitor = createDigitalInput(PIN_GPIO25, PullResistance.PULL_DOWN);
         // Validate monitor is LOW, test control state HIGH
         if (gpio25InMonitor.state() == DigitalState.LOW) {
             gpio24OutTest.high();
         }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         DigitalState state =  gpio25InMonitor.state() ;
-
         Assertions.assertTrue(state  ==  DigitalState.HIGH, "TestGpioOut  now HIGHs");
     }
 
-    @Test
+     @Test
     public void testSerial() {
         Assertions.assertTrue(false, "TestSerial expected read on loopback");
     }
 
 
     private I2C  createI2cBMPDevice() {
-        final String I2C_PROVIDER = "ffm-i2c";
-        final int BMP_I2C_BUS = 1;
-        final int BMP_I2C_ADDR = 0x76;
         String name = "I2cBMC280";
         String id = Integer.toHexString(BMP_I2C_ADDR);
         var i2cDeviceConfig = I2C.newConfigBuilder(pi4j)
@@ -178,13 +174,12 @@ import org.junit.jupiter.api.Test;
         return  i2c;
     }
     Spi createSPIDevice() {
-        SpiBus bmpSpiSpiBus = SpiBus.BUS_0;
-        final String SPI_PROVIDER = "ffm-spi" ;
+        SpiBus bmpSpiBus = SpiBus.BUS_0;
 
         var spiConfig = Spi.newConfigBuilder(pi4j)
-            .id("SPI" + bmpSpiSpiBus + "_BMP280")
-            .name("D/A converter")
-            .bus(bmpSpiSpiBus)
+            .id("SPI" + bmpSpiBus + "_BMP280")
+            .name("Sensor")
+            .bus(bmpSpiBus)
             .chipSelect(SpiChipSelect.CS_0)
             .baud(Spi.DEFAULT_BAUD)    // Max 10MHz
             .mode(SpiMode.MODE_0)
@@ -194,23 +189,21 @@ import org.junit.jupiter.api.Test;
         return spi;
     }
 
-    DigitalInput createDigitalInput(int pin) {
-        final String GPIO_IN_PROVIDER = "ffm-digital-input" ;
+    DigitalInput createDigitalInput(int pin, PullResistance pull) {
 
         var inputConfig3 = DigitalInput.newConfigBuilder(pi4j)
             .bcm(pin)
-            .pull(PullResistance.PULL_DOWN)
+            .pull(pull)
             .provider(GPIO_IN_PROVIDER);
         return pi4j.create(inputConfig3);
     }
 
-    DigitalOutput createDigitalOutput(int pin) {
-        final String GPIO_OUT_PROVIDER = "ffm-digital-output" ;
+    DigitalOutput createDigitalOutput(int pin, DigitalState initial, DigitalState shutDown) {
 
         var outputConfig3 = DigitalOutput.newConfigBuilder(pi4j)
             .bcm(pin)
-            .initial(DigitalState.LOW)
-            .shutdown(DigitalState.LOW)
+            .initial(initial)
+            .shutdown(shutDown)
             .provider(GPIO_OUT_PROVIDER);
         return pi4j.create(outputConfig3);
     }
@@ -223,8 +216,7 @@ import org.junit.jupiter.api.Test;
         return value[0];
     }
 
-    Pwm createPWM(int channel) {
-        final String PWM_PROVIDER =  "ffm-pwm" ;
+    Pwm createHwPwm(int channel) {
 
         var chip = PwmChipUtil.getPWMChip();
         var configPwm = Pwm.newConfigBuilder(pi4j)
