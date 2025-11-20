@@ -1,10 +1,10 @@
 
-SmokeTest
-
+Main
+SmokeTest for HW providers.
 Testcase to verify the providers can be loaded and used.  The use is very simple, just enough to know it worked. The test
 uses the FFM providers.
 
-EQ.  I used a T-cobbler plugged into a prototype board, two BMP280 sensors, both mounted on individual breakout boards.
+EQ.  T-cobbler plugged into a prototype board, two sensors, BMP280 or BME280, both mounted on individual breakout boards.
 Connections are M-M jumpers.  The I2C and SPI BMP280 charts refers to connection points on the breakout board
 but your sensor may use different letter designations. Also, the are BMP sensors available with I2C and SPI interfaces
 or only one of the interfaces, read the fine print if you order these sensors.
