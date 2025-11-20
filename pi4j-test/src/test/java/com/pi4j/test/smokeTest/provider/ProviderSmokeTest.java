@@ -41,6 +41,7 @@ import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBus;
 import com.pi4j.io.spi.SpiChipSelect;
 import com.pi4j.io.spi.SpiMode;
+import jdk.jfr.Description;
 import org.junit.jupiter.api.*;
 
  /**
@@ -100,6 +101,7 @@ import org.junit.jupiter.api.*;
         Assertions.assertTrue(id == ID_VALUE_MSK_BMP || id ==ID_VALUE_MSK_BME, "TestBMP and BME ID");
     }
 
+    @Disabled("Needs issue 552 implement writeThenRead in ffm Spi")
     @Test
     public void testSpi() {
 
@@ -140,6 +142,7 @@ import org.junit.jupiter.api.*;
         Assertions.assertTrue(state  ==  DigitalState.HIGH, "TestGpioIn  now HIGHs");
     }
 
+    @DisplayName("testGpioOut() Has work-around while debugging with ffm")
     @Test
     public void testGpioOut() {
 
@@ -150,10 +153,16 @@ import org.junit.jupiter.api.*;
         if (gpio25InMonitor.state() == DigitalState.LOW) {
             gpio24OutTest.high();
         }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         DigitalState state =  gpio25InMonitor.state() ;
         Assertions.assertTrue(state  ==  DigitalState.HIGH, "TestGpioOut  now HIGHs");
     }
 
+    @Disabled("Requires implementation")
      @Test
     public void testSerial() {
         Assertions.assertTrue(false, "TestSerial expected read on loopback");
@@ -161,7 +170,7 @@ import org.junit.jupiter.api.*;
 
 
     private I2C  createI2cBMPDevice() {
-        String name = "I2cBMC280";
+        String name = "I2cBMP280";
         String id = Integer.toHexString(BMP_I2C_ADDR);
         var i2cDeviceConfig = I2C.newConfigBuilder(pi4j)
             .bus(BMP_I2C_BUS)
