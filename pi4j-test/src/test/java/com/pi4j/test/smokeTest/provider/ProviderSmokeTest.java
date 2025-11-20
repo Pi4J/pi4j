@@ -41,7 +41,6 @@ import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBus;
 import com.pi4j.io.spi.SpiChipSelect;
 import com.pi4j.io.spi.SpiMode;
-import jdk.jfr.Description;
 import org.junit.jupiter.api.*;
 
  /**
