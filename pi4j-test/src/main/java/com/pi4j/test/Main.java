@@ -35,12 +35,13 @@ import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBus;
 import com.pi4j.io.spi.SpiChipSelect;
 import com.pi4j.io.spi.SpiMode;
-import com.pi4j.plugin.ffm.providers.gpio.DigitalInputFFMProviderImpl;
+/* import com.pi4j.plugin.ffm.providers.gpio.DigitalInputFFMProviderImpl;
 import com.pi4j.plugin.ffm.providers.gpio.DigitalOutputFFMProviderImpl;
 import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
 import com.pi4j.plugin.ffm.providers.pwm.PwmFFMProviderImpl;
 import com.pi4j.plugin.ffm.providers.serial.SerialFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.spi.SpiFFMProviderImpl;
+import com.pi4j.plugin.ffm.providers.spi.SpiFFMProviderImpl;  */
+
 import com.pi4j.util.Console;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,11 +70,11 @@ public class Main {
     private static final int BMP_I2C_ADDR = 0x76;
     private static final String FFM_PROVIDER = "ffm";
     private static final String LINUXFS_PROVIDER = "linuxfs";
-    private static final String SPI_PROVIDER = "ffm-spi";
-    private static final String GPIO_IN_PROVIDER = "ffm-digital-input";
-    private static final String I2C_PROVIDER = "ffm-i2c";
-    private static final String GPIO_OUT_PROVIDER = "ffm-digital-output";
-    private static final String PWM_PROVIDER = "ffm-pwm";
+    private static final String SPI_PROVIDER = "linuxfs-spi"; //"ffm-spi";
+    private static final String GPIO_IN_PROVIDER = "linuxfs-digital-input"; //"ffm-digital-input";
+    private static final String I2C_PROVIDER =  "linuxfs-i2c";//"ffm-i2c";
+    private static final String GPIO_OUT_PROVIDER = "linuxfs-digital-output"; //"linuxfs-digital-output"; //"ffm-digital-output";
+    private static final String PWM_PROVIDER = "linuxfs-pwm"; //"ffm-pwm";
     private static final String SERIAL_PROVIDER = "ffm-serial";
     static Context pi4j = null;
     private static final Console console = null;
@@ -103,15 +104,16 @@ public class Main {
         /* Plan the ContextUtil class to create the linuxfs or ffm provider
         as requested and return appropriate provider names by IO-TYPE
         */
+        pi4j = Pi4J.newAutoContext();     //  remove var
 
-        pi4j = Pi4J.newContextBuilder()
+  /*    pi4j = Pi4J.newContextBuilder()
             .add(new DigitalOutputFFMProviderImpl())
             .add(new DigitalInputFFMProviderImpl())
             .add(new I2CFFMProviderImpl())
             .add(new SpiFFMProviderImpl())
             .add(new PwmFFMProviderImpl())
             .add(new SerialFFMProviderImpl())
-            .build();
+            .build();  */
         // create About class instance
         About about = new About();
         about.enumerateProviders(pi4j);
