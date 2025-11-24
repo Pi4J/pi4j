@@ -1,4 +1,4 @@
- package com.pi4j.test.smokeTest.provider;
+ package com.pi4j.test.smoketest.provider;
 
 /*
  *
@@ -31,6 +31,7 @@
 
 import com.pi4j.Pi4J;
 import com.pi4j.boardinfo.util.PwmChipUtil;
+import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.gpio.digital.*;
@@ -75,24 +76,24 @@ import org.junit.jupiter.api.*;
 
      @BeforeEach
     public void beforeTest() {
+        // Only run these tests on a Raspberry Pi device
+        Assumptions.assumeTrue(BoardInfoHelper.runningOnRaspberryPi(), "This test only runs on a Raspberry Pi");
 
         System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
         pi4j = Pi4J.newAutoContext();
-
     }
 
-
-    @AfterEach
-    public void afterTest() {
-        try {
-            pi4j.shutdown();
-        } catch (Pi4JException e) { /* do nothing */ }
-    }
-
+     @AfterEach
+     public void afterTest() {
+         try {
+             if (pi4j != null)
+                 pi4j.shutdown();
+         } catch (Pi4JException e) { /* do nothing */ }
+     }
 
     @Test
     public void testI2c() {
-      
+
         I2C dev = createI2cBMPDevice();
         // read 0xD0 validate data equal 0x58 or 0x60
         int id = dev.readRegister(0xD0);
