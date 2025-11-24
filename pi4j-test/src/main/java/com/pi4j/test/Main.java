@@ -35,25 +35,15 @@ import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBus;
 import com.pi4j.io.spi.SpiChipSelect;
 import com.pi4j.io.spi.SpiMode;
-/* import com.pi4j.plugin.ffm.providers.gpio.DigitalInputFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.gpio.DigitalOutputFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.pwm.PwmFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.serial.SerialFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.spi.SpiFFMProviderImpl;  */
-
 import com.pi4j.util.Console;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * <p>Main class.</p>
- * Simple test of the six providers. Dependent upon
- * the wiring described in the README file.
+ * Simple test of the six providers. Dependent upon the wiring described in the README file.
  *
  */
-
 
 public class Main {
 
@@ -72,8 +62,9 @@ public class Main {
     private static final String LINUXFS_PROVIDER = "linuxfs";
     private static final String SPI_PROVIDER = "linuxfs-spi"; //"ffm-spi";
     private static final String GPIO_IN_PROVIDER = "linuxfs-digital-input"; //"ffm-digital-input";
-    private static final String I2C_PROVIDER =  "linuxfs-i2c";//"ffm-i2c";
-    private static final String GPIO_OUT_PROVIDER = "linuxfs-digital-output"; //"linuxfs-digital-output"; //"ffm-digital-output";
+    private static final String I2C_PROVIDER = "linuxfs-i2c";//"ffm-i2c";
+    private static final String GPIO_OUT_PROVIDER = "linuxfs-digital-output";
+        //"linuxfs-digital-output"; //"ffm-digital-output";
     private static final String PWM_PROVIDER = "linuxfs-pwm"; //"ffm-pwm";
     private static final String SERIAL_PROVIDER = "ffm-serial";
     static Context pi4j = null;
@@ -188,7 +179,6 @@ public class Main {
         return (id == ID_VALUE_MSK_BMP || id == ID_VALUE_MSK_BME);
     }
 
-
     private static boolean testSpi() {
 
         Spi spi = createSPIDevice();
@@ -251,11 +241,11 @@ public class Main {
         return false;
     }
 
-
     private static I2C createI2cBMPDevice() {
         String name = "I2cBMP280";
         String id = Integer.toHexString(BMP_I2C_ADDR);
-        var i2cDeviceConfig = I2C.newConfigBuilder(pi4j)
+        var i2cDeviceConfig = I2C
+            .newConfigBuilder(pi4j)
             .bus(BMP_I2C_BUS)
             .device(BMP_I2C_ADDR)
             .id(id + " " + name)
@@ -269,7 +259,8 @@ public class Main {
     private static Spi createSPIDevice() {
         SpiBus bmpSpiBus = SpiBus.BUS_0;
 
-        var spiConfig = Spi.newConfigBuilder(pi4j)
+        var spiConfig = Spi
+            .newConfigBuilder(pi4j)
             .id("SPI" + bmpSpiBus + "_BMP280")
             .name("Sensor")
             .bus(bmpSpiBus)
@@ -284,23 +275,20 @@ public class Main {
 
     private static DigitalInput createDigitalInput(int pin, PullResistance pull) {
 
-        var inputConfig3 = DigitalInput.newConfigBuilder(pi4j)
-            .bcm(pin)
-            .pull(pull)
-            .provider(GPIO_IN_PROVIDER);
+        var inputConfig3 = DigitalInput.newConfigBuilder(pi4j).bcm(pin).pull(pull).provider(GPIO_IN_PROVIDER);
         return pi4j.create(inputConfig3);
     }
 
     private static DigitalOutput createDigitalOutput(int pin, DigitalState initial, DigitalState shutDown) {
 
-        var outputConfig3 = DigitalOutput.newConfigBuilder(pi4j)
+        var outputConfig3 = DigitalOutput
+            .newConfigBuilder(pi4j)
             .bcm(pin)
             .initial(initial)
             .shutdown(shutDown)
             .provider(GPIO_OUT_PROVIDER);
         return pi4j.create(outputConfig3);
     }
-
 
     private static int readSpiRegister(Spi spi, int register) {
         byte[] data = new byte[]{(byte) (0b10000000 | register)};
@@ -312,7 +300,8 @@ public class Main {
     private static Pwm createHwPwm(int channel) {
 
         var chip = PwmChipUtil.getPWMChip();
-        var configPwm = Pwm.newConfigBuilder(pi4j)
+        var configPwm = Pwm
+            .newConfigBuilder(pi4j)
             .channel(channel)
             .pwmType(PwmType.HARDWARE)
             .provider(PWM_PROVIDER)
@@ -325,14 +314,11 @@ public class Main {
         return pwm;
     }
 
-
     /* Listener class        */
     private static class DataInGpioListener implements DigitalStateChangeListener {
 
-
         public DataInGpioListener() {
         }
-
 
         @Override
         public void onDigitalStateChange(DigitalStateChangeEvent event) {
@@ -346,6 +332,5 @@ public class Main {
             }
         }
     }
-
 
 }
