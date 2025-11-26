@@ -111,11 +111,11 @@
             <artifactId>pi4j-plugin-linuxfs</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>com.pi4j</groupId>
             <artifactId>pi4j-plugin-ffm</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency-->
 
     </dependencies>
 
