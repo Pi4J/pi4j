@@ -44,9 +44,6 @@ import com.pi4j.plugin.ffm.providers.serial.SerialFFMProviderImpl;
 import com.pi4j.plugin.ffm.providers.spi.SpiFFMProviderImpl;
 import com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalInputProvider;
 import com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalOutputProvider;
-import com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalOutputProviderImpl;
-import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalInputProvider;
-import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalOutputProvider;
 import com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CProvider;
 import com.pi4j.plugin.linuxfs.provider.pwm.LinuxFsPwmProvider;
 import com.pi4j.plugin.linuxfs.provider.spi.LinuxFsSpiProvider;
@@ -54,7 +51,6 @@ import com.pi4j.util.Console;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.pi4j.boardinfo.util.PwmChipUtil.DEFAULT_PWM_SYSTEM_PATH;
 
 /**
  * <p>Main class.</p>
