@@ -62,7 +62,7 @@ import org.junit.jupiter.api.*;
     static final int PIN_GPIO16 = 16;
     static final int PIN_GPIO26 = 26;
     static final int PIN_GPIO24 = 24;
-    static final int PIN_GPIO25 = 25;
+    static final int PIN_GPIO27 = 27;
     static final int BMP_I2C_BUS = 1;
     static final int BMP_I2C_ADDR = 0x76;
 
@@ -148,9 +148,9 @@ import org.junit.jupiter.api.*;
 
         DigitalOutput gpio24OutTest = createDigitalOutput(PIN_GPIO24, DigitalState.LOW, DigitalState.LOW);
 
-        DigitalInput gpio25InMonitor = createDigitalInput(PIN_GPIO25, PullResistance.PULL_DOWN);
+        DigitalInput gpio27InMonitor = createDigitalInput(PIN_GPIO27, PullResistance.PULL_DOWN);
         // Validate monitor is LOW, test control state HIGH
-        if (gpio25InMonitor.state() == DigitalState.LOW) {
+        if (gpio27InMonitor.state() == DigitalState.LOW) {
             gpio24OutTest.high();
         }
         try {
@@ -158,7 +158,7 @@ import org.junit.jupiter.api.*;
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        DigitalState state =  gpio25InMonitor.state() ;
+        DigitalState state =  gpio27InMonitor.state() ;
         Assertions.assertTrue(state  ==  DigitalState.HIGH, "TestGpioOut  now HIGHs");
     }
 

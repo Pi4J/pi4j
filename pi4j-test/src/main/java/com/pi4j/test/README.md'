@@ -48,7 +48,7 @@ PWM
 Output
 | RPi                   | Color  |     Monitor    |
 |:----------------------|:-------|:---------------|
-| Pin18  GPIO24 Output  | Blue   | Pin22  GPIO25  |
+| Pin18  GPIO24 Output  | Blue   | Pin22  GPIO27  |
 
 Input
 | RPi                   | Color  |     Control    |

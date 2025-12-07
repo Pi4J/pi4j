@@ -62,11 +62,17 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
             var npwmFd = file.open(pwmChipFile + CHIP_NPWM_PATH, FileFlag.O_RDONLY);
             var maxChannel = getIntegerContent(file.read(npwmFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
             file.close(npwmFd);
-            if (chip > maxChannel - 1) {
+            if (channel > maxChannel - 1) {
                 throw new IllegalArgumentException("PWM Bus at path '" + pwmFile + "' cannot be exported! Max available channel is " + maxChannel);
             }
             var exportFd = file.open(pwmChipFile + CHIP_EXPORT_PATH, FileFlag.O_WRONLY);
-            file.write(exportFd, getByteContent(chip));
+            file.write(exportFd, getByteContent(channel));
+            try {
+                Thread.sleep(80);
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage(), e);
+                throw new InitializeException("Programmed delay failure, unable to export PWM [" + config.channel() + "] @ <" + (pwmChipFile + CHIP_EXPORT_PATH) + ">; " + e.getMessage(), e);
+             }
             file.close(exportFd);
             if (deviceNotExists(pwmFile)) {
                 throw new IllegalArgumentException("PWM Bus at path '" + pwmFile + "' cannot be exported!");
