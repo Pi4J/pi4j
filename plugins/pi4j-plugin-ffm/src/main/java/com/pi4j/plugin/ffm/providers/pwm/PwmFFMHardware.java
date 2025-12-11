@@ -72,7 +72,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
             } catch (InterruptedException e) {
                 logger.error(e.getMessage(), e);
                 throw new InitializeException("Programmed delay failure, unable to export PWM at channel " + config.channel() + " @ <" + (pwmChipFile + CHIP_EXPORT_PATH) + ">; " + e.getMessage(), e);
-             }
+            }
             file.close(exportFd);
             if (deviceNotExists(pwmFile)) {
                 throw new IllegalArgumentException("PWM channel " + channel + " at path '" + pwmFile + "' cannot be exported!");
@@ -117,35 +117,36 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
     @Override
     public Pwm on() throws IOException {
         if (onState) {
-            logger.warn("{} - PWM is already enabled.", pwmPath);
-            return this;
+            logger.debug("{} - PWM Bus is already enabled. Settings will be re-applied to apply any change.", pwmPath);
         }
+
         if (frequency < 0) {
             logger.error("{} - cannot set frequency '{}', required more then 0.", pwmPath, frequency);
             throw new Pi4JException("cannot set frequency '" + frequency + "', required more then 0.");
         }
+
         this.period = (NANOS_IN_SECOND / frequency);
         logger.debug("{} - period is '{}', dutyCycle is '{}' and polarity '{}'.", pwmPath, period, dutyCycle, polarity);
 
         var periodFd = file.open(this.pwmPath + PERIOD_PATH, FileFlag.O_WRONLY);
-        var dutyCycleFd = file.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_WRONLY);
-        var polarityFd = file.open(this.pwmPath + POLARITY_PATH, FileFlag.O_WRONLY);
-
         file.write(periodFd, String.valueOf(period).getBytes());
+        file.close(periodFd);
 
+        var dutyCycleFd = file.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_WRONLY);
         var dCycle = Math.round((double) (period * dutyCycle) / 100);
         file.write(dutyCycleFd, String.valueOf(dCycle).getBytes());
-
-        file.write(polarityFd, polarity.getName().getBytes());
-
         file.close(dutyCycleFd);
-        file.close(periodFd);
+
+        var polarityFd = file.open(this.pwmPath + POLARITY_PATH, FileFlag.O_WRONLY);
+        file.write(polarityFd, polarity.getName().getBytes());
         file.close(polarityFd);
 
         var enableFd = file.open(this.pwmPath + ENABLE_PATH, FileFlag.O_RDWR);
         file.write(enableFd, String.valueOf(1).getBytes());
         file.close(enableFd);
+
         this.onState = true;
+
         return this;
     }
 
@@ -221,6 +222,4 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
             waitForPermissions(path, timeout + 10);
         }
     }
-
-
 }
