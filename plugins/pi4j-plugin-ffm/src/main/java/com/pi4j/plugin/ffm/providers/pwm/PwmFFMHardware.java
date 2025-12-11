@@ -72,7 +72,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
             } catch (InterruptedException e) {
                 logger.error(e.getMessage(), e);
                 throw new InitializeException("Programmed delay failure, unable to export PWM at channel " + config.channel() + " @ <" + (pwmChipFile + CHIP_EXPORT_PATH) + ">; " + e.getMessage(), e);
-             }
+            }
             file.close(exportFd);
             if (deviceNotExists(pwmFile)) {
                 throw new IllegalArgumentException("PWM channel " + channel + " at path '" + pwmFile + "' cannot be exported!");
@@ -117,7 +117,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
     @Override
     public Pwm on() throws IOException {
         if (onState) {
-            logger.debug("{} - PWM Bus is already enabled. Settings will be applied again.", pwmPath);
+            logger.debug("{} - PWM Bus is already enabled. Settings will be re-applied to apply any change.", pwmPath);
         }
 
         if (frequency < 0) {
