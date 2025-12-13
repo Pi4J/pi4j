@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.TimeUnit;
 
 public class PwmFFMHardware extends PwmBase implements Pwm {
-    private Logger logger = LoggerFactory.getLogger(PwmFFMHardware.class);
+    private final Logger logger = LoggerFactory.getLogger(PwmFFMHardware.class);
 
     private final FileDescriptorNative file = new FileDescriptorNative();
 
@@ -67,12 +67,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
             }
             var exportFd = file.open(pwmChipFile + CHIP_EXPORT_PATH, FileFlag.O_WRONLY);
             file.write(exportFd, getByteContent(channel));
-            try {
-                Thread.sleep(80);
-            } catch (InterruptedException e) {
-                logger.error(e.getMessage(), e);
-                throw new InitializeException("Programmed delay failure, unable to export PWM at channel " + config.channel() + " @ <" + (pwmChipFile + CHIP_EXPORT_PATH) + ">; " + e.getMessage(), e);
-            }
+            waitForFile(pwmFile, 0);
             file.close(exportFd);
             if (deviceNotExists(pwmFile)) {
                 throw new IllegalArgumentException("PWM channel " + channel + " at path '" + pwmFile + "' cannot be exported!");
@@ -80,7 +75,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
         }
         this.pwmPath = pwmFile;
 
-        waitForPermissions(this.pwmPath + ENABLE_PATH, 0);
+        waitForFile(this.pwmPath + ENABLE_PATH, 0);
         var stateFd = file.open(this.pwmPath + ENABLE_PATH, FileFlag.O_RDONLY);
         this.onState = getIntegerContent(file.read(stateFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE)) == 1;
         file.close(stateFd);
@@ -209,17 +204,17 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
      * @param path    path of the file
      * @param timeout counting timeout
      */
-    private void waitForPermissions(String path, int timeout) {
+    private void waitForFile(String path, int timeout) {
         if (timeout > 100) {
-            throw new Pi4JException("Timeout occurred while waiting for permissions");
+            throw new Pi4JException("Timeout occurred while waiting for file");
         }
-        logger.trace("{} - Waiting for permissions '{}' for {}ms", pwmPath, path, timeout);
-        var access = file.access(path, FileFlag.R_OK);
+        logger.trace("{} - Waiting for file '{}' for {}ms", pwmPath, path, timeout);
+        var access = file.access(path, FileFlag.R_OK | FileFlag.F_OK);
         if (access != 0) {
             var deferredDelay = new DeferredDelay();
             deferredDelay.setDelayMillis(10);
             deferredDelay.materializeDelay();
-            waitForPermissions(path, timeout + 10);
+            waitForFile(path, timeout + 10);
         }
     }
 }
