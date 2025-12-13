@@ -15,9 +15,9 @@ public class FileWatcher implements AutoCloseable {
     private final WatchService watcher;
     private final Path directory;
     private final String fileToWatch;
-    private final int timoutMs;
+    private final int timeoutMs;
 
-    public FileWatcher(Path directory, String fileToWatch, int timoutMs) {
+    public FileWatcher(Path directory, String fileToWatch, int timeoutMs) {
         try {
             this.watcher = FileSystems.getDefault().newWatchService();
         } catch (IOException e) {
@@ -25,7 +25,7 @@ public class FileWatcher implements AutoCloseable {
         }
         this.directory = directory;
         this.fileToWatch = fileToWatch;
-        this.timoutMs = timoutMs;
+        this.timeoutMs = timeoutMs;
         try {
             this.directory.register(watcher, StandardWatchEventKinds.ENTRY_CREATE);
         } catch (IOException e) {
@@ -43,7 +43,7 @@ public class FileWatcher implements AutoCloseable {
             return true;
         }
         var now = Instant.now();
-        var timeout = Duration.ofMillis(timoutMs);
+        var timeout = Duration.ofMillis(timeoutMs);
         while (Duration.between(now, Instant.now()).compareTo(timeout) < 0) {
             var key = watcher.poll();
             if (key == null) {
