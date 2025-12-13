@@ -11,14 +11,13 @@ import java.time.Instant;
  * File watcher wrapper to wait for file is ready with defined timeout.
  */
 public class FileWatcher implements AutoCloseable {
-    // in ms
-    private static final int TIMEOUT = 100;
 
     private final WatchService watcher;
     private final Path directory;
     private final String fileToWatch;
+    private final int timoutMs;
 
-    public FileWatcher(Path directory, String fileToWatch) {
+    public FileWatcher(Path directory, String fileToWatch, int timoutMs) {
         try {
             this.watcher = FileSystems.getDefault().newWatchService();
         } catch (IOException e) {
@@ -26,6 +25,7 @@ public class FileWatcher implements AutoCloseable {
         }
         this.directory = directory;
         this.fileToWatch = fileToWatch;
+        this.timoutMs = timoutMs;
         try {
             this.directory.register(watcher, StandardWatchEventKinds.ENTRY_CREATE);
         } catch (IOException e) {
@@ -43,7 +43,7 @@ public class FileWatcher implements AutoCloseable {
             return true;
         }
         var now = Instant.now();
-        var timeout = Duration.ofMillis(TIMEOUT);
+        var timeout = Duration.ofMillis(timoutMs);
         while (Duration.between(now, Instant.now()).compareTo(timeout) < 0) {
             var key = watcher.poll();
             if (key == null) {

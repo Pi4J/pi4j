@@ -61,7 +61,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
         var pwmFile = pwmChipFile + PWM_PATH + channel;
         if (deviceNotExists(pwmFile)) {
             logger.trace("{} - no PWM Bus found... will try to export PWM Bus first.", pwmFile);
-            try (var pwmFileWatcher = new FileWatcher(Path.of(pwmChipFile), PWM_PATH + channel)) {
+            try (var pwmFileWatcher = new FileWatcher(Path.of(pwmChipFile), PWM_PATH + channel, 100)) {
                 var npwmFd = file.open(pwmChipFile + CHIP_NPWM_PATH, FileFlag.O_RDONLY);
                 var maxChannel = getIntegerContent(file.read(npwmFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
                 file.close(npwmFd);
