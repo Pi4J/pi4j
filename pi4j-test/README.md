@@ -28,6 +28,13 @@ Two BMP280 or BME280 are used as they are available as PCBs with both I2C and SP
 * Two sensors, BMP280 or BME280, mounted on PCB with I2C and SPI
 * M-M breadboard wires
 
+Buying examples:
+
+* [Amazon: T-cobbler, 2 sets](https://www.amazon.com/Quluxe-Breakout-Expansion-Assembled-Raspberry/dp/B08D3S6FGH/?th=1)
+* [Amazon: Breadboard, T-cobbler, Breadboard, 65pcs wires](https://www.amazon.com/LK-COKOINO-Raspberry-Solderless-Breadboard/dp/B08B4SHS18/)
+* [Amazon: BME280, 3-pack](https://www.amazon.com.be/dp/B08BC2NGVV?ref=ppx_yo2ov_dt_b_fed_asin_title)
+* [Sparkfun: BME280](https://www.sparkfun.com/sparkfun-atmospheric-sensor-breakout-bme280.html)
+
 ### Sensor Wiring
 
 The I2C and SPI BMP280 charts refers to connection points on the breakout board
@@ -35,24 +42,24 @@ but your sensor may use different letter designations. Also, the are BMP sensors
 
 **I2C**
 
-| RPi Pin | Number | BCM | Color    | Sensor |
-|:--------|:------:|:---:|:---------|:-------|
-| 3.3V    | 1      |  -  | Red     | Vin    |
-| Gnd     | 9      |  -  | Black   | Gnd    |
-| SDA     | 3      |  2  | Orange  | SDA    |
-| SCL     | 5      |  3  | Yellow  | SCK    |
-| 3.3v    | 1      |  -  | Red     | CS     |
+| RPi Pin | Number | BCM | Color     | Sensor |
+|:--------|:------:|:---:|:----------|:-------|
+| 3.3V    | 1      |  -  | Red       | Vin    |
+| Gnd     | 9      |  -  | Black     | Gnd    |
+| SDA     | 3      |  2  | Orange    | SDA    |
+| SCL     | 5      |  3  | Yellow    | SCK    |
+| 3.3v    | 1      |  -  | Red       | CS     |
 
 **SPI** connection using 4-wire SPI
 
-| RPi Pin   | Number | BCM | Color  | Sensor  |
-|:----------|:------:|:---:|:-------|:--------|
-| MOSI      |   19   | 10  | Blue   | SDA     |
-| MISO      |   21   |  9  | Purple |   SDO   |
-| SCLK      |   23   | 11  | Green  | SCK/SCL |
-| SPICE0    |   24   |  8  | Yellow |   CS    |
-| Gnd       |   9    |  -  | Black  |   GND   |
-| 3.3V      |  17    | -   | Red   | Vin/Vcc |
+| RPi Pin   | Number | BCM | Color   | Sensor  |
+|:----------|:------:|:---:|:--------|:--------|
+| MOSI      |   19   | 10  | Blue    | SDA     |
+| MISO      |   21   |  9  | Purple  | SDO     |
+| SCLK      |   23   | 11  | Green   | SCK/SCL |
+| SPICE0    |   24   |  8  | Yellow  | CS      |
+| Gnd       |   9    |  -  | Black   | GND     |
+| 3.3V      |  17    | -   | Red     | Vin/Vcc |
 
 ### Direct Wiring
 
