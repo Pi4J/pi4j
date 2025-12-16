@@ -31,6 +31,7 @@ import com.pi4j.io.gpio.digital.*;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmType;
+import com.pi4j.io.serial.*;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBus;
 import com.pi4j.io.spi.SpiChipSelect;
@@ -50,6 +51,8 @@ import com.pi4j.util.Console;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 /**
  * <p>Main class.</p>
@@ -203,6 +206,7 @@ public class Main {
         Pwm pwm = createHwPwm(PWM_CHANNEL);
         pwm.on(50, 1);
         Thread.sleep(10000);  // wait 10 seconds while listener counts flashes
+        pwm.off();
         logger.info("Exit: testPWM");
         return (pwmFlashes == 10);
     }
@@ -235,10 +239,55 @@ public class Main {
         return (state == DigitalState.HIGH);
     }
 
-    private static boolean testSerial() {
-        logger.info("testSerial   Not implemented   yet....");
-        return true;
-    }
+    private static boolean testSerial()
+    {
+        logger.info("Enter; testSerial ");
+      //  final SerialReader[] serialReader = {null};
+        final SerialReader[] serialReader = new SerialReader[1];
+        String testData = "serial_test serial_test serial_test serial_test  " ;
+        Serial txPort = createSerialDevice();
+        txPort.open();;
+        logger.info("about to create runnable");
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                logger.info("BUG, isOpen not implemented...Waiting till serial port is open");
+                while (!txPort.isOpen()) {
+                    try {
+                        Thread.sleep(1000);
+                        logger.info("retry...");
+                        break;   //  bug work around
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                //opened now!
+                logger.info("serial port is open!");
+
+                // Start a thread to handle the incoming data from the serial port
+                serialReader[0] = new Main.SerialReader(txPort);
+                Thread serialReaderThread = new Thread(serialReader[0], "SerialReader");
+                serialReaderThread.setDaemon(true);
+                serialReaderThread.start();
+
+            }
+        };
+        logger.info("about to start runnable");
+        runnable.run();
+        for (int i = 0 ; i <10; i++) {
+            txPort.write(testData);
+         }
+        // allow time for the serail reader to process incoming data
+         try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        serialReader[0].stopReading();
+        String read = serialReader[0].getReadData();
+        return (read.indexOf(testData) > -1) ? true : false;
+  }
 
     private static I2C createI2cBMPDevice() {
         String name = "I2cBMP280";
@@ -255,6 +304,23 @@ public class Main {
         return i2c;
     }
 
+    private static Serial createSerialDevice(){
+
+        //Object StopBits;
+        Serial serial = pi4j.create(Serial.newConfigBuilder(pi4j)
+            .baud(Baud._4800)
+            .dataBits_8()
+            .parity(Parity.NONE)
+            .stopBits(StopBits._1)
+            .flowControl(FlowControl.NONE)
+            .id("smokeTest port")
+            .port("/dev/ttyAMA0")       //serial0")    // /dev/ttyAMA0  /dev/ttyS0
+            .provider(pc.getSerialName())
+            .build());
+
+
+        return serial;
+    }
     private static Spi createSPIDevice() {
         SpiBus bmpSpiBus = SpiBus.BUS_0;
 
@@ -306,7 +372,7 @@ public class Main {
             .initial(50)
             .frequency(1)
             .chip(chip)
-            .shutdown(0)  //  ?????
+            .shutdown(0)
             .build();
         Pwm pwm = pi4j.create(configPwm);
         return pwm;
@@ -425,4 +491,54 @@ public class Main {
         }
     }
 
+    private static class SerialReader implements Runnable {
+
+     private final Serial serial;
+    private String line = "";
+    private boolean continueReading = true;
+
+
+    public SerialReader(Serial serial) {
+             this.serial = serial;
+        }
+
+        public void stopReading() {
+            continueReading = false;
+        }
+
+        @Override
+        public void run() {
+            // We use a buffered reader to handle the data received from the serial port
+            BufferedReader br = new BufferedReader(new InputStreamReader(serial.getInputStream()));
+
+            try {
+               // Read data until the flag is false
+                while (continueReading) {
+                    // First we need to check if there is data available to read.
+                    var available = serial.available();
+                    if (available > 0) {
+                        for (int i = 0; i < available; i++) {
+                            byte b = (byte) br.read();
+                            if (b < 32) {
+                                // All non-string bytes are ignored
+                                ;
+                                } else {
+                                    line += (char) b;
+                                    //logger.info("line: '" + line + "'");
+                                }
+                        }
+                    } else {
+                        Thread.sleep(10);
+                    }
+                }
+            } catch (Exception e) {
+                logger.info("Error reading data from serial: " + e.getMessage());
+                System.out.println(e.getStackTrace());
+            }
+        }
+
+        private String getReadData(){
+            return line;
+        }
+    }
 }
