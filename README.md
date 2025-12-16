@@ -37,7 +37,11 @@ Builds are available from:
 
 ## Using Pi4J
 
-You need the **Java 11 runtime when you use Pi4J V2, and Java 21 for V3**.
+You need these Java runtimes to use Pi4J:
+
+* Java 11 for V2
+* Java 21 for V3
+* Java 25 for V4
 
 When you want to use Pi4J in your project, you should definitely check out [the Pi4J website](https://pi4j.com) where
 you can find a lot of information and many examples!
@@ -53,9 +57,9 @@ var led = pi4j.digitalOutput().create(PIN_LED);
 
 while (true) {
   if (led.state() == DigitalState.HIGH) {
-     led.low();
+    led.low();
   } else {
-     led.high();
+    led.high();
   }
 
   Thread.sleep(500);
@@ -67,20 +71,19 @@ while (true) {
 For full description of the code structure, how to compile... see
 the ["About the code" on our website](https://pi4j.com/architecture/about-the-code/).
 
-![Pi4J V2+ code structure](assets/draw.io/pi4j-code-structure.jpg)
+![Pi4J code structure](assets/draw.io/pi4j-code-structure.jpg)
 
 ### Project Overview
 
-Starting with the Pi4J 2.0 builds, the Pi4J project is prioritizing focus
-on providing Java programs access, control and communication with the core
-I/O capabilities of the Raspberry Pi platform.
+Starting with Pi4J V2, the Pi4J project is prioritizing focus on providing Java programs access, control and
+communication with the core I/O capabilities of the Raspberry Pi platform.
 
 Read all about it on [pi4j.com: "What's New in V2"](https://www.pi4j.com/about/info-v2/).
 
 ### Build Instructions
 
 The Pi4J codebase can be built using [Apache Maven 3.8+](https://maven.apache.org/).
-and [Java JDK 21 (since V3)](https://openjdk.java.net/).
+and [Java JDK 25 (since V4)](https://openjdk.java.net/).
 The following command can be used to build the Pi4J JARs:
 
 ```
@@ -95,6 +98,9 @@ the Pi4J V2+ JARs and Native Libraries:
 ```
 mvn clean install -Pnative
 mvn clean install -Pnative,docker
+
+# When you want to speed up...
+mvn clean install -Pnative -DskipTests
 ```
 
 > **NOTE:** A comprehensive set of build instructions can be found in
@@ -102,7 +108,7 @@ mvn clean install -Pnative,docker
 
 ### Adding a feature or solving a problem
 
-If you have and idea to extend and improve Pi4J, please first create a ticket to discuss how
+If you have an idea to extend and improve Pi4J, please first create a ticket to discuss how
 it fits in the project and how it can be implemented.
 
 If you find a bug, create a ticket, so we are aware of it and others with the same problem can
