@@ -12,6 +12,10 @@ Usage parms:
 -p linuxfs (default), or ffm
 -h help
 ```
+## Enable UART
+# config.sys  for smoketest serial
+dtoverlay=disable-bt
+enable_uart=1
 
 ## Wiring
 
