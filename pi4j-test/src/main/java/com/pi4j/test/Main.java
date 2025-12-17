@@ -47,7 +47,6 @@ import com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalOutputProvider;
 import com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CProvider;
 import com.pi4j.plugin.linuxfs.provider.pwm.LinuxFsPwmProvider;
 import com.pi4j.plugin.linuxfs.provider.spi.LinuxFsSpiProvider;
-import com.pi4j.util.Console;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +71,6 @@ public class Main {
 
     static Context pi4j = null;
     static ProviderContext pc = null;
-    private static final Console console = null;
     private static int pwmFlashes = 0;
     public static String DEFAULT_PWM_FILESYSTEM_PATH = "/sys/class/pwm";
 
@@ -247,6 +245,7 @@ public class Main {
             return true ;
         }
         final SerialReader[] serialReader = new SerialReader[1];
+
         String testData = "serial_test serial_test serial_test serial_test  " ;
         Serial txPort = createSerialDevice();
         txPort.open();;
@@ -292,21 +291,6 @@ public class Main {
         return (read.indexOf(testData) > -1) ? true : false;
   }
 
-    private static I2C createI2cBMPDevice() {
-        String name = "I2cBMP280";
-        String id = Integer.toHexString(BMP_I2C_ADDR);
-        var i2cDeviceConfig = I2C
-            .newConfigBuilder(pi4j)
-            .bus(BMP_I2C_BUS)
-            .device(BMP_I2C_ADDR)
-            .id(id + " " + name)
-            .name(name)
-            .provider(pc.getI2cName())
-            .build();
-        I2C i2c = pi4j.create(i2cDeviceConfig);
-        return i2c;
-    }
-
     private static Serial createSerialDevice(){
 
         //Object StopBits;
@@ -324,6 +308,22 @@ public class Main {
 
         return serial;
     }
+
+    private static I2C createI2cBMPDevice() {
+        String name = "I2cBMP280";
+        String id = Integer.toHexString(BMP_I2C_ADDR);
+        var i2cDeviceConfig = I2C
+            .newConfigBuilder(pi4j)
+            .bus(BMP_I2C_BUS)
+            .device(BMP_I2C_ADDR)
+            .id(id + " " + name)
+            .name(name)
+            .provider(pc.getI2cName())
+            .build();
+        I2C i2c = pi4j.create(i2cDeviceConfig);
+        return i2c;
+    }
+
     private static Spi createSPIDevice() {
         SpiBus bmpSpiBus = SpiBus.BUS_0;
 
@@ -375,7 +375,7 @@ public class Main {
             .initial(50)
             .frequency(1)
             .chip(chip)
-            .shutdown(0)
+            .shutdown(0)  //  ?????
             .build();
         Pwm pwm = pi4j.create(configPwm);
         return pwm;
@@ -493,16 +493,15 @@ public class Main {
             }
         }
     }
-
     private static class SerialReader implements Runnable {
 
-     private final Serial serial;
-    private String line = "";
-    private boolean continueReading = true;
+        private final Serial serial;
+        private String line = "";
+        private boolean continueReading = true;
 
 
-    public SerialReader(Serial serial) {
-             this.serial = serial;
+        public SerialReader(Serial serial) {
+            this.serial = serial;
         }
 
         public void stopReading() {
@@ -515,7 +514,7 @@ public class Main {
             BufferedReader br = new BufferedReader(new InputStreamReader(serial.getInputStream()));
 
             try {
-               // Read data until the flag is false
+                // Read data until the flag is false
                 while (continueReading) {
                     // First we need to check if there is data available to read.
                     var available = serial.available();
@@ -525,10 +524,10 @@ public class Main {
                             if (b < 32) {
                                 // All non-string bytes are ignored
                                 ;
-                                } else {
-                                    line += (char) b;
-                                    //logger.info("line: '" + line + "'");
-                                }
+                            } else {
+                                line += (char) b;
+                                //logger.info("line: '" + line + "'");
+                            }
                         }
                     } else {
                         Thread.sleep(10);
@@ -544,4 +543,5 @@ public class Main {
             return line;
         }
     }
+
 }
