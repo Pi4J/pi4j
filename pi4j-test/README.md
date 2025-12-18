@@ -23,6 +23,8 @@ Two BMP280 or BME280 are used as they are available as PCBs with both I2C and SP
 
 ![Wiring diagram](wiring/wiring-diagram.png)
 
+Depending on the type of BMP-sensors, the actual wiring may look a bit different. Use the tables below for correct connections.
+
 ![Example setup](wiring/test-setup.jpg)
 
 Used for the wiring diagram:
