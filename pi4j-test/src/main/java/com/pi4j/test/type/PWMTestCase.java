@@ -16,15 +16,13 @@ public class PWMTestCase extends TestCase {
     private static final int PWM_CHANNEL = 2;
     private static int pwmFlashes = 0;
 
-    public static TestResult run(ProviderContext providerContext) throws InterruptedException {
+    public static TestResult run(ProviderContext providerContext, int frequency, int dutyCycle, int expected) throws InterruptedException {
         // Create PWM
         var chip = PwmChipUtil.getPWMChip();
         var configPwm = Pwm
             .newConfigBuilder(providerContext.getContext())
             .channel(PWM_CHANNEL)
             .pwmType(PwmType.HARDWARE)
-            .initial(50)
-            .frequency(1)
             .chip(chip)
             .shutdown(0)
             .build();
@@ -35,14 +33,14 @@ public class PWMTestCase extends TestCase {
         gpioInMonitor.addListener(new DataInGpioListener());
 
         // Test
-        pwm.on(50, 1);
+        pwm.on(dutyCycle, frequency);
         Thread.sleep(10000);  // wait 10 seconds while listener counts flashes
         pwm.off();
 
-        if (pwmFlashes == 10) {
-            return new TestResult("PWM", true, "Correct number of flashes detected");
+        if (pwmFlashes == expected) {
+            return new TestResult("PWM " + frequency + " " + dutyCycle, true, "Correct number of flashes detected");
         } else {
-            return new TestResult("PWM", false, "Number of flashes is not correct: " + pwmFlashes);
+            return new TestResult("PWM " + frequency + " " + dutyCycle, false, "Number of flashes is not correct: " + pwmFlashes + "/" + expected);
         }
     }
 
