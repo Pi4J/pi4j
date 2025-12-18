@@ -39,7 +39,7 @@ public class PWMTestCase extends TestCase {
         Thread.sleep(10000);  // wait 10 seconds while listener counts flashes
         pwm.off();
 
-        logger.info("Number of flashes counted: {}" + pwmFlashes);
+        logger.info("Number of flashes counted: {}", pwmFlashes);
 
         // Cleanup
         gpioInMonitor.close();
