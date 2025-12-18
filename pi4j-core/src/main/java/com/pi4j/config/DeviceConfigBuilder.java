@@ -10,7 +10,7 @@ package com.pi4j.config;
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
  * **********************************************************************
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,17 +28,17 @@ package com.pi4j.config;
 /**
  * <p>DeviceConfigBuilder interface.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
+ * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
+ * @version $Id: $Id
  */
 public interface DeviceConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
     /**
      * <p>device.</p>
      *
-     * @param device a {@link java.lang.String} object.
+     * @param device a {@link java.lang.Integer} object.
      * @return a BUILDER_TYPE object.
      */
-    BUILDER_TYPE device(String device);
+    BUILDER_TYPE device(Integer device);
 }

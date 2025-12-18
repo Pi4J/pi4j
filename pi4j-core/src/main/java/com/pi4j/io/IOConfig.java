@@ -30,19 +30,23 @@ import com.pi4j.config.Config;
 /**
  * <p>IOConfig interface.</p>
  *
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
- * @param <CONFIG_TYPE>
  */
 public interface IOConfig<CONFIG_TYPE> extends Config<CONFIG_TYPE> {
     String PLATFORM_KEY = "platform";
     String PROVIDER_KEY = "provider";
+
     String provider();
-    default String getProvider(){
+
+    default String getProvider() {
         return provider();
     }
+
     String platform();
-    default String getPlatform(){
+
+    default String getPlatform() {
         return platform();
     }
 }

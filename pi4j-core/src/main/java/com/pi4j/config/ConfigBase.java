@@ -35,9 +35,9 @@ import java.util.Map;
 /**
  * <p>ConfigBase class.</p>
  *
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
- * @param <CONFIG_TYPE>
  */
 public class ConfigBase<CONFIG_TYPE extends Config> implements Config<CONFIG_TYPE> {
 
@@ -45,12 +45,12 @@ public class ConfigBase<CONFIG_TYPE extends Config> implements Config<CONFIG_TYP
     protected String id = null;
     protected String name = null;
     protected String description = null;
-    protected Map<String,String> properties = new HashMap<>();
+    protected Map<String, String> properties = new HashMap<>();
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected ConfigBase(){
+    protected ConfigBase() {
     }
 
     /**
@@ -58,52 +58,70 @@ public class ConfigBase<CONFIG_TYPE extends Config> implements Config<CONFIG_TYP
      *
      * @param properties a {@link java.util.Map} object.
      */
-    protected ConfigBase(Map<String,String> properties){
+    protected ConfigBase(Map<String, String> properties) {
         // add all properties to this config object
         this.properties.putAll(properties);
 
         // load required 'id' property
-        if(properties.containsKey(ID_KEY))
+        if (properties.containsKey(ID_KEY))
             this.id = properties.get(ID_KEY);
 
         // load optional 'name' property
-        if(properties.containsKey(NAME_KEY))
+        if (properties.containsKey(NAME_KEY))
             this.name = properties.get(NAME_KEY);
 
         // load optional 'description' property
-        if(properties.containsKey(DESCRIPTION_KEY))
+        if (properties.containsKey(DESCRIPTION_KEY))
             this.description = properties.get(DESCRIPTION_KEY);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<String, String> properties() {
         return Collections.unmodifiableMap(this.properties);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String id() {
         return this.id;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String name() {
         return this.name;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String description() {
         return this.description;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void validate() {
-        if(StringUtil.isNullOrEmpty(this.id)){
+        if (StringUtil.isNullOrEmpty(this.id)) {
             throw new ConfigMissingRequiredKeyException(ID_KEY);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getUniqueIdentifier() {
+        return 0;
     }
 }

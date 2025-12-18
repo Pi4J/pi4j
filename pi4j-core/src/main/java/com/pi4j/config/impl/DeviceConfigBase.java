@@ -35,21 +35,21 @@ import java.util.Map;
 /**
  * <p>Abstract DeviceConfigBase class.</p>
  *
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
- * @param <CONFIG_TYPE>
  */
 public abstract class DeviceConfigBase<CONFIG_TYPE extends Config<CONFIG_TYPE>>
-        extends ConfigBase<CONFIG_TYPE>
-        implements DeviceConfig<CONFIG_TYPE> {
+    extends ConfigBase<CONFIG_TYPE>
+    implements DeviceConfig<CONFIG_TYPE> {
 
     // private configuration variables
-    protected String device =  null;
+    protected Integer device = null;
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DeviceConfigBase(){
+    protected DeviceConfigBase() {
     }
 
     /**
@@ -57,12 +57,12 @@ public abstract class DeviceConfigBase<CONFIG_TYPE extends Config<CONFIG_TYPE>>
      *
      * @param properties a {@link java.util.Map} object.
      */
-    protected DeviceConfigBase(Map<String,String> properties){
+    protected DeviceConfigBase(Map<String, String> properties) {
         super(properties);
 
         // load address property
-        if(properties.containsKey(DEVICE_KEY)){
-            this.device = properties.get(DEVICE_KEY);
+        if (properties.containsKey(DEVICE_KEY)) {
+            this.device = Integer.parseInt(properties.get(DEVICE_KEY));
         } else {
             throw new ConfigMissingRequiredKeyException(DEVICE_KEY);
         }
@@ -71,7 +71,9 @@ public abstract class DeviceConfigBase<CONFIG_TYPE extends Config<CONFIG_TYPE>>
     /**
      * <p>device.</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link java.lang.Integer} object.
      */
-    public String device() { return this.device; };
+    public Integer device() {
+        return this.device;
+    }
 }

@@ -43,8 +43,8 @@ public class SerialTest {
             .add(new SerialFFMProviderImpl())
             .build();
 
-        var serial1 = pi4j.serial().create(SerialConfigBuilder.newInstance(pi4j).device("/dev/pts/1").baud(Baud._230400));
-        var serial2 = pi4j.serial().create(SerialConfigBuilder.newInstance(pi4j).device("/dev/pts/2").baud(Baud._230400));
+        var serial1 = pi4j.serial().create(SerialConfigBuilder.newInstance(pi4j).port("/dev/pts/1").baud(Baud._230400));
+        var serial2 = pi4j.serial().create(SerialConfigBuilder.newInstance(pi4j).port("/dev/pts/2").baud(Baud._230400));
         var writeData = "Test";
         executor.submit(() -> {
             serial1.write(writeData);

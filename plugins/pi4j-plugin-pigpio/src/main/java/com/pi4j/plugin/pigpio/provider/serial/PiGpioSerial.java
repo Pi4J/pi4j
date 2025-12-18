@@ -43,7 +43,6 @@ import com.pi4j.library.pigpio.PiGpioMode;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-@Deprecated(forRemoval = true)
 public class PiGpioSerial extends SerialBase implements Serial {
 
     protected final PiGpio piGpio;
@@ -63,14 +62,14 @@ public class PiGpioSerial extends SerialBase implements Serial {
         this.piGpio = piGpio;
 
         // TODO :: HANDLE SERIAL PIN CONFIG FOR RASPBERRY PI SERIAL PORTS
-        if (config.device().endsWith("ttyS0")) {
+        if (config.port().endsWith("ttyS0")) {
             // set pin ALT5 modes for SERIAL RX & TX PINS on RPI3B
             piGpio.gpioSetMode(14, PiGpioMode.ALT5);
             piGpio.gpioSetMode(15, PiGpioMode.ALT5);
         }
 
         // create SERIAL instance of PIGPIO SERIAL
-        this.handle = piGpio.serOpen(config.device(), config.baud());
+        this.handle = piGpio.serOpen(config.port(), config.baud());
 
         // set open state flag
         this.isOpen = true;

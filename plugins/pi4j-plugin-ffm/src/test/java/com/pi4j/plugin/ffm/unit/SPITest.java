@@ -44,7 +44,7 @@ public class SPITest {
 
             pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
                 .bus(SpiBus.BUS_0)
-                .address(0)
+                .channel(0)
                 .mode(0)
                 .baud(50_000)
                 .build());
@@ -62,7 +62,7 @@ public class SPITest {
 
             var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
                 .bus(SpiBus.BUS_0)
-                .address(1)
+                .channel(1)
                 .mode(0)
                 .baud(50_000)
                 .build());
@@ -90,7 +90,7 @@ public class SPITest {
 
             var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
                 .bus(SpiBus.BUS_0)
-                .address(2)
+                .channel(2)
                 .mode(0)
                 .baud(50_000)
                 .build());
@@ -116,7 +116,7 @@ public class SPITest {
 
             var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
                 .bus(SpiBus.BUS_0)
-                .address(3)
+                .channel(3)
                 .mode(0)
                 .baud(50_000)
                 .build());

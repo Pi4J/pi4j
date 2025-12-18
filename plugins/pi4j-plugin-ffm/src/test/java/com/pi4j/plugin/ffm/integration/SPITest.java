@@ -41,7 +41,7 @@ public class SPITest {
         pi4j = Pi4J.newContextBuilder()
             .add(new SpiFFMProviderImpl())
             .build();
-        var config = SpiConfigBuilder.newInstance(pi4j).bus(SpiBus.BUS_0).address(0).mode(0).baud(50_000).build();
+        var config = SpiConfigBuilder.newInstance(pi4j).bus(SpiBus.BUS_0).channel(0).mode(0).baud(50_000).build();
         spi = pi4j.spi().create(config);
     }
 

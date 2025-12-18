@@ -36,12 +36,12 @@ public abstract class AnalogInputBase extends AnalogBase<AnalogInput, AnalogInpu
      * <p>Constructor for AnalogInputBase.</p>
      *
      * @param provider a {@link com.pi4j.io.gpio.analog.AnalogInputProvider} object.
-     * @param config a {@link com.pi4j.io.gpio.analog.AnalogInputConfig} object.
+     * @param config   a {@link com.pi4j.io.gpio.analog.AnalogInputConfig} object.
      */
-    public AnalogInputBase(AnalogInputProvider provider, AnalogInputConfig config){
+    public AnalogInputBase(AnalogInputProvider provider, AnalogInputConfig config) {
         super(provider, config);
-        if(this.id == null) this.id = "AIN-" + config.address();
-        if(this.name == null) this.name = "AIN-" + config.address();
+        if (this.id == null) this.id = "AIN-" + config.bcm();
+        if (this.name == null) this.name = "AIN-" + config.bcm();
     }
 }
 

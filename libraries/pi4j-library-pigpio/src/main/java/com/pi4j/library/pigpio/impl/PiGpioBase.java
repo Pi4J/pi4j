@@ -29,7 +29,6 @@ package com.pi4j.library.pigpio.impl;
 
 import com.pi4j.library.pigpio.*;
 import com.pi4j.library.pigpio.internal.PIGPIO;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +51,7 @@ public abstract class PiGpioBase implements PiGpio {
     protected final Set<Integer> i2cHandles = Collections.synchronizedSet(new HashSet<>());
     protected final Set<Integer> spiHandles = Collections.synchronizedSet(new HashSet<>());
     protected List<PiGpioStateChangeListener> stateChangeListeners = new CopyOnWriteArrayList<>();
-    protected Map<Integer,List<PiGpioStateChangeListener>> pinChangeListeners = new ConcurrentHashMap<>();
+    protected Map<Integer, List<PiGpioStateChangeListener>> pinChangeListeners = new ConcurrentHashMap<>();
     protected boolean initialized = false;
 
     /**
@@ -90,7 +89,7 @@ public abstract class PiGpioBase implements PiGpio {
      * <p>validateInitialized.</p>
      */
     protected void validateInitialized() {
-        if(!this.initialized)
+        if (!this.initialized)
             throw new PiGpioException("PIGPIO NOT INITIALIZED; make sure you call the PiGpio::initialize() function first.");
     }
 
@@ -113,21 +112,21 @@ public abstract class PiGpioBase implements PiGpio {
      * <p>
      * The user GPIO are marked with an X in the following table.
      * <p>
-     *           0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
+     * 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
      * Type 1    X  X  -  -  X  -  -  X  X  X  X  X  -  -  X  X
      * Type 2    -  -  X  X  X  -  -  X  X  X  X  X  -  -  X  X
      * Type 3          X  X  X  X  X  X  X  X  X  X  X  X  X  X
      * <p>
-     *          16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+     * 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
      * Type 1    -  X  X  -  -  X  X  X  X  X  -  -  -  -  -  -
      * Type 2    -  X  X  -  -  -  X  X  X  X  -  X  X  X  X  X
      * Type 3    X  X  X  X  X  X  X  X  X  X  X  X  -  -  -  -
      *
-     * @param pin a int.
+     * @param bcm a int.
      * @throws java.lang.IllegalArgumentException if {@code pin} in not a valid pin.
      */
-    protected void validateUserPin(int pin) throws IllegalArgumentException {
-        validatePin(pin, true);
+    protected void validateUserPin(int bcm) throws IllegalArgumentException {
+        validatePin(bcm, true);
     }
 
     /**
@@ -143,14 +142,14 @@ public abstract class PiGpioBase implements PiGpio {
     /**
      * <p>validatePin.</p>
      *
-     * @param pin a int.
+     * @param pin     a int.
      * @param userPin a boolean.
      * @throws java.lang.IllegalArgumentException if {@code pin} in not a valid pin.
      */
     protected void validatePin(int pin, boolean userPin) throws IllegalArgumentException {
         int min = PI_MIN_GPIO;
         int max = ((userPin ? PI_MAX_USER_GPIO : PI_MAX_GPIO));
-        if(pin < min || pin > max)
+        if (pin < min || pin > max)
             throw new IllegalArgumentException("Invalid PIN number: " + pin + "; (supported pins: " + min + "-" + max + ")");
     }
 
@@ -160,12 +159,12 @@ public abstract class PiGpioBase implements PiGpio {
      * @param dutyCycle a int.
      * @throws java.lang.IllegalArgumentException if {@code dutyCycle} is not valid.
      */
-    protected void validateDutyCycle(int dutyCycle) throws IllegalArgumentException{
+    protected void validateDutyCycle(int dutyCycle) throws IllegalArgumentException {
         int min = 0;
         int max = PI_MAX_DUTYCYCLE_RANGE;
-        if(dutyCycle < min || dutyCycle > max)
+        if (dutyCycle < min || dutyCycle > max)
             throw new IllegalArgumentException("Invalid Duty Cycle: " + dutyCycle +
-                    "; (supported duty-cycle: " + min + " - " + max + ")");
+                "; (supported duty-cycle: " + min + " - " + max + ")");
     }
 
     /**
@@ -174,12 +173,12 @@ public abstract class PiGpioBase implements PiGpio {
      * @param range a int.
      * @throws java.lang.IllegalArgumentException if {@code range} is not valid.
      */
-    protected void validateDutyCycleRange(int range) throws IllegalArgumentException{
+    protected void validateDutyCycleRange(int range) throws IllegalArgumentException {
         int min = PI_MIN_DUTYCYCLE_RANGE;
         int max = PI_MAX_DUTYCYCLE_RANGE;
-        if(range < min || range > max)
+        if (range < min || range > max)
             throw new IllegalArgumentException("Invalid Duty Cycle Range: " + range +
-                    "; (supported range: " + min + " - " + max + ")");
+                "; (supported range: " + min + " - " + max + ")");
     }
 
     /**
@@ -188,13 +187,13 @@ public abstract class PiGpioBase implements PiGpio {
      * @param pulseWidth a int.
      * @throws java.lang.IllegalArgumentException if {@code pulseWidth} is not valid.
      */
-    protected void validatePulseWidth(int pulseWidth) throws IllegalArgumentException{
-        if(pulseWidth == 0) return;
+    protected void validatePulseWidth(int pulseWidth) throws IllegalArgumentException {
+        if (pulseWidth == 0) return;
         int min = PI_MIN_SERVO_PULSEWIDTH;
         int max = PI_MAX_SERVO_PULSEWIDTH;
-        if(pulseWidth < min || pulseWidth > max)
+        if (pulseWidth < min || pulseWidth > max)
             throw new IllegalArgumentException("Invalid Pulse-Width: " + pulseWidth +
-                    "; (supported pulse-width: " + min + " - " + max + ")");
+                "; (supported pulse-width: " + min + " - " + max + ")");
     }
 
     /**
@@ -202,12 +201,12 @@ public abstract class PiGpioBase implements PiGpio {
      *
      * @param micros a int.
      */
-    protected void validateDelayMicroseconds(long micros){
+    protected void validateDelayMicroseconds(long micros) {
         int min = 0;
         int max = PI_MAX_MICS_DELAY;
-        if(micros < min || micros > max)
+        if (micros < min || micros > max)
             throw new IllegalArgumentException("Invalid microseconds delay: " + micros +
-                    "; (supported range: " + min + " - " + max + ")");
+                "; (supported range: " + min + " - " + max + ")");
     }
 
     /**
@@ -215,12 +214,12 @@ public abstract class PiGpioBase implements PiGpio {
      *
      * @param millis a int.
      */
-    protected void validateDelayMilliseconds(int millis){
+    protected void validateDelayMilliseconds(int millis) {
         int min = 0;
         int max = PI_MAX_MILS_DELAY;
-        if(millis < min || millis > max)
+        if (millis < min || millis > max)
             throw new IllegalArgumentException("Invalid milliseconds delay: " + millis +
-                    "; (supported range: " + min + " - " + max + ")");
+                "; (supported range: " + min + " - " + max + ")");
     }
 
     /**
@@ -228,17 +227,17 @@ public abstract class PiGpioBase implements PiGpio {
      *
      * @param result a {@link com.pi4j.library.pigpio.PiGpioPacket} object.
      */
-    protected void validateResult(PiGpioPacket result){
+    protected void validateResult(PiGpioPacket result) {
         validateResult(result.result());
     }
 
     /**
      * <p>validateResult.</p>
      *
-     * @param result a {@link com.pi4j.library.pigpio.PiGpioPacket} object.
+     * @param result         a {@link com.pi4j.library.pigpio.PiGpioPacket} object.
      * @param throwException a boolean.
      */
-    protected void validateResult(PiGpioPacket result, boolean throwException){
+    protected void validateResult(PiGpioPacket result, boolean throwException) {
         validateResult(result.result(), throwException);
     }
 
@@ -254,14 +253,14 @@ public abstract class PiGpioBase implements PiGpio {
     /**
      * <p>validateResult.</p>
      *
-     * @param value a long.
+     * @param value          a long.
      * @param throwException a boolean.
      */
     protected void validateResult(long value, boolean throwException) {
-        if(value < 0) {
+        if (value < 0) {
             PiGpioError err = PiGpioError.from(value);
             logger.warn("PIGPIO ERROR: {}; {}", err.name(), err.message());
-            if(throwException) {
+            if (throwException) {
                 throw new PiGpioException("PIGPIO ERROR: " + err.name() + "; " + err.message());
             }
         }
@@ -274,7 +273,7 @@ public abstract class PiGpioBase implements PiGpio {
      */
     protected void validateHandle(int handle) {
         // validate I2C handle
-        if(handle < 0) {
+        if (handle < 0) {
             throw new IllegalArgumentException("PIGPIO ERROR: INVALID I2C/SPI/SERIAL HANDLE [" + handle + "]; Valid range: >0");
         }
     }
@@ -286,7 +285,7 @@ public abstract class PiGpioBase implements PiGpio {
      */
     protected void validateI2cRegister(int register) {
         // validate I2C/SMBus register range
-        if(register < 0 || register > 255) {
+        if (register < 0 || register > 255) {
             throw new IllegalArgumentException("PIGPIO ERROR: INVALID I2C REGISTER [" + register + "]; Valid range: 0-255");
         }
     }
@@ -298,7 +297,7 @@ public abstract class PiGpioBase implements PiGpio {
      */
     protected void validateI2cDeviceAddress(int device) {
         // validate I2C/SMBus device address :: 0-0x7F
-        if(device < 0 || device > 0x7F) {
+        if (device < 0 || device > 0x7F) {
             throw new IllegalArgumentException("PIGPIO ERROR: INVALID I2C DEVICE ADDRESS [" + device + "]; Valid range: 0-127");
         }
     }
@@ -310,7 +309,7 @@ public abstract class PiGpioBase implements PiGpio {
      */
     protected void validateI2cBus(int bus) {
         // validate I2C/SMBus bus number :: >=0
-        if(bus < 0) {
+        if (bus < 0) {
             throw new IllegalArgumentException("PIGPIO ERROR: INVALID I2C BUS [" + bus + "]; Valid range: >=0");
         }
     }
@@ -322,7 +321,7 @@ public abstract class PiGpioBase implements PiGpio {
      */
     protected void validateI2cBlockLength(int length) {
         // validate I2C/SMBus payload data length :: 0-32
-        if(length < 0 || length > 32) {
+        if (length < 0 || length > 32) {
             throw new IllegalArgumentException("PIGPIO ERROR: INVALID I2C PAYLOAD DATA LENGTH [" + length + "]; Valid range: 0-32");
         }
     }
@@ -334,7 +333,7 @@ public abstract class PiGpioBase implements PiGpio {
      */
     protected void validateGpioGlitchFilter(int interval) {
         // validate GPIO glitch filter interval value :: 0-300000
-        if(interval < 0 || interval > 300000) {
+        if (interval < 0 || interval > 300000) {
             throw new IllegalArgumentException("PIGPIO ERROR: INVALID GPIO GLITCH FILTER INTERVAL [" + interval + "]; Valid range: 0-300000");
         }
     }
@@ -347,10 +346,10 @@ public abstract class PiGpioBase implements PiGpio {
      */
     protected void validateGpioNoiseFilter(int steady, int active) {
         // validate GPIO noise filter properties
-        if(steady < 0 || steady > 300000) {
+        if (steady < 0 || steady > 300000) {
             throw new IllegalArgumentException("PIGPIO ERROR: INVALID GPIO NOISE FILTER -> STEADY INTERVAL [" + steady + " us]; Valid range: 0-300000");
         }
-        if(active < 0 || active > 1000000) {
+        if (active < 0 || active > 1000000) {
             throw new IllegalArgumentException("PIGPIO ERROR: INVALID GPIO NOISE FILTER -> ACTIVE INTERVAL [" + steady + " us]; Valid range: 0-1000000");
         }
     }
@@ -358,32 +357,35 @@ public abstract class PiGpioBase implements PiGpio {
 
     /**
      * Get the initialized state of the PiGpio library
+     *
      * @return true or false based on initialized state.
      */
     @Override
-    public boolean isInitialised(){
+    public boolean isInitialised() {
         return this.initialized;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void addPinListener(int pin, PiGpioStateChangeListener listener){
+    public void addPinListener(int pin, PiGpioStateChangeListener listener) {
         List<PiGpioStateChangeListener> listeners = null;
 
         // if the pin already exists in the map, then get the listeners collection by pin number
-        if(pinChangeListeners.containsKey(pin)){
+        if (pinChangeListeners.containsKey(pin)) {
             listeners = pinChangeListeners.get(pin);
         }
 
         // if the pin does not exist in the map, then create a new
         // listener collection for this pin and add it to the map
-        else if(!pinChangeListeners.containsKey(pin)){
+        else if (!pinChangeListeners.containsKey(pin)) {
             listeners = new CopyOnWriteArrayList<>();
             pinChangeListeners.put(pin, listeners);
         }
 
         // add the new listener object to the listeners collection for this pin index
-        if(!listeners.contains(listener)){
+        if (!listeners.contains(listener)) {
             listeners.add(listener);
         }
 
@@ -391,13 +393,15 @@ public abstract class PiGpioBase implements PiGpio {
         this.gpioEnableNotifications(pin);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void removePinListener(int pin, PiGpioStateChangeListener listener){
+    public void removePinListener(int pin, PiGpioStateChangeListener listener) {
         List<PiGpioStateChangeListener> listeners = null;
 
         // if the pin does not exist in the map, then we are done; nothing to remove
-        if(!pinChangeListeners.containsKey(pin)){
+        if (!pinChangeListeners.containsKey(pin)) {
             return;
         }
 
@@ -405,23 +409,25 @@ public abstract class PiGpioBase implements PiGpio {
         listeners = pinChangeListeners.get(pin);
 
         // remove the existing listener object from the listeners collection for this pin index
-        if(!listeners.contains(listener)){
+        if (!listeners.contains(listener)) {
             listeners.remove(listener);
         }
 
         // disable this GPIO pin for notification monitoring
-        if(listeners.isEmpty()) {
+        if (listeners.isEmpty()) {
             this.gpioDisableNotifications(pin);
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void removePinListeners(int pin){
+    public void removePinListeners(int pin) {
         List<PiGpioStateChangeListener> listeners = null;
 
         // if the pin does not exist in the map, then we are done; nothing to remove
-        if(!pinChangeListeners.containsKey(pin)){
+        if (!pinChangeListeners.containsKey(pin)) {
             return;
         }
 
@@ -435,34 +441,42 @@ public abstract class PiGpioBase implements PiGpio {
         this.gpioDisableNotifications(pin);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void removeAllPinListeners(){
+    public void removeAllPinListeners() {
         // remove all pin listeners
         pinChangeListeners.clear();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void addListener(PiGpioStateChangeListener listener){
+    public void addListener(PiGpioStateChangeListener listener) {
         // add listener
-        if(!stateChangeListeners.contains(listener)) {
+        if (!stateChangeListeners.contains(listener)) {
             stateChangeListeners.add(listener);
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void removeListener(PiGpioStateChangeListener listener){
+    public void removeListener(PiGpioStateChangeListener listener) {
         // remove listener
-        if(stateChangeListeners.contains(listener)) {
+        if (stateChangeListeners.contains(listener)) {
             stateChangeListeners.remove(listener);
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void removeAllListeners(){
+    public void removeAllListeners() {
         // remove all listeners
         stateChangeListeners.clear();
     }
@@ -496,15 +510,14 @@ public abstract class PiGpioBase implements PiGpio {
                     }
                 });
             }
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
     }
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Returns the hardware revision (as hexadecimal string).
      * <p>
      * If the hardware revision can not be found or is not a valid hexadecimal number the function returns 0.
@@ -512,13 +525,14 @@ public abstract class PiGpioBase implements PiGpio {
      * The revision number can be used to determine the assignment of GPIO to pins (see gpio).
      * <p>
      * There are at least three types of board.
-     *  - Type 1 boards have hardware revision numbers of 2 and 3.
-     *  - Type 2 boards have hardware revision numbers of 4, 5, 6, and 15.
-     *  - Type 3 boards have hardware revision numbers of 16 or greater.
+     * - Type 1 boards have hardware revision numbers of 2 and 3.
+     * - Type 2 boards have hardware revision numbers of 4, 5, 6, and 15.
+     * - Type 3 boards have hardware revision numbers of 16 or greater.
      * <p>
-     *     for "Revision : 0002" the function returns 2.
-     *     for "Revision : 000f" the function returns 15.
-     *     for "Revision : 000g" the function returns 0.
+     * for "Revision : 0002" the function returns 2.
+     * for "Revision : 000f" the function returns 15.
+     * for "Revision : 000g" the function returns 0.
+     *
      * @see <a href="http://abyz.me.uk/rpi/pigpio/cif.html#gpioHardwareRevision">PIGPIO::gpioHardwareRevision</a>
      */
     @Override
@@ -526,35 +540,35 @@ public abstract class PiGpioBase implements PiGpio {
         logger.trace("[HARDWARE] -> GET REVISION (STRING)");
         validateReady();
         long revision = gpioHardwareRevision();
-        String revisionString = Integer.toHexString((int)revision);
+        String revisionString = Integer.toHexString((int) revision);
         logger.trace("[HARDWARE] <- REVISION (STRING): {}", revisionString);
         return revisionString;
     }
-    
+
     /**
      * * {@inheritDoc}
-     * 
+     * <p>
      * Configures pigpio to use a particular sample rate timed by a specified peripheral.
      * This function is only effective if called before gpioInitialise.
      * The timings are provided by the specified peripheral (PWM or PCM).
      * The default setting is 5 microseconds using the PCM peripheral.
      *
-     * @param cfgMicros 1, 2, 4, 5, 8, 10
+     * @param cfgMicros     1, 2, 4, 5, 8, 10
      * @param cfgPeripheral 0 (PWM), 1 (PCM)
-     * @param cfgSource deprecated, value is ignored
+     * @param cfgSource     deprecated, value is ignored
      * @return a int.
      */
     public int gpioCfgClock(int cfgMicros, int cfgPeripheral, int cfgSource) {
-    	logger.trace("[gpioCfgClock] -> STARTED");
-    	
-    	if(this.initialized) {
-    		logger.error("pigpio is already initialized - this call will have no effect");
-    		throw new PiGpioException("pigpio is already initialized - this call will have no effect");
-    	}
-    	
-    	int rc = PIGPIO.gpioCfgClock(cfgMicros, cfgPeripheral, cfgSource);
-    	logger.trace("[gpioCfgClock] <- FINISHED. Return code={}",rc);
-    	
-    	return rc;
+        logger.trace("[gpioCfgClock] -> STARTED");
+
+        if (this.initialized) {
+            logger.error("pigpio is already initialized - this call will have no effect");
+            throw new PiGpioException("pigpio is already initialized - this call will have no effect");
+        }
+
+        int rc = PIGPIO.gpioCfgClock(cfgMicros, cfgPeripheral, cfgSource);
+        logger.trace("[gpioCfgClock] <- FINISHED. Return code={}", rc);
+
+        return rc;
     }
 }

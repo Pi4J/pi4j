@@ -38,7 +38,6 @@ import com.pi4j.io.serial.SerialProvider;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-@Deprecated(forRemoval = true)
 public class RpiSerial extends SerialBase implements Serial {
 
     /**

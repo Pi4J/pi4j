@@ -203,7 +203,6 @@ public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfi
         return this.state(DigitalState.getInverseState(this.state()));
     }
 
-
     /**
      * <p>pulseHigh.</p>
      *

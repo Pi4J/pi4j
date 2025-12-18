@@ -1,16 +1,16 @@
-package com.pi4j.config.impl;
+package com.pi4j.config;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  AddressConfigBuilderBase.java
+ * FILENAME      :  PortConfig.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
  * **********************************************************************
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,35 +25,33 @@ package com.pi4j.config.impl;
  * #L%
  */
 
-import com.pi4j.config.AddressConfig;
-import com.pi4j.config.AddressConfigBuilder;
-import com.pi4j.config.Config;
-import com.pi4j.config.ConfigBuilder;
-import com.pi4j.context.Context;
-
 /**
- * <p>Abstract AddressConfigBuilderBase class.</p>
+ * <p>PortConfig interface.</p>
  *
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
- * @param <BUILDER_TYPE>
- * @param <CONFIG_TYPE>
  */
-public abstract class AddressConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
-        extends ConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
-        implements AddressConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+public interface PortConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
 
     /**
-     * PRIVATE CONSTRUCTOR
+     * Constant <code>PORT_KEY="port"</code>
      */
-    protected AddressConfigBuilderBase(Context context){
-        super(context);
-    }
+    String PORT_KEY = "port";
 
-    /** {@inheritDoc} */
-    @Override
-    public BUILDER_TYPE address(Integer address){
-        this.properties.put(AddressConfig.ADDRESS_KEY, address.toString());
-        return (BUILDER_TYPE) this;
+    /**
+     * <p>port.</p>
+     *
+     * @return a {@link String} object.
+     */
+    String port();
+
+    /**
+     * <p>getPort.</p>
+     *
+     * @return a {@link String} object.
+     */
+    default String getPort() {
+        return this.port();
     }
 }

@@ -31,30 +31,32 @@ import com.pi4j.provider.Provider;
 /**
  * <p>Abstract GpioBase class.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <CONFIG_TYPE>
  * @param <IO_TYPE>
  * @param <PROVIDER_TYPE>
+ * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
+ * @version $Id: $Id
  */
 public abstract class GpioBase<IO_TYPE extends Gpio<IO_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
-        CONFIG_TYPE extends GpioConfig<CONFIG_TYPE>, PROVIDER_TYPE extends Provider>
-        extends IOBase<IO_TYPE, CONFIG_TYPE, PROVIDER_TYPE>
-        implements Gpio<IO_TYPE, CONFIG_TYPE, PROVIDER_TYPE> {
+    CONFIG_TYPE extends GpioConfig<CONFIG_TYPE>, PROVIDER_TYPE extends Provider>
+    extends IOBase<IO_TYPE, CONFIG_TYPE, PROVIDER_TYPE>
+    implements Gpio<IO_TYPE, CONFIG_TYPE, PROVIDER_TYPE> {
 
     /**
      * <p>Constructor for GpioBase.</p>
      *
      * @param provider a PROVIDER_TYPE object.
-     * @param config a CONFIG_TYPE object.
+     * @param config   a CONFIG_TYPE object.
      */
-    public GpioBase(PROVIDER_TYPE provider, CONFIG_TYPE config){
+    public GpioBase(PROVIDER_TYPE provider, CONFIG_TYPE config) {
         super(provider, config);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String toString(){
+    public String toString() {
         StringBuilder result = new StringBuilder();
 
         // include ID
@@ -62,17 +64,11 @@ public abstract class GpioBase<IO_TYPE extends Gpio<IO_TYPE, CONFIG_TYPE, PROVID
         result.append(this.id());
 
         // include NAME
-        if(this.name() != null && !this.name().isEmpty()) {
+        if (this.name() != null && !this.name().isEmpty()) {
             result.append(" \"");
             result.append(this.name());
         }
 
-        // include ADDRESS
-        if(this.address() != null) {
-            result.append("\" (#");
-            result.append(this.address());
-            result.append(")");
-        }
         return result.toString();
     }
 }

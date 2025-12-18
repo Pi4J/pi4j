@@ -61,7 +61,6 @@ public enum IOType {
     PWM(PwmProvider.class, Pwm.class, PwmConfig.class, PwmConfigBuilder.class),
     I2C(I2CProvider.class, com.pi4j.io.i2c.I2C.class, I2CConfig.class, I2CConfigBuilder.class),
     SPI(SpiProvider.class, Spi.class, I2CConfig.class, I2CConfigBuilder.class),
-    @Deprecated(forRemoval = true)
     SERIAL(SerialProvider.class, Serial.class, SerialConfig.class, SerialConfigBuilder.class);
 
     private Class<? extends Provider> providerClass;

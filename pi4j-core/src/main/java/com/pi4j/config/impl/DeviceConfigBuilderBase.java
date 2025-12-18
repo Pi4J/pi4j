@@ -34,26 +34,28 @@ import com.pi4j.context.Context;
 /**
  * <p>Abstract DeviceConfigBuilderBase class.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
+ * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
+ * @version $Id: $Id
  */
 public abstract class DeviceConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
-        extends ConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
-        implements DeviceConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+    extends ConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
+    implements DeviceConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DeviceConfigBuilderBase(Context context){
+    protected DeviceConfigBuilderBase(Context context) {
         super(context);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public BUILDER_TYPE device(String device){
-        this.properties.put(DeviceConfig.DEVICE_KEY, device);
+    public BUILDER_TYPE device(Integer device) {
+        this.properties.put(DeviceConfig.DEVICE_KEY, device.toString());
         return (BUILDER_TYPE) this;
     }
 }

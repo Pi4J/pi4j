@@ -80,12 +80,14 @@ public interface Platform extends IOCreator, ProviderProvider, Extension<Platfor
      */
     Map<IOType, Provider> providers();
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <T extends Provider> T provider(Class<T> providerClass) throws ProviderNotFoundException, ProviderInterfaceException {
         for (Provider p : providers().values()) {
             if (providerClass.isAssignableFrom(p.getClass()))
-				return (T) p;
+                return (T) p;
         }
         if (providerClass.isInterface()) {
             throw new ProviderNotFoundException(providerClass);
@@ -94,95 +96,112 @@ public interface Platform extends IOCreator, ProviderProvider, Extension<Platfor
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <T extends Provider> T provider(IOType ioType) throws ProviderNotFoundException {
-        if(providers().containsKey(ioType))
-            return (T)providers().get(ioType);
+        if (providers().containsKey(ioType))
+            return (T) providers().get(ioType);
         throw new ProviderNotFoundException(ioType);
     }
 
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    default <T extends Provider> T provider(String providerId, Class<T> providerClass) throws ProviderNotFoundException{
-        for(Provider provider : providers().values()){
-            if(provider.id().equalsIgnoreCase(providerId) && providerClass.isInstance(provider)){
-                return (T)provider;
+    default <T extends Provider> T provider(String providerId, Class<T> providerClass) throws ProviderNotFoundException {
+        for (Provider provider : providers().values()) {
+            if (provider.id().equalsIgnoreCase(providerId) && providerClass.isInstance(provider)) {
+                return (T) provider;
             }
         }
         throw new ProviderNotFoundException(providerId, providerClass);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * <p>provider.</p>
+     *
+     * @param providerId a {@link java.lang.String} object.
+     * @param <T>
+     * @return
+     * @throws ProviderNotFoundException
+     */
     default <T extends Provider> T provider(String providerId) throws ProviderNotFoundException {
 
         // first attempt to resolve by direct unique identifier
-        if(providers().containsKey(providerId)){
-            return (T)providers().get(providerId);
+        if (providers().containsKey(providerId)) {
+            return (T) providers().get(providerId);
         }
 
         // additionally attempt to resolve the provider by its class name
         try {
             Class providerClass = Class.forName(providerId);
-            if(providerClass != null && Provider.class.isAssignableFrom(providerClass)){
+            if (providerClass != null && Provider.class.isAssignableFrom(providerClass)) {
                 // iterate over providers looking for a matching class/interface
-                for(Provider provider : providers().values()) {
+                for (Provider provider : providers().values()) {
                     if (providerClass.isInstance(provider)) {
                         return (T) provider;
                     }
                 }
             }
-        } catch (ClassNotFoundException e){}
+        } catch (ClassNotFoundException e) {
+        }
 
         // unable to resolve provider by 'id' or class name
         throw new ProviderNotFoundException(providerId);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default boolean hasProvider(String providerId) {
 
         // first attempt to resolve by direct unique identifier
-        if(providers().containsKey(providerId)){
+        if (providers().containsKey(providerId)) {
             return true;
         }
 
         // additionally attempt to resolve the provider by its class name
         try {
             Class providerClass = Class.forName(providerId);
-            if(providerClass != null && Provider.class.isAssignableFrom(providerClass)){
+            if (providerClass != null && Provider.class.isAssignableFrom(providerClass)) {
                 // iterate over providers looking for a matching class/interface
-                for(Provider provider : providers().values()) {
+                for (Provider provider : providers().values()) {
                     if (providerClass.isInstance(provider)) {
                         return true;
                     }
                 }
             }
-        } catch (ClassNotFoundException e){}
+        } catch (ClassNotFoundException e) {
+        }
 
         // unable to resolve provider by 'id' or class name
         return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <T extends Provider> boolean hasProvider(Class<T> providerClass) {
         try {
             return provider(providerClass) != null;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <T extends Provider> boolean hasProvider(IOType ioType) {
         try {
             return provider(ioType) != null;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
@@ -191,22 +210,28 @@ public interface Platform extends IOCreator, ProviderProvider, Extension<Platfor
     // I/O INSTANCE ACCESSOR/CREATOR METHODS
     // ------------------------------------------------------------------------
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    <I extends IO>I create(IOConfig config, IOType ioType);
+    <I extends IO> I create(IOConfig config, IOType ioType);
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    <T extends IO>T create(String id);
+    <T extends IO> T create(String id);
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    <T extends IO>T create(String id, IOType ioType);
+    <T extends IO> T create(String id, IOType ioType);
 
     // ------------------------------------------------------------------------
     // DESCRIPTOR
     // ------------------------------------------------------------------------
 
-    /** {@inheritDoc} */
     /**
      * <p>describe.</p>
      *
@@ -214,9 +239,9 @@ public interface Platform extends IOCreator, ProviderProvider, Extension<Platfor
      */
     default Descriptor describe() {
         return Descriptor.create()
-                .id(this.id())
-                .name(this.name())
-                .category("PLATFORM")
-                .description(this.description()).type(this.getClass());
+            .id(this.id())
+            .name(this.name())
+            .category("PLATFORM")
+            .description(this.description()).type(this.getClass());
     }
 }

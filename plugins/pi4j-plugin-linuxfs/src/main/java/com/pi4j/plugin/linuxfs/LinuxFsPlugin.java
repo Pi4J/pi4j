@@ -134,20 +134,11 @@ public class LinuxFsPlugin implements Plugin {
             pwmFileSystemPath = service.context().properties().get("linux.pwm.system.path", pwmFileSystemPath);
         }
 
-        // [PWM] get overriding custom 'linux.gpio.system.path' setting from Pi4J context
-        if (service.context().properties().has("linux.pwm.chip")) {
-            try {
-                pwmChip = Integer.parseInt(service.context().properties().get("linux.pwm.chip", Integer.toString(pwmChip)));
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            }
-        }
-
         // Create & define supported Linux file system I/O providers that will be exposed to Pi4J via this plugin
         Provider[] providers = {
             LinuxFsDigitalInputProvider.newInstance(gpioFileSystemPath),
             LinuxFsDigitalOutputProvider.newInstance(gpioFileSystemPath),
-            LinuxFsPwmProvider.newInstance(pwmFileSystemPath, pwmChip),
+            LinuxFsPwmProvider.newInstance(pwmFileSystemPath),
             LinuxFsI2CProvider.newInstance(),
             LinuxFsSpiProvider.newInstance()
         };

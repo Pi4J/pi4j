@@ -50,6 +50,14 @@ public interface SerialConfigBuilder extends
     /**
      * <p>baud.</p>
      *
+     * @param port a {@link java.lang.String} object.
+     * @return a {@link com.pi4j.io.serial.SerialConfigBuilder} object.
+     */
+    SerialConfigBuilder port(String port);
+
+    /**
+     * <p>baud.</p>
+     *
      * @param rate a {@link java.lang.Integer} object.
      * @return a {@link com.pi4j.io.serial.SerialConfigBuilder} object.
      */

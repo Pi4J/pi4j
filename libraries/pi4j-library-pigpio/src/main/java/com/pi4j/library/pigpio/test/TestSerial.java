@@ -40,7 +40,6 @@ import java.util.Random;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-@Deprecated(forRemoval = true)
 public class TestSerial {
 
     private static final Logger logger = LoggerFactory.getLogger(TestSerial.class);

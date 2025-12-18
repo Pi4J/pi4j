@@ -383,7 +383,6 @@ public class PIGPIO {
      * @param data_bits a int.
      * @return a int.
      */
-    @Deprecated(forRemoval = true)
     public static native int gpioSerialReadOpen(int user_gpio, int baud, int data_bits);
 
     /**
@@ -393,7 +392,6 @@ public class PIGPIO {
      * @param invert    a int.
      * @return a int.
      */
-    @Deprecated(forRemoval = true)
     public static native int gpioSerialReadInvert(int user_gpio, int invert);
 
     /**
@@ -404,7 +402,6 @@ public class PIGPIO {
      * @param bufSize   a int.
      * @return a int.
      */
-    @Deprecated(forRemoval = true)
     public static native int gpioSerialRead(int user_gpio, byte[] buffer, int bufSize);
 
     /**
@@ -413,7 +410,6 @@ public class PIGPIO {
      * @param user_gpio a int.
      * @return a int.
      */
-    @Deprecated(forRemoval = true)
     public static native int gpioSerialReadClose(int user_gpio);
 
     /**
@@ -881,7 +877,6 @@ public class PIGPIO {
      * @param serFlags a int.
      * @return a int.
      */
-    @Deprecated(forRemoval = true)
     public static native int serOpen(String sertty, int baud, int serFlags);
 
     /**
@@ -891,7 +886,6 @@ public class PIGPIO {
      * @param baud   a int.
      * @return a int.
      */
-    @Deprecated(forRemoval = true)
     public static int serOpen(String sertty, int baud) {
         return serOpen(sertty, baud, 0);
     }
@@ -902,7 +896,6 @@ public class PIGPIO {
      * @param handle a int.
      * @return a int.
      */
-    @Deprecated(forRemoval = true)
     public static native int serClose(int handle);
 
     /**
@@ -912,7 +905,6 @@ public class PIGPIO {
      * @param bVal   a byte.
      * @return a int.
      */
-    @Deprecated(forRemoval = true)
     public static native int serWriteByte(int handle, byte bVal);
 
     /**
@@ -921,7 +913,6 @@ public class PIGPIO {
      * @param handle a int.
      * @return a int.
      */
-    @Deprecated(forRemoval = true)
     public static native int serReadByte(int handle);
 
     /**
@@ -933,7 +924,6 @@ public class PIGPIO {
      * @param count  a int.
      * @return a int.
      */
-    @Deprecated(forRemoval = true)
     public static native int serWrite(int handle, byte[] buf, int offset, int count);
 
     /**
@@ -944,7 +934,6 @@ public class PIGPIO {
      * @param count  a int.
      * @return a int.
      */
-    @Deprecated(forRemoval = true)
     public static int serWrite(int handle, byte[] buf, int count) {
         return serWrite(handle, buf, 0, count);
     }
@@ -958,7 +947,6 @@ public class PIGPIO {
      * @param count  a int.
      * @return a int.
      */
-    @Deprecated(forRemoval = true)
     public static native int serRead(int handle, byte[] buf, int offset, int count);
 
     /**
@@ -969,7 +957,6 @@ public class PIGPIO {
      * @param count  a int.
      * @return a int.
      */
-    @Deprecated(forRemoval = true)
     public static int serRead(int handle, byte[] buf, int count) {
         return serRead(handle, buf, 0, count);
     }
@@ -980,7 +967,6 @@ public class PIGPIO {
      * @param handle a int.
      * @return a int.
      */
-    @Deprecated(forRemoval = true)
     public static native int serDataAvailable(int handle);
 
     /**
@@ -989,7 +975,6 @@ public class PIGPIO {
      * @param handle a int.
      * @return a int.
      */
-    @Deprecated(forRemoval = true)
     public static native int serDrain(int handle);
 
     /**

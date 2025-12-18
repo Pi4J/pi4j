@@ -52,36 +52,36 @@ public class PiGpioSpi extends SpiBase implements Spi {
     /**
      * <p>Constructor for PiGpioSpi.</p>
      *
-     * @param piGpio a {@link com.pi4j.library.pigpio.PiGpio} object.
+     * @param piGpio   a {@link com.pi4j.library.pigpio.PiGpio} object.
      * @param provider a {@link com.pi4j.io.spi.SpiProvider} object.
-     * @param config a {@link com.pi4j.io.spi.SpiConfig} object.
-     * <p>
-     * ------------------------------------------------------------------
-     * spiFlags consists of the least significant 22 bits.
-     * ------------------------------------------------------------------
-     * 21 20 19 18 17 16 15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0
-     *  b  b  b  b  b  b  R  T  n  n  n  n  W  A u2 u1 u0 p2 p1 p0  m  m
-     * <p>
-     * [mm]     defines the SPI mode.
-     *          Warning: modes 1 and 3 do not appear to work on the auxiliary SPI.
-     * <p>
-     *          Mode POL PHA
-     *           0    0   0
-     *           1    0   1
-     *           2    1   0
-     *           3    1   1
-     * <p>
-     * [px]     is 0 if CEx is active low (default) and 1 for active high.
-     * [ux]     is 0 if the CEx GPIO is reserved for SPI (default) and 1 otherwise.
-     * [A]      is 0 for the main SPI, 1 for the auxiliary SPI.
-     * [W]      is 0 if the device is not 3-wire, 1 if the device is 3-wire. Main SPI only.
-     * [nnnn]   defines the number of bytes (0-15) to write before switching the MOSI line to MISO to read data.
-     *          This field is ignored if W is not set. Main SPI only.
-     * [T]      is 1 if the least significant bit is transmitted on MOSI first, the default (0) shifts the
-     *          most significant bit out first. Auxiliary SPI only.
-     * [R]      is 1 if the least significant bit is received on MISO first, the default (0) receives the most
-     *          significant bit first. Auxiliary SPI only.
-     * [bbbbbb] defines the word size in bits (0-32). The default (0) sets 8 bits per word. Auxiliary SPI only.
+     * @param config   a {@link com.pi4j.io.spi.SpiConfig} object.
+     *                 <p>
+     *                 ------------------------------------------------------------------
+     *                 spiFlags consists of the least significant 22 bits.
+     *                 ------------------------------------------------------------------
+     *                 21 20 19 18 17 16 15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0
+     *                 b  b  b  b  b  b  R  T  n  n  n  n  W  A u2 u1 u0 p2 p1 p0  m  m
+     *                 <p>
+     *                 [mm]     defines the SPI mode.
+     *                 Warning: modes 1 and 3 do not appear to work on the auxiliary SPI.
+     *                 <p>
+     *                 Mode POL PHA
+     *                 0    0   0
+     *                 1    0   1
+     *                 2    1   0
+     *                 3    1   1
+     *                 <p>
+     *                 [px]     is 0 if CEx is active low (default) and 1 for active high.
+     *                 [ux]     is 0 if the CEx GPIO is reserved for SPI (default) and 1 otherwise.
+     *                 [A]      is 0 for the main SPI, 1 for the auxiliary SPI.
+     *                 [W]      is 0 if the device is not 3-wire, 1 if the device is 3-wire. Main SPI only.
+     *                 [nnnn]   defines the number of bytes (0-15) to write before switching the MOSI line to MISO to read data.
+     *                 This field is ignored if W is not set. Main SPI only.
+     *                 [T]      is 1 if the least significant bit is transmitted on MOSI first, the default (0) shifts the
+     *                 most significant bit out first. Auxiliary SPI only.
+     *                 [R]      is 1 if the least significant bit is received on MISO first, the default (0) receives the most
+     *                 significant bit first. Auxiliary SPI only.
+     *                 [bbbbbb] defines the word size in bits (0-32). The default (0) sets 8 bits per word. Auxiliary SPI only.
      *
      */
     public PiGpioSpi(PiGpio piGpio, SpiProvider provider, SpiConfig config) {
@@ -100,46 +100,46 @@ public class PiGpioSpi extends SpiBase implements Spi {
         int flags = 0;
 
         // if 'flags' were provided in the SPI config, then accept them
-        if(config().flags() != null){
+        if (config().flags() != null) {
             flags = config().flags().intValue();
         }
 
         // only SPI BUS_0 and AUX SPI BUS_1 are supported by PiGPIO
-        if(bus.getBus() > 1){
+        if (bus.getBus() > 1) {
             throw new IOException("Unsupported BUS by PiGPIO SPI Provider: bus=" + bus.toString());
         }
 
         // channel/address (chip-select) #2 is not supported on SPI_BUS_0 by PiGPIO
-        if(bus == SpiBus.BUS_0 && config.address() == 2) {
-            throw new IOException("Unsupported Pigpio SPI channel (chip select) on SPI BUS_0 bus: address=" + config.address() );
+        if (bus == SpiBus.BUS_0 && config.channel() == 2) {
+            throw new IOException("Unsupported Pigpio SPI channel (chip select) on SPI BUS_0 bus: channel=" + config.channel());
         }
-        if(config.address() > 2) {
-            throw new IOException("Unsupported Pigpio SPI channel (chip select) address greater than 2" + config.address() );
+        if (config.channel() > 2) {
+            throw new IOException("Unsupported Pigpio SPI channel (chip select), greater than 2" + config.channel());
         }
         // Comments on the PiGPIO web https://abyz.me.uk/rpi/pigpio/cif.html#spiOpen as follows:
         // "Warning: modes 1 and 3 do not appear to work on the auxiliary SPI."
         // SPI MODE_1 and MODE_3 are not supported on the AUX SPI BUS_1 by PiGPIO
-        if(bus == SpiBus.BUS_1 && (mode == SpiMode.MODE_1 || mode == SpiMode.MODE_3)) {
+        if (bus == SpiBus.BUS_1 && (mode == SpiMode.MODE_1 || mode == SpiMode.MODE_3)) {
             throw new IOException("Unsupported SPI mode on AUX SPI BUS_1: mode=" + mode.toString());
         }
 
-        if(config.writeLsbFirstUserProvided()) {  // user provided, overwrite flags
-         if (config().getWriteLsbFirst() == 0) {
+        if (config.writeLsbFirstUserProvided()) {  // user provided, overwrite flags
+            if (config().getWriteLsbFirst() == 0) {
                 flags = (flags | (0xFFFFFFFF ^ SPI_WRITE_LSB_FIRST_MASK)); // clear bit
-            }else {
-                flags = (flags | (0xFFFFFFFF ^ SPI_WRITE_LSB_FIRST_MASK)) |SPI_WRITE_LSB_FIRST_MASK; // clear AUX bit
+            } else {
+                flags = (flags | (0xFFFFFFFF ^ SPI_WRITE_LSB_FIRST_MASK)) | SPI_WRITE_LSB_FIRST_MASK; // clear AUX bit
             }
         }
 
-        if(config.readLsbFirstUserProvided()) {  // user provided, overwrite flags
+        if (config.readLsbFirstUserProvided()) {  // user provided, overwrite flags
             if (config().getReadLsbFirst() == 0) {
                 flags = (flags | (0xFFFFFFFF ^ SPI_READ_LSB_FIRST_MASK)); // clear bit
-            }else {
-                flags = (flags | (0xFFFFFFFF ^ SPI_READ_LSB_FIRST_MASK)) |SPI_READ_LSB_FIRST_MASK; // clear AUX bit
+            } else {
+                flags = (flags | (0xFFFFFFFF ^ SPI_READ_LSB_FIRST_MASK)) | SPI_READ_LSB_FIRST_MASK; // clear AUX bit
             }
         }
 
-        if(config.busUserProvided()) {  // user provided, overwrite flags
+        if (config.busUserProvided()) {  // user provided, overwrite flags
             // update flags value with BUS bit ('A' 0x0000=BUS0; 0x0100=BUS1)
             if (bus == SpiBus.BUS_0) {
                 flags = (flags & (0xFFFFFFFF ^ SPI_BUS_MASK)); // clear AUX bit
@@ -148,28 +148,32 @@ public class PiGpioSpi extends SpiBase implements Spi {
             }
         }
 
-        if(config.modeUserProvided()) {  // user provided, overwrite flags
+        if (config.modeUserProvided()) {  // user provided, overwrite flags
             // update flags value with MODE bits ('mm' 0x03)
             flags = (flags & (0xFFFFFFFF ^ SPI_MODE_MASK)) | mode.getMode(); // set MODE bits
         }
-            // create SPI instance of PiGPIO SPI
-       this.handle = piGpio.spiOpen(
-            config.address(),
+        // create SPI instance of PiGPIO SPI
+        this.handle = piGpio.spiOpen(
+            config.channel(),
             config.baud(),
             flags);
 
-       // set open state flag
-       this.isOpen = true;
+        // set open state flag
+        this.isOpen = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Spi initialize(Context context) throws InitializeException {
         super.initialize(context);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() {
         piGpio.spiClose(this.handle);
@@ -180,7 +184,9 @@ public class PiGpioSpi extends SpiBase implements Spi {
     // DEVICE TRANSFER FUNCTIONS
     // -------------------------------------------------------------------
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int transfer(byte[] write, int writeOffset, byte[] read, int readOffset, int numberOfBytes) {
         return piGpio.spiXfer(this.handle, write, writeOffset, read, readOffset, numberOfBytes);
@@ -190,13 +196,17 @@ public class PiGpioSpi extends SpiBase implements Spi {
     // DEVICE WRITE FUNCTIONS
     // -------------------------------------------------------------------
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int write(byte b) {
         return piGpio.spiWriteByte(this.handle, b);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int write(byte[] data, int offset, int length) {
         return piGpio.spiWrite(this.handle, data, offset, length);
@@ -207,13 +217,17 @@ public class PiGpioSpi extends SpiBase implements Spi {
     // RAW DEVICE READ FUNCTIONS
     // -------------------------------------------------------------------
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read() {
         return piGpio.spiReadByte(this.handle);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read(byte[] buffer, int offset, int length) {
         return piGpio.spiRead(this.handle, buffer, offset, length);

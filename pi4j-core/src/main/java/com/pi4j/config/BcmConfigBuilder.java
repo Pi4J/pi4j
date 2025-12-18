@@ -1,11 +1,11 @@
-package com.pi4j.io;
+package com.pi4j.config;
 
 /*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  IOAddressConfigBuilder.java
+ * FILENAME      :  BcmConfigBuilder.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -25,23 +25,31 @@ package com.pi4j.io;
  * #L%
  */
 
-import com.pi4j.config.AddressConfigBuilder;
-import com.pi4j.platform.Platform;
-import com.pi4j.provider.Provider;
-
 /**
- * <p>IOConfigBuilder interface.</p>
+ * <p>BcmConfigBuilder interface.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
+ * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
+ * @version $Id: $Id
  */
-public interface IOAddressConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>
-        extends IOConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,
-                AddressConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
-    BUILDER_TYPE provider(String provider);
-    BUILDER_TYPE provider(Class<? extends Provider> providerClass);
-    BUILDER_TYPE platform(String platform);
-    BUILDER_TYPE platform(Class<? extends Platform> platformClass);
+public interface BcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+    /**
+     * <p>address.</p>
+     *
+     * @param address a {@link java.lang.Integer} object.
+     * @return a BUILDER_TYPE object.
+     * @deprecated use {@link #bcm(Integer)} instead.
+     * <p>
+     */
+    @Deprecated(forRemoval = true)
+    BUILDER_TYPE address(Integer address);
+
+    /**
+     * <p>pin defined by BCM number.</p>
+     *
+     * @param bcm a {@link java.lang.Integer} object.
+     * @return a BUILDER_TYPE object.
+     */
+    BUILDER_TYPE bcm(Integer bcm);
 }

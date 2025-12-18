@@ -62,8 +62,8 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
 
     public DigitalInputFFM(String chipName, DigitalInputProvider provider, DigitalInputConfig config) {
         super(provider, config);
-        this.pin = config.address();
-        this.deviceName = "/dev/gpiochip" + config.busNumber();
+        this.pin = config.bcm();
+        this.deviceName = "/dev/gpiochip" + config.bus();
         this.debounce = config.debounce();
         this.pull = config.pull();
         PermissionHelper.checkDevicePermissions(deviceName, config);
@@ -217,8 +217,8 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
         /**
          * Constructs the EventWatcher
          *
-         * @param pinEvent        event
-         * @param eventProcessor  event processor
+         * @param pinEvent       event
+         * @param eventProcessor event processor
          */
         EventWatcher(int fd, PinEvent pinEvent, PinEventProcessing eventProcessor) {
             this.fd = fd;

@@ -42,7 +42,7 @@ import java.util.Optional;
 /**
  * PWM Util used to determine the PWM address on a Raspberry Pi.
  * This will determine if a user accessible PWM is configured, if so, returns an Int identifying which pwmchip
- * If no user accessible PWM found, will return the original default value of 2.
+ * If no user accessible PWM found, will return the original default value defined by {@link #DEFAULT_RP1_PWM_CHIP}.
  */
 public class PwmChipUtil {
 
@@ -70,12 +70,38 @@ public class PwmChipUtil {
     public static int DEFAULT_PWM_CHIP = DEFAULT_RP1_PWM_CHIP;
 
     /**
+     * The ID of the PWM chip:
+     *
+     * <ul>
+     *     <li>System without RP1 (pre-RPi 5): 0</li>
+     *     <li>System with RP1 (RPi 5 and later): as detected or {@link #DEFAULT_RP1_PWM_CHIP}</li>
+     * </ul>
+     *
+     * @return {@link int} value for the pwmchip
+     */
+    public static int getPWMChip() {
+        if (!BoardInfoHelper.usesRP1()) {
+            return 0;
+        }
+        return getPWMChipForRP1(DEFAULT_PWM_SYSTEM_PATH);
+    }
+
+    /**
+     * getPWMChipForRP1 using the default PWM system path
+     *
+     * @return {@link int} value for the pwmchip if configured,
+     * else defaults to original expected value defined by {@link #DEFAULT_RP1_PWM_CHIP}.
+     */
+    public static int getPWMChipForRP1() {
+        return getPWMChipForRP1(DEFAULT_PWM_SYSTEM_PATH);
+    }
+
+    /**
      * getPWMChipForRP1
      *
-     * @param pwmFileSystemPath Device tree path to PWM chips
-     *                          typically /sys/class/pwm
-     * @return Int value for the pwmchip if configured,
-     * else default to original expected value of 2.
+     * @param pwmFileSystemPath Device tree path to PWM chips, typically /sys/class/pwm
+     * @return {@link int} value for the pwmchip if configured,
+     * else defaults to original expected value of defined by {@link #DEFAULT_RP1_PWM_CHIP}.
      */
     public static int getPWMChipForRP1(String pwmFileSystemPath) {
         Logger logger = LoggerFactory.getLogger(PwmChipUtil.class);
@@ -140,7 +166,7 @@ public class PwmChipUtil {
                     chipNum = new StringBuilder().append(chipNum.substring(0, chipNum.length())).append(path.substring(numStart, numStart + 1)).toString();
                     numStart++;
                     if (numStart == path.length())
-                        break ;
+                        break;
                 }
                 return Optional.of(Integer.parseInt(chipNum));
             }
