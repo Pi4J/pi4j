@@ -1,6 +1,4 @@
-package com.pi4j.test;
-
-/*
+package com.pi4j.test;/*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
@@ -52,31 +50,30 @@ import com.pi4j.plugin.linuxfs.provider.spi.LinuxFsSpiProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 /**
  * <p>Main class.</p>
  * Simple test of the six providers. Dependent upon the wiring described in the README file.
  *
  */
-
 public class Main {
 
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
     private static final int PWM_CHANNEL = 2;
-    private static final int PIN_GPIO23 = 23;
     private static final int ID_VALUE_MSK_BMP = 0x58;   // expected chpId value BMP28
     private static final int ID_VALUE_MSK_BME = 0x60;   // expected chpId value BME280
-    private static final int PIN_GPIO16 = 16;
-    private static final int PIN_GPIO26 = 26;
-    private static final int PIN_GPIO24 = 24;
-    private static final int PIN_GPIO27 = 27;
     private static final int BMP_I2C_BUS = 1;
     private static final int BMP_I2C_ADDR = 0x76;
+
     private static final String FFM_PROVIDER = "ffm";
     private static final String LINUXFS_PROVIDER = "linuxfs";
+
     static Context pi4j = null;
+    static ProviderContext pc = null;
     private static int pwmFlashes = 0;
-    private static final String DEFAULT_PWM_FILESYSTEM_PATH = "/sys/class/pwm";
-    private static ProviderContext pc = null;
+    public static String DEFAULT_PWM_FILESYSTEM_PATH = "/sys/class/pwm";
 
     /**
      * <p>Constructor for Main.</p>
@@ -93,12 +90,22 @@ public class Main {
 
         System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
 
+        // Initialize Pi4J with an auto context
+        // An auto context includes AUTO-DETECT BINDINGS enabled
+        // which will load all detected Pi4J extension libraries
+        // (Platforms and Providers) in the class path
+
+
+        /* Plan the ContextUtil class to create the linuxfs or ffm provider
+        as requested and return appropriate provider names by IO-TYPE
+        */
+        //   pi4j = Pi4J.newAutoContext();     //  remove var
 
         logger.info("==============================================================");
         logger.info("startup  Main ");
         logger.info("==============================================================");
 
-        String useProvider = FFM_PROVIDER;
+        String useProvider = LINUXFS_PROVIDER;
         String helpString = " parms:   -p  linuxfs  ffm   -h help \n ";
         for (int i = 0; i < args.length; i++) {
             String o = args[i];
@@ -118,13 +125,12 @@ public class Main {
                 logger.info(helpString);
                 System.exit(31);
             } else {
-                logger.info("  !!! Invalid Parm " + args.toString());
+                logger.info("  !!! Invalid Parm " + args);
                 logger.info(helpString);
                 System.exit(32);
             }
 
         }
-
         pc = new ProviderContext(useProvider);
         pi4j = pc.getContext();
         // create About class instance
@@ -139,6 +145,7 @@ public class Main {
         String overResult = "";
 
         logger.info("Run all tests");
+        // testObj = new SmokeTest(pi4j, console, testNumber);
         overResult += "\n Test result   \n";
         boolean result = testI2c();
         overResult += String.format(" Test  %s  Result %b  \n", "testI2C    ", result);
@@ -163,19 +170,20 @@ public class Main {
     }
 
     private static boolean testI2c() {
+        logger.info("Enter: testI2c");
         I2C dev = createI2cBMPDevice();
         // read 0xD0 validate data equal 0x58 or 0x60
         int id = dev.readRegister(0xD0);
-
+        logger.info("Exit: testI2c");
         return (id == ID_VALUE_MSK_BMP || id == ID_VALUE_MSK_BME);
     }
 
     private static boolean testSpi() {
+        logger.info("Enter: testSpi");
 
-        if (pc.getProviderName().equals(FFM_PROVIDER)){
-            // TODO  remove hack when ffm supports writeThenRead
-            logger.info("skip test, writeThenRead not implemented");
-            return true ;
+        if (pc.getProviderGroupName().equals(FFM_PROVIDER)) {
+            logger.info("SKIP test, no interface in FFM");
+            return true;
         }
         Spi spi = createSPIDevice();
         final int chipId = 0xD0;
@@ -185,79 +193,120 @@ public class Main {
             e.printStackTrace();
         }
         int id = readSpiRegister(spi, chipId);
-
+        logger.info("Exit: testSpi");
         return (id == ID_VALUE_MSK_BMP || id == ID_VALUE_MSK_BME);
     }
 
     private static boolean testPWM() throws Exception {
+        logger.info("Enter: testPWM");
         pwmFlashes = 0;
-        DigitalInput gpio23InMonitor = createDigitalInput(PIN_GPIO23, PullResistance.PULL_DOWN);
-        gpio23InMonitor.addListener(new Main.DataInGpioListener());
+        DigitalInput gpioInMonitor = createDigitalInput(23, PullResistance.PULL_DOWN);
+        gpioInMonitor.addListener(new Main.DataInGpioListener());
         Pwm pwm = createHwPwm(PWM_CHANNEL);
         pwm.on(50, 1);
         Thread.sleep(10000);  // wait 10 seconds while listener counts flashes
-
+        pwm.off();
+        logger.info("Exit: testPWM");
         return (pwmFlashes == 10);
     }
 
     private static boolean testGpioIn() {
-        DigitalOutput gpio26OutControl = createDigitalOutput(PIN_GPIO26, DigitalState.LOW, DigitalState.LOW);
-        DigitalInput gpio16InTest = createDigitalInput(PIN_GPIO16, PullResistance.PULL_DOWN);
+        logger.info("Enter: testGpioIn");
+        DigitalOutput gpioOutControl = createDigitalOutput(26, DigitalState.LOW, DigitalState.LOW);
+        DigitalInput gpioInTest = createDigitalInput(16, PullResistance.PULL_DOWN);
         // Validate monitor is LOW, then set test control state HIGH
-        if (gpio16InTest.state() == DigitalState.LOW) {
-            gpio26OutControl.high();
+        if (gpioInTest.state() == DigitalState.LOW) {
+            gpioOutControl.high();
         }
-        DigitalState state = gpio16InTest.state();
+        DigitalState state = gpioInTest.state();
+        logger.info("Exit: testGpioIn");
 
         return (state == DigitalState.HIGH);
     }
 
     private static boolean testGpioOut() {
-
-        DigitalOutput gpio24OutTest = createDigitalOutput(PIN_GPIO24, DigitalState.LOW, DigitalState.LOW);
-
-        DigitalInput gpio27InMonitor = createDigitalInput(PIN_GPIO27, PullResistance.PULL_DOWN);
+        logger.info("Enter: testGpioOut");
+        DigitalOutput gpioOutTest = createDigitalOutput(24, DigitalState.LOW, DigitalState.LOW);
+        DigitalInput gpioInMonitor = createDigitalInput(25, PullResistance.PULL_DOWN);
         // Validate monitor is LOW, test control state HIGH
-        if (gpio27InMonitor.state() == DigitalState.LOW) {
-            gpio24OutTest.high();
+        if (gpioInMonitor.state() == DigitalState.LOW) {
+            gpioOutTest.high();
         }
-        if (pc.getProviderName().equals(FFM_PROVIDER)){
-            // TODO
-            logger.info("Workaround testGpioOut to debug ffm");
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        DigitalState state = gpio27InMonitor.state();
+        DigitalState state = gpioInMonitor.state();
+        logger.info("Exit: testGpioOut");
+
         return (state == DigitalState.HIGH);
     }
 
     private static boolean testSerial() {
-        logger.info("testSerial   Not implemented   yet....");
-        if (pc.getProviderName().equals(LINUXFS_PROVIDER)) {
-            logger.info("linuxfs does not support Serial");
+        logger.info("Enter; testSerial ");
+        if (pc.getProviderGroupName().equals(LINUXFS_PROVIDER)) {
+            logger.info("SKIP test, not in LINUXFS");
             return true;
         }
-        // serialData    what to send and read back.
-        Serial device = createSerialDevice();
+        final SerialReader[] serialReader = new SerialReader[1];
 
-        logger.info( " device open %b", device.isOpen());
-        return true;
+        String testData = "serial_test serial_test serial_test serial_test  ";
+        Serial txPort = createSerialDevice();
+        txPort.open();
+        ;
+        logger.info("about to create runnable");
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                logger.info("BUG, isOpen not implemented...Waiting till serial port is open");
+                while (!txPort.isOpen()) {
+                    try {
+                        Thread.sleep(1000);
+                        logger.info("retry...");
+                        break;   //  bug work around
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                //opened now!
+                logger.info("serial port is open!");
+
+                // Start a thread to handle the incoming data from the serial port
+                serialReader[0] = new Main.SerialReader(txPort);
+                Thread serialReaderThread = new Thread(serialReader[0], "SerialReader");
+                serialReaderThread.setDaemon(true);
+                serialReaderThread.start();
+
+            }
+        };
+        logger.info("about to start runnable");
+        runnable.run();
+        for (int i = 0; i < 10; i++) {
+            txPort.write(testData);
+        }
+        // allow time for the serail reader to process incoming data
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        serialReader[0].stopReading();
+        String read = serialReader[0].getReadData();
+        return (read.indexOf(testData) > -1) ? true : false;
     }
 
-    private static Serial createSerialDevice(){
+    private static Serial createSerialDevice() {
+
+        //Object StopBits;
         Serial serial = pi4j.create(Serial.newConfigBuilder(pi4j)
             .baud(Baud._4800)
             .dataBits_8()
             .parity(Parity.NONE)
             .stopBits(StopBits._1)
             .flowControl(FlowControl.NONE)
-            .id("test uart port")
-            .port("/dev/serial0")
-            .provider(pc.getSerialName())
+            .id("smokeTest port")
+            .port("/dev/ttyAMA0")       //serial0")    // /dev/ttyAMA0  /dev/ttyS0
+            .provider(pc.getSerialProviderName())
             .build());
+
+
         return serial;
     }
 
@@ -270,7 +319,7 @@ public class Main {
             .device(BMP_I2C_ADDR)
             .id(id + " " + name)
             .name(name)
-            .provider(pc.getI2cName())
+            .provider(pc.getI2cProviderName())
             .build();
         I2C i2c = pi4j.create(i2cDeviceConfig);
         return i2c;
@@ -285,31 +334,27 @@ public class Main {
             .name("Sensor")
             .bus(bmpSpiBus)
             .chipSelect(SpiChipSelect.CS_0)
-            .baud(Spi.DEFAULT_BAUD)
+            .baud(Spi.DEFAULT_BAUD)    // Max 10MHz
             .mode(SpiMode.MODE_0)
-            .provider(pc.getSpiName())
+            .provider(pc.getSpiProviderName())
             .build();
         Spi spi = pi4j.create(spiConfig);
         return spi;
     }
 
-    private static DigitalInput createDigitalInput(int pin, PullResistance pull) {
+    private static DigitalInput createDigitalInput(int bcm, PullResistance pull) {
 
-        var inputConfig3 = DigitalInput.newConfigBuilder(pi4j)
-            .bcm(pin)
-            .pull(pull)
-            .provider(pc.getInPinName());
+        var inputConfig3 = DigitalInput.newConfigBuilder(pi4j).bcm(bcm).pull(pull).provider(pc.getDigitalInputProviderName());
         return pi4j.create(inputConfig3);
     }
 
-    private static DigitalOutput createDigitalOutput(int pin, DigitalState initial, DigitalState shutDown) {
-
+    private static DigitalOutput createDigitalOutput(int bcm, DigitalState initial, DigitalState shutDown) {
         var outputConfig3 = DigitalOutput
             .newConfigBuilder(pi4j)
-            .bcm(pin)
+            .bcm(bcm)
             .initial(initial)
             .shutdown(shutDown)
-            .provider(pc.getOutPinName());
+            .provider(pc.getDigitalOutputProviderName());
         return pi4j.create(outputConfig3);
     }
 
@@ -327,37 +372,42 @@ public class Main {
             .newConfigBuilder(pi4j)
             .channel(channel)
             .pwmType(PwmType.HARDWARE)
-            .provider(pc.getPwmName())
+            .provider(pc.getPwmProviderName())
             .initial(50)
             .frequency(1)
             .chip(chip)
-            .shutdown(0)
+            .shutdown(0)  //  ?????
             .build();
         Pwm pwm = pi4j.create(configPwm);
         return pwm;
     }
 
     /**
-     *  Class ProviderContext
+     * Class ProviderContext
      * Will create a new context with the designated providers classes
      *
      *
      */
-    private static class ProviderContext{
+    private static class ProviderContext {
         Context pi4j = null;
-        String useProviders = "";
-        ProviderContext(){
-            pi4j = Pi4J.newAutoContext() ;
-        }
+        String group = null;
+
+        private String i2cProviderName = "";
+        private String spiProviderName = "";
+        private String pwmProviderName = "";
+        private String digitalOutputProviderName = "";
+        private String digitalInputProviderName = "";
+        private String serialProviderName = "";
 
         /**
          *
-         * @param group  Identifies which set of provicders to create
+         * @param argGroup Identifies which set of providers to create
          */
-        ProviderContext(String group) {
-            useProviders = group;
-            if (group.equals(LINUXFS_PROVIDER)) {
-               String pwmFileSystemPath = DEFAULT_PWM_FILESYSTEM_PATH;
+        ProviderContext(String argGroup) {
+            group = argGroup;
+
+            if (group == LINUXFS_PROVIDER) {
+                String pwmFileSystemPath = DEFAULT_PWM_FILESYSTEM_PATH;
                 pi4j = Pi4J.newContextBuilder().add(LinuxFsI2CProvider.newInstance())
                     .add(GpioDDigitalInputProvider.newInstance())
                     .add(GpioDDigitalOutputProvider.newInstance())
@@ -365,13 +415,13 @@ public class Main {
                     .add(LinuxFsI2CProvider.newInstance())
                     .add(LinuxFsSpiProvider.newInstance())
                     .build();
-                i2cName = "linuxfs-i2c";
-                spiName = "linuxfs-spi";
-                pwmName = "linuxfs-pwm";
-                outPinName = "gpiod-digital-output";
-                inPinName = "gpiod-digital-input";
-                serialName = "NONE-serial";
-            } else if (group.equals(FFM_PROVIDER)) {
+                i2cProviderName = "linuxfs-i2c";
+                spiProviderName = "linuxfs-spi";
+                pwmProviderName = "linuxfs-pwm";
+                digitalOutputProviderName = "gpiod-digital-output";
+                digitalInputProviderName = "gpiod-digital-input";
+                serialProviderName = "NONE-serial";
+            } else if (group == FFM_PROVIDER) {
                 pi4j = Pi4J.newContextBuilder()
                     .add(new DigitalOutputFFMProviderImpl())
                     .add(new DigitalInputFFMProviderImpl())
@@ -380,48 +430,48 @@ public class Main {
                     .add(new PwmFFMProviderImpl())
                     .add(new SerialFFMProviderImpl())
                     .build();
-                i2cName = "ffm-i2c";
-                spiName = "ffm-spi";
-                pwmName = "ffm-pwm";
-                outPinName = "ffm-digital-output";
-                inPinName = "ffm-digital-input";
-                serialName = "ffm-serial";
+                i2cProviderName = "ffm-i2c";
+                spiProviderName = "ffm-spi";
+                pwmProviderName = "ffm-pwm";
+                digitalOutputProviderName = "ffm-digital-output";
+                digitalInputProviderName = "ffm-digital-input";
+                serialProviderName = "ffm-serial";
             }
         }
-        private Context getContext(){
-            return pi4j ;
+
+        public String getProviderGroupName() {
+            return group;
         }
 
-        private String getProviderName(){
-            return useProviders ;
-        }
-        private String i2cName = "";
-        private String spiName = "";
-        private String pwmName = "";
-        private String outPinName = "";
-        private String inPinName = "";
-        private String serialName = "";
-
-        private String getI2cName(){
-            return i2cName ;
-        }
-        private String getSpiName(){
-            return spiName ;
-        }
-        private String getPwmName(){
-            return pwmName ;
-        }
-        private String getOutPinName(){
-            return outPinName ;
-        }
-        private String getInPinName(){
-            return inPinName ;
-        }
-        private String getSerialName(){
-            return serialName ;
+        public Context getContext() {
+            return pi4j;
         }
 
+        public String getI2cProviderName() {
+            return i2cProviderName;
+        }
+
+        public String getSpiProviderName() {
+            return spiProviderName;
+        }
+
+        public String getPwmProviderName() {
+            return pwmProviderName;
+        }
+
+        public String getDigitalOutputProviderName() {
+            return digitalOutputProviderName;
+        }
+
+        public String getDigitalInputProviderName() {
+            return digitalInputProviderName;
+        }
+
+        public String getSerialProviderName() {
+            return serialProviderName;
+        }
     }
+
     /* Listener class        */
     private static class DataInGpioListener implements DigitalStateChangeListener {
 
@@ -431,7 +481,7 @@ public class Main {
         @Override
         public void onDigitalStateChange(DigitalStateChangeEvent event) {
             if (event.state() == DigitalState.HIGH) {
-                logger.info("Pin went High");
+                // System.out.println("onDigitalStateChange Pin went High");
             } else if (event.state() == DigitalState.LOW) {
                 logger.info("PWM flashed");
                 Main.pwmFlashes++;
@@ -441,4 +491,53 @@ public class Main {
         }
     }
 
+    private static class SerialReader implements Runnable {
+
+        private final Serial serial;
+        private String line = "";
+        private boolean continueReading = true;
+
+
+        public SerialReader(Serial serial) {
+            this.serial = serial;
+        }
+
+        public void stopReading() {
+            continueReading = false;
+        }
+
+        @Override
+        public void run() {
+            // We use a buffered reader to handle the data received from the serial port
+            BufferedReader br = new BufferedReader(new InputStreamReader(serial.getInputStream()));
+
+            try {
+                // Read data until the flag is false
+                while (continueReading) {
+                    // First we need to check if there is data available to read.
+                    var available = serial.available();
+                    if (available > 0) {
+                        for (int i = 0; i < available; i++) {
+                            byte b = (byte) br.read();
+                            if (b < 32) {
+                                //logger.info("All non-string bytes are ignored");
+                            } else {
+                                line += (char) b;
+                                //logger.info("line: '" + line + "'");
+                            }
+                        }
+                    } else {
+                        Thread.sleep(10);
+                    }
+                }
+            } catch (Exception e) {
+                logger.info("Error reading data from serial: " + e.getMessage());
+                System.out.println(e.getStackTrace());
+            }
+        }
+
+        private String getReadData() {
+            return line;
+        }
+    }
 }
