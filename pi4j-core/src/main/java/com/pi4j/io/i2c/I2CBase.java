@@ -30,37 +30,44 @@ import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.IOBase;
 import com.pi4j.io.i2c.impl.DefaultI2CRegister;
 
+import java.util.concurrent.Callable;
+
 /**
  * <p>Abstract I2CBase class.</p>
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <T>
  */
-public abstract class I2CBase extends IOBase<I2C, I2CConfig, I2CProvider> implements I2C {
+public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig, I2CProvider> implements I2C {
 
-    protected boolean isOpen = false;
+    protected boolean isOpen;
+    protected final T i2CBus;
 
     /**
      * <p>Constructor for I2CBase.</p>
      *
-     * @param provider a {@link com.pi4j.io.i2c.I2CProvider} object.
-     * @param config a {@link com.pi4j.io.i2c.I2CConfig} object.
+     * @param provider a {@link I2CProvider} object.
+     * @param config   a {@link I2CConfig} object.
+     * @param i2CBus   a {@link I2CBus} object.
      */
-    public I2CBase(I2CProvider provider, I2CConfig config) {
+    public I2CBase(I2CProvider provider, I2CConfig config, T i2CBus) {
         super(provider, config);
-        this.name = config.name();
-        this.id = config.id();
-        this.description = config.description();
         this.isOpen = true;
+        this.i2CBus = i2CBus;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isOpen() {
         return this.isOpen;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() {
         this.isOpen = false;
@@ -68,24 +75,33 @@ public abstract class I2CBase extends IOBase<I2C, I2CConfig, I2CProvider> implem
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Get an encapsulated interface for reading and writing to a specific I2C device register
      */
-    public I2CRegister getRegister(int address){
+    public I2CRegister getRegister(int address) {
         return new DefaultI2CRegister(this, address);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public I2C shutdown(Context context) throws ShutdownException {
+    public <V> V execute(Callable<V> action) {
+        if (action == null)
+            throw new NullPointerException("Parameter 'action' is mandatory!");
+        return this.i2CBus.execute(this, action);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public I2C shutdownInternal(Context context) throws ShutdownException {
         // if this I2C device is still open, then we need to close it since we are shutting down
-        if(this.isOpen()) {
+        if (this.isOpen()) {
             try {
-                this.close();
+                close();
             } catch (Exception e) {
                 throw new ShutdownException(e);
             }
         }
-        return (I2C)this;
+        return this;
     }
 }

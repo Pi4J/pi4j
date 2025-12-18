@@ -27,7 +27,8 @@ package com.pi4j.plugin.linuxfs.provider.gpio.digital;
  * #L%
  */
 
-import com.pi4j.io.exception.IOAlreadyExistsException;
+
+import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputProviderBase;
@@ -46,6 +47,8 @@ public class LinuxFsDigitalOutputProviderImpl extends DigitalOutputProviderBase
 
     /**
      * <p>Constructor for LinuxFsDigitalOutputProviderImpl.</p>
+     *
+     * @param gpioFileSystemPath
      */
     public LinuxFsDigitalOutputProviderImpl(String gpioFileSystemPath) {
         this.id = ID;
@@ -55,8 +58,8 @@ public class LinuxFsDigitalOutputProviderImpl extends DigitalOutputProviderBase
 
     @Override
     public int getPriority() {
-        // the linux FS DO driver should not be used over the pigpio
-        return 50;
+        // the linux FS Digital driver should be higher priority on RP1 chip.
+        return BoardInfoHelper.usesRP1() ? 100 : 50;
     }
 
     /**
@@ -65,7 +68,7 @@ public class LinuxFsDigitalOutputProviderImpl extends DigitalOutputProviderBase
     @Override
     public DigitalOutput create(DigitalOutputConfig config) {
         // create filesystem based GPIO instance using instance address (GPIO NUMBER)
-        LinuxGpio gpio = new LinuxGpio(this.gpioFileSystemPath, config.address());
+        LinuxGpio gpio = new LinuxGpio(this.gpioFileSystemPath, config.bcm());
         LinuxFsDigitalOutput digitalOutput = new LinuxFsDigitalOutput(gpio, this, config);
         this.context.registry().add(digitalOutput);
         return digitalOutput;

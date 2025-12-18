@@ -61,21 +61,7 @@ public class ManualPlatformsTest {
         // Initialize Pi4J with AUTO-DETECT disabled
         // we don't want to load any detected Pi4J extension
         // libraries (Platforms and Providers) from the class path
-        pi4j = Pi4J.newContextBuilder()
-
-                        // add any platforms that we want to work with
-                        .add(new MockPlatform())
-
-                        // add any providers that we want to work with
-                        .add(MockAnalogInputProvider.newInstance(),
-                             MockAnalogOutputProvider.newInstance(),
-                             MockDigitalInputProvider.newInstance(),
-                             MockDigitalOutputProvider.newInstance(),
-                             MockPwmProvider.newInstance(),
-                             MockI2CProvider.newInstance(),
-                             MockSpiProvider.newInstance(),
-                             MockSerialProvider.newInstance())
-                        .build();
+        pi4j = Pi4J.newContextBuilder().autoDetectMockPlugins().autoDetectPlatforms().build();
     }
 
     @AfterAll

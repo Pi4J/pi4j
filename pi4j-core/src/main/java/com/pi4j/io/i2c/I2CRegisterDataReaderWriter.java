@@ -29,7 +29,7 @@ package com.pi4j.io.i2c;
  * I2C Register Data Writer Interface for Pi4J Data Communications
  *
  * @author Robert Savage
- *
+ * <p>
  * Based on previous contributions from:
  *        Daniel Sendula,
  *        <a href="http://raspelikan.blogspot.co.at">RasPelikan</a>

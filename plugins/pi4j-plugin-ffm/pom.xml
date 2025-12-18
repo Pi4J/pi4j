@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- MAVEN PARENT POM -->
+    <parent>
+        <groupId>com.pi4j</groupId>
+        <artifactId>pi4j-plugin</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+        <relativePath>../pi4j-plugin/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>pi4j-plugin-ffm</artifactId>
+    <name>Pi4J :: PLUGIN :: FFM API Providers</name>
+    <description>Pi4J Library Plugin for FFM API Providers</description>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <version>1.37</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.18.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-plugin-linuxfs</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-plugin-gpiod</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <!-- STANDARD BUILD INSTRUCTIONS -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.14.0</version>
+                    <configuration>
+                        <source>24</source>
+                        <target>24</target>
+                        <annotationProcessorPaths>
+                            <annotationProcessorPath>
+                                <groupId>org.openjdk.jmh</groupId>
+                                <artifactId>jmh-generator-annprocess</artifactId>
+                                <version>1.37</version>
+                            </annotationProcessorPath>
+                        </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <!-- DOWNLOAD RUNTIME DEPENDENCIES -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>
+                        -javaagent:${settings.localRepository}/org/mockito/mockito-core/5.18.0/mockito-core-5.18.0.jar
+                        -Xshare:off
+                        --enable-native-access=ALL-UNNAMED
+                    </argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeScope>runtime</includeScope>
+                            <excludeGroupIds>com.pi4j</excludeGroupIds>
+                            <outputDirectory>${project.build.directory}/dependencies</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- OPTIONALLY DEPLOY THE FINAL JAR TO THE RASPBERRY PI -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+
+                    <!-- copy the compiled JAR file to the Raspberry Pi platform platform -->
+                    <execution>
+                        <id>transfer-compiled-pi4j-jar</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+                                         classpathref="maven.plugin.classpath"/>
+                                <if>
+                                    <equals arg1="${pi4j.dev.transfer}" arg2="true"/>
+                                    <then>
+                                        <!-- ensure the target directory exists on the Raspberry Pi -->
+                                        <sshexec host="${pi4j.dev.host}" port="${pi4j.dev.port}"
+                                                 username="${pi4j.dev.user}"
+                                                 password="${pi4j.dev.password}" trust="true" failonerror="false"
+                                                 verbose="false" command="mkdir --parents ${pi4j.dev.directory}"/>
+
+                                        <!-- copy the JAR file(s) to the Raspberry Pi -->
+                                        <scp
+                                            todir="${pi4j.dev.user}:${pi4j.dev.password}@${pi4j.dev.host}:${pi4j.dev.directory}"
+                                            port="${pi4j.dev.port}" trust="true" verbose="false" failonerror="true">
+                                            <fileset dir="${project.build.directory}">
+                                                <include name="${project.build.finalName}.jar"/>
+                                            </fileset>
+                                            <fileset dir="${project.build.directory}/dependencies">
+                                                <include name="*.jar"/>
+                                            </fileset>
+                                        </scp>
+                                    </then>
+                                </if>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>pw.krejci</groupId>
+                <artifactId>jmh-maven-plugin</artifactId>
+                <version>0.2.2</version>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -1,22 +1,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.pi4j</groupId>
-	<artifactId>pi4j-parent</artifactId>
-    <version>2.5.0-SNAPSHOT</version>
-	<name>Pi4J :: Parent POM</name>
-	<description>Parent Maven POM for the Pi4J Project</description>
-	<url>https://v2.pi4j.com</url>
-	<inceptionYear>2012</inceptionYear>
-	<packaging>pom</packaging>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<!-- ORGANIZATION -->
-	<organization>
-		<name>Pi4J</name>
-		<url>https://v2.pi4j.com</url>
-	</organization>
+    <groupId>com.pi4j</groupId>
+    <artifactId>pi4j-parent</artifactId>
+    <version>4.0.0-SNAPSHOT</version>
+    <name>Pi4J :: Parent POM</name>
+    <description>Parent Maven POM for the Pi4J Project</description>
+    <url>https://pi4j.com</url>
+    <inceptionYear>2012</inceptionYear>
+    <packaging>pom</packaging>
 
-	<!-- LICENSE -->
+    <!-- ORGANIZATION -->
+    <organization>
+        <name>Pi4J</name>
+        <url>https://pi4j.com</url>
+    </organization>
+
+    <!-- LICENSE -->
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -26,25 +27,25 @@
         </license>
     </licenses>
 
-	<!-- DEVELOPERS/CONTRIBUTORS -->
-	<developers>
-		<developer>
-			<name>Robert Savage</name>
-			<email>robert@pi4j.com</email>
-			<url>http://robertsavage.me</url>
+    <!-- DEVELOPERS/CONTRIBUTORS -->
+    <developers>
+        <developer>
+            <name>Robert Savage</name>
+            <email>robert@pi4j.com</email>
+            <url>http://robertsavage.me</url>
             <organization>Savage Software</organization>
-			<organizationUrl>http://savagesoftware.com</organizationUrl>
+            <organizationUrl>http://savagesoftware.com</organizationUrl>
             <properties>
                 <blog>http://savagehomeautomation.com</blog>
                 <linikedin>https://www.linkedin.com/in/robert-savage</linikedin>
                 <twitter>https://twitter.com/savageautomate</twitter>
             </properties>
-			<roles>
-				<role>sponsor</role>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-		</developer>
+            <roles>
+                <role>sponsor</role>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+        </developer>
         <developer>
             <name>Daniel Sendula</name>
             <email>daniel@pi4j.com</email>
@@ -58,24 +59,26 @@
             <url>https://webtechie.be</url>
             <properties>
                 <blog>https://webtechie.be</blog>
-                <linikedin>https://www.linkedin.com/in/frankdelporte/</linikedin>
-                <twitter>https://twitter.com/FrankDelporte</twitter>
+                <linkedin>https://www.linkedin.com/in/frankdelporte/</linkedin>
+                <mastodon>https://foojay.social/@frankdelporte</mastodon>
+                <bluesky>https://bsky.app/profile/frankdelporte.be</bluesky>
             </properties>
             <roles>
                 <role>facilitator</role>
                 <role>developer</role>
             </roles>
+            <timezone>+1</timezone>
         </developer>
-		<developer>
-			<id>eitch</id>
-			<name>Robert von Burg</name>
-			<email>eitch@eitchnet.ch</email>
-			<url>http://strolch.li</url>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</developer>
+        <developer>
+            <id>eitch</id>
+            <name>Robert von Burg</name>
+            <email>eitch@eitchnet.ch</email>
+            <url>http://strolch.li</url>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
         <developer>
             <id>alex9849</id>
             <name>Alexander Liggesmeyer</name>
@@ -85,7 +88,15 @@
             </roles>
             <timezone>+1</timezone>
         </developer>
-	</developers>
+        <developer>
+            <id>taartspi</id>
+            <name>Tom Aarts</name>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
     <contributors>
         <contributor>
             <name>Marcus Hirt</name>
@@ -109,33 +120,33 @@
         </contributor>
     </contributors>
 
-	<!-- SOURCE CONTROL -->
-	<scm>
-		<developerConnection>scm:git:ssh://git@github.com/Pi4J/pi4j-v2.git</developerConnection>
-		<connection>scm:git:ssh://git@github.com/Pi4J/pi4j-v2.git</connection>
-		<url>https://github.com/Pi4J/pi4j-v2.git</url>
-	</scm>
+    <!-- SOURCE CONTROL -->
+    <scm>
+        <developerConnection>scm:git:ssh://git@github.com/Pi4J/pi4j.git</developerConnection>
+        <connection>scm:git:ssh://git@github.com/Pi4J/pi4j.git</connection>
+        <url>https://github.com/Pi4J/pi4j.git</url>
+    </scm>
 
-	<!-- ISSUE MANAGEMENT -->
-	<issueManagement>
-		<url>https://github.com/Pi4J/pi4j-v2/issues</url>
-		<system>github</system>
-	</issueManagement>
+    <!-- ISSUE MANAGEMENT -->
+    <issueManagement>
+        <url>https://github.com/Pi4J/pi4j/issues</url>
+        <system>github</system>
+    </issueManagement>
 
-	<!-- DISTRIBUTION REPOSITORIES -->
-	<distributionManagement>
-		<downloadUrl>https://v2.pi4j.com/download</downloadUrl>
-		<repository>
-			<id>sonatype-oss-staging</id>
-			<name>Sonatype Open Source Maven Repository</name>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-		</repository>
-		<snapshotRepository>
-			<id>sonatype-oss-snapshots</id>
-			<name>Sonatype Open Source Maven Snapshots Repository</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
+    <!-- DISTRIBUTION REPOSITORIES -->
+    <distributionManagement>
+        <downloadUrl>https://pi4j.com/download</downloadUrl>
+        <repository>
+            <id>sonatype-oss-staging</id>
+            <name>Sonatype Open Source Maven Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+        <snapshotRepository>
+            <id>sonatype-oss-snapshots</id>
+            <name>Sonatype Open Source Maven Snapshots Repository</name>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <!-- DEPENDENCY REPOSITORIES -->
     <repositories>
@@ -152,9 +163,9 @@
         </repository>
     </repositories>
 
-	<!-- PROJECT MODULES -->
-	<modules>
-        <!-- THE FOLLOWING MODULES ARE V2 -->
+    <!-- PROJECT MODULES -->
+    <modules>
+        <!-- THE FOLLOWING ARE THE Pi4J MODULES -->
         <module>libraries/pi4j-library</module>
         <module>pi4j-core</module>
         <module>plugins/pi4j-plugin</module>
@@ -162,8 +173,8 @@
         <module>pi4j-distribution</module>
     </modules>
 
-	<!-- BUILD PROPERTIES -->
-	<properties>
+    <!-- BUILD PROPERTIES -->
+    <properties>
         <!-- =================================================================== -->
         <!-- SELECT THE PROPER COMPILER OPTION FOR THE NATIVE LIBRARY BUILDS     -->
         <!-- The supported options are:                                          -->
@@ -249,47 +260,50 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- JAVA COMPILER VERSIONS -->
-        <java.version>11</java.version>
+        <java.version>24</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <!-- DEPENDENCY VERSIONS -->
-        <ant-jsch.version>1.10.8</ant-jsch.version>
-        <jsch.version>0.1.55</jsch.version>
+        <!--
+        It seems we are stuck at this version of ant-contrib. Bumping it leads to:
+        Error executing Ant tasks: 'org.apache.tools.ant.util.FileUtils
+        org.apache.tools.ant.util.FileUtils.getFileUtils()
+        -->
         <ant-contrib.version>20020829</ant-contrib.version>
-        <junit.jupiter.version>5.6.2</junit.jupiter.version>
-        <junit.platform.version>1.6.2</junit.platform.version>
-        <slf4j.version>1.7.32</slf4j.version>
-        <jSerialComm.version>2.6.2</jSerialComm.version>
-        <gson.version>2.8.6</gson.version>
-        <json.version>20200518</json.version>
+        <ant-jsch.version>1.10.15</ant-jsch.version>
+        <jna.version>5.16.0</jna.version>
+        <jsch.version>0.1.55</jsch.version>
+        <junit.jupiter.version>5.12.1</junit.jupiter.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <jserialcomm.version>2.11.0</jserialcomm.version>
+        <jna.version>5.15.0</jna.version>
 
         <!-- PLUGIN VERSIONS -->
-        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
-        <maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
-        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <maven-source-plugin.version>3.2.0</maven-source-plugin.version>
-        <maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
-        <maven-resource-plugin.version>3.2.0</maven-resource-plugin.version>
-        <maven-site-plugin.version>3.9.1</maven-site-plugin.version>
-        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
-        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
-        <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
-        <maven-scm-plugin.version>1.11.2</maven-scm-plugin.version>
-        <maven-bundle-plugin.version>5.1.2</maven-bundle-plugin.version>
-        <maven-antrun-plugin.version>3.0.0</maven-antrun-plugin.version>
-        <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
-        <native-maven-plugin.version>1.0-alpha-9</native-maven-plugin.version>
-        <maven-release-plugin.version>3.0.0-M4</maven-release-plugin.version>
-        <license-maven-plugin.version>2.0.0</license-maven-plugin.version>
-        <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
+        <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
+        <exec-maven-plugin.version>3.5.0</exec-maven-plugin.version>
         <jdeb.version>1.8</jdeb.version>
-        <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
-        <s3-upload-maven-plugin.version>1.5</s3-upload-maven-plugin.version>
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
+        <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
+        <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
+        <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+        <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
+        <maven-gpg-plugin.version>3.2.1</maven-gpg-plugin.version>
+        <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
+        <maven-javadoc-plugin.version>3.11.1</maven-javadoc-plugin.version>
+        <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
+        <maven-resource-plugin.version>3.3.1</maven-resource-plugin.version>
+        <maven-scm-plugin.version>2.1.0</maven-scm-plugin.version>
+        <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
+        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+        <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+        <native-maven-plugin.version>1.0-alpha-9</native-maven-plugin.version>
+        <central-publishing-maven-plugin.version>0.9.0</central-publishing-maven-plugin.version>
 
         <!-- REPORTS VERSIONS -->
-        <maven-project-info-reports-plugin.version>3.1.1</maven-project-info-reports-plugin.version>
+        <maven-project-info-reports-plugin.version>3.5.0</maven-project-info-reports-plugin.version>
 
         <!-- SPECIAL ACCESS PROPERTIES -->
         <!-- These are only used by project committer/publisher -->
@@ -313,8 +327,7 @@
         <raspberrypi.password>raspberry</raspberrypi.password>
         <raspberrypi.deploydirectory>/home/pi/deploy</raspberrypi.deploydirectory>
         <raspberrypi.jvmOptions/>
-
-	</properties>
+    </properties>
 
     <!-- PROJECT DEPENDENCIES -->
     <dependencyManagement>
@@ -383,7 +396,7 @@
         <dependency>
             <groupId>com.fazecast</groupId>
             <artifactId>jSerialComm</artifactId>
-            <version>2.5.1</version>
+            <version>${jserialcomm.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -399,21 +412,21 @@
 
     </dependencies>
 
-	<!-- BUILD INSTRUCTIONS -->
-	<build>
+    <!-- BUILD INSTRUCTIONS -->
+    <build>
 
         <!-- GLOBAL PROJECT RESOURCES -->
-		<resources>
-			<resource>
-				<directory>${basedir}</directory>
-				<filtering>false</filtering>
-				<includes>
-					<include>LICENSE.txt</include>
-					<include>NOTICE.txt</include>
-					<include>README.md</include>
-				</includes>
-			</resource>
-		</resources>
+        <resources>
+            <resource>
+                <directory>${basedir}</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>LICENSE.txt</include>
+                    <include>NOTICE.txt</include>
+                    <include>README.md</include>
+                </includes>
+            </resource>
+        </resources>
 
         <!-- PLUGIN MANAGEMENT -->
         <pluginManagement>
@@ -451,6 +464,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
+                        <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
                         <excludes>
                             <exclude>**/*UsingTestHarness.java</exclude>
                         </excludes>
@@ -502,6 +516,14 @@
                             </goals>
                         </execution>
                     </executions>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <detectJavaApiLink>false</detectJavaApiLink>
+                        <doclint>none</doclint>
+                        <!-- Optional: skip errors -->
+                        <failOnError>false</failOnError>
+                        <additionalOptions>-Xdoclint:none</additionalOptions>
+                    </configuration>
                 </plugin>
 
                 <!-- DOWNLOAD LICENSE, README & NOTICE ARTIFACTS -->
@@ -665,101 +687,34 @@
                     <version>${jdeb.version}</version>
                 </plugin>
 
-                <!-- AWS S3 UPLOAD PLUGIN -->
-                <plugin>
-                    <groupId>com.bazaarvoice.maven.plugins</groupId>
-                    <artifactId>s3-upload-maven-plugin</artifactId>
-                    <version>${s3-upload-maven-plugin.version}</version>
-                </plugin>
-
                 <!-- ENFORCER PLUGIN -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.0.0-M2</version>
-                </plugin>
-
-                <!-- Deploy to Maven plugin -->
-                <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>${nexus-staging-maven-plugin.version}</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <serverId>oss.sonatype.org</serverId>
-                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>deploy-to-sonatype</id>
-                            <phase>deploy</phase>
-                            <goals>
-                                <goal>deploy</goal>
-                                <goal>release</goal>
-                            </goals>
-                        </execution>
-                    </executions>
+                    <version>3.5.0</version>
                 </plugin>
 
             </plugins>
         </pluginManagement>
 
         <!-- GLOBAL BUILD PLUGINS (used when building all modules) -->
-		<plugins>
-			<!-- USE LATEST SCM PLUGIN TO SUPPORT GIT -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-scm-plugin</artifactId>
-				<configuration>
-					<goals>install</goals>
-				</configuration>
-			</plugin>
-
-			<!-- ATTACH LICENSE AS ARTIFACT -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-artifacts</id>
-						<phase>package</phase>
-						<goals>
-							<goal>attach-artifact</goal>
-						</goals>
-						<configuration>
-							<artifacts>
-								<artifact>
-									<file>${basedir}/LICENSE.txt</file>
-									<type>txt</type>
-									<classifier>license</classifier>
-								</artifact>
-								<artifact>
-									<file>${basedir}/NOTICE.txt</file>
-									<type>txt</type>
-									<classifier>notice</classifier>
-								</artifact>
-								<artifact>
-									<file>${basedir}/README.md</file>
-									<type>md</type>
-									<classifier>readme</classifier>
-								</artifact>
-							</artifacts>
-						</configuration>
-					</execution>
-				</executions>
-				<inherited>false</inherited>
-			</plugin>
+        <plugins>
+            <!-- SPECIFY MINIMAL MAVEN VERSION -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
-                        <id>enforce-java</id>
+                        <id>enforce-maven</id>
                         <goals>
                             <goal>enforce</goal>
                         </goals>
                         <configuration>
                             <rules>
+                                <requireMavenVersion>
+                                    <version>[3.9,)</version>
+                                </requireMavenVersion>
                                 <requireJavaVersion>
                                     <version>${java.version}</version>
                                 </requireJavaVersion>
@@ -768,9 +723,86 @@
                     </execution>
                 </executions>
             </plugin>
-		</plugins>
-	</build>
 
+            <!-- USE LATEST SCM PLUGIN TO SUPPORT GIT -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <configuration>
+                    <goals>install</goals>
+                </configuration>
+            </plugin>
+
+            <!-- ATTACH LICENSE AS ARTIFACT -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${basedir}/LICENSE.txt</file>
+                                    <type>txt</type>
+                                    <classifier>license</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>${basedir}/NOTICE.txt</file>
+                                    <type>txt</type>
+                                    <classifier>notice</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>${basedir}/README.md</file>
+                                    <type>md</type>
+                                    <classifier>readme</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+                <inherited>false</inherited>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven-checkstyle-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>checkstyle-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <failsOnError>true</failsOnError>
+                    <configLocation>config/checkstyle/checkstyle.xml</configLocation>
+                    <excludes>**/module-info.java</excludes>
+                    <outputFileFormat>plain</outputFileFormat>
+                    <consoleOutput>true</consoleOutput>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>${central-publishing-maven-plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
     <reporting>
         <plugins>
             <plugin>
@@ -981,7 +1013,7 @@
             </properties>
         </profile>
 
-        <!-- profile to deploy to sonatype nexus -->
+        <!-- profile to deploy to Maven Central -->
         <profile>
             <id>deploy</id>
             <build>
@@ -999,8 +1031,8 @@
                         <artifactId>maven-javadoc-plugin</artifactId>
                     </plugin>
                     <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>

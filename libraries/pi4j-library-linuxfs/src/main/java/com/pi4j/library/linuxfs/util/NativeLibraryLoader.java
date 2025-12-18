@@ -61,7 +61,7 @@ public class NativeLibraryLoader {
 
 		// first, make sure that this library has not already been previously loaded
 		if (loadedLibraries.contains(fileName)) {
-		    logger.warn("Library [" + fileName + "] has already been loaded; no need to load again.");
+            logger.warn("Library [{}] has already been loaded; no need to load again.", fileName);
 			return;
 		}
 
@@ -74,7 +74,7 @@ public class NativeLibraryLoader {
 
             // if the overriding library path is set to "system", then attempt to use the system resolved library paths
             if (libpath.equalsIgnoreCase("system")) {
-                logger.debug("Attempting to load library using {pi4j.library.path} system resolved library name: [" + libName + "]");
+                logger.debug("Attempting to load library using {pi4j.library.path} system resolved library name: [{}]", libName);
                 try {
                     // load library from JVM system library path; based on library name
                     System.loadLibrary(libName);
@@ -100,7 +100,7 @@ public class NativeLibraryLoader {
                 }
                 // build path based on lib directory and lib filename
                 String path = Paths.get(libpath, fileName).toString();
-                logger.debug("Attempting to load library using {pi4j.library.path} defined path: [" + path + "]");
+                logger.debug("Attempting to load library using {pi4j.library.path} defined path: [{}]", path);
                 try {
                     // load library from local path of this JAR file
                     System.load(path);
@@ -119,7 +119,7 @@ public class NativeLibraryLoader {
             else {
                 // build path based on lib directory and lib filename
                 String path = Paths.get(libpath, fileName).toString();
-                logger.debug("Attempting to load library using {pi4j.library.path} defined path: [" + path + "]");
+                logger.debug("Attempting to load library using {pi4j.library.path} defined path: [{}]", path);
                 try {
                     // load library from user defined absolute path provided via pi4j.library.path}
                     System.load(path);
@@ -174,12 +174,12 @@ public class NativeLibraryLoader {
 
             // include the CPU architecture in the embedded path
             String path = "/lib/" + osArch + "/" + libName + "/" + fileName;
-            logger.debug("Attempting to load library [" + fileName + "] using path: [" + path + "]");
+            logger.debug("Attempting to load library [{}] using path: [{}]", fileName, path);
             try {
                 loadLibraryFromClasspath(path);
-                logger.debug("Library [" + fileName + "] loaded successfully using embedded resource file: [" + path + "]");
+                logger.debug("Library [{}] loaded successfully using embedded resource file: [{}]", fileName, path);
             } catch (UnsatisfiedLinkError e) {
-                logger.error("Unable to load [" + fileName + "] using path: [" + path + "]", e);
+                logger.error("Unable to load [{}] using path: [{}]", fileName, path, e);
                 String exceptMessage;
                 // no guarantee the except pertains to ELF miss-match so check MSG content
                 if (e.getMessage().contains("wrong ELF class")) {
@@ -199,7 +199,7 @@ public class NativeLibraryLoader {
                 }
                 throw new UnsatisfiedLinkError(exceptMessage);
             } catch (Exception e) {
-                logger.error("Unable to load [" + fileName + "] using path: [" + path + "]", e);
+                logger.error("Unable to load [{}] using path: [{}]", fileName, path, e);
                 throw new UnsatisfiedLinkError("Pi4J was unable to extract and load the native library [" +
                     path + "] from the embedded resources inside this JAR [" +
                     NativeLibraryLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath() +
@@ -212,7 +212,7 @@ public class NativeLibraryLoader {
 
 	/**
 	 * Loads library from classpath
-     *
+     * <p>
 	 * The file from classpath is copied into system temporary directory and then loaded. The temporary file is
      * deleted after exiting. Method uses String as filename because the pathname is
 	 * "abstract", not system-dependent.

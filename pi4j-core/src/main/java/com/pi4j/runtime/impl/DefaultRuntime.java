@@ -110,15 +110,17 @@ public class DefaultRuntime implements Runtime {
 
         // listen for shutdown to properly clean up
         // TODO :: ADD PI4J INTERNAL SHUTDOWN CALLBACKS/EVENTS
-        java.lang.Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                // shutdown Pi4J
-                if (!isShutdown)
-                    shutdown();
-            } catch (Exception e) {
-                logger.error("Failed to shutdown Pi4J runtime", e);
-            }
-        }, "pi4j-shutdown"));
+        if (this.context.config().enableShutdownHook()) {
+            java.lang.Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    // shutdown Pi4J
+                    if (!isShutdown)
+                        shutdown();
+                } catch (Exception e) {
+                    logger.error("Failed to shutdown Pi4J runtime", e);
+                }
+            }, "pi4j-shutdown"));
+        }
     }
 
     /**
@@ -280,11 +282,14 @@ public class DefaultRuntime implements Runtime {
                         plugin.initialize(DefaultPluginService.newInstance(this.context(), store));
 
                         // if auto-detect providers is enabled,
+                        //    OR
+                        // Detecting Mocks is enabled and this is a mock plugin
                         // then add any detected providers to the collection to load
-                        if (config.autoDetectProviders()) {
+                        if (config.autoDetectProviders() ||  (config.autoDetectMockPlugins() && plugin.isMock())) {
                             store.providers.forEach(provider -> addProvider(provider, providers));
                         }
 
+                   
                         // if auto-detect platforms is enabled,
                         // then add any detected platforms to the collection to load
                         if (config.autoDetectPlatforms()) {
@@ -304,7 +309,7 @@ public class DefaultRuntime implements Runtime {
             context().config().getProviders().forEach(provider -> {
                 Provider replaced = providers.put(provider.getType(), provider);
                 if (replaced != null) {
-                    logger.warn("Replacing auto detected provider {} {} with provider {} from context config",
+                    logger.info("Replacing auto detected provider {} {} with provider {} from context config",
                         replaced.getType(), replaced.getName(), provider.getName());
                 }
             });
@@ -374,14 +379,14 @@ public class DefaultRuntime implements Runtime {
             if (provider.getPriority() <= existingProvider.getPriority()) {
                 if (existingProvider.getName().equals(provider.getName()))
                     throw new InitializeException(
-                        provider.getType() + " with name " + provider.getName() + " is already registered.");
-                logger.warn("Ignoring provider {} {} with priority {} as lower priority than {} which has priority {}",
-                    provider.getType(), provider.getName(), provider.getPriority(), existingProvider.getName(),
-                    existingProvider.getPriority());
+                        provider.getType() + " with name " + provider.getName() + " (" + provider.getId() + ") is already registered.");
+                logger.info("Ignoring provider {} {} ({}) with priority {} as lower priority than {} which has priority {}",
+                    provider.getType(), provider.getName(), provider.getId(), provider.getPriority(),
+                    existingProvider.getName(), existingProvider.getPriority());
             } else {
-                logger.warn("Replacing provider {} {} with priority {} with provider {} with higher priority {}",
-                    existingProvider.getType(), existingProvider.getName(), existingProvider.getPriority(),
-                    provider.getName(), provider.getPriority());
+                logger.info("Replacing provider {} {} ({}) with priority {} with provider {} ({}) with higher priority {}",
+                    existingProvider.getType(), existingProvider.getName(), existingProvider.getId(), existingProvider.getPriority(),
+                    provider.getName(), provider.getId(), provider.getPriority());
                 providers.put(provider.getType(), provider);
             }
         }

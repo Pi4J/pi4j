@@ -27,7 +27,8 @@ package com.pi4j.plugin.pigpio.provider.gpio.digital;
  * #L%
  */
 
-import com.pi4j.io.exception.IOAlreadyExistsException;
+
+import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalInputProviderBase;
@@ -56,8 +57,8 @@ public class PiGpioDigitalInputProviderImpl extends DigitalInputProviderBase imp
 
     @Override
     public int getPriority() {
-        // the pigpio DI driver should be used over the default
-        return 100;
+        // the Pigpio driver should be higher priority when NOT on RP1 chip
+        return BoardInfoHelper.usesRP1() ? 50 : 100;
     }
 
     /**

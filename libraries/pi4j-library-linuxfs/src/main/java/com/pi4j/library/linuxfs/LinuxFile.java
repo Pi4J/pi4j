@@ -82,7 +82,7 @@ public class LinuxFile extends RandomAccessFile {
      * Runs an ioctl on a file descriptor. Uses special offset buffer to produce real C-like structures with pointers.
      * Advanced use only! Must be able to produce byte-perfect data structures just as gcc would on this system,
      * including struct padding and pointer size.
-     *
+     * <p>
      * The data ByteBuffer uses the current position to determine the head point of data passed to the ioctl. This is
      * useful for appending entry-point data structures at the end of the buffer, while referring to other
      * structures/data that come before them in the buffer.
@@ -93,7 +93,7 @@ public class LinuxFile extends RandomAccessFile {
      * pointer. Also be sure to consider GCC padding and structure alignment. GCC will try a field to its word size (32b
      * ints align at 4-byte, etc), and will align the structure size with the native word size (4-byte for 32b, 8-byte
      * for 64b).
-     *
+     * <p>
      * Provided IntBuffer offsets must use native byte order (endianness).
      *
      * <pre>

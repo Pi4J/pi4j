@@ -22,18 +22,17 @@ package com.pi4j.plugin.linuxfs.provider.i2c;
  * #L%
  */
 
+import com.pi4j.io.i2c.I2C;
+import com.pi4j.io.i2c.I2CBase;
+import com.pi4j.io.i2c.I2CConfig;
+import com.pi4j.io.i2c.I2CProvider;
+import com.pi4j.plugin.linuxfs.util.SystemUtil;
+
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.Objects;
-
-import com.pi4j.io.i2c.I2C;
-import com.pi4j.io.i2c.I2CBase;
-import com.pi4j.io.i2c.I2CConfig;
-import com.pi4j.io.i2c.I2CProvider;
-
-import  com.pi4j.plugin.linuxfs.util.SystemUtil;
 
 /**
  * <p>PiGpioI2C class.</p>
@@ -41,20 +40,21 @@ import  com.pi4j.plugin.linuxfs.util.SystemUtil;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public class LinuxFsI2C extends I2CBase implements I2C {
+public class LinuxFsI2C extends I2CBase<LinuxFsI2CBus> implements I2C {
 
     private final LinuxFsI2CBus i2CBus;
 
     /**
      * <p>Constructor for PiGpioI2C.</p>
      *
+     * @param i2CBus
      * @param provider
      *     a {@link I2CProvider} object.
      * @param config
      *     a {@link I2CConfig} object.
      */
     public LinuxFsI2C(LinuxFsI2CBus i2CBus, I2CProvider provider, I2CConfig config) {
-        super(provider, config);
+        super(provider, config, i2CBus);
         this.i2CBus = i2CBus;
     }
 
@@ -311,14 +311,13 @@ public class LinuxFsI2C extends I2CBase implements I2C {
 
        this.i2CBus.executeIOCTL(this, command, ioctlData, offsets);
 
-        // move results back into user buffer
-        for(int i = 0; i <length; i++){   // can I assume length is safe and the readBuff data is not shorter ??   I think yes
-            buffer[i] = ioctlData.get(readBuffPosition +i );
-;        }
+        // move results back into user buffer. Location determined by user supplied offset
+        for (int i = 0; i < length; i++) {
+            buffer[i + offset] = ioctlData.get(readBuffPosition + i);
+        }
 
-        return (readLength);
+        return readLength;
     }
-
 
     /**
      * {@inheritDoc}
@@ -333,12 +332,5 @@ public class LinuxFsI2C extends I2CBase implements I2C {
         word = (buff[1] << 8)  | buff[0];
         return word;
 
-    }
-
-    @Override
-    public void close() {
-        if (this.i2CBus != null)
-            this.i2CBus.close();
-        super.close();
     }
 }

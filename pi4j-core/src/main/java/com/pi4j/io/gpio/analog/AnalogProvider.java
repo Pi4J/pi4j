@@ -32,6 +32,9 @@ import com.pi4j.io.gpio.GpioProvider;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <ANALOG_TYPE>
+ * @param <CONFIG_TYPE>
+ * @param <PROVIDER_TYPE>
  */
 public interface AnalogProvider<PROVIDER_TYPE extends AnalogProvider, ANALOG_TYPE extends Analog, CONFIG_TYPE
         extends AnalogConfig> extends GpioProvider<PROVIDER_TYPE, ANALOG_TYPE, CONFIG_TYPE> {

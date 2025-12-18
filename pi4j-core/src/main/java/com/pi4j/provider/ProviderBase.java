@@ -42,6 +42,9 @@ import java.util.Map;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <CONFIG_TYPE>
+ * @param <IO_TYPE>
+ * @param <PROVIDER_TYPE>
  */
 public abstract class ProviderBase<PROVIDER_TYPE extends Provider, IO_TYPE extends IO, CONFIG_TYPE extends Config>
         extends ExtensionBase<PROVIDER_TYPE>
@@ -85,7 +88,7 @@ public abstract class ProviderBase<PROVIDER_TYPE extends Provider, IO_TYPE exten
 
     /** {@inheritDoc} */
     @Override
-    public PROVIDER_TYPE shutdown(Context context) throws ShutdownException {
+    public PROVIDER_TYPE shutdownInternal(Context context) throws ShutdownException {
 
         // TODO :: ABSTRACT PROVIDER IO INSTANCE SHUTDOWN VIA PROXY IMPL
 
@@ -93,7 +96,7 @@ public abstract class ProviderBase<PROVIDER_TYPE extends Provider, IO_TYPE exten
         Map<String, IO> instances = context.registry().allByProvider(this.id(), IO.class);
         instances.forEach((address, instance)->{
             try {
-                instance.shutdown(context);
+                instance.shutdownInternal(context);
             } catch (LifecycleException e) {
                 logger.error(e.getMessage(), e);
             }

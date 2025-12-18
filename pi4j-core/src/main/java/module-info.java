@@ -24,12 +24,19 @@
  */
 module com.pi4j {
 
+    // for tests
+    opens com.pi4j.boardinfo.definition;
+    opens com.pi4j.boardinfo.model;
+    opens com.pi4j.boardinfo.util;
+
     // depends on SLF4J
     requires org.slf4j;
 
-
     // exposed interfaces/classes
     exports com.pi4j;
+    exports com.pi4j.boardinfo.definition;
+    exports com.pi4j.boardinfo.model;
+    exports com.pi4j.boardinfo.util;
     exports com.pi4j.common;
     exports com.pi4j.config;
     exports com.pi4j.config.exception;
@@ -40,6 +47,7 @@ module com.pi4j {
     exports com.pi4j.event;
     exports com.pi4j.io;
     exports com.pi4j.io.binding;
+    exports com.pi4j.io.gpio;
     exports com.pi4j.io.gpio.analog;
     exports com.pi4j.io.gpio.digital;
     exports com.pi4j.io.exception;
@@ -54,6 +62,10 @@ module com.pi4j {
     exports com.pi4j.provider.exception;
     exports com.pi4j.registry;
     exports com.pi4j.util;
+    exports com.pi4j.boardinfo.datareader;
+    opens com.pi4j.boardinfo.datareader;
+    exports com.pi4j.boardinfo.util.command;
+    opens com.pi4j.boardinfo.util.command;
 
     // extensibility service interfaces
     uses com.pi4j.extension.Plugin;

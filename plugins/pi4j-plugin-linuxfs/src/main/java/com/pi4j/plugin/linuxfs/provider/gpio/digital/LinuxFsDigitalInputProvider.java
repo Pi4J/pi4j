@@ -45,6 +45,7 @@ public interface LinuxFsDigitalInputProvider extends DigitalInputProvider {
     /**
      * <p>newInstance.</p>
      *
+     * @param gpioFileSystemPath
      * @return a {@link com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalInputProvider} object.
      */
     static LinuxFsDigitalInputProvider newInstance(String gpioFileSystemPath) {

@@ -27,7 +27,6 @@ package com.pi4j.plugin.pigpio.provider.i2c;
  * #L%
  */
 
-
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.io.i2c.I2C;
@@ -45,7 +44,7 @@ import java.util.Objects;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public class PiGpioI2C extends I2CBase implements I2C {
+public class PiGpioI2C extends I2CBase<PiGpioI2CBus> implements I2C {
 
     protected final PiGpio piGpio;
     protected final int handle;
@@ -53,18 +52,19 @@ public class PiGpioI2C extends I2CBase implements I2C {
     /**
      * <p>Constructor for PiGpioI2C.</p>
      *
-     * @param piGpio a {@link com.pi4j.library.pigpio.PiGpio} object.
-     * @param provider a {@link com.pi4j.io.i2c.I2CProvider} object.
-     * @param config a {@link com.pi4j.io.i2c.I2CConfig} object.
+     * @param piGpio   a {@link PiGpio} object.
+     * @param i2CBus   a {@link PiGpioI2CBus} object.
+     * @param provider a {@link I2CProvider} object.
+     * @param config   a {@link I2CConfig} object.
      */
-    public PiGpioI2C(PiGpio piGpio, I2CProvider provider, I2CConfig config) {
-        super(provider, config);
+    public PiGpioI2C(PiGpio piGpio, PiGpioI2CBus i2CBus, I2CProvider provider, I2CConfig config) {
+        super(provider, config, i2CBus);
 
         // set local reference instance
         this.piGpio = piGpio;
 
         // set pin ALT0 modes for I2C BUS<1> or BUS<2> usage on RPI3B
-        switch(config.bus()) {
+        switch (config.bus()) {
             case 0: {
                 piGpio.gpioSetMode(0, PiGpioMode.ALT0);
                 piGpio.gpioSetMode(1, PiGpioMode.ALT0);
@@ -83,14 +83,18 @@ public class PiGpioI2C extends I2CBase implements I2C {
         this.isOpen = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public I2C initialize(Context context) throws InitializeException {
         super.initialize(context);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() {
         piGpio.i2cClose(this.handle);
@@ -101,13 +105,17 @@ public class PiGpioI2C extends I2CBase implements I2C {
     // RAW DEVICE WRITE FUNCTIONS
     // -------------------------------------------------------------------
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int write(byte b) {
         return piGpio.i2cWriteByte(this.handle, b);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int write(byte[] data, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, data.length);
@@ -119,13 +127,17 @@ public class PiGpioI2C extends I2CBase implements I2C {
     // RAW DEVICE READ FUNCTIONS
     // -------------------------------------------------------------------
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read() {
         return piGpio.i2cReadByte(this.handle);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read(byte[] buffer, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, buffer.length);
@@ -136,13 +148,17 @@ public class PiGpioI2C extends I2CBase implements I2C {
     // DEVICE REGISTER WRITE FUNCTIONS
     // -------------------------------------------------------------------
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int writeRegister(int register, byte b) {
         return piGpio.i2cWriteByteData(this.handle, register, b);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int writeRegister(int register, byte[] data, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, data.length);
@@ -150,13 +166,13 @@ public class PiGpioI2C extends I2CBase implements I2C {
         return length;
     }
 
-    @Override
     /**
      * {@inheritDoc}
      * <p> Note: Function not supported with PIGPIO provider.
      * This method 'is' supported in the LinuxFS provider
      * </p>
      */
+    @Override
     public int writeRegister(byte[] register, byte[] data, int offset, int length) {
         throw new IllegalStateException("Not supported, please use LinuxFS plugin");
     }
@@ -165,31 +181,37 @@ public class PiGpioI2C extends I2CBase implements I2C {
     // DEVICE REGISTER READ FUNCTIONS
     // -------------------------------------------------------------------
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int readRegister(int register) {
         return piGpio.i2cReadByteData(this.handle, register);
     }
 
-    @Override
     /**
      * {@inheritDoc}
      * <p> Note: Function not supported with PIGPIO provider.
      * This method 'is' supported in the LinuxFS provider
      * </p>
      */
+    @Override
     public int readRegister(byte[] register, byte[] buffer, int offset, int length) {
         throw new IllegalStateException("Not supported, please use LinuxFS plugin");
-     }
+    }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int readRegister(int register, byte[] buffer, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, buffer.length);
         return piGpio.i2cReadI2CBlockData(this.handle, register, buffer, offset, length);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int writeReadRegisterWord(int register, int word) {
         return piGpio.i2cProcessCall(this.handle, register, word);

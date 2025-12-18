@@ -59,7 +59,7 @@ public class GpioDDigitalOutputProviderImpl extends DigitalOutputProviderBase im
     @Override
     public DigitalOutput create(DigitalOutputConfig config) {
         // create new I/O instance based on I/O config
-        GpioLine line = GpioDContext.getInstance().getOrOpenLine(config.address());
+        GpioLine line = GpioDContext.getInstance().getOrOpenLine(config.bcm());
         GpioDDigitalOutput digitalOutput = new GpioDDigitalOutput(line, this, config);
         this.context.registry().add(digitalOutput);
         return digitalOutput;
@@ -67,20 +67,20 @@ public class GpioDDigitalOutputProviderImpl extends DigitalOutputProviderBase im
 
     @Override
     public int getPriority() {
-        // GpioD should be used if available
+        // the gpioD driver should be higher priority always
         return 150;
     }
 
     @Override
     public DigitalOutputProvider initialize(Context context) throws InitializeException {
         DigitalOutputProvider provider = super.initialize(context);
-        GpioDContext.getInstance().initialize();
+        GpioDContext.getInstance().initialize(context.properties());
         return provider;
     }
 
     @Override
-    public DigitalOutputProvider shutdown(Context context) throws ShutdownException {
+    public DigitalOutputProvider shutdownInternal(Context context) throws ShutdownException {
         GpioDContext.getInstance().close();
-        return super.shutdown(context);
+        return super.shutdownInternal(context);
     }
 }

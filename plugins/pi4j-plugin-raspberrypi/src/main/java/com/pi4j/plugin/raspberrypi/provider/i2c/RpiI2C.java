@@ -39,7 +39,7 @@ import com.pi4j.io.i2c.I2CProvider;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public class RpiI2C extends I2CBase implements I2C {
+public class RpiI2C extends I2CBase<RpiI2CBus> implements I2C {
 
     /**
      * <p>Constructor for RpiI2C.</p>
@@ -48,7 +48,7 @@ public class RpiI2C extends I2CBase implements I2C {
      * @param config a {@link com.pi4j.io.i2c.I2CConfig} object.
      */
     public RpiI2C(I2CProvider provider, I2CConfig config){
-        super(provider, config);
+        super(provider, config, new RpiI2CBus(config));
     }
 
     /** {@inheritDoc} */

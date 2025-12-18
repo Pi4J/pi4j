@@ -26,6 +26,7 @@ package com.pi4j.io.gpio.analog.impl;
  */
 
 import com.pi4j.context.Context;
+import com.pi4j.io.gpio.GpioConfig;
 import com.pi4j.io.gpio.analog.AnalogInputConfig;
 import com.pi4j.io.gpio.analog.AnalogInputConfigBuilder;
 
@@ -36,26 +37,50 @@ import com.pi4j.io.gpio.analog.AnalogInputConfigBuilder;
  * @version $Id: $Id
  */
 public class DefaultAnalogInputConfigBuilder
-        extends AnalogConfigBuilderBase<AnalogInputConfigBuilder, AnalogInputConfig>
-        implements AnalogInputConfigBuilder {
+    extends AnalogConfigBuilderBase<AnalogInputConfigBuilder, AnalogInputConfig>
+    implements AnalogInputConfigBuilder {
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    private DefaultAnalogInputConfigBuilder(Context context){
+    private DefaultAnalogInputConfigBuilder(Context context) {
         super(context);
     }
 
     /**
      * <p>newInstance.</p>
      *
+     * @param context
      * @return a {@link com.pi4j.io.gpio.analog.AnalogInputConfigBuilder} object.
      */
     public static AnalogInputConfigBuilder newInstance(Context context) {
         return new DefaultAnalogInputConfigBuilder(context);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @deprecated use {@link #bus(int)} instead.
+     * <p>
+     * {@inheritDoc}
+     */
+    @Override
+    @Deprecated(forRemoval = true)
+    public AnalogInputConfigBuilder address(Integer address) {
+        this.properties.put(GpioConfig.ADDRESS_KEY, String.valueOf(address));
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DefaultAnalogInputConfigBuilder bus(int bus) {
+        this.properties.put(GpioConfig.BUS_KEY, String.valueOf(bus));
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AnalogInputConfig build() {
         AnalogInputConfig config = new DefaultAnalogInputConfig(getResolvedProperties());

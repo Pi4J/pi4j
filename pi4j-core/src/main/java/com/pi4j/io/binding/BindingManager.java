@@ -71,4 +71,8 @@ public class BindingManager<SOURCE_TYPE, BINDING_TYPE extends Binding, EVENT_TYP
         bindings.removeAll(List.of(binding));
         return this.source;
     }
+
+    public boolean hasBindings() {
+        return !bindings.isEmpty();
+    }
 }

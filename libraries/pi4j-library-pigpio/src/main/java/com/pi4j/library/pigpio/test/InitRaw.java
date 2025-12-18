@@ -61,11 +61,11 @@ public class InitRaw {
         logger.info("Pi4J Library :: PIGPIO JNI (Raw) Wrapper Library");
         logger.info("-----------------------------------------------------");
         logger.info("-----------------------------------------------------");
-        logger.info("PIGPIO VERSION   : " + PIGPIO.gpioVersion());
-        logger.info("PIGPIO HARDWARE  : " + Integer.toHexString(PIGPIO.gpioHardwareRevision()));
+        logger.info("PIGPIO VERSION   : {}", PIGPIO.gpioVersion());
+        logger.info("PIGPIO HARDWARE  : {}", Integer.toHexString(PIGPIO.gpioHardwareRevision()));
         int init = PIGPIO.gpioInitialise();
         if(init < 0){
-            logger.error("ERROR; PIGPIO INIT FAILED; ERROR CODE: " + init);
+            logger.error("ERROR; PIGPIO INIT FAILED; ERROR CODE: {}", init);
         } else {
             logger.info("PIGPIO INITIALIZED SUCCESSFULLY");
             PIGPIO.gpioTerminate();

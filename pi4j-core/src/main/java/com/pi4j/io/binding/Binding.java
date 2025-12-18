@@ -32,6 +32,8 @@ import java.util.Collection;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <BINDING_TYPE>
+ * @param <MEMBER_TYPE>
  */
 public interface Binding<BINDING_TYPE extends Binding, MEMBER_TYPE> {
     BINDING_TYPE add(MEMBER_TYPE... member);

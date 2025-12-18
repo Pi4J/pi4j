@@ -1,4 +1,6 @@
-package com.pi4j.test;/*-
+package com.pi4j.test;
+
+/*-
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
@@ -66,7 +68,7 @@ public class About {
         logger.info(title);
         logger.info("=====================================================");
         for (Provider provider : context.providers().all().values()) {
-            logger.info("  " + provider.name() + " [" + provider.id() + "]; " + provider.type());
+            logger.info("  {} [{}]; {}", provider.name(), provider.id(), provider.type());
         }
     }
 
@@ -78,10 +80,10 @@ public class About {
      */
     public void enumerateProviders(Context context, IOType ioType) {
         logger.info("=====================================================");
-        logger.info(ioType + " PROVIDERS");
+        logger.info("{} PROVIDERS", ioType);
         logger.info("=====================================================");
         for(var provider : context.providers().all(ioType).values()){
-            logger.info("  " + provider.name() + " [" + provider.id() + "]; " + provider.type());
+            logger.info("  {} [{}]; {}", provider.name(), provider.id(), provider.type());
         }
     }
 
@@ -95,7 +97,7 @@ public class About {
         logger.info("PLATFORMS");
         logger.info("=====================================================");
         for (Platform platform : context.platforms().all().values()) {
-            logger.info("  " + platform.name() + " [" + platform.id() + "]; " + platform.getDescription());
+            logger.info("  {} [{}]; {}", platform.name(), platform.id(), platform.getDescription());
         }
     }
 
@@ -105,12 +107,16 @@ public class About {
      * @param context a {@link com.pi4j.context.Context} object.
      * @throws Pi4JException if any.
      */
-    public void describeDeafultPlatform(Context context) throws Pi4JException {
+    public void describeDefaultPlatform(Context context) throws Pi4JException {
         logger.info("=====================================================");
         logger.info("DEFAULT (RUNTIME) PLATFORM ");
         logger.info("=====================================================");
-        logger.info("  " + context.platform().name() + " [" + context.platform().id() + "]");
-        context.platform().describe().print(System.out);
+        if (context.platform() == null) {
+            logger.warn("  NOT DEFINED");
+        } else {
+            logger.info("  {}} [{}}]", context.platform().name(), context.platform().id());
+            context.platform().describe().print(System.out);
+        }
     }
 
 //    public void enumeratePlatformProviders() throws Pi4JException {

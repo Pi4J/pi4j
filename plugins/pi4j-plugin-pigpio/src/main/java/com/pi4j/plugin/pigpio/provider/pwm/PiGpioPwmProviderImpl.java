@@ -27,7 +27,8 @@ package com.pi4j.plugin.pigpio.provider.pwm;
  * #L%
  */
 
-import com.pi4j.io.exception.IOAlreadyExistsException;
+
+import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.pwm.PwmProviderBase;
@@ -57,8 +58,8 @@ public class PiGpioPwmProviderImpl extends PwmProviderBase implements PiGpioPwmP
 
     @Override
     public int getPriority() {
-        // the pigpio PWM driver should be used over the default
-        return 100;
+        // the Pigpio driver should be higher priority when NOT on RP1 chip.
+        return BoardInfoHelper.usesRP1() ? 50 : 100;
     }
 
     /**
@@ -68,8 +69,19 @@ public class PiGpioPwmProviderImpl extends PwmProviderBase implements PiGpioPwmP
     public Pwm create(PwmConfig config) {
         synchronized (this.piGpio) {
             // initialize the PIGPIO library
-            if (!piGpio.isInitialized())
+            if (!piGpio.isInitialized()) {
                 piGpio.initialize();
+            }
+
+            // validate the config
+            if (config.bcm() == null) {
+                throw new IllegalArgumentException("PWM bcm number is needed for both hardware and software PWM with the PiGpio I/O provider.");
+            }
+
+            // Warn for unneeded config
+            if (config.pwmType() == PwmType.HARDWARE && (config.chip() != null || config.channel() != null)) {
+                logger.warn("You specified a chip and/or channel value for the PWM, but this is not needed for PiGpio PWM. Please specify bcm instead.");
+            }
 
             // create new I/O instance based on I/O config
             Pwm pwm;

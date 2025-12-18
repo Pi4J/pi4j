@@ -51,20 +51,20 @@ public class TestSpiRaw {
      * @param args an array of {@link String} objects.
      */
     public static void main(String[] args) {
-        logger.info("PIGPIO VERSION   : " + PIGPIO.gpioVersion());
-        logger.info("PIGPIO HARDWARE  : " + PIGPIO.gpioHardwareRevision());
+        logger.info("PIGPIO VERSION   : {}", PIGPIO.gpioVersion());
+        logger.info("PIGPIO HARDWARE  : {}", PIGPIO.gpioHardwareRevision());
 
         int init = PIGPIO.gpioInitialise();
-        logger.info("PIGPIO INITIALIZE: " + init);
+        logger.info("PIGPIO INITIALIZE: {}", init);
         if(init < 0){
-            logger.error("ERROR; PIGPIO INIT FAILED; ERROR CODE: " + init);
+            logger.error("ERROR; PIGPIO INIT FAILED; ERROR CODE: {}", init);
             System.exit(init);
         }
 
         int handle = PIGPIO.spiOpen(0, 50000, 0);
-        logger.info("PIGPIO SPI OPEN  : " + handle);
+        logger.info("PIGPIO SPI OPEN  : {}", handle);
         if(handle < 0) {
-            logger.error("ERROR; SPI OPEN FAILED: ERROR CODE: " + handle);
+            logger.error("ERROR; SPI OPEN FAILED: ERROR CODE: {}", handle);
             System.exit(handle);
         }
 
@@ -73,10 +73,10 @@ public class TestSpiRaw {
         for(int b = 0; b < 256; b++) {
             logger.info("[W/R BYTE]");
             // WRITE :: SINGLE RAW BYTE
-            logger.info(" (WRITE) 0x" + Integer.toHexString(b));
+            logger.info(" (WRITE) 0x{}", Integer.toHexString(b));
             int result = PIGPIO.spiWrite(handle, new byte[]{ (byte)b }, 1);
             if(result < 0) {
-                logger.error("\nERROR; SPI WRITE FAILED: ERROR CODE: " + result);
+                logger.error("\nERROR; SPI WRITE FAILED: ERROR CODE: {}", result);
                 System.exit(result);
             }
 
@@ -84,17 +84,17 @@ public class TestSpiRaw {
             byte rx[] = new byte[1];
 
             result = PIGPIO.spiRead(handle, rx, 1);
-            logger.info(" (READ) 0x" + StringUtil.toHexString(rx));
+            logger.info(" (READ) 0x{}", StringUtil.toHexString(rx));
             logger.info("");
             if(result < 0) {
-                logger.error("\nERROR; SPI READ FAILED: ERROR CODE: " + result);
+                logger.error("\nERROR; SPI READ FAILED: ERROR CODE: {}", result);
                 System.exit(result);
             }
 
             int expected = b;
             int received = Byte.toUnsignedInt(rx[0]);
             if(received != expected) {
-                logger.error("\nERROR; SPI READ FAILED: BYTE MISMATCH: expected=" + expected + "; received=" + received);
+                logger.error("\nERROR; SPI READ FAILED: BYTE MISMATCH: expected={}; received={}", expected, received);
                 System.exit(0);
             }
         }
@@ -104,19 +104,19 @@ public class TestSpiRaw {
             // WRITE :: SINGLE RAW BYTE
             byte tx[] = new byte[] {(byte)(b)};
             byte rx[] = new byte[] {0};
-            logger.info(" (WRITE) 0x" + StringUtil.toHexString(tx));
+            logger.info(" (WRITE) 0x{}", StringUtil.toHexString(tx));
             int result = PIGPIO.spiXfer(handle, tx, rx, 1);
-            logger.info(" (READ) 0x" + StringUtil.toHexString(rx));
+            logger.info(" (READ) 0x{}", StringUtil.toHexString(rx));
             logger.info("");
             if(result < 0) {
-                logger.error("\nERROR; SPI XFER FAILED: ERROR CODE: " + result);
+                logger.error("\nERROR; SPI XFER FAILED: ERROR CODE: {}", result);
                 System.exit(result);
             }
             if(b>0) { // ignore first read
                 int expected = b-1;
                 int received = Byte.toUnsignedInt(rx[0]);
                 if (received != expected) {
-                    logger.error("\nERROR; SPI XFER FAILED: BYTE MISMATCH: expected=" + expected + "; received=" + received);
+                    logger.error("\nERROR; SPI XFER FAILED: BYTE MISMATCH: expected={}; received={}", expected, received);
                     System.exit(0);
                 }
             }
@@ -133,10 +133,10 @@ public class TestSpiRaw {
             r.nextBytes(writeBuffer);
 
             // WRITE :: MULTI-BYTE
-            logger.info(" (WRITE) 0x" + StringUtil.toHexString(writeBuffer));
+            logger.info(" (WRITE) 0x{}", StringUtil.toHexString(writeBuffer));
             int result = PIGPIO.spiWrite(handle, writeBuffer, len);
             if(result < 0) {
-                logger.error("\nERROR; SPI WRITE FAILED: ERROR CODE: " + result);
+                logger.error("\nERROR; SPI WRITE FAILED: ERROR CODE: {}", result);
                 System.exit(result);
             }
 
@@ -147,16 +147,16 @@ public class TestSpiRaw {
             // READ :: MULTI-BYTE
             byte[] readBuffer = new byte[len];
             result = PIGPIO.spiRead(handle, readBuffer, len);
-            logger.info(" (READ) 0x" + StringUtil.toHexString(readBuffer));
+            logger.info(" (READ) 0x{}", StringUtil.toHexString(readBuffer));
             logger.info("");
             if(result < 0) {
-                logger.error("\nERROR; SPI READ FAILED: ERROR CODE: " + result);
+                logger.error("\nERROR; SPI READ FAILED: ERROR CODE: {}", result);
                 System.exit(result);
             }
 
             // validate read length
             if(result != len) {
-                logger.error("\nERROR; SPI READ FAILED: LENGTH MISMATCH: " + result);
+                logger.error("\nERROR; SPI READ FAILED: LENGTH MISMATCH: {}", result);
                 System.exit(result);
             }
 
@@ -169,9 +169,8 @@ public class TestSpiRaw {
             expectBuffer.put(Arrays.copyOfRange(writeBuffer, 0, writeBuffer.length-1));
 
             if(expectBuffer.get(0) != readBuffer[0]) {
-                logger.error("\nERROR; SPI READ FAILED: BYTE MISMATCH: expected=" +
-                        StringUtil.toHexString(expectBuffer) + "; received=" +
-                        StringUtil.toHexString(readBuffer));
+                logger.error("\nERROR; SPI READ FAILED: BYTE MISMATCH: expected={}; received={}",
+                             StringUtil.toHexString(expectBuffer), StringUtil.toHexString(readBuffer));
                 System.exit(0);
             }
         }

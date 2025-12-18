@@ -27,15 +27,13 @@ package com.pi4j.plugin.linuxfs.provider.pwm;
  * #L%
  */
 
-import com.pi4j.io.exception.IOAlreadyExistsException;
+import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.pwm.PwmProviderBase;
 import com.pi4j.io.pwm.PwmType;
 import com.pi4j.plugin.linuxfs.internal.LinuxPwm;
-
-import static java.text.MessageFormat.format;
 
 /**
  * <p>LinuxFsPwmProviderImpl class.</p>
@@ -46,32 +44,22 @@ import static java.text.MessageFormat.format;
 public class LinuxFsPwmProviderImpl extends PwmProviderBase implements LinuxFsPwmProvider {
 
     final String pwmFileSystemPath;
-    final int pwmChip;
 
     /**
      * <p>Constructor for LinuxFsPwmProviderImpl.</p>
-     */
-    public LinuxFsPwmProviderImpl(String pwmFileSystemPath, int pwmChip) {
-        this.id = ID;
-        this.name = NAME;
-        this.pwmFileSystemPath = pwmFileSystemPath;
-        this.pwmChip = pwmChip;
-    }
-
-    @Override
-    public int getPriority() {
-        // the linux FS PWM driver should not be used over the pigpio
-        return 50;
-    }
-
-    /**
-     * <p>Constructor for LinuxFsPwmProviderImpl.</p>
+     *
+     * @param pwmFileSystemPath Path to PWM device tree
      */
     public LinuxFsPwmProviderImpl(String pwmFileSystemPath) {
         this.id = ID;
         this.name = NAME;
         this.pwmFileSystemPath = pwmFileSystemPath;
-        this.pwmChip = LinuxPwm.DEFAULT_PWM_CHIP;
+    }
+
+    @Override
+    public int getPriority() {
+        // the linux FS PWM driver should be higher priority on RP1 chip
+        return BoardInfoHelper.usesRP1() ? 100 : 50;
     }
 
     /**
@@ -79,14 +67,23 @@ public class LinuxFsPwmProviderImpl extends PwmProviderBase implements LinuxFsPw
      */
     @Override
     public Pwm create(PwmConfig config) {
-        // create new I/O instance based on I/O config
-        if (config.pwmType() != PwmType.HARDWARE)
-            throw new IOException(format(
-                "The Linux file system PWM provider does not support software-emulated PWM pins; PIN ADDRESS={0}",
-                config.address()));
+        // validate PWM type
+        if (config.pwmType() != PwmType.HARDWARE) {
+            throw new IOException("The Linux file system PWM provider only supports HARDWARE PWM");
+        }
 
-        // create filesystem based PWM instance using instance address (PWM PIN NUMBER)
-        LinuxPwm pwm = new LinuxPwm(this.pwmFileSystemPath, this.pwmChip, config.address());
+        // validate the config
+        if (config.chip() == null || config.channel() == null) {
+            throw new IllegalArgumentException("PWM Chip and Channel are needed for hardware PWM with the LinuxFS I/O provider");
+        }
+
+        // Warn for unneeded config
+        if (config.pwmType() == PwmType.HARDWARE && config.bcm() != null) {
+            logger.warn("You specified a bcm value for the PWM, but this is not needed for hardware PWM. Please specify chip and channel instead.");
+        }
+
+        // create filesystem based PWM instance
+        LinuxPwm pwm = new LinuxPwm(this.pwmFileSystemPath, config.chip(), config.channel());
         LinuxFsPwm fsPwm = new LinuxFsPwm(pwm, this, config);
         this.context.registry().add(fsPwm);
         return fsPwm;

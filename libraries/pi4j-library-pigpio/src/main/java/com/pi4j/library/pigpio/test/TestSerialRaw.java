@@ -51,27 +51,28 @@ public class TestSerialRaw {
      * <p>main.</p>
      *
      * @param args an array of {@link String} objects.
+     * @throws InterruptedException
      */
     public static void main(String[] args) throws InterruptedException {
-        logger.info("PIGPIO VERSION   : " + PIGPIO.gpioVersion());
-        logger.info("PIGPIO HARDWARE  : " + PIGPIO.gpioHardwareRevision());
+        logger.info("PIGPIO VERSION   : {}", PIGPIO.gpioVersion());
+        logger.info("PIGPIO HARDWARE  : {}", PIGPIO.gpioHardwareRevision());
 
         int init = PIGPIO.gpioInitialise();
-        logger.info("PIGPIO INITIALIZE: " + init);
+        logger.info("PIGPIO INITIALIZE: {}", init);
 
         if(init < 0){
-            logger.error("ERROR; PIGPIO INIT FAILED; ERROR CODE: " + init);
+            logger.error("ERROR; PIGPIO INIT FAILED; ERROR CODE: {}", init);
             System.exit(init);
         }
 
         int handle = PIGPIO.serOpen(SERIAL_DEVICE, BAUD_RATE, 0);
-        logger.info("PIGPIO SERIAL OPEN  : " + handle);
+        logger.info("PIGPIO SERIAL OPEN  : {}", handle);
         if(handle < 0) {
-            logger.error("ERROR; SERIAL OPEN FAILED: ERROR CODE: " + handle);
+            logger.error("ERROR; SERIAL OPEN FAILED: ERROR CODE: {}", handle);
             System.exit(handle);
         }
 
-        logger.info("SERIAL DATA DRAINED  : " + PIGPIO.serDrain(handle));
+        logger.info("SERIAL DATA DRAINED  : {}", PIGPIO.serDrain(handle));
 
         // iterate over BYTE range of values, WRITE the byte then immediately
         // READ back the byte value and compare to make sure they are the same values.
@@ -79,10 +80,10 @@ public class TestSerialRaw {
             logger.info("[SERIAL W/R BYTE]");
 
             // WRITE :: SINGLE RAW BYTE
-            logger.info(" (WRITE) 0x" + Integer.toHexString(b));
+            logger.info(" (WRITE) 0x{}", Integer.toHexString(b));
             int result = PIGPIO.serWriteByte(handle, (byte)b);
             if(result < 0) {
-                logger.error("\nERROR; SERIAL WRITE FAILED: ERROR CODE: " + result);
+                logger.error("\nERROR; SERIAL WRITE FAILED: ERROR CODE: {}", result);
                 System.exit(result);
             }
 
@@ -92,25 +93,25 @@ public class TestSerialRaw {
 
             // READ :: NUMBER OF BYTES AVAILABLE TO READ
             int available = PIGPIO.serDataAvailable(handle);
-            logger.info(" (AVAIL) " + available);
+            logger.info(" (AVAIL) {}", available);
             if(available != 1) {
-                logger.error("\nERROR; SERIAL AVAILABLE FAILED: expected=1; received=" + available);
+                logger.error("\nERROR; SERIAL AVAILABLE FAILED: expected=1; received={}", available);
                 System.exit(result);
             }
 
             // READ :: SINGLE RAW BYTE
             result = PIGPIO.serReadByte(handle);
-            logger.info(" (READ) 0x" + Integer.toHexString(result));
+            logger.info(" (READ) 0x{}", Integer.toHexString(result));
             logger.info("");
             if(result < 0) {
-                logger.error("\nERROR; SERIAL READ FAILED: ERROR CODE: " + result);
+                logger.error("\nERROR; SERIAL READ FAILED: ERROR CODE: {}", result);
                 System.exit(result);
             }
 
             int expected = b;
             int recevied = result;
             if(recevied != expected) {
-                logger.error("\nERROR; SERIAL READ FAILED: BYTE MISMATCH: expected=" + expected + "; received=" + recevied);
+                logger.error("\nERROR; SERIAL READ FAILED: BYTE MISMATCH: expected={}; received={}", expected, recevied);
                 System.exit(0);
             }
         }
@@ -126,10 +127,10 @@ public class TestSerialRaw {
             r.nextBytes(writeBuffer);
 
             // WRITE :: MULTI-BYTE
-            logger.info(" (WRITE) 0x" + StringUtil.toHexString(writeBuffer));
+            logger.info(" (WRITE) 0x{}", StringUtil.toHexString(writeBuffer));
             int result = PIGPIO.serWrite(handle, writeBuffer, len);
             if(result < 0) {
-                logger.error("\nERROR; SERIAL WRITE FAILED: ERROR CODE: " + result);
+                logger.error("\nERROR; SERIAL WRITE FAILED: ERROR CODE: {}", result);
                 System.exit(result);
             }
 
@@ -139,40 +140,39 @@ public class TestSerialRaw {
 
             // READ :: NUMBER OF BYTES AVAILABLE TO READ
             int available = PIGPIO.serDataAvailable(handle);
-            logger.info(" (AVAIL) " + available);
+            logger.info(" (AVAIL) {}", available);
             if(available != len) {
-                logger.error("\nERROR; SERIAL AVAILABLE FAILED: expected=1; received=" + available);
+                logger.error("\nERROR; SERIAL AVAILABLE FAILED: expected=1; received={}", available);
                 System.exit(result);
             }
 
             // READ :: MULTI-BYTE
             byte[] readBuffer = new byte[available];
             result = PIGPIO.serRead(handle, readBuffer, available);
-            logger.info(" (READ) 0x" + StringUtil.toHexString(readBuffer));
+            logger.info(" (READ) 0x{}", StringUtil.toHexString(readBuffer));
             logger.info("");
             if(result < 0) {
-                logger.error("\nERROR; SERIAL READ FAILED: ERROR CODE: " + result);
+                logger.error("\nERROR; SERIAL READ FAILED: ERROR CODE: {}", result);
                 System.exit(result);
             }
 
             // validate read length
             if(result != len) {
-                logger.error("\nERROR; SERIAL READ FAILED: LENGTH MISMATCH: " + result);
+                logger.error("\nERROR; SERIAL READ FAILED: LENGTH MISMATCH: {}", result);
                 System.exit(result);
             }
 
             // validate buffer contents
             if(!Arrays.equals(writeBuffer, readBuffer)) {
-                logger.error("\nERROR; SERIAL READ FAILED: BYTE MISMATCH: expected=" +
-                        StringUtil.toHexString(writeBuffer) + "; received=" +
-                        StringUtil.toHexString(readBuffer));
+                logger.error("\nERROR; SERIAL READ FAILED: BYTE MISMATCH: expected={}; received={}",
+                             StringUtil.toHexString(writeBuffer), StringUtil.toHexString(readBuffer));
                 System.exit(0);
             }
         }
 
         // close SERIAL channel
         int closed = PIGPIO.serClose(handle);
-        logger.info("PIGPIO SERIAL CLOSED : " + handle);
+        logger.info("PIGPIO SERIAL CLOSED : {}", handle);
 
 
         PIGPIO.gpioTerminate();

@@ -25,6 +25,10 @@ package com.pi4j.context;
  * #L%
  */
 
+import com.pi4j.boardinfo.definition.BoardModel;
+import com.pi4j.boardinfo.model.BoardInfo;
+import com.pi4j.boardinfo.model.JavaInfo;
+import com.pi4j.boardinfo.model.OperatingSystem;
 import com.pi4j.common.Describable;
 import com.pi4j.common.Descriptor;
 import com.pi4j.config.Config;
@@ -103,7 +107,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      * Submits the given task for async execution
      *
      * @param task the task to execute asynchronously
-     *
      * @return the task to cancel later
      */
     Future<?> submitTask(Runnable task);
@@ -117,13 +120,11 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     Context shutdown() throws ShutdownException;
 
     /**
-     *
      * @return {@link Future} of {@link Context}
      */
     Future<Context> asyncShutdown();
 
     /**
-     *
      * @return Flag indicating if the context has been shutdown
      */
     boolean isShutdown();
@@ -211,7 +212,7 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      * <p>platform.</p>
      *
      * @param platformClass a P object.
-     * @param <P> the platform type
+     * @param <P>           the platform type
      * @return a P object.
      * @throws PlatformNotFoundException if platform specified by {@code platformClass} is not found.
      */
@@ -223,7 +224,7 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      * <p>platform.</p>
      *
      * @param platformClass a P object.
-     * @param <P> the platform type
+     * @param <P>           the platform type
      * @return a P object.
      * @throws PlatformNotFoundException if platform specified by {@code platformClass} is not found.
      */
@@ -235,7 +236,7 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      * <p>Has platforms.</p>
      *
      * @param platformClass a P object.
-     * @return {@link boolean}
+     * @return boolean
      * @throws PlatformNotFoundException if platform specified by {@code platformClass} is not found.
      */
     default boolean hasPlatform(Class<? extends Platform> platformClass) throws PlatformNotFoundException {
@@ -246,18 +247,40 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     // PROVIDER ACCESSOR METHODS
     // ------------------------------------------------------------------------
 
-    /** {@inheritDoc} */
+
+    /**
+     * <p>provider.</p>
+     *
+     * @param providerId a {@link java.lang.String} object.
+     * @param <T>
+     * @return
+     * @throws ProviderNotFoundException
+     */
     default <T extends Provider> T provider(String providerId) throws ProviderNotFoundException {
         return (T) providers().get(providerId);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * <p>provider.</p>
+     *
+     * @param providerId    a {@link java.lang.String} object.
+     * @param providerClass a T object.
+     * @param <T>
+     * @return
+     * @throws ProviderNotFoundException
+     */
     default <T extends Provider> T provider(String providerId, Class<T> providerClass)
         throws ProviderNotFoundException {
         return (T) providers().get(providerId);
     }
 
-    /** {@inheritDoc} */
+
+    /**
+     * <p>Has providers.</p>
+     *
+     * @param providerId a {@link java.lang.String} object.
+     * @return
+     */
     default boolean hasProvider(String providerId) {
         try {
             return providers().exists(providerId);
@@ -266,17 +289,39 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         }
     }
 
-    /** {@inheritDoc} */
+
+    /**
+     * <p>Has providers.</p>
+     *
+     * @param ioType a {@link com.pi4j.io.IOType} object.
+     * @param <T>
+     * @return
+     */
     default <T extends Provider> boolean hasProvider(IOType ioType) {
         return providers().exists(ioType);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * <p>Has providers.</p>
+     *
+     * @param providerClass a {@link java.lang.Class} object.
+     * @param <T>
+     * @return
+     */
     default <T extends Provider> boolean hasProvider(Class<T> providerClass) {
         return providers().exists(providerClass);
     }
 
-    /** {@inheritDoc} */
+
+    /**
+     * <p>provider.</p>
+     *
+     * @param providerClass a {@link java.lang.Class} object.
+     * @param <T>
+     * @return
+     * @throws ProviderNotFoundException
+     * @throws ProviderInterfaceException
+     */
     default <T extends Provider> T provider(Class<T> providerClass)
         throws ProviderNotFoundException, ProviderInterfaceException {
         // return the default provider for this type from the default platform
@@ -291,7 +336,15 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         throw new ProviderNotFoundException(providerClass);
     }
 
-    /** {@inheritDoc} */
+
+    /**
+     * <p>provider.</p>
+     *
+     * @param ioType a {@link com.pi4j.io.IOType} object.
+     * @param <T>
+     * @return
+     * @throws ProviderNotFoundException
+     */
     default <T extends Provider> T provider(IOType ioType) throws ProviderNotFoundException {
         // return the default provider for this type from the default platform
         if (platform() != null && platform().hasProvider(ioType))
@@ -306,9 +359,24 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     }
 
     // ------------------------------------------------------------------------
+    // BOARD INFO ACCESSOR METHODS
+    // ------------------------------------------------------------------------
+
+    /**
+     * Return the BoardInfo containing more info about the
+     * {@link BoardModel}, {@link OperatingSystem}, and {@link JavaInfo}.
+     *
+     * @return {@link BoardInfo}
+     */
+    BoardInfo boardInfo();
+
+    // ------------------------------------------------------------------------
     // I/O INSTANCE ACCESSOR/CREATOR METHODS
     // ------------------------------------------------------------------------
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <I extends IO> I create(IOConfig config, IOType ioType) {
 
@@ -340,6 +408,9 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         throw new IOException("This IO instance [" + config.id() + "] could not be created because it does not define one of the following: 'PLATFORM', 'PROVIDER', or 'I/O TYPE'.");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <T extends IO> T create(String id) {
         Provider provider = null;
@@ -373,7 +444,7 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         if (provider == null) {
             // unable to resolve the IO type and thus unable to create I/O instance
             throw new IOException("This IO instance [" + id +
-                    "] could not be created because it does not define one of the following: 'PLATFORM', 'PROVIDER', or 'I/O TYPE'.");
+                "] could not be created because it does not define one of the following: 'PLATFORM', 'PROVIDER', or 'I/O TYPE'.");
         }
 
         // create IO instance using the provided ID and resolved inherited properties
@@ -383,6 +454,9 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         return (T) provider.create((Config) builder.build());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     default <T extends IO> T create(String id, IOType ioType) {
         Provider provider = null;
@@ -407,8 +481,8 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
             // validate IO type from resolved provider
             if (!ioType.isType(provider.type())) {
                 throw new IOException("This IO instance [" + id +
-                        "] could not be created because the resolved provider [" + providerId +
-                        "] does not match the required I/O TYPE [" + ioType.name() + "]");
+                    "] could not be created because the resolved provider [" + providerId +
+                    "] does not match the required I/O TYPE [" + ioType.name() + "]");
             }
         }
 
@@ -439,6 +513,17 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      * @throws IOShutdownException  if an error occured while shuting down the IO
      */
     <T extends IO> T shutdown(String id) throws IOInvalidIDException, IONotFoundException, IOShutdownException;
+
+    /**
+     * shutdown and unregister a created IO.
+     *
+     * @param <T>      the IO Type
+     * @param instance the IO to shutdown and unregister
+     * @throws IONotFoundException  if the IO was not registered
+     * @throws IOInvalidIDException if the ID is invalid
+     * @throws IOShutdownException  if an error occured while shuting down the IO
+     */
+    <T extends IO> void shutdown(T instance) throws IOInvalidIDException, IONotFoundException, IOShutdownException;
 
     // ------------------------------------------------------------------------
     // I/O INSTANCE ACCESSORS

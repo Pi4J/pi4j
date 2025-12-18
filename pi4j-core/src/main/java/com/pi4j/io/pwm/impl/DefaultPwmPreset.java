@@ -36,18 +36,18 @@ import com.pi4j.io.pwm.PwmPreset;
 public class DefaultPwmPreset  implements PwmPreset {
 
     protected final String name;
-    protected final Float dutyCycle;
+    protected final Integer dutyCycle;
     protected final Integer frequency;
 
     /**
      * <p>Constructor for DefaultPwmPreset.</p>
      *
      * @param name a {@link java.lang.String} object.
-     * @param dutyCycle a {@link java.lang.Number} object.
+     * @param dutyCycle a {@link java.lang.Integer} object.
      */
-    public DefaultPwmPreset(String name, Number dutyCycle){
+    public DefaultPwmPreset(String name, Integer dutyCycle){
         this.name = name.toLowerCase().trim();
-        this.dutyCycle = dutyCycle.floatValue();
+        this.dutyCycle = dutyCycle;
         this.frequency = null;
     }
 
@@ -55,15 +55,15 @@ public class DefaultPwmPreset  implements PwmPreset {
      * <p>Constructor for DefaultPwmPreset.</p>
      *
      * @param name a {@link java.lang.String} object.
-     * @param dutyCycle a {@link java.lang.Number} object.
+     * @param dutyCycle a {@link java.lang.Integer} object.
      * @param frequency a {@link java.lang.Integer} object.
      */
-    public DefaultPwmPreset(String name, Number dutyCycle, Integer frequency){
+    public DefaultPwmPreset(String name, Integer dutyCycle, Integer frequency){
         this.name = name.toLowerCase().trim();
 
         // bounds check the duty-cycle value
         if(dutyCycle != null) {
-            float dc = dutyCycle.floatValue();
+            Integer dc = dutyCycle;
             if (dc < 0) dc = 0;
             if (dc > 100) dc = 100;
             this.dutyCycle = dc;
@@ -79,9 +79,11 @@ public class DefaultPwmPreset  implements PwmPreset {
         return this.name;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Float dutyCycle() {
+    public Integer dutyCycle() {
         return this.dutyCycle;
     }
 

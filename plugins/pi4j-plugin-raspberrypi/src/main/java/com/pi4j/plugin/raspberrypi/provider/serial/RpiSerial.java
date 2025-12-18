@@ -44,37 +44,47 @@ public class RpiSerial extends SerialBase implements Serial {
      * <p>Constructor for RpiSerial.</p>
      *
      * @param provider a {@link com.pi4j.io.serial.SerialProvider} object.
-     * @param config a {@link com.pi4j.io.serial.SerialConfig} object.
+     * @param config   a {@link com.pi4j.io.serial.SerialConfig} object.
      */
-    public RpiSerial(SerialProvider provider, SerialConfig config){
+    public RpiSerial(SerialProvider provider, SerialConfig config) {
         super(provider, config);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int write(byte b) {
         return 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int write(byte[] data, int offset, int length) {
         return 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read() {
         return 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read(byte[] buffer, int offset, int length) {
         return 0;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int available() {
         return 0;

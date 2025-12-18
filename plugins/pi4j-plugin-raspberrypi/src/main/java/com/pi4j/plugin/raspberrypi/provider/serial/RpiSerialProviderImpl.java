@@ -27,7 +27,6 @@ package com.pi4j.plugin.raspberrypi.provider.serial;
  * #L%
  */
 
-import com.pi4j.io.exception.IOAlreadyExistsException;
 import com.pi4j.io.serial.Serial;
 import com.pi4j.io.serial.SerialConfig;
 import com.pi4j.io.serial.SerialProviderBase;

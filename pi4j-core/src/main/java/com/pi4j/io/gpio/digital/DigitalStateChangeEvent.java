@@ -32,6 +32,7 @@ package com.pi4j.io.gpio.digital;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <DIGITAL_TYPE>
  */
 public class DigitalStateChangeEvent<DIGITAL_TYPE extends Digital> implements DigitalEvent {
 

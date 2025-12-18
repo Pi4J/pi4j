@@ -37,10 +37,7 @@ import com.pi4j.runtime.Runtime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -210,7 +207,7 @@ public class DefaultRuntimePlatforms implements RuntimePlatforms {
 
 
     private <T extends Platform> Platforms add(T ... platform) throws PlatformAlreadyExistsException, PlatformInitializeException {
-        return add(Arrays.asList(platform));
+        return add(List.of(platform));
     }
 
     private <T extends Platform > Platforms add(Collection<T> platform) throws PlatformAlreadyExistsException, PlatformInitializeException {
@@ -309,7 +306,7 @@ public class DefaultRuntimePlatforms implements RuntimePlatforms {
         try {
             logger.trace("calling 'shutdown' platform [id={}; name={}; class={}]",
                     platform.id(), platform.name(), platform.getClass().getName());
-            platform.shutdown(runtime.context());
+            platform.shutdownInternal(runtime.context());
         } catch (Exception e) {
             logger.error("unable to 'shutdown()' platform: [id={}; name={}]; {}",
                     platform.id(), platform.name(), e.getMessage());

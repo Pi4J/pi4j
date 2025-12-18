@@ -34,6 +34,7 @@ import com.pi4j.common.Lifecycle;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <T>
  */
 public interface Extension<T> extends Identity, Lifecycle<T> {
 

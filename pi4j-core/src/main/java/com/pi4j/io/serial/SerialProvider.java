@@ -40,11 +40,11 @@ public interface SerialProvider extends Provider<SerialProvider, Serial, SerialC
      * <p>create.</p>
      *
      * @param builder a {@link com.pi4j.io.serial.SerialConfigBuilder} object.
-     * @param <T> a T object.
+     * @param <T>     a T object.
      * @return a T object.
      */
     default <T extends Serial> T create(SerialConfigBuilder builder) {
-        return (T)create(builder.build());
+        return (T) create(builder.build());
     }
 
 //    default <T extends Serial> T create(Integer address) {

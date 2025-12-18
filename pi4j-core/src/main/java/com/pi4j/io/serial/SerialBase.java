@@ -44,26 +44,32 @@ public abstract class SerialBase extends IOBase<Serial, SerialConfig, SerialProv
      * <p>Constructor for SerialBase.</p>
      *
      * @param provider a {@link com.pi4j.io.serial.SerialProvider} object.
-     * @param config a {@link com.pi4j.io.serial.SerialConfig} object.
+     * @param config   a {@link com.pi4j.io.serial.SerialConfig} object.
      */
-    public SerialBase(SerialProvider provider, SerialConfig config){
+    public SerialBase(SerialProvider provider, SerialConfig config) {
         super(provider, config);
         logger.trace("created instance with config: {}", config);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isOpen() {
         return this.isOpen;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void open() {
         logger.trace("invoked 'open()'");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() {
         logger.trace("invoked 'closed()'");

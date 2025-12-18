@@ -26,13 +26,12 @@ package com.pi4j.registry.impl;
  */
 
 import com.pi4j.io.IO;
+import com.pi4j.io.IOType;
 import com.pi4j.io.exception.IOAlreadyExistsException;
 import com.pi4j.io.exception.IOInvalidIDException;
 import com.pi4j.io.exception.IONotFoundException;
 import com.pi4j.io.exception.IOShutdownException;
 import com.pi4j.registry.Registry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -44,7 +43,6 @@ import java.util.Map;
  */
 public class DefaultRegistry implements Registry {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
     private RuntimeRegistry registry = null;
 
     /**
@@ -53,7 +51,7 @@ public class DefaultRegistry implements Registry {
      * @param registry a {@link com.pi4j.registry.impl.RuntimeRegistry} object.
      * @return a {@link com.pi4j.registry.Registry} object.
      */
-    public static Registry newInstance(RuntimeRegistry registry){
+    public static Registry newInstance(RuntimeRegistry registry) {
         return new DefaultRegistry(registry);
     }
 
@@ -63,30 +61,38 @@ public class DefaultRegistry implements Registry {
         this.registry = registry;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean exists(String id) {
         return registry.exists(id);
     }
 
     @Override
-    public boolean exists(int address) {
-        return registry.exists(address);
+    public boolean exists(IOType ioType, int address) {
+        return registry.exists(ioType, address);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<String, ? extends IO> all() {
         return registry.all();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends IO> T get(String id) throws IOInvalidIDException, IONotFoundException {
         return registry.get(id);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends IO> T get(String id, Class<T> type) throws IOInvalidIDException, IONotFoundException {
         return registry.get(id, type);

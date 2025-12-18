@@ -26,6 +26,7 @@ package com.pi4j.io.gpio.digital.impl;
  */
 
 import com.pi4j.context.Context;
+import com.pi4j.io.gpio.GpioConfig;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
 import com.pi4j.io.gpio.digital.PullResistance;
@@ -39,49 +40,79 @@ import java.util.concurrent.TimeUnit;
  * @version $Id: $Id
  */
 public class DefaultDigitalInputConfigBuilder
-        extends DigitalConfigBuilderBase<DigitalInputConfigBuilder, DigitalInputConfig>
-        implements DigitalInputConfigBuilder {
+    extends DigitalConfigBuilderBase<DigitalInputConfigBuilder, DigitalInputConfig>
+    implements DigitalInputConfigBuilder {
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DefaultDigitalInputConfigBuilder(Context context){
+    protected DefaultDigitalInputConfigBuilder(Context context) {
         super(context);
     }
 
     /**
      * <p>newInstance.</p>
      *
+     * @param context
      * @return a {@link com.pi4j.io.gpio.digital.DigitalInputConfigBuilder} object.
      */
     public static DigitalInputConfigBuilder newInstance(Context context) {
         return new DefaultDigitalInputConfigBuilder(context);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalInputConfig build() {
         DigitalInputConfig config = new DefaultDigitalInputConfig(getResolvedProperties());
         return config;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * @deprecated use {@link #bus(int)} instead.
+     * <p>
+     * {@inheritDoc}
+     */
+    @Override
+    @Deprecated(forRemoval = true)
+    public DigitalInputConfigBuilder address(Integer address) {
+        this.properties.put(GpioConfig.BCM_KEY, String.valueOf(address));
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DigitalInputConfigBuilder bus(int bus) {
+        this.properties.put(GpioConfig.BUS_KEY, String.valueOf(bus));
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalInputConfigBuilder pull(PullResistance value) {
         this.properties.put(DigitalInputConfig.PULL_RESISTANCE_KEY, value.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalInputConfigBuilder debounce(Long microseconds) {
-        if(microseconds != null) {
+        if (microseconds != null) {
             this.properties.put(DigitalInputConfig.DEBOUNCE_RESISTANCE_KEY, microseconds.toString());
         }
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalInputConfigBuilder debounce(Long interval, TimeUnit units) {
         return debounce(units.toMicros(interval));

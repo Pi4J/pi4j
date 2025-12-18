@@ -47,13 +47,13 @@ public class RegistryGetIoInstance {
 
     @BeforeAll
     public void beforeTest() throws Pi4JException {
-        System.setProperty(org.slf4j.impl.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
+        System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
 
         // initialize Pi4J with an auto context
         // An auto context includes AUTO-DETECT BINDINGS enabled
         // which will load all detected Pi4J extension libraries
         // (Platforms and Providers) in the class path
-        pi4j = Pi4J.newAutoContextAllowMocks();
+        pi4j = Pi4J.newContextBuilder().autoDetectMockPlugins().autoDetectPlatforms().build();
     }
 
     @AfterAll

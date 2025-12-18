@@ -77,7 +77,9 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
 
         if(!this.state.equals(state)){
             this.state = state;
-            this.dispatch(new DigitalStateChangeEvent<>(this, this.state));
+            if (this.hasListenersOrBindings()) {
+                this.dispatch(new DigitalStateChangeEvent<>(this, this.state));
+            }
         }
         return this;
     }
@@ -100,7 +102,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
         }
 
         // end the pulse state
-        toggle();
+        this.state(DigitalState.getInverseState(state));
 
         // invoke callback if one was defined
         if (callback != null) {
@@ -231,7 +233,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
 
     /** {@inheritDoc} */
     @Override
-    public DigitalOutput shutdown(Context context) throws ShutdownException {
+    public DigitalOutput shutdownInternal(Context context) throws ShutdownException {
         // set pin state to the shutdown state if a shutdown state is configured
         if(config().shutdownState() != null && config().shutdownState() != DigitalState.UNKNOWN){
             try {
@@ -240,7 +242,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
                 throw new ShutdownException(e);
             }
         }
-        return super.shutdown(context);
+        return super.shutdownInternal(context);
     }
 
     /** {@inheritDoc} */

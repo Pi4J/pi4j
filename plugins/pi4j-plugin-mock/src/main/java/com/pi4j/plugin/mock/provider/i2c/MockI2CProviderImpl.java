@@ -27,7 +27,6 @@ package com.pi4j.plugin.mock.provider.i2c;
  * #L%
  */
 
-import com.pi4j.io.exception.IOAlreadyExistsException;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CProviderBase;

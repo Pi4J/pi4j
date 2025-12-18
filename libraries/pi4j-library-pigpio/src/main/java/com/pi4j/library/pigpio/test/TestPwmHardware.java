@@ -50,6 +50,7 @@ public class TestPwmHardware {
      * <p>main.</p>
      *
      * @param args an array of {@link String} objects.
+     * @throws IOException
      */
     public static void main(String[] args) throws IOException {
         String loglevel = "INFO";
@@ -68,8 +69,8 @@ public class TestPwmHardware {
         logger.info("PIGPIO INITIALIZED SUCCESSFULLY");
         logger.info("-----------------------------------------------------");
 
-        logger.info("PIGPIO VERSION   : " + piGpio.gpioVersion());
-        logger.info("PIGPIO HARDWARE  : " + piGpio.gpioHardwareRevision());
+        logger.info("PIGPIO VERSION   : {}", piGpio.gpioVersion());
+        logger.info("PIGPIO HARDWARE  : {}", piGpio.gpioHardwareRevision());
 
         // set pin ALT modes for PWM
         piGpio.gpioSetMode(19, PiGpioMode.ALT5);

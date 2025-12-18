@@ -26,6 +26,7 @@ package com.pi4j.io.gpio.digital.impl;
  */
 
 import com.pi4j.context.Context;
+import com.pi4j.io.gpio.GpioConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
@@ -37,40 +38,65 @@ import com.pi4j.io.gpio.digital.DigitalState;
  * @version $Id: $Id
  */
 public class DefaultDigitalOutputConfigBuilder
-        extends DigitalConfigBuilderBase<DigitalOutputConfigBuilder, DigitalOutputConfig>
-        implements DigitalOutputConfigBuilder {
+    extends DigitalConfigBuilderBase<DigitalOutputConfigBuilder, DigitalOutputConfig>
+    implements DigitalOutputConfigBuilder {
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DefaultDigitalOutputConfigBuilder(Context context){
+    protected DefaultDigitalOutputConfigBuilder(Context context) {
         super(context);
     }
 
     /**
      * <p>newInstance.</p>
      *
+     * @param context
      * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder} object.
      */
     public static DigitalOutputConfigBuilder newInstance(Context context) {
         return new DefaultDigitalOutputConfigBuilder(context);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DigitalOutputConfigBuilder address(Integer address) {
+        this.properties.put(GpioConfig.BCM_KEY, String.valueOf(address));
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public DigitalOutputConfigBuilder bus(int bus) {
+        this.properties.put(GpioConfig.BUS_KEY, String.valueOf(bus));
+        return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutputConfigBuilder shutdown(DigitalState state) {
         this.properties.put(DigitalOutputConfig.SHUTDOWN_STATE_KEY, state.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutputConfigBuilder initial(DigitalState state) {
         this.properties.put(DigitalOutputConfig.INITIAL_STATE_KEY, state.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DigitalOutputConfig build() {
         DigitalOutputConfig config = new DefaultDigitalOutputConfig(getResolvedProperties());

@@ -32,6 +32,7 @@ import com.pi4j.event.Listener;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <EVENT_TYPE>
  */
 public interface AnalogListener<EVENT_TYPE extends AnalogEvent> extends Listener {
     // MARKER INTERFACE

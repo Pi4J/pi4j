@@ -127,14 +127,14 @@ public class DefaultI2CRegister implements I2CRegister, I2CRegisterDataReader, I
     /** {@inheritDoc} */
     @Override
     public int readRegister(byte[] register, byte[] buffer, int offset, int length) {
-        return(this.i2c.readRegister(register,buffer,offset,length));
+        return this.i2c.readRegister(register,buffer,offset,length);
     }
 
 
     /** {@inheritDoc} */
     @Override
     public int readRegister(int register, byte[] buffer, int offset, int length) {
-        return(this.i2c.readRegister(register,buffer,offset,length));
+        return this.i2c.readRegister(register,buffer,offset,length);
     }
 
 
@@ -147,12 +147,12 @@ public class DefaultI2CRegister implements I2CRegister, I2CRegisterDataReader, I
     /** {@inheritDoc} */
     @Override
     public int writeRegister(int register, byte[] data, int offset, int length) {
-        return(this.i2c.writeRegister(register,data,offset,length));
+        return this.i2c.writeRegister(register,data,offset,length);
     }
 
     /** {@inheritDoc} */
     @Override
     public int writeRegister(byte[] register, byte[] data, int offset, int length) {
-        return(this.i2c.writeRegister(register,data,offset,length));
+        return this.i2c.writeRegister(register,data,offset,length);
     }
 }

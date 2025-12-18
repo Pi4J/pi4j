@@ -44,6 +44,8 @@ import java.util.stream.Collectors;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <BUILDER_TYPE>
+ * @param <CONFIG_TYPE>
  */
 public abstract class ConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
         implements ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {

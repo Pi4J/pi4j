@@ -1,5 +1,6 @@
 package com.pi4j.plugin.gpiod.provider.gpio.digital;
 
+
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.ShutdownException;
@@ -26,7 +27,7 @@ public class GpioDDigitalInputProviderImpl extends DigitalInputProviderBase impl
     @Override
     public DigitalInput create(DigitalInputConfig config) {
         // create new I/O instance based on I/O config
-        GpioLine line = GpioDContext.getInstance().getOrOpenLine(config.address());
+        GpioLine line = GpioDContext.getInstance().getOrOpenLine(config.bcm());
         GpioDDigitalInput digitalInput = new GpioDDigitalInput(line, this, config);
         this.context.registry().add(digitalInput);
         return digitalInput;
@@ -34,7 +35,7 @@ public class GpioDDigitalInputProviderImpl extends DigitalInputProviderBase impl
 
     @Override
     public int getPriority() {
-        // GpioD should be used if available
+        // the gpioD driver should be higher priority always
         return 150;
     }
 
@@ -44,13 +45,13 @@ public class GpioDDigitalInputProviderImpl extends DigitalInputProviderBase impl
     @Override
     public DigitalInputProvider initialize(Context context) throws InitializeException {
         DigitalInputProvider provider = super.initialize(context);
-        GpioDContext.getInstance().initialize();
+        GpioDContext.getInstance().initialize(context.properties());
         return provider;
     }
 
     @Override
-    public DigitalInputProvider shutdown(Context context) throws ShutdownException {
+    public DigitalInputProvider shutdownInternal(Context context) throws ShutdownException {
         GpioDContext.getInstance().close();
-        return super.shutdown(context);
+        return super.shutdownInternal(context);
     }
 }

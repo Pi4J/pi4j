@@ -125,16 +125,6 @@ public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfi
     /**
      * <p>setState.</p>
      *
-     * @param state a boolean.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws IOException if any.
-     */
-    default DigitalOutput setState(boolean state) throws IOException {
-        return this.state(DigitalState.getState(state));
-    }
-    /**
-     * <p>setState.</p>
-     *
      * @param state a byte.
      * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
      * @throws IOException if any.
@@ -219,7 +209,6 @@ public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfi
     default DigitalOutput toggle() throws IOException {
         return this.state(DigitalState.getInverseState(this.state()));
     }
-
 
     /**
      * <p>pulseHigh.</p>
@@ -311,7 +300,7 @@ public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfi
      * @return a {@link java.util.concurrent.Future} object.
      */
     default Future<?> pulseAsync(int interval, TimeUnit unit, DigitalState state){
-        return pulseAsync(interval, unit, DigitalState.HIGH, null);
+        return pulseAsync(interval, unit, state, null);
     }
 
     /**

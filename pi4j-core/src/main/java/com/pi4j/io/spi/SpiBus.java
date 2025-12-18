@@ -52,22 +52,22 @@ public enum SpiBus {
     /**
      * <p>getByNumber.</p>
      *
-     * @param busNumber a short.
+     * @param bus a short.
      * @return a {@link SpiBus} object.
      */
-    public static SpiBus getByNumber(short busNumber){
-        return getByNumber((int)busNumber);
+    public static SpiBus getByNumber(short bus) {
+        return getByNumber((int) bus);
     }
 
     /**
      * <p>getByNumber.</p>
      *
-     * @param busNumber a int.
+     * @param bus a int.
      * @return a {@link SpiBus} object.
      */
-    public static SpiBus getByNumber(int busNumber){
-        for(var item : SpiBus.values()){
-            if(item.getBus() == busNumber){
+    public static SpiBus getByNumber(int bus) {
+        for (var item : SpiBus.values()) {
+            if (item.getBus() == bus) {
                 return item;
             }
         }
@@ -81,13 +81,13 @@ public enum SpiBus {
      * @return a {@link SpiBus} object.
      */
     public static SpiBus parse(String bus) {
-        if(bus.equalsIgnoreCase("0")) return SpiBus.BUS_0;
-        if(bus.equalsIgnoreCase("1")) return SpiBus.BUS_1;
-        if(bus.equalsIgnoreCase("2")) return SpiBus.BUS_2;
-        if(bus.equalsIgnoreCase("3")) return SpiBus.BUS_3;
-        if(bus.equalsIgnoreCase("4")) return SpiBus.BUS_4;
-        if(bus.equalsIgnoreCase("5")) return SpiBus.BUS_5;
-        if(bus.equalsIgnoreCase("6")) return SpiBus.BUS_6;
+        if (bus.equalsIgnoreCase("0")) return SpiBus.BUS_0;
+        if (bus.equalsIgnoreCase("1")) return SpiBus.BUS_1;
+        if (bus.equalsIgnoreCase("2")) return SpiBus.BUS_2;
+        if (bus.equalsIgnoreCase("3")) return SpiBus.BUS_3;
+        if (bus.equalsIgnoreCase("4")) return SpiBus.BUS_4;
+        if (bus.equalsIgnoreCase("5")) return SpiBus.BUS_5;
+        if (bus.equalsIgnoreCase("6")) return SpiBus.BUS_6;
         return Spi.DEFAULT_BUS;
     }
 }

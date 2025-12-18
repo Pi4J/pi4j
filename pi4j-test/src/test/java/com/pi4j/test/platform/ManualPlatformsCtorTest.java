@@ -30,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
-import com.pi4j.exception.Pi4JException;
 import com.pi4j.test.provider.TestI2CProvider;
 import com.pi4j.test.provider.TestPwmProvider;
 import com.pi4j.test.provider.TestSerialProvider;

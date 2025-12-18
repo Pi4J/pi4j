@@ -87,6 +87,12 @@ public interface ContextConfig {
      */
     boolean autoInject();
     /**
+     * <p>enableShutdownHook.</p>
+     *
+     * @return a boolean.
+     */
+    boolean enableShutdownHook();
+    /**
      * <p>getAutoInject.</p>
      *
      * @return a boolean.

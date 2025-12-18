@@ -97,8 +97,11 @@ public class Frequency {
      */
     public static int getFrequencyFromNanos(Number nanoseconds){
         int frequency;
-        long period = 1000000000; // NANOSECONDS PER SECOND;
-        frequency = Math.round(1000000000/nanoseconds.longValue());
+        if(nanoseconds.longValue() <= 0){
+            return 0;
+        }
+        long period = 1_000_000_000; // NANOSECONDS PER SECOND;
+        frequency = (int) Math.round(period / (nanoseconds.longValue() * 1.0));
         return frequency;
     }
 }

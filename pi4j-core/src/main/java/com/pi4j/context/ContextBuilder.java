@@ -148,6 +148,34 @@ public interface ContextBuilder extends Builder<Context> {
     }
 
     /**
+     * <p>enableShutdownHook.</p>
+     *
+     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     */
+    ContextBuilder enableShutdownHook();
+
+    /**
+     * <p>disableShutdownHook.</p>
+     *
+     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     */
+    ContextBuilder disableShutdownHook();
+
+    /**
+     * <p>setShutdownHook.</p>
+     *
+     * @param enableShutdownHook a boolean.
+     *
+     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     */
+    default ContextBuilder setShutdownHook(boolean enableShutdownHook) {
+        if (enableShutdownHook)
+            return enableShutdownHook();
+        else
+            return disableShutdownHook();
+    }
+
+    /**
      * <p>toConfig.</p>
      *
      * @return a {@link com.pi4j.context.ContextConfig} object.
@@ -517,4 +545,12 @@ public interface ContextBuilder extends Builder<Context> {
     default ContextBuilder add(Properties properties){
         return properties(properties, null);
     }
+
+    /**
+     * Sets the GPIO chip name to be used by GpioDContext.
+     *
+     * @param chipName The name of the GPIO chip (e.g., "gpiochip0").
+     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     */
+    ContextBuilder setGpioChipName(String chipName);
 }

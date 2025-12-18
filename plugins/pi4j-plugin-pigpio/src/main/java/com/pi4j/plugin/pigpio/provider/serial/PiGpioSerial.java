@@ -37,8 +37,6 @@ import com.pi4j.io.serial.SerialProvider;
 import com.pi4j.library.pigpio.PiGpio;
 import com.pi4j.library.pigpio.PiGpioMode;
 
-import java.io.IOException;
-
 /**
  * <p>PiGpioSerial class.</p>
  *
@@ -53,9 +51,9 @@ public class PiGpioSerial extends SerialBase implements Serial {
     /**
      * <p>Constructor for PiGpioSerial.</p>
      *
-     * @param piGpio a {@link com.pi4j.library.pigpio.PiGpio} object.
+     * @param piGpio   a {@link com.pi4j.library.pigpio.PiGpio} object.
      * @param provider a {@link com.pi4j.io.serial.SerialProvider} object.
-     * @param config a {@link com.pi4j.io.serial.SerialConfig} object.
+     * @param config   a {@link com.pi4j.io.serial.SerialConfig} object.
      */
     public PiGpioSerial(PiGpio piGpio, SerialProvider provider, SerialConfig config) {
         super(provider, config);
@@ -64,35 +62,41 @@ public class PiGpioSerial extends SerialBase implements Serial {
         this.piGpio = piGpio;
 
         // TODO :: HANDLE SERIAL PIN CONFIG FOR RASPBERRY PI SERIAL PORTS
-        if(config.device().endsWith("ttyS0")) {
+        if (config.port().endsWith("ttyS0")) {
             // set pin ALT5 modes for SERIAL RX & TX PINS on RPI3B
             piGpio.gpioSetMode(14, PiGpioMode.ALT5);
             piGpio.gpioSetMode(15, PiGpioMode.ALT5);
         }
 
         // create SERIAL instance of PIGPIO SERIAL
-        this.handle = piGpio.serOpen(config.device(), config.baud());
+        this.handle = piGpio.serOpen(config.port(), config.baud());
 
         // set open state flag
         this.isOpen = true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Serial initialize(Context context) throws InitializeException {
         super.initialize(context);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public int available()  {
+    public int available() {
         return piGpio.serDataAvailable(this.handle);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void close()  {
+    public void close() {
         piGpio.serClose(this.handle);
         super.close();
     }
@@ -101,13 +105,17 @@ public class PiGpioSerial extends SerialBase implements Serial {
     // DEVICE WRITE FUNCTIONS
     // -------------------------------------------------------------------
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int write(byte b) {
         return piGpio.serWriteByte(this.handle, b);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int write(byte[] data, int offset, int length) {
         return piGpio.serWrite(this.handle, data, offset, length);
@@ -118,13 +126,17 @@ public class PiGpioSerial extends SerialBase implements Serial {
     // RAW DEVICE READ FUNCTIONS
     // -------------------------------------------------------------------
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read() {
         return piGpio.serReadByte(this.handle);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read(byte[] buffer, int offset, int length) {
         return piGpio.serRead(this.handle, buffer, offset, length);
@@ -134,7 +146,9 @@ public class PiGpioSerial extends SerialBase implements Serial {
     // MISC I/O FUNCTIONS
     // -------------------------------------------------------------------
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int drain() {
         return piGpio.serDrain(this.handle);

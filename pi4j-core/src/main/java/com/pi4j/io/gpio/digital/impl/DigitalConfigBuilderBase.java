@@ -28,31 +28,34 @@ package com.pi4j.io.gpio.digital.impl;
 import com.pi4j.context.Context;
 import com.pi4j.io.gpio.digital.DigitalConfig;
 import com.pi4j.io.gpio.digital.DigitalConfigBuilder;
-import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
-import com.pi4j.io.impl.IOAddressConfigBuilderBase;
+import com.pi4j.io.impl.IOBcmConfigBuilderBase;
 
 /**
  * <p>Abstract AnalogConfigBuilderBase class.</p>
  *
+ * @param <BUILDER_TYPE>
+ * @param <CONFIG_TYPE>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
 public abstract class DigitalConfigBuilderBase<BUILDER_TYPE extends DigitalConfigBuilder, CONFIG_TYPE extends DigitalConfig>
-        extends IOAddressConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
-        implements DigitalConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+    extends IOBcmConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
+    implements DigitalConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DigitalConfigBuilderBase(Context context){
+    protected DigitalConfigBuilderBase(Context context) {
         super(context);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public BUILDER_TYPE onState(DigitalState state) {
         this.properties.put(DigitalConfig.ON_STATE_KEY, state.toString());
-        return (BUILDER_TYPE)this;
+        return (BUILDER_TYPE) this;
     }
 }

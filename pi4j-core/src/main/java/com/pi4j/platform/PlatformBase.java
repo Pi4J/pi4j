@@ -53,6 +53,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <PLATFORM>
  */
 public abstract class PlatformBase<PLATFORM extends Platform>
         extends ExtensionBase<Platform>
@@ -110,8 +111,9 @@ public abstract class PlatformBase<PLATFORM extends Platform>
     public <T extends Provider> T provider(Class<T> providerClass) throws ProviderNotFoundException, ProviderInterfaceException {
 
         if(!providerClass.isInterface()){
-            logger.warn("Provider type [" + providerClass.getName() + "] requested; this is not an 'Interface'" +
-                    " and may not return a valid provider or may not be able to cast to the concrete class.");
+            logger.warn("Provider type [{}] requested; this is not an 'Interface'" +
+                        "and may not return a valid provider or may not be able to cast to the concrete class.",
+                        providerClass.getName());
         }
 
         for (Provider p : providers.values()) {
@@ -259,7 +261,7 @@ public abstract class PlatformBase<PLATFORM extends Platform>
 
     /** {@inheritDoc} */
     @Override
-    public PLATFORM shutdown(Context context) throws ShutdownException {
+    public PLATFORM shutdownInternal(Context context) throws ShutdownException {
         return (PLATFORM)this;
     }
 

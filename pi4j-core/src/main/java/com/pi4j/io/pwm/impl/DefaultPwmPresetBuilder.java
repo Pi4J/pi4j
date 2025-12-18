@@ -35,7 +35,7 @@ import com.pi4j.io.pwm.PwmPresetBuilder;
  * @version $Id: $Id
  */
 public class DefaultPwmPresetBuilder implements PwmPresetBuilder{
-    protected Float dutyCycle = null;
+    protected Integer dutyCycle = null;
     protected Integer frequency = null;
     protected final String name;
 
@@ -48,7 +48,12 @@ public class DefaultPwmPresetBuilder implements PwmPresetBuilder{
         super(); this.name = name;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Creates a new instance of {@link DefaultPwmPresetBuilder} with the specified name.
+     *
+     * @param name the name of the PWM preset
+     * @return a new {@link PwmPresetBuilder} instance
+     */
     public static PwmPresetBuilder newInstance(String name) {
         return new DefaultPwmPresetBuilder(name);
     }
@@ -62,8 +67,8 @@ public class DefaultPwmPresetBuilder implements PwmPresetBuilder{
 
     /** {@inheritDoc} */
     @Override
-    public PwmPresetBuilder dutyCycle(Number dutyCycle) {
-        float dc = dutyCycle.floatValue();
+    public PwmPresetBuilder dutyCycle(Integer dutyCycle) {
+        Integer dc = dutyCycle ;
 
         // bounds check the duty-cycle value
         if(dc < 0) dc = 0;

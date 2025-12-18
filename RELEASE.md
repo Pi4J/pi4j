@@ -18,7 +18,7 @@ The tag is signed by the configured git signing key. The key used can be checked
 
 To deploy to maven, use the following commands:
 
-    ./deployToMavenCentral.sh <version>
+    MVN_PROFILES=-P\!default,native,docker ./deployToMavenCentral.sh <version>
 
 This checks out the given tag and used the ``deploy`` profile to build and push the artifacts to maven central.
 

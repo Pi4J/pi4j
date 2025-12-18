@@ -25,6 +25,7 @@ package com.pi4j.context.impl;
  * #L%
  */
 
+import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.context.Context;
 import com.pi4j.context.ContextBuilder;
 import com.pi4j.context.ContextConfig;
@@ -50,10 +51,11 @@ public class DefaultContextBuilder implements ContextBuilder {
     protected Logger logger = LoggerFactory.getLogger(DefaultContextBuilder.class);
 
     // auto detection flags
-    protected boolean autoDetectMockPlugins = false;
+    protected boolean autoDetectMockPlugins = !BoardInfoHelper.runningOnRaspberryPi();
     protected boolean autoDetectPlatforms = false;
     protected boolean autoDetectProviders = false;
     protected boolean autoInject = false;
+    protected boolean enableShutdownHook = false;
 
     // default platform identifier
     protected String defaultPlatformId = null;
@@ -64,6 +66,9 @@ public class DefaultContextBuilder implements ContextBuilder {
 
     // properties
     protected Map<String,String> properties = Collections.synchronizedMap(new HashMap<>());
+
+    // Add a field to store the GPIO chip name
+    protected String gpioChipName;
 
     /**
      * Private Constructor
@@ -85,7 +90,7 @@ public class DefaultContextBuilder implements ContextBuilder {
     @Override
     public ContextBuilder add(Platform... platform) {
         if(platform != null && platform.length > 0)
-            this.platforms.addAll(Arrays.asList(platform));
+            this.platforms.addAll(List.of(platform));
         return this;
     }
 
@@ -93,7 +98,7 @@ public class DefaultContextBuilder implements ContextBuilder {
     @Override
     public ContextBuilder add(Provider... provider) {
         if(provider != null && provider.length > 0)
-            this.providers.addAll(Arrays.asList(provider));
+            this.providers.addAll(List.of(provider));
         return this;
     }
 
@@ -154,6 +159,20 @@ public class DefaultContextBuilder implements ContextBuilder {
     @Override
     public ContextBuilder noAutoInject() {
         this.autoInject = false;
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ContextBuilder enableShutdownHook() {
+        this.enableShutdownHook = true;
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ContextBuilder disableShutdownHook() {
+        this.enableShutdownHook = false;
         return this;
     }
 
@@ -230,6 +249,12 @@ public class DefaultContextBuilder implements ContextBuilder {
         return properties(prop, prefixFilter);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public ContextBuilder setGpioChipName(String chipName) {
+        this.gpioChipName = chipName;
+        return this;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -258,9 +283,15 @@ public class DefaultContextBuilder implements ContextBuilder {
             public boolean autoDetectMockPlugins() {
                 return builder.autoDetectMockPlugins;
             }
+
             @Override
             public boolean autoDetectPlatforms() {
                 return builder.autoDetectPlatforms;
+            }
+
+            @Override
+            public boolean enableShutdownHook() {
+                return builder.enableShutdownHook;
             }
 
             @Override

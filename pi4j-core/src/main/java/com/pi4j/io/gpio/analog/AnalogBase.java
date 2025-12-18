@@ -39,6 +39,9 @@ import com.pi4j.io.gpio.GpioBase;
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <ANALOG_TYPE>
+ * @param <CONFIG_TYPE>
+ * @param <PROVIDER_TYPE>
  */
 public abstract class AnalogBase<ANALOG_TYPE
         extends Analog<ANALOG_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
@@ -80,14 +83,14 @@ public abstract class AnalogBase<ANALOG_TYPE
     @Override
     public ANALOG_TYPE addListener(AnalogValueChangeListener... listener) {
         valueChangeEventManager.add(listener);
-        return (ANALOG_TYPE)this;
+        return (ANALOG_TYPE) this;
     }
 
     /** {@inheritDoc} */
     @Override
     public ANALOG_TYPE removeListener(AnalogValueChangeListener... listener) {
         valueChangeEventManager.add(listener);
-        return (ANALOG_TYPE)this;
+        return (ANALOG_TYPE) this;
     }
 
     /** {@inheritDoc} */
@@ -114,7 +117,7 @@ public abstract class AnalogBase<ANALOG_TYPE
 
     /** {@inheritDoc} */
     @Override
-    public ANALOG_TYPE shutdown(Context context){
+    public ANALOG_TYPE shutdownInternal(Context context){
         // remove all listeners
         valueChangeEventManager.clear();
 

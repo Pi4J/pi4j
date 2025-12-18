@@ -153,7 +153,7 @@ JNIEXPORT jint JNICALL Java_com_pi4j_library_pigpio_internal_PIGPIO_gpioHardware
 JNIEXPORT jint JNICALL Java_com_pi4j_library_pigpio_internal_PIGPIO_gpioInitialise
   (JNIEnv *env, jclass class)
 {
-    // SEE: https://github.com/Pi4J/pi4j-v2/issues/15
+    // SEE: https://github.com/Pi4J/pi4j/issues/15
     //  By default, PIGPIO steals all the signal handlers. The JVM doesn't like this
     //  as it uses them in running the JVM so it ends up with the program crashing.
     //  The following should disable the signal handlers inside the PIGPIO library.

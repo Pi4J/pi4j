@@ -27,11 +27,15 @@ package com.pi4j.plugin.pigpio.provider.i2c;
  * #L%
  */
 
-import com.pi4j.io.exception.IOAlreadyExistsException;
+
+import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CProviderBase;
 import com.pi4j.library.pigpio.PiGpio;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>PiGpioI2CProviderImpl class.</p>
@@ -42,6 +46,7 @@ import com.pi4j.library.pigpio.PiGpio;
 public class PiGpioI2CProviderImpl extends I2CProviderBase implements PiGpioI2CProvider {
 
     final PiGpio piGpio;
+    private final Map<Integer, PiGpioI2CBus> i2CBusMap;
 
     /**
      * <p>Constructor for PiGpioI2CProviderImpl.</p>
@@ -52,12 +57,13 @@ public class PiGpioI2CProviderImpl extends I2CProviderBase implements PiGpioI2CP
         this.id = ID;
         this.name = NAME;
         this.piGpio = piGpio;
+        this.i2CBusMap = new HashMap<>();
     }
 
     @Override
     public int getPriority() {
-        // the pigpio I2C driver should be used over the default
-        return 100;
+        // the Pigpio driver should be higher priority when NOT on RP1 chip
+        return BoardInfoHelper.usesRP1() ? 50 : 100;
     }
 
     /**
@@ -67,11 +73,13 @@ public class PiGpioI2CProviderImpl extends I2CProviderBase implements PiGpioI2CP
     public I2C create(I2CConfig config) {
         synchronized (this.piGpio) {
             // initialize the PIGPIO library
-            if (!piGpio.isInitialized())
-                piGpio.initialize();
+            if (!this.piGpio.isInitialized())
+                this.piGpio.initialize();
+
+            PiGpioI2CBus i2CBus = this.i2CBusMap.computeIfAbsent(config.getBus(), busNr -> new PiGpioI2CBus(config));
 
             // create new I/O instance based on I/O config
-            PiGpioI2C i2C = new PiGpioI2C(piGpio, this, config);
+            PiGpioI2C i2C = new PiGpioI2C(this.piGpio, i2CBus, this, config);
             this.context.registry().add(i2C);
             return i2C;
         }

@@ -35,11 +35,16 @@ import com.pi4j.io.binding.BindingManager;
 import com.pi4j.io.binding.DigitalBinding;
 import com.pi4j.io.gpio.GpioBase;
 
+import java.util.function.Consumer;
+
 /**
  * <p>Abstract DigitalBase class.</p>
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @param <CONFIG_TYPE>
+ * @param <DIGITAL_TYPE>
+ * @param <PROVIDER_TYPE>
  */
 public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
         CONFIG_TYPE extends DigitalConfig<CONFIG_TYPE>,
@@ -73,6 +78,20 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
                 (binding, event) -> binding.process(event));
     }
 
+    @Override
+    public Consumer<Boolean> addConsumer(Consumer<Boolean> listener) {
+        addListener(new ConsumerAdapter(listener, config().onState() != null ? config().onState() : DigitalState.HIGH));
+        return listener;
+    }
+
+    @Override
+    public DIGITAL_TYPE removeConsumer(Consumer<Boolean> listener) {
+        stateChangeEventManager.remove(
+            (candidate) -> (candidate instanceof ConsumerAdapter)
+                && ((ConsumerAdapter) candidate).consumer == listener);
+        return (DIGITAL_TYPE) this;
+    }
+
     /** {@inheritDoc} */
     @Override
     public DIGITAL_TYPE addListener(DigitalStateChangeListener... listener) {
@@ -92,7 +111,7 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
     public DIGITAL_TYPE bind(DigitalBinding ... binding) {
         return bindings.bind(binding);
 
-        //bindings.addAll(Arrays.asList(binding));
+        //bindings.addAll(List.of(binding));
         //return (DIGITAL_TYPE)this;
     }
 
@@ -100,9 +119,14 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
     @Override
     public DIGITAL_TYPE unbind(DigitalBinding ... binding) {
         return bindings.unbind(binding);
-        //bindings.removeAll(Arrays.asList(binding));
+        //bindings.removeAll(List.of(binding));
         //return (DIGITAL_TYPE)this;
     }
+
+    public boolean hasListenersOrBindings() {
+        return stateChangeEventManager.hasListeners() || bindings.hasBindings();
+    }
+
 
     /**
      * Dispatch DigitalChangeEvent on digital input state changes
@@ -116,7 +140,7 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
 
     /** {@inheritDoc} */
     @Override
-    public DIGITAL_TYPE shutdown(Context context) throws ShutdownException {
+    public DIGITAL_TYPE shutdownInternal(Context context) throws ShutdownException {
         // remove all listeners
         stateChangeEventManager.clear();
 
@@ -140,5 +164,20 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
 
         // return TRUE if the current state matches the configured ON state
         return state().equals(onState);
+    }
+
+    private static class ConsumerAdapter implements DigitalStateChangeListener {
+        private final Consumer<Boolean> consumer;
+        private final DigitalState onState;
+
+        private ConsumerAdapter(Consumer<Boolean> consumer, DigitalState onState) {
+            this.consumer = consumer;
+            this.onState = onState;
+        }
+
+        @Override
+        public void onDigitalStateChange(DigitalStateChangeEvent event) {
+            consumer.accept(event.state().equals(onState));
+        }
     }
 }

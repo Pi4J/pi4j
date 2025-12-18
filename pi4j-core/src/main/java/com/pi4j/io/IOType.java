@@ -87,6 +87,7 @@ public enum IOType {
     public Class<? extends Provider> getProviderClass() {
         return providerClass;
     }
+
     /**
      * <p>getIOClass.</p>
      *
@@ -95,6 +96,7 @@ public enum IOType {
     public Class<? extends IO> getIOClass() {
         return ioClass;
     }
+
     /**
      * <p>Getter for the field <code>configClass</code>.</p>
      *
@@ -113,10 +115,10 @@ public enum IOType {
         return configBuilderClass;
     }
 
-    public <CB extends IOConfigBuilder>CB newConfigBuilder(Context context) {
+    public <CB extends IOConfigBuilder> CB newConfigBuilder(Context context) {
         try {
             Method newInstance = getConfigBuilderClass().getMethod("newInstance", Context.class);
-            return (CB)newInstance.invoke(null, context);
+            return (CB) newInstance.invoke(null, context);
         } catch (Exception e) {
             throw new Pi4JException(e);
         }
@@ -128,7 +130,7 @@ public enum IOType {
      * @param type a {@link com.pi4j.io.IOType} object.
      * @return a boolean.
      */
-    public boolean isType(IOType type){
+    public boolean isType(IOType type) {
         return type == this;
     }
 
@@ -138,9 +140,9 @@ public enum IOType {
      * @param type a {@link com.pi4j.io.IOType} object.
      * @return a {@link java.lang.Class} object.
      */
-    public static Class<? extends IO> getIOClass(IOType type){
-        for(var typeInstance : IOType.values()){
-            if(typeInstance.equals(type)){
+    public static Class<? extends IO> getIOClass(IOType type) {
+        for (var typeInstance : IOType.values()) {
+            if (typeInstance.equals(type)) {
                 return typeInstance.getIOClass();
             }
         }
@@ -153,9 +155,9 @@ public enum IOType {
      * @param type a {@link com.pi4j.io.IOType} object.
      * @return a {@link java.lang.Class} object.
      */
-    public static Class<? extends Provider> getProviderClass(IOType type){
-        for(var typeInstance : IOType.values()){
-            if(typeInstance.equals(type)){
+    public static Class<? extends Provider> getProviderClass(IOType type) {
+        for (var typeInstance : IOType.values()) {
+            if (typeInstance.equals(type)) {
                 return typeInstance.getProviderClass();
             }
         }
@@ -168,9 +170,9 @@ public enum IOType {
      * @param type a {@link com.pi4j.io.IOType} object.
      * @return a {@link java.lang.Class} object.
      */
-    public static Class<? extends IOConfig> getConfigClass(IOType type){
-        for(var typeInstance : IOType.values()){
-            if(typeInstance.equals(type)){
+    public static Class<? extends IOConfig> getConfigClass(IOType type) {
+        for (var typeInstance : IOType.values()) {
+            if (typeInstance.equals(type)) {
                 return typeInstance.getConfigClass();
             }
         }
@@ -183,9 +185,9 @@ public enum IOType {
      * @param name a {@link java.lang.String} object.
      * @return a {@link com.pi4j.io.IOType} object.
      */
-    public static IOType getByProviderClass(String name){
-        for(var type : IOType.values()){
-            if(type.name().equalsIgnoreCase(name)){
+    public static IOType getByProviderClass(String name) {
+        for (var type : IOType.values()) {
+            if (type.name().equalsIgnoreCase(name)) {
                 return type;
             }
         }
@@ -198,7 +200,7 @@ public enum IOType {
      * @param provider a {@link com.pi4j.provider.Provider} object.
      * @return a {@link com.pi4j.io.IOType} object.
      */
-    public static IOType getByIO(Provider provider){
+    public static IOType getByIO(Provider provider) {
         return provider.type();
     }
 
@@ -208,9 +210,9 @@ public enum IOType {
      * @param providerClass a {@link java.lang.Class} object.
      * @return a {@link com.pi4j.io.IOType} object.
      */
-    public static IOType getByProviderClass(Class<? extends Provider> providerClass){
-        for(var type : IOType.values()){
-            if(type.getProviderClass().isAssignableFrom(providerClass)){
+    public static IOType getByProviderClass(Class<? extends Provider> providerClass) {
+        for (var type : IOType.values()) {
+            if (type.getProviderClass().isAssignableFrom(providerClass)) {
                 return type;
             }
         }
@@ -223,7 +225,7 @@ public enum IOType {
      * @param io a {@link com.pi4j.io.IO} object.
      * @return a {@link com.pi4j.io.IOType} object.
      */
-    public static IOType getByIO(IO io){
+    public static IOType getByIO(IO io) {
         return io.type();
     }
 
@@ -233,9 +235,9 @@ public enum IOType {
      * @param ioClass a {@link java.lang.Class} object.
      * @return a {@link com.pi4j.io.IOType} object.
      */
-    public static IOType getByIOClass(Class<? extends IO> ioClass){
-        for(var type : IOType.values()){
-            if(type.getIOClass().isAssignableFrom(ioClass)){
+    public static IOType getByIOClass(Class<? extends IO> ioClass) {
+        for (var type : IOType.values()) {
+            if (type.getIOClass().isAssignableFrom(ioClass)) {
                 return type;
             }
         }
@@ -248,9 +250,9 @@ public enum IOType {
      * @param configClass a {@link java.lang.Class} object.
      * @return a {@link com.pi4j.io.IOType} object.
      */
-    public static IOType getByConfigClass(Class<? extends IOConfig> configClass){
-        for(var type : IOType.values()){
-            if(type.getConfigClass().isAssignableFrom(configClass)){
+    public static IOType getByConfigClass(Class<? extends IOConfig> configClass) {
+        for (var type : IOType.values()) {
+            if (type.getConfigClass().isAssignableFrom(configClass)) {
                 return type;
             }
         }
@@ -270,38 +272,39 @@ public enum IOType {
             if (iot != null) {
                 return iot;
             }
-        } catch (Exception e){}
+        } catch (Exception e) {
+        }
 
         // lower case the string for comparisons
         ioType = ioType.toLowerCase();
 
         // ANALOG INPUT
-        if(ioType.startsWith("analog.i")) return ANALOG_INPUT;
-        if(ioType.startsWith("analog-i")) return ANALOG_INPUT;
-        if(ioType.startsWith("analog_i")) return ANALOG_INPUT;
-        if(ioType.startsWith("analog i")) return ANALOG_INPUT;
-        if(ioType.equalsIgnoreCase("ain")) return ANALOG_INPUT;
+        if (ioType.startsWith("analog.i")) return ANALOG_INPUT;
+        if (ioType.startsWith("analog-i")) return ANALOG_INPUT;
+        if (ioType.startsWith("analog_i")) return ANALOG_INPUT;
+        if (ioType.startsWith("analog i")) return ANALOG_INPUT;
+        if (ioType.equalsIgnoreCase("ain")) return ANALOG_INPUT;
 
         // ANALOG OUTPUT
-        if(ioType.startsWith("analog.o")) return ANALOG_OUTPUT;
-        if(ioType.startsWith("analog-o")) return ANALOG_OUTPUT;
-        if(ioType.startsWith("analog_o")) return ANALOG_OUTPUT;
-        if(ioType.startsWith("analog o")) return ANALOG_OUTPUT;
-        if(ioType.equalsIgnoreCase("aout")) return ANALOG_OUTPUT;
+        if (ioType.startsWith("analog.o")) return ANALOG_OUTPUT;
+        if (ioType.startsWith("analog-o")) return ANALOG_OUTPUT;
+        if (ioType.startsWith("analog_o")) return ANALOG_OUTPUT;
+        if (ioType.startsWith("analog o")) return ANALOG_OUTPUT;
+        if (ioType.equalsIgnoreCase("aout")) return ANALOG_OUTPUT;
 
         // DIGITAL INPUT
-        if(ioType.startsWith("digital.i")) return DIGITAL_INPUT;
-        if(ioType.startsWith("digital-i")) return DIGITAL_INPUT;
-        if(ioType.startsWith("digital_i")) return DIGITAL_INPUT;
-        if(ioType.startsWith("digital i")) return DIGITAL_INPUT;
-        if(ioType.equalsIgnoreCase("din")) return DIGITAL_INPUT;
+        if (ioType.startsWith("digital.i")) return DIGITAL_INPUT;
+        if (ioType.startsWith("digital-i")) return DIGITAL_INPUT;
+        if (ioType.startsWith("digital_i")) return DIGITAL_INPUT;
+        if (ioType.startsWith("digital i")) return DIGITAL_INPUT;
+        if (ioType.equalsIgnoreCase("din")) return DIGITAL_INPUT;
 
         // DIGITAL OUTPUT
-        if(ioType.startsWith("digital.o")) return DIGITAL_OUTPUT;
-        if(ioType.startsWith("digital-o")) return DIGITAL_OUTPUT;
-        if(ioType.startsWith("digital_o")) return DIGITAL_OUTPUT;
-        if(ioType.startsWith("digital o")) return DIGITAL_OUTPUT;
-        if(ioType.equalsIgnoreCase("dout")) return DIGITAL_OUTPUT;
+        if (ioType.startsWith("digital.o")) return DIGITAL_OUTPUT;
+        if (ioType.startsWith("digital-o")) return DIGITAL_OUTPUT;
+        if (ioType.startsWith("digital_o")) return DIGITAL_OUTPUT;
+        if (ioType.startsWith("digital o")) return DIGITAL_OUTPUT;
+        if (ioType.equalsIgnoreCase("dout")) return DIGITAL_OUTPUT;
 
         // DIGITAL MULTIPURPOSE
         if(ioType.startsWith("digital.m")) return DIGITAL_MULTIPURPOSE;
@@ -313,38 +316,38 @@ public enum IOType {
         if(ioType.equalsIgnoreCase("dmulti-purpose")) return DIGITAL_MULTIPURPOSE;
 
         // PWM
-        if(ioType.equalsIgnoreCase("pwm")) return PWM;
-        if(ioType.equalsIgnoreCase("p.w.m")) return PWM;
-        if(ioType.equalsIgnoreCase("p-w-m")) return PWM;
-        if(ioType.equalsIgnoreCase("p_w_m")) return PWM;
-        if(ioType.startsWith("pulse.width")) return PWM;
-        if(ioType.startsWith("pulse-width")) return PWM;
-        if(ioType.startsWith("pulse_width")) return PWM;
-        if(ioType.startsWith("pulse width")) return PWM;
+        if (ioType.equalsIgnoreCase("pwm")) return PWM;
+        if (ioType.equalsIgnoreCase("p.w.m")) return PWM;
+        if (ioType.equalsIgnoreCase("p-w-m")) return PWM;
+        if (ioType.equalsIgnoreCase("p_w_m")) return PWM;
+        if (ioType.startsWith("pulse.width")) return PWM;
+        if (ioType.startsWith("pulse-width")) return PWM;
+        if (ioType.startsWith("pulse_width")) return PWM;
+        if (ioType.startsWith("pulse width")) return PWM;
 
         // I2C
-        if(ioType.equalsIgnoreCase("i²c")) return I2C;
-        if(ioType.equalsIgnoreCase("i2c")) return I2C;
-        if(ioType.equalsIgnoreCase("i.2.c")) return I2C;
-        if(ioType.equalsIgnoreCase("i-2-c")) return I2C;
-        if(ioType.equalsIgnoreCase("i_2_c")) return I2C;
-        if(ioType.equalsIgnoreCase("i 2 c")) return I2C;
-        if(ioType.equalsIgnoreCase("inter.integrated.circuit")) return I2C;
-        if(ioType.equalsIgnoreCase("inter-integrated-circuit")) return I2C;
-        if(ioType.equalsIgnoreCase("inter_integrated_circuit")) return I2C;
-        if(ioType.equalsIgnoreCase("inter integrated circuit")) return I2C;
+        if (ioType.equalsIgnoreCase("i²c")) return I2C;
+        if (ioType.equalsIgnoreCase("i2c")) return I2C;
+        if (ioType.equalsIgnoreCase("i.2.c")) return I2C;
+        if (ioType.equalsIgnoreCase("i-2-c")) return I2C;
+        if (ioType.equalsIgnoreCase("i_2_c")) return I2C;
+        if (ioType.equalsIgnoreCase("i 2 c")) return I2C;
+        if (ioType.equalsIgnoreCase("inter.integrated.circuit")) return I2C;
+        if (ioType.equalsIgnoreCase("inter-integrated-circuit")) return I2C;
+        if (ioType.equalsIgnoreCase("inter_integrated_circuit")) return I2C;
+        if (ioType.equalsIgnoreCase("inter integrated circuit")) return I2C;
 
         // SPI
-        if(ioType.equalsIgnoreCase("spi")) return SPI;
-        if(ioType.equalsIgnoreCase("serial.peripheral.interface")) return SPI;
-        if(ioType.equalsIgnoreCase("serial-peripheral-interface")) return SPI;
-        if(ioType.equalsIgnoreCase("serial_peripheral_interface")) return SPI;
-        if(ioType.equalsIgnoreCase("serial peripheral interface")) return SPI;
+        if (ioType.equalsIgnoreCase("spi")) return SPI;
+        if (ioType.equalsIgnoreCase("serial.peripheral.interface")) return SPI;
+        if (ioType.equalsIgnoreCase("serial-peripheral-interface")) return SPI;
+        if (ioType.equalsIgnoreCase("serial_peripheral_interface")) return SPI;
+        if (ioType.equalsIgnoreCase("serial peripheral interface")) return SPI;
 
         // SERIAL
-        if(ioType.equalsIgnoreCase("serial")) return SERIAL;
-        if(ioType.equalsIgnoreCase("uart")) return SERIAL;
-        if(ioType.equalsIgnoreCase("rs232")) return SERIAL;
+        if (ioType.equalsIgnoreCase("serial")) return SERIAL;
+        if (ioType.equalsIgnoreCase("uart")) return SERIAL;
+        if (ioType.equalsIgnoreCase("rs232")) return SERIAL;
 
 
         throw new IllegalArgumentException("Unknown IO TYPE: " + ioType);

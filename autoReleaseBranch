@@ -80,7 +80,7 @@ if [ "${source_branch}" == "${branch}" ] ; then
   echo "INFO: Source and release branch are the same not merging: ${source_branch}"
 else
   echo "INFO: Merging ${source_branch}..."
-  if ! GIT_EDITOR=: git merge ${source_branch} ; then
+  if ! GIT_EDITOR=: git merge "${source_branch}" ; then
     echo "ERROR: Failed to prepare repo for auto release!"
     exit 1
   fi
@@ -110,7 +110,7 @@ fi
 
 # push changes to origin
 echo "INFO: Pushing ${branch} to origin..."
-if ! git push origin ${branch} ; then
+if ! git push origin "${branch}" ; then
   echo "ERROR: Failed to push ${branch} to origin."
   exit 1
 fi

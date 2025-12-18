@@ -214,7 +214,7 @@ fi
 
 # build
 echo -e "\nINFO: Doing a build with new version..."
-if ! mvn clean package -DskipTests ${MVN_PROFILES} > "${logFile}" ; then
+if ! mvn clean package -DskipTests "${MVN_PROFILES}" > "${logFile}" ; then
   echo -e "ERROR: Failed to build with new version!"
   exit 1
 fi
@@ -242,7 +242,7 @@ if ! git checkout "${newVersion}" ; then
   echo -e "ERROR: Failed to checkout tag ${newVersion}"
   exit 1
 fi
-if ! mvn source:jar install -DskipTests ${MVN_PROFILES} > /dev/null ; then
+if ! mvn source:jar install -DskipTests "${MVN_PROFILES}" > /dev/null ; then
   echo -e "ERROR: Failed to install new version!"
   exit 1
 fi

@@ -48,9 +48,6 @@ public abstract class SpiBase extends IOBase<Spi, SpiConfig, SpiProvider> implem
      */
     public SpiBase(SpiProvider provider, SpiConfig config) {
         super(provider, config);
-        this.name = config.name();
-        this.id = config.id();
-        this.description = config.description();
     }
 
     /** {@inheritDoc} */

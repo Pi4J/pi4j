@@ -32,7 +32,7 @@ fi
 
 # Verify tag
 echo -e "\nINFO: Verifying tag ${releaseVersion}\n\n"
-if ! git tag --verify ${releaseVersion} ; then
+if ! git tag --verify "${releaseVersion}" ; then
   echo -e "ERROR: Failed to verify tag ${releaseVersion}"
   exit 1
 fi
@@ -43,14 +43,14 @@ current_branch=$(pwb)
 
 # Checkout tag
 echo -e "\nINFO: Checking out tag ${releaseVersion}"
-if ! git checkout ${releaseVersion} ; then
+if ! git checkout "${releaseVersion}" ; then
   echo -e "ERROR: Failed to checkout tag ${releaseVersion}"
   exit 1
 fi
 
 # cleanup trap
 function cleanup {
-  if ! git checkout ${current_branch} ; then
+  if ! git checkout "${current_branch}" ; then
     echo "ERROR: Failed to checkout previous branch ${current_branch}"
     exit 1
   fi
@@ -60,7 +60,7 @@ trap cleanup EXIT
 # Build and deploy
 echo -e "\nINFO: Building and deploying to Maven Central..."
 export MAVEN_OPTS="--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED"
-if ! mvn clean deploy -DskipTests -Pdeploy -Dgpg.keyname=${gpgKeyName} ; then
+if ! mvn clean deploy -DskipTests "${MVN_PROFILES}" -Pdeploy "-Dgpg.keyname=${gpgKeyName}" ; then
   echo -e "ERROR: Failed to build and deploy to Maven Central!"
   exit 1
 fi

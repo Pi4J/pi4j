@@ -28,6 +28,7 @@ package com.pi4j.io.i2c.impl;
 import com.pi4j.config.exception.ConfigMissingRequiredKeyException;
 import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.io.i2c.I2CConfig;
+import com.pi4j.io.i2c.I2CImplementation;
 import com.pi4j.io.impl.IOConfigBase;
 import com.pi4j.util.StringUtil;
 
@@ -40,17 +41,18 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public class DefaultI2CConfig
-        extends IOConfigBase<I2CConfig>
-        implements I2CConfig {
+    extends IOConfigBase<I2CConfig>
+    implements I2CConfig {
 
     // private configuration properties
     protected Integer bus = null;
     protected Integer device = null;
+    protected I2CImplementation i2cImplementation = null;
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    private DefaultI2CConfig(){
+    private DefaultI2CConfig() {
         super();
     }
 
@@ -62,21 +64,28 @@ public class DefaultI2CConfig
      *
      * @param properties a {@link java.util.Map} object.
      */
-    protected DefaultI2CConfig(Map<String,String> properties){
+    protected DefaultI2CConfig(Map<String, String> properties) {
         super(properties);
 
         // load (required) BUS property
-        if(properties.containsKey(BUS_KEY)){
+        if (properties.containsKey(BUS_KEY)) {
             this.bus = Integer.parseInt(properties.get(BUS_KEY));
         } else {
             throw new ConfigMissingRequiredKeyException(BUS_KEY);
         }
 
         // load (required) DEVICE property
-        if(properties.containsKey(DEVICE_KEY)){
+        if (properties.containsKey(DEVICE_KEY)) {
             this.device = Integer.parseInt(properties.get(DEVICE_KEY));
         } else {
             throw new ConfigMissingRequiredKeyException(DEVICE_KEY);
+        }
+
+        // i2c implementation
+        if (properties.containsKey(I2C_IMPLEMENTATION)) {
+            this.i2cImplementation = I2CImplementation.valueOf(properties.get(I2C_IMPLEMENTATION));
+        } else {
+            this.i2cImplementation = I2CImplementation.SMBUS;
         }
 
         // define default property values if any are missing (based on the required address value)
@@ -85,15 +94,32 @@ public class DefaultI2CConfig
         this.description = StringUtil.setIfNullOrEmpty(this.description, "I2C-" + this.bus() + "." + this.device(), true);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Integer bus() {
         return this.bus;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Integer device() {
         return this.device;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getUniqueIdentifier() {
+        return (bus() << 8) + device();
+    }
+
+    @Override
+    public I2CImplementation i2cImplementation() {
+        return i2cImplementation;
     }
 }

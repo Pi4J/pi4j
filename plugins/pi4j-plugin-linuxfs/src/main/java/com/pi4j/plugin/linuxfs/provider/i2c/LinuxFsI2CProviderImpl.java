@@ -27,9 +27,12 @@ package com.pi4j.plugin.linuxfs.provider.i2c;
  * #L%
  */
 
-import com.pi4j.io.exception.IOAlreadyExistsException;
+
+import com.pi4j.context.Context;
+import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfig;
+import com.pi4j.io.i2c.I2CProvider;
 import com.pi4j.io.i2c.I2CProviderBase;
 
 import java.util.HashMap;
@@ -47,8 +50,8 @@ public class LinuxFsI2CProviderImpl extends I2CProviderBase implements LinuxFsI2
 
     @Override
     public int getPriority() {
-        // the linux FS I2C driver should be used over the pigpio
-        return 150;
+       // the linux FS driver should always be higher priority
+       return 150;
     }
 
     @Override
@@ -56,9 +59,14 @@ public class LinuxFsI2CProviderImpl extends I2CProviderBase implements LinuxFsI2
         LinuxFsI2CBus i2CBus = this.i2CBusMap.computeIfAbsent(config.getBus(), busNr -> new LinuxFsI2CBus(config));
         // create new I/O instance based on I/O config
         LinuxFsI2C i2C = new LinuxFsI2C(i2CBus, this, config);
-        // Workaround, needed if first LinuxFsI2C usage is ioctl (readRegister or writeRegister)
-        i2C.read();
         this.context.registry().add(i2C);
         return i2C;
+    }
+
+    @Override
+    public I2CProvider shutdownInternal(Context context) throws ShutdownException {
+        this.i2CBusMap.forEach(((busNr, bus) -> bus.close()));
+        this.i2CBusMap.clear();
+        return super.shutdownInternal(context);
     }
 }

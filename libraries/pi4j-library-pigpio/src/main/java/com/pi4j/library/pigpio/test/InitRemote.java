@@ -70,12 +70,12 @@ public class InitRemote {
         logger.info("-----------------------------------------------------");
         int init = piGpio.gpioInitialise();
         if(init < 0){
-            logger.error("ERROR; PIGPIO INIT FAILED; ERROR CODE: " + init);
+            logger.error("ERROR; PIGPIO INIT FAILED; ERROR CODE: {}", init);
         } else {
             logger.info("PIGPIO INITIALIZED SUCCESSFULLY");
         }
-        logger.info("PIGPIO VERSION   : " + piGpio.gpioVersion());
-        logger.info("PIGPIO HARDWARE  : " + Long.toHexString(piGpio.gpioHardwareRevision()));
+        logger.info("PIGPIO VERSION   : {}", piGpio.gpioVersion());
+        logger.info("PIGPIO HARDWARE  : {}", Long.toHexString(piGpio.gpioHardwareRevision()));
         piGpio.gpioTerminate();
         logger.info("PIGPIO TERMINATED");
         logger.info("-----------------------------------------------------");

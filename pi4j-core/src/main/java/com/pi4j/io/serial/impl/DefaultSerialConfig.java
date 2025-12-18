@@ -26,7 +26,7 @@ package com.pi4j.io.serial.impl;
  */
 
 import com.pi4j.io.gpio.digital.PullResistance;
-import com.pi4j.io.impl.IODeviceConfigBase;
+import com.pi4j.io.impl.IOPortConfigBase;
 import com.pi4j.io.serial.*;
 import com.pi4j.util.StringUtil;
 
@@ -39,8 +39,8 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public class DefaultSerialConfig
-        extends IODeviceConfigBase<SerialConfig>
-        implements SerialConfig {
+    extends IOPortConfigBase<SerialConfig>
+    implements SerialConfig {
 
     // private configuration properties
     protected final Integer baud;
@@ -57,77 +57,88 @@ public class DefaultSerialConfig
      *
      * @param properties a {@link java.util.Map} object.
      */
-    protected DefaultSerialConfig(Map<String,String> properties){
+    protected DefaultSerialConfig(Map<String, String> properties) {
         super(properties);
 
         // define default property values if any are missing (based on the required address value)
-        this.id = StringUtil.setIfNullOrEmpty(this.id, "SERIAL-" + this.device, true);
-        this.name = StringUtil.setIfNullOrEmpty(this.name, "SERIAL-" + this.device, true);
-        this.description = StringUtil.setIfNullOrEmpty(this.description, "SERIAL-" + this.device, true);
+        this.id = StringUtil.setIfNullOrEmpty(this.id, "SERIAL-" + this.port, true);
+        this.name = StringUtil.setIfNullOrEmpty(this.name, "SERIAL-" + this.port, true);
+        this.description = StringUtil.setIfNullOrEmpty(this.description, "SERIAL-" + this.port, true);
 
         // load optional BAUD RATE from properties
-        if(properties.containsKey(BAUD_KEY)){
+        if (properties.containsKey(BAUD_KEY)) {
             this.baud = StringUtil.parseInteger(properties.get(BAUD_KEY), Serial.DEFAULT_BAUD);
         } else {
             this.baud = Serial.DEFAULT_BAUD;
         }
 
         // load optional DATA BITS from properties
-        if(properties.containsKey(DATA_BITS_KEY)){
+        if (properties.containsKey(DATA_BITS_KEY)) {
             this.dataBits = DataBits.parse(properties.get(DATA_BITS_KEY));
         } else {
             this.dataBits = Serial.DEFAULT_DATA_BITS;
         }
 
         // load optional PARITY from properties
-        if(properties.containsKey(PARITY_KEY)){
+        if (properties.containsKey(PARITY_KEY)) {
             this.parity = Parity.parse(properties.get(PARITY_KEY));
         } else {
             this.parity = Serial.DEFAULT_PARITY;
         }
 
         // load optional STOP BITS from properties
-        if(properties.containsKey(STOP_BITS_KEY)){
+        if (properties.containsKey(STOP_BITS_KEY)) {
             this.stopBits = StopBits.parse(properties.get(STOP_BITS_KEY));
         } else {
             this.stopBits = Serial.DEFAULT_STOP_BITS;
         }
 
         // load optional FLOW CONTROL from properties
-        if(properties.containsKey(FLOW_CONTROL_KEY)){
+        if (properties.containsKey(FLOW_CONTROL_KEY)) {
             this.flowControl = FlowControl.parse(properties.get(FLOW_CONTROL_KEY));
         } else {
             this.flowControl = Serial.DEFAULT_FLOW_CONTROL;
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Integer baud() {
         return this.baud;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public StopBits stopBits() {
         return this.stopBits;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public DataBits dataBits() {
         return this.dataBits;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Parity parity() {
         return this.parity;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public FlowControl flowControl() {
         return this.flowControl;
     }
+
 }

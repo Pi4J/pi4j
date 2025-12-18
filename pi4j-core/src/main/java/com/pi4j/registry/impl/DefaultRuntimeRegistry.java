@@ -25,10 +25,10 @@ package com.pi4j.registry.impl;
  * #L%
  */
 
-import com.pi4j.config.AddressConfig;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.LifecycleException;
 import com.pi4j.io.IO;
+import com.pi4j.io.IOType;
 import com.pi4j.io.exception.*;
 import com.pi4j.runtime.Runtime;
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
     private static final Logger logger = LoggerFactory.getLogger(DefaultRuntimeRegistry.class);
     private Runtime runtime;
     private final Map<String, IO> instances;
-    private final Set<Integer> usedAddresses;
+    private final Map<IOType, Set<Integer>> usedAddressesByIoType;
 
     // static singleton instance
 
@@ -58,7 +58,6 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
      * <p>newInstance.</p>
      *
      * @param runtime a {@link com.pi4j.runtime.Runtime} object.
-     *
      * @return a {@link com.pi4j.registry.impl.RuntimeRegistry} object.
      */
     public static RuntimeRegistry newInstance(Runtime runtime) {
@@ -69,36 +68,34 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
     private DefaultRuntimeRegistry(Runtime runtime) {
         // set local runtime reference
         this.instances = new HashMap<>();
-        this.usedAddresses = new HashSet<>();
+        this.usedAddressesByIoType = new HashMap<>();
         this.runtime = runtime;
     }
 
     @Override
     public synchronized RuntimeRegistry add(IO instance) throws IOInvalidIDException, IOAlreadyExistsException {
 
-        // validate target I/O instance id
-        String _id = validateId(instance.id());
+        // Validate target I/O instance id
+        String id = validateId(instance.id());
 
-        // first test to make sure this id does not already exist in the registry
-        if (instances.containsKey(_id))
-            throw new IOAlreadyExistsException(_id);
-        if (instance.config() instanceof AddressConfig<?>) {
-            AddressConfig<?> addressConfig = (AddressConfig<?>) instance.config();
-            if (exists(addressConfig.address())) {
-                throw new IOAlreadyExistsException(addressConfig.address());
-            }
-            this.usedAddresses.add(addressConfig.address());
+        // First test to make sure this id does not already exist in the registry
+        if (instances.containsKey(id)) {
+            throw new IOAlreadyExistsException(id);
         }
 
-        // add instance to collection
+        // Second check by IO Type and the unique identifier
+        if (exists(instance.type(), instance.config().getUniqueIdentifier())) {
+            throw new IOAlreadyExistsException(instance.config().getUniqueIdentifier());
+        }
+        Set<Integer> usedAddresses = this.usedAddressesByIoType.computeIfAbsent(instance.type(), _ -> new HashSet<>());
+        usedAddresses.add(instance.config().getUniqueIdentifier());
+
+        // Add the instance to the collection
         try {
             instance.initialize(this.runtime.context());
-            instances.put(_id, instance);
+            instances.put(id, instance);
         } catch (InitializeException e) {
-            if (instance.config() instanceof AddressConfig<?>) {
-                AddressConfig<?> addressConfig = (AddressConfig<?>) instance.config();
-                this.usedAddresses.remove(addressConfig.address());
-            }
+            removeFromMap(instance);
             throw new IllegalStateException("Failed to initialize IO " + instance.getId(), e);
         }
 
@@ -140,34 +137,51 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
     public synchronized <T extends IO> T remove(String id)
         throws IONotFoundException, IOInvalidIDException, IOShutdownException {
         String _id = validateId(id);
-        IO shutdownInstance = null;
 
         // first test to make sure this id is included in the registry
         if (!exists(_id))
             throw new IONotFoundException(_id);
 
-        // shutdown instance
-        try {
-            long start = System.currentTimeMillis();
-            shutdownInstance = instances.get(_id);
-            shutdownInstance.shutdown(runtime.context());
-            long took = System.currentTimeMillis() - start;
-            if (took > 10)
-                logger.warn("Shutting down of IO " + shutdownInstance.getId() + " took " + took + "ms");
-        } catch (LifecycleException e) {
-            logger.error(e.getMessage(), e);
-            throw new IOShutdownException(shutdownInstance, e);
-        }
-
-        // remove the shutdown instance from the registry
-        if (shutdownInstance.config() instanceof AddressConfig<?>) {
-            AddressConfig<?> addressConfig = (AddressConfig<?>) shutdownInstance.config();
-            this.usedAddresses.remove(addressConfig.address());
-        }
-        this.instances.remove(_id);
+        IO shutdownInstance = instances.get(_id);
+        remove(shutdownInstance);
 
         // return the shutdown I/O provider instances
         return (T) shutdownInstance;
+    }
+
+    @Override
+    public <T extends IO> void remove(T instance)
+        throws IONotFoundException, IOInvalidIDException, IOShutdownException {
+        if (instance == null)
+            throw new IllegalArgumentException("An IO instance cannot be NULL.");
+
+        // shutdown instance
+        try {
+            long start = System.currentTimeMillis();
+
+            instance.shutdownInternal(runtime.context());
+            long took = System.currentTimeMillis() - start;
+            if (took > 10) {
+                logger.info("Shutting down of IO {} took {}ms", instance.getId(), took);
+            }
+        } catch (LifecycleException e) {
+            logger.error(e.getMessage(), e);
+            throw new IOShutdownException(instance, e);
+        }
+
+        // remove the shutdown instance from the registry
+        removeFromMap(instance);
+
+        this.instances.remove(instance.id());
+    }
+
+    private <T extends IO> void removeFromMap(T instance) {
+        Set<Integer> usedAddresses = this.usedAddressesByIoType.get(instance.type());
+        if (usedAddresses == null)
+            return;
+        usedAddresses.remove(instance.config().getUniqueIdentifier());
+        if (usedAddresses.isEmpty())
+            this.usedAddressesByIoType.remove(instance.type());
     }
 
     /**
@@ -187,8 +201,9 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
     }
 
     @Override
-    public synchronized boolean exists(int address) {
-        return usedAddresses.contains(address);
+    public synchronized boolean exists(IOType ioType, int identifier) {
+        Set<Integer> usedAddresses = this.usedAddressesByIoType.get(ioType);
+        return usedAddresses != null && usedAddresses.contains(identifier);
     }
 
     /**
