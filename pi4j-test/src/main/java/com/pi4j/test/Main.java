@@ -66,6 +66,7 @@ public class Main {
     private static final int ID_VALUE_MSK_BME = 0x60;   // expected chpId value BME280
     private static final int BMP_I2C_BUS = 1;
     private static final int BMP_I2C_ADDR = 0x76;
+
     private static final String FFM_PROVIDER = "ffm";
     private static final String LINUXFS_PROVIDER = "linuxfs";
 
@@ -182,7 +183,7 @@ public class Main {
 
         if (pc.getProviderGroupName().equals(FFM_PROVIDER)) {
             logger.info("SKIP test, no interface in FFM");
-            return true ;
+            return true;
         }
         Spi spi = createSPIDevice();
         final int chipId = 0xD0;
@@ -237,18 +238,18 @@ public class Main {
         return (state == DigitalState.HIGH);
     }
 
-    private static boolean testSerial()
-    {
+    private static boolean testSerial() {
         logger.info("Enter; testSerial ");
         if (pc.getProviderGroupName().equals(LINUXFS_PROVIDER)) {
             logger.info("SKIP test, not in LINUXFS");
-            return true ;
+            return true;
         }
         final SerialReader[] serialReader = new SerialReader[1];
 
-        String testData = "serial_test serial_test serial_test serial_test  " ;
+        String testData = "serial_test serial_test serial_test serial_test  ";
         Serial txPort = createSerialDevice();
-        txPort.open();;
+        txPort.open();
+        ;
         logger.info("about to create runnable");
         Runnable runnable = new Runnable() {
             @Override
@@ -277,11 +278,11 @@ public class Main {
         };
         logger.info("about to start runnable");
         runnable.run();
-        for (int i = 0 ; i <10; i++) {
+        for (int i = 0; i < 10; i++) {
             txPort.write(testData);
-         }
+        }
         // allow time for the serail reader to process incoming data
-         try {
+        try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -289,9 +290,9 @@ public class Main {
         serialReader[0].stopReading();
         String read = serialReader[0].getReadData();
         return (read.indexOf(testData) > -1) ? true : false;
-  }
+    }
 
-    private static Serial createSerialDevice(){
+    private static Serial createSerialDevice() {
 
         //Object StopBits;
         Serial serial = pi4j.create(Serial.newConfigBuilder(pi4j)
@@ -302,7 +303,7 @@ public class Main {
             .flowControl(FlowControl.NONE)
             .id("smokeTest port")
             .port("/dev/ttyAMA0")       //serial0")    // /dev/ttyAMA0  /dev/ttyS0
-            .provider(pc.getSerialName())
+            .provider(pc.getSerialProviderName())
             .build());
 
 
@@ -318,7 +319,7 @@ public class Main {
             .device(BMP_I2C_ADDR)
             .id(id + " " + name)
             .name(name)
-            .provider(pc.getI2cName())
+            .provider(pc.getI2cProviderName())
             .build();
         I2C i2c = pi4j.create(i2cDeviceConfig);
         return i2c;
@@ -335,7 +336,7 @@ public class Main {
             .chipSelect(SpiChipSelect.CS_0)
             .baud(Spi.DEFAULT_BAUD)    // Max 10MHz
             .mode(SpiMode.MODE_0)
-            .provider(pc.getSpiName())
+            .provider(pc.getSpiProviderName())
             .build();
         Spi spi = pi4j.create(spiConfig);
         return spi;
@@ -343,7 +344,7 @@ public class Main {
 
     private static DigitalInput createDigitalInput(int bcm, PullResistance pull) {
 
-        var inputConfig3 = DigitalInput.newConfigBuilder(pi4j).bcm(bcm).pull(pull).provider(pc.getInPinName());
+        var inputConfig3 = DigitalInput.newConfigBuilder(pi4j).bcm(bcm).pull(pull).provider(pc.getDigitalInputProviderName());
         return pi4j.create(inputConfig3);
     }
 
@@ -353,7 +354,7 @@ public class Main {
             .bcm(bcm)
             .initial(initial)
             .shutdown(shutDown)
-            .provider(pc.getOutPinName());
+            .provider(pc.getDigitalOutputProviderName());
         return pi4j.create(outputConfig3);
     }
 
@@ -371,7 +372,7 @@ public class Main {
             .newConfigBuilder(pi4j)
             .channel(channel)
             .pwmType(PwmType.HARDWARE)
-            .provider(pc.getPwmName())
+            .provider(pc.getPwmProviderName())
             .initial(50)
             .frequency(1)
             .chip(chip)
@@ -391,10 +392,12 @@ public class Main {
         Context pi4j = null;
         String group = null;
 
-        ProviderContext() {
-            pi4j = Pi4J.newAutoContext();
-            group = LINUXFS_PROVIDER;
-        }
+        private String i2cProviderName = "";
+        private String spiProviderName = "";
+        private String pwmProviderName = "";
+        private String digitalOutputProviderName = "";
+        private String digitalInputProviderName = "";
+        private String serialProviderName = "";
 
         /**
          *
@@ -412,12 +415,12 @@ public class Main {
                     .add(LinuxFsI2CProvider.newInstance())
                     .add(LinuxFsSpiProvider.newInstance())
                     .build();
-                i2cName = "linuxfs-i2c";
-                spiName = "linuxfs-spi";
-                pwmName = "linuxfs-pwm";
-                outPinName = "gpiod-digital-output";
-                inPinName = "gpiod-digital-input";
-                serialName = "NONE-serial";
+                i2cProviderName = "linuxfs-i2c";
+                spiProviderName = "linuxfs-spi";
+                pwmProviderName = "linuxfs-pwm";
+                digitalOutputProviderName = "gpiod-digital-output";
+                digitalInputProviderName = "gpiod-digital-input";
+                serialProviderName = "NONE-serial";
             } else if (group == FFM_PROVIDER) {
                 pi4j = Pi4J.newContextBuilder()
                     .add(new DigitalOutputFFMProviderImpl())
@@ -427,52 +430,46 @@ public class Main {
                     .add(new PwmFFMProviderImpl())
                     .add(new SerialFFMProviderImpl())
                     .build();
-                i2cName = "ffm-i2c";
-                spiName = "ffm-spi";
-                pwmName = "ffm-pwm";
-                outPinName = "ffm-digital-output";
-                inPinName = "ffm-digital-input";
-                serialName = "ffm-serial";
+                i2cProviderName = "ffm-i2c";
+                spiProviderName = "ffm-spi";
+                pwmProviderName = "ffm-pwm";
+                digitalOutputProviderName = "ffm-digital-output";
+                digitalInputProviderName = "ffm-digital-input";
+                serialProviderName = "ffm-serial";
             }
         }
 
-        private String getProviderGroupName() { return group ;}
+        public String getProviderGroupName() {
+            return group;
+        }
 
-        private Context getContext() {
+        public Context getContext() {
             return pi4j;
         }
 
-        private String i2cName = "";
-        private String spiName = "";
-        private String pwmName = "";
-        private String outPinName = "";
-        private String inPinName = "";
-        private String serialName = "";
-
-        private String getI2cName() {
-            return i2cName;
+        public String getI2cProviderName() {
+            return i2cProviderName;
         }
 
-        private String getSpiName() {
-            return spiName;
+        public String getSpiProviderName() {
+            return spiProviderName;
         }
 
-        private String getPwmName() {
-            return pwmName;
+        public String getPwmProviderName() {
+            return pwmProviderName;
         }
 
-        private String getOutPinName() {
-            return outPinName;
+        public String getDigitalOutputProviderName() {
+            return digitalOutputProviderName;
         }
 
-        private String getInPinName() {
-            return inPinName;
+        public String getDigitalInputProviderName() {
+            return digitalInputProviderName;
         }
 
-        private String getSerialName() {
-            return serialName;
+        public String getSerialProviderName() {
+            return serialProviderName;
         }
-
     }
 
     /* Listener class        */
@@ -493,6 +490,7 @@ public class Main {
             }
         }
     }
+
     private static class SerialReader implements Runnable {
 
         private final Serial serial;
@@ -522,8 +520,7 @@ public class Main {
                         for (int i = 0; i < available; i++) {
                             byte b = (byte) br.read();
                             if (b < 32) {
-                                // All non-string bytes are ignored
-                                ;
+                                //logger.info("All non-string bytes are ignored");
                             } else {
                                 line += (char) b;
                                 //logger.info("line: '" + line + "'");
@@ -539,9 +536,8 @@ public class Main {
             }
         }
 
-        private String getReadData(){
+        private String getReadData() {
             return line;
         }
     }
-
 }
