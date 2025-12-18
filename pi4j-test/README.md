@@ -19,7 +19,7 @@ enable_uart=1
 
 ## Wiring
 
-Two BMP280 or BME280 are used as they are available as PCBs with both I2C and SPI interfaces. Some other wiring is added to connect GPIOs to each other for other types of communication. 
+Two BMP280 or BME280 are used as they are available as PCBs with both I2C and SPI interfaces. Some other wiring is added to connect GPIOs to each other, to test different types of communication. 
 
 ![Wiring diagram](wiring/wiring-diagram.png)
 
