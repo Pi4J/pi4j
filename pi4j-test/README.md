@@ -25,6 +25,11 @@ Two BMP280 or BME280 are used as they are available as PCBs with both I2C and SP
 
 ![Example setup](wiring/test-setup.jpg)
 
+Used for the wiring diagram:
+
+* Fritzing
+* [Adafruit T-cobbler](https://github.com/adafruit/Fritzing-Library/blob/master/parts/Adafruit%20T-Cobbler%20Plus.fzpz)
+
 ### Components
 
 * Breadboard
@@ -46,24 +51,24 @@ but your sensor may use different letter designations. Also, the are BMP sensors
 
 **I2C**
 
-| RPi Pin | Number | BCM | Color     | Sensor |
-|:--------|:------:|:---:|:----------|:-------|
-| 3.3V    | 1      |  -  | Red       | Vin    |
-| Gnd     | 9      |  -  | Black     | Gnd    |
-| SDA     | 3      |  2  | Orange    | SDA    |
-| SCL     | 5      |  3  | Yellow    | SCK    |
-| 3.3v    | 1      |  -  | Red       | CS     |
+| RPi Pin | Number | BCM | Color     | Sensor     |
+|:--------|:------:|:---:|:----------|:-----------|
+| 3.3V    | 1      |  -  | Red       | Vin or Vcc or 3.3V        |
+| Gnd     | 9      |  -  | Black     | Gnd        |
+| SDA     | 3      |  2  | Orange    | SDA        |
+| SCL     | 5      |  3  | Yellow    | SCK or SCL |
+| 3.3v    | 1      |  -  | Red       | CS         |
 
 **SPI** connection using 4-wire SPI
 
-| RPi Pin   | Number | BCM | Color   | Sensor  |
-|:----------|:------:|:---:|:--------|:--------|
-| MOSI      |   19   | 10  | Blue    | SDA     |
-| MISO      |   21   |  9  | Purple  | SDO     |
-| SCLK      |   23   | 11  | Green   | SCK/SCL |
-| SPICE0    |   24   |  8  | Yellow  | CS      |
-| Gnd       |   9    |  -  | Black   | GND     |
-| 3.3V      |  17    | -   | Red     | Vin/Vcc |
+| RPi Pin | Number | BCM | Color   | Sensor             |
+|:--------|:------:|:---:|:--------|:-------------------|
+| MOSI    |   19   | 10  | Blue    | SDA or SDI         |
+| MISO    |   21   |  9  | Purple  | SDO                |
+| SCLK    |   23   | 11  | Green   | SCK or SCL         |
+| SPI CE0 |   24   |  8  | Yellow  | CS                 |
+| Gnd     |   9    |  -  | Black   | GND                |
+| 3.3V    |   1    |  -  | Red     | Vin or Vcc or 3.3V |
 
 ### Direct Wiring
 
