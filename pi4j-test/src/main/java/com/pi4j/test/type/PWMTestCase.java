@@ -37,6 +37,8 @@ public class PWMTestCase extends TestCase {
         Thread.sleep(10000);  // wait 10 seconds while listener counts flashes
         pwm.off();
 
+        pwm.close();
+
         if (pwmFlashes == expected) {
             return new TestResult("PWM " + frequency + " " + dutyCycle, true, "Correct number of flashes detected");
         } else {
