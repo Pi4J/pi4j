@@ -70,7 +70,7 @@ public class SPITest {
             var result = spi.write((byte) 0x1C);
             assertEquals(1, result);
 
-            result = spi.write("Test" .getBytes(), 0, 4);
+            result = spi.write(("Test").getBytes(), 0, 4);
             assertEquals(4, result);
         }
     }
@@ -80,9 +80,9 @@ public class SPITest {
         var spiTestData = new IoctlNativeMock.IoctlTestData(SpiTransferBuffer.class, (answer) -> {
             SpiTransferBuffer buffer = answer.getArgument(2);
             if (buffer.getRxBuffer().length == 1) {
-                return new SpiTransferBuffer(buffer.getTxBuffer(), "T" .getBytes(), 1);
+                return new SpiTransferBuffer(buffer.getTxBuffer(), ("T").getBytes(), 1);
             } else {
-                return new SpiTransferBuffer(buffer.getTxBuffer(), "Test" .getBytes(), 4);
+                return new SpiTransferBuffer(buffer.getTxBuffer(), ("Test").getBytes(), 4);
             }
         });
         try (var _ = FileDescriptorNativeMock.echo();
@@ -96,12 +96,12 @@ public class SPITest {
                 .build());
 
             var result = spi.read();
-            assertEquals("T" .getBytes()[0], result);
+            assertEquals(("T").getBytes()[0], result);
 
             var data = new byte[4];
             result = spi.read(data, 0, 4);
             assertEquals(4, result);
-            assertArrayEquals("Test" .getBytes(), data);
+            assertArrayEquals(("Test").getBytes(), data);
         }
     }
 
@@ -121,9 +121,9 @@ public class SPITest {
                 .baud(50_000)
                 .build());
             var buffer = new byte[4];
-            var result = spi.transfer("Test" .getBytes(), 0, buffer, 0, 4);
+            var result = spi.transfer(("Test").getBytes(), 0, buffer, 0, 4);
             assertEquals(4, result);
-            assertArrayEquals("Test" .getBytes(), buffer);
+            assertArrayEquals(("Test").getBytes(), buffer);
         }
     }
 }

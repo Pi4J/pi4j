@@ -68,13 +68,13 @@ public class SPITest {
     @Test
     public void testSPITransfer() {
         var buffer = new byte[4];
-        spi.transfer("Test" .getBytes(), 0, buffer, 0, 4);
+        spi.transfer(("Test").getBytes(), 0, buffer, 0, 4);
         assertEquals("Test", new String(buffer));
     }
 
     @Test
     public void testSPIWrite() {
-        var written = spi.write("Test" .getBytes());
+        var written = spi.write(("Test").getBytes());
         assertEquals(4, written);
     }
 
