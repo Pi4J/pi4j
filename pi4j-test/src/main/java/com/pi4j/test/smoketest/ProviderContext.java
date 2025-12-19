@@ -1,4 +1,4 @@
-package com.pi4j.test.smokeTest;
+package com.pi4j.test.smoketest;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
