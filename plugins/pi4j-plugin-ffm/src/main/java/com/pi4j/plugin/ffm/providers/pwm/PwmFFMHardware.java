@@ -104,6 +104,8 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
             this.period = getIntegerContent(file.read(periodFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
             file.close(periodFd);
         }
+        // [INITIALIZE STATE] initialize PWM pin state (via superclass impl)
+        super.initialize(context);
 
         logger.debug("{} - pwm setup finished. Initial state: {}", pwmPath, this.onState ? "on" : "off");
         return this;
