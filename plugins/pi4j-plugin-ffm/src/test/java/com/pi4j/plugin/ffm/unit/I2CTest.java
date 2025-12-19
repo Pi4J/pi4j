@@ -4,14 +4,14 @@ import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.io.i2c.I2CConfigBuilder;
 import com.pi4j.io.i2c.I2CImplementation;
-import com.pi4j.plugin.ffm.common.PermissionHelper;
+import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.i2c.rdwr.I2CMessage;
 import com.pi4j.plugin.ffm.common.i2c.rdwr.RDWRData;
 import com.pi4j.plugin.ffm.mocks.FileDescriptorNativeMock;
 import com.pi4j.plugin.ffm.mocks.IoctlNativeMock;
 import com.pi4j.plugin.ffm.mocks.PermissionHelperMock;
 import com.pi4j.plugin.ffm.mocks.SMBusNativeMock;
-import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
+import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
 import com.pi4j.plugin.ffm.providers.i2c.I2CFunctionality;
 import com.pi4j.plugin.ffm.providers.i2c.impl.I2CDirect;
 import com.pi4j.plugin.ffm.providers.i2c.impl.I2CFile;
@@ -29,14 +29,14 @@ public class I2CTest {
     private static Context pi4j;
 
     private static final FileDescriptorNativeMock.FileDescriptorTestData I2C_FILE =
-        new FileDescriptorNativeMock.FileDescriptorTestData("/dev/i2c-", 1, "Test".getBytes());
+        new FileDescriptorNativeMock.FileDescriptorTestData("/dev/i2c-", 1, ("Test").getBytes());
 
-    private static final MockedStatic<PermissionHelper> permissionHelperMock = PermissionHelperMock.echo();
+    private static final MockedStatic<FFMPermissionHelper> permissionHelperMock = PermissionHelperMock.echo();
 
     @BeforeAll
     public static void setup() {
         pi4j = Pi4J.newContextBuilder()
-            .add(new I2CFFMProviderImpl())
+            .add(new FFMI2CProviderImpl())
             .build();
 
     }
@@ -126,7 +126,7 @@ public class I2CTest {
             var result3 = new byte[4];
             var count3 = smbus.readRegister(0x1C, result3, 0, 4);
             assertEquals(4, count3);
-            assertArrayEquals("Test".getBytes(), result3);
+            assertArrayEquals(("Test").getBytes(), result3);
 
             result3 = new byte[1];
             count3 = smbus.readRegister(0x1C, result3, 0, 1);
@@ -146,16 +146,16 @@ public class I2CTest {
             var result = direct.write((byte) 0x1C);
             assertEquals(1, result);
 
-            result = direct.write("Test".getBytes());
+            result = direct.write(("Test").getBytes());
             assertEquals(4, result);
 
             result = direct.writeRegister(0x1C, 0x1C);
             assertEquals(1, result);
 
-            result = direct.writeRegister(0x1C, "Test".getBytes(), 0, 4);
+            result = direct.writeRegister(0x1C, ("Test").getBytes(), 0, 4);
             assertEquals(4, result);
 
-            result = direct.writeRegister("Test".getBytes(), "Test".getBytes(), 0, 4);
+            result = direct.writeRegister(("Test").getBytes(), ("Test").getBytes(), 0, 4);
             assertEquals(4, result);
         }
     }
@@ -168,7 +168,7 @@ public class I2CTest {
             if (rdwr.nmsgs() > 1) {
                 return new RDWRData(new I2CMessage[]{
                     rdwr.msgs()[0],
-                    new I2CMessage(rdwr.msgs()[1].address(), rdwr.msgs()[1].flags(), 4, "Test".getBytes())
+                    new I2CMessage(rdwr.msgs()[1].address(), rdwr.msgs()[1].flags(), 4, ("Test").getBytes())
                 }, rdwr.nmsgs());
             } else {
                 return new RDWRData(new I2CMessage[]{
@@ -191,12 +191,12 @@ public class I2CTest {
             var data2 = new byte[4];
             var count2 = direct.readRegister(0x1C, data2);
             assertEquals(4, count2);
-            assertArrayEquals("Test".getBytes(), data2);
+            assertArrayEquals(("Test").getBytes(), data2);
 
             var data3 = new byte[4];
-            var count3 = direct.readRegister("Test".getBytes(), data3);
+            var count3 = direct.readRegister(("Test").getBytes(), data3);
             assertEquals(4, count3);
-            assertArrayEquals("Test".getBytes(), data3);
+            assertArrayEquals(("Test").getBytes(), data3);
         }
     }
 
@@ -204,7 +204,7 @@ public class I2CTest {
     public void testWriteFile() {
         var functionalities = I2CFunctionality.I2C_FUNC_I2C.getValue();
         var i2cWriteByte = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, new byte[]{0x1C});
-        var i2cWriteBytes = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, "Test".getBytes());
+        var i2cWriteBytes = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, ("Test").getBytes());
         var i2cWriteRegister1 = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, new byte[]{0x1C, 0x1C});
         var i2cWriteRegister2 = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, new byte[]{0x1C, 0x54, 0x65, 0x73, 0x74});
         var i2cWriteRegister3 = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, new byte[]{0x54, 0x65, 0x73, 0x74, 0x54, 0x65, 0x73, 0x74});
@@ -215,16 +215,16 @@ public class I2CTest {
             var result = file.write((byte) 0x1C);
             assertEquals(1, result);
 
-            result = file.write("Test".getBytes());
+            result = file.write(("Test").getBytes());
             assertEquals(4, result);
 
             result = file.writeRegister(0x1C, 0x1C);
             assertEquals(2, result);
 
-            result = file.writeRegister(0x1C, "Test".getBytes(), 0, 4);
+            result = file.writeRegister(0x1C, ("Test").getBytes(), 0, 4);
             assertEquals(5, result);
 
-            result = file.writeRegister("Test".getBytes(), "Test".getBytes(), 0, 4);
+            result = file.writeRegister(("Test").getBytes(), ("Test").getBytes(), 0, 4);
             assertEquals(8, result);
         }
     }
@@ -232,29 +232,29 @@ public class I2CTest {
     @Test
     public void testReadFile() {
         var functionalities = I2CFunctionality.I2C_FUNC_I2C.getValue();
-        var i2cReadByte = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, "T".getBytes());
-        var i2cReadBytes = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, "Test".getBytes());
+        var i2cReadByte = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, ("T").getBytes());
+        var i2cReadBytes = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, ("Test").getBytes());
         try (var _ = FileDescriptorNativeMock.echo(I2C_FILE, i2cReadByte, i2cReadBytes);
              var _ = IoctlNativeMock.i2c(functionalities);
              var file = pi4j.i2c().create(I2CConfigBuilder.newInstance(pi4j).bus(9).device(0x1C).i2cImplementation(I2CImplementation.FILE))) {
 
             var data = file.read();
-            assertEquals("T".getBytes()[0], data);
+            assertEquals(("T").getBytes()[0], data);
 
             var data1 = new byte[4];
             var count1 = file.read(data1, 0, 4);
             assertEquals(4, count1);
-            assertArrayEquals("Test".getBytes(), data1);
+            assertArrayEquals(("Test").getBytes(), data1);
 
             var data2 = new byte[4];
             var count2 = file.readRegister(0x1C, data2);
             assertEquals(4, count2);
-            assertArrayEquals("Test".getBytes(), data2);
+            assertArrayEquals(("Test").getBytes(), data2);
 
             var data3 = new byte[4];
-            var count3 = file.readRegister("Test".getBytes(), data3);
+            var count3 = file.readRegister(("Test").getBytes(), data3);
             assertEquals(4, count3);
-            assertArrayEquals("Test".getBytes(), data3);
+            assertArrayEquals(("Test").getBytes(), data3);
         }
     }
 }

@@ -5,9 +5,9 @@ import com.pi4j.context.Context;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfigBuilder;
 import com.pi4j.io.pwm.PwmType;
-import com.pi4j.plugin.ffm.common.PermissionHelper;
+import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.mocks.PermissionHelperMock;
-import com.pi4j.plugin.ffm.providers.pwm.PwmFFMProviderImpl;
+import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.condition.OS.LINUX;
 @EnabledOnOs(LINUX)
 @Disabled
 public class PwmTest {
-    private static final MockedStatic<PermissionHelper> permissionHelperMock = PermissionHelperMock.echo();
+    private static final MockedStatic<FFMPermissionHelper> permissionHelperMock = PermissionHelperMock.echo();
 
     private static Context pi4j;
     private static Pwm pwm;
@@ -28,7 +28,7 @@ public class PwmTest {
     @BeforeAll
     public static void setup() {
         pi4j = Pi4J.newContextBuilder()
-            .add(new PwmFFMProviderImpl())
+            .add(new FFMPwmProviderImpl())
             .build();
         pwm = pi4j.pwm().create(PwmConfigBuilder.newInstance(pi4j)
             .pwmType(PwmType.HARDWARE)

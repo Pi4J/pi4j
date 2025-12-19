@@ -2,14 +2,14 @@ package com.pi4j.plugin.ffm.providers.pwm;
 
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.pwm.*;
-import com.pi4j.plugin.ffm.common.PermissionHelper;
+import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 
-public class PwmFFMProviderImpl extends PwmProviderBase implements PwmProvider {
+public class FFMPwmProviderImpl extends PwmProviderBase implements PwmProvider {
 
-    public PwmFFMProviderImpl() {
+    public FFMPwmProviderImpl() {
         this.id = "ffm-pwm";
         this.name = "FFM API Provider PWM";
-        PermissionHelper.checkUserPermissions(this);
+        FFMPermissionHelper.checkUserPermissions(this);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class PwmFFMProviderImpl extends PwmProviderBase implements PwmProvider {
         }
 
         // create new I/O instance based on I/O config
-        var pwm = new PwmFFMHardware(this, config);
+        var pwm = new FFMPwmHardware(this, config);
         this.context.registry().add(pwm);
         return pwm;
     }

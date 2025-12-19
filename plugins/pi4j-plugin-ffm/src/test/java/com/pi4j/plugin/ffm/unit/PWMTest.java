@@ -4,10 +4,10 @@ import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.io.pwm.PwmConfigBuilder;
 import com.pi4j.io.pwm.PwmType;
-import com.pi4j.plugin.ffm.common.PermissionHelper;
+import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.mocks.FileDescriptorNativeMock;
 import com.pi4j.plugin.ffm.mocks.PermissionHelperMock;
-import com.pi4j.plugin.ffm.providers.pwm.PwmFFMProviderImpl;
+import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,12 +18,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class PWMTest {
     private static Context pi4j;
 
-    private static final MockedStatic<PermissionHelper> permissionHelperMock = PermissionHelperMock.echo();
+    private static final MockedStatic<FFMPermissionHelper> permissionHelperMock = PermissionHelperMock.echo();
 
     @BeforeAll
     public static void setup() {
         pi4j = Pi4J.newContextBuilder()
-            .add(new PwmFFMProviderImpl())
+            .add(new FFMPwmProviderImpl())
             .build();
 
     }
@@ -36,10 +36,10 @@ public class PWMTest {
 
     @Test
     public void testCreation() {
-        var pwmEnable = new FileDescriptorNativeMock.FileDescriptorTestData("/sys/class/pwm/pwmchip0/pwm0/enable", 1, "Test".getBytes(), (_) -> "1".getBytes());
-        var pwmDutyCycle = new FileDescriptorNativeMock.FileDescriptorTestData("/sys/class/pwm/pwmchip0/pwm0/duty_cycle", 2, "1".getBytes());
-        var pwmPolarity = new FileDescriptorNativeMock.FileDescriptorTestData("/sys/class/pwm/pwmchip0/pwm0/polarity", 3, "normal".getBytes());
-        var pwmPeriod = new FileDescriptorNativeMock.FileDescriptorTestData("/sys/class/pwm/pwmchip0/pwm0/period", 4, "1".getBytes());
+        var pwmEnable = new FileDescriptorNativeMock.FileDescriptorTestData("/sys/class/pwm/pwmchip0/pwm0/enable", 1, ("Test").getBytes(), (_) -> ("1").getBytes());
+        var pwmDutyCycle = new FileDescriptorNativeMock.FileDescriptorTestData("/sys/class/pwm/pwmchip0/pwm0/duty_cycle", 2, ("1").getBytes());
+        var pwmPolarity = new FileDescriptorNativeMock.FileDescriptorTestData("/sys/class/pwm/pwmchip0/pwm0/polarity", 3, ("normal").getBytes());
+        var pwmPeriod = new FileDescriptorNativeMock.FileDescriptorTestData("/sys/class/pwm/pwmchip0/pwm0/period", 4, ("1").getBytes());
         try (var _ = FileDescriptorNativeMock.echo(pwmEnable, pwmDutyCycle, pwmPolarity, pwmPeriod)) {
 
             pi4j.pwm().create(PwmConfigBuilder.newInstance(pi4j)
@@ -55,10 +55,10 @@ public class PWMTest {
         var chip = 0;
         var channel = 2;
         var path = "/sys/class/pwm/pwmchip" + chip + "/pwm" + channel;
-        var pwmEnable = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/enable", 1, "Test".getBytes(), (_) -> "0".getBytes());
-        var pwmDutyCycle = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/duty_cycle", 2, "1".getBytes());
-        var pwmPolarity = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/polarity", 3, "normal".getBytes());
-        var pwmPeriod = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/period", 4, "1".getBytes());
+        var pwmEnable = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/enable", 1, ("Test").getBytes(), (_) -> ("0").getBytes());
+        var pwmDutyCycle = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/duty_cycle", 2, ("1").getBytes());
+        var pwmPolarity = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/polarity", 3, ("normal").getBytes());
+        var pwmPeriod = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/period", 4, ("1").getBytes());
         try (var _ = FileDescriptorNativeMock.echo(pwmEnable, pwmDutyCycle, pwmPolarity, pwmPeriod)) {
             var pwm = pi4j.pwm().create(PwmConfigBuilder.newInstance(pi4j)
                 .pwmType(PwmType.HARDWARE)
@@ -79,10 +79,10 @@ public class PWMTest {
         var chip = 0;
         var channel = 2;
         var path = "/sys/class/pwm/pwmchip" + chip + "/pwm" + channel;
-        var pwmEnable = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/enable", 1, "Test".getBytes(), (_) -> "0".getBytes());
-        var pwmDutyCycle = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/duty_cycle", 2, "1".getBytes());
-        var pwmPolarity = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/polarity", 3, "normal".getBytes());
-        var pwmPeriod = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/period", 4, "1".getBytes());
+        var pwmEnable = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/enable", 1, ("Test").getBytes(), (_) -> ("0").getBytes());
+        var pwmDutyCycle = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/duty_cycle", 2, ("1").getBytes());
+        var pwmPolarity = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/polarity", 3, ("normal").getBytes());
+        var pwmPeriod = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/period", 4, ("1").getBytes());
 
         try (var _ = FileDescriptorNativeMock.echo(pwmEnable, pwmDutyCycle, pwmPolarity, pwmPeriod)) {
             var pwm = pi4j.pwm().create(PwmConfigBuilder.newInstance(pi4j)

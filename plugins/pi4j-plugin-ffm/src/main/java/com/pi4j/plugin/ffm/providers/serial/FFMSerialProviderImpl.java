@@ -4,12 +4,12 @@ import com.pi4j.io.serial.Serial;
 import com.pi4j.io.serial.SerialConfig;
 import com.pi4j.io.serial.SerialProviderBase;
 
-public class SerialFFMProviderImpl extends SerialProviderBase {
+public class FFMSerialProviderImpl extends SerialProviderBase {
 
     /**
      * <p>Constructor for PiGpioSerialProviderImpl.</p>
      */
-    public SerialFFMProviderImpl() {
+    public FFMSerialProviderImpl() {
         this.id = "ffm-serial";
         this.name = "FFM API Provider Serial";
     }
@@ -25,7 +25,7 @@ public class SerialFFMProviderImpl extends SerialProviderBase {
     @Override
     public Serial create(SerialConfig config) {
         // create new I/O instance based on I/O config
-        var serial = new SerialFFM(this, config);
+        var serial = new FFMSerial(this, config);
         this.context.registry().add(serial);
         return serial;
     }

@@ -3,7 +3,7 @@ package com.pi4j.plugin.ffm.integration;
 import com.pi4j.Pi4J;
 import com.pi4j.io.serial.Baud;
 import com.pi4j.io.serial.SerialConfigBuilder;
-import com.pi4j.plugin.ffm.providers.serial.SerialFFMProviderImpl;
+import com.pi4j.plugin.ffm.providers.serial.FFMSerialProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -40,7 +40,7 @@ public class SerialTest {
     @Test
     public void testSerial() {
         var pi4j = Pi4J.newContextBuilder()
-            .add(new SerialFFMProviderImpl())
+            .add(new FFMSerialProviderImpl())
             .build();
 
         var serial1 = pi4j.serial().create(SerialConfigBuilder.newInstance(pi4j).port("/dev/pts/1").baud(Baud._230400));

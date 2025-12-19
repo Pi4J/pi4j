@@ -7,8 +7,8 @@ import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.digital.PullResistance;
-import com.pi4j.plugin.ffm.providers.gpio.DigitalInputFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.gpio.DigitalOutputFFMProviderImpl;
+import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
+import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -46,15 +46,15 @@ public class GPIOTest {
             }
         }
         pi4j0 = Pi4J.newContextBuilder()
-            .add(new DigitalInputFFMProviderImpl(), new DigitalOutputFFMProviderImpl())
+            .add(new FFMDigitalInputProviderImpl(), new FFMDigitalOutputProviderImpl())
             .setGpioChipName("gpiochip0")
             .build();
         pi4j1 = Pi4J.newContextBuilder()
-            .add(new DigitalInputFFMProviderImpl())
+            .add(new FFMDigitalInputProviderImpl())
             .setGpioChipName("gpiochip1")
             .build();
         pi4jNonExistent = Pi4J.newContextBuilder()
-            .add(new DigitalInputFFMProviderImpl())
+            .add(new FFMDigitalInputProviderImpl())
             .setGpioChipName("gpiochip99")
             .build();
     }

@@ -1,20 +1,20 @@
 package com.pi4j.plugin.ffm.providers.i2c;
 
 import com.pi4j.io.i2c.*;
-import com.pi4j.plugin.ffm.common.PermissionHelper;
+import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.providers.i2c.impl.I2CDirect;
 import com.pi4j.plugin.ffm.providers.i2c.impl.I2CFile;
 import com.pi4j.plugin.ffm.providers.i2c.impl.I2CSMBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class I2CFFMProviderImpl extends I2CProviderBase implements I2CProvider {
-    private static final Logger logger = LoggerFactory.getLogger(I2CFFMProviderImpl.class);
+public class FFMI2CProviderImpl extends I2CProviderBase implements I2CProvider {
+    private static final Logger logger = LoggerFactory.getLogger(FFMI2CProviderImpl.class);
 
-    public I2CFFMProviderImpl() {
+    public FFMI2CProviderImpl() {
         this.id = "ffm-i2c";
         this.name = "FFM API Provider I2C";
-        PermissionHelper.checkUserPermissions(this);
+        FFMPermissionHelper.checkUserPermissions(this);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class I2CFFMProviderImpl extends I2CProviderBase implements I2CProvider {
      */
     @Override
     public I2C create(I2CConfig config) {
-        var bus = new I2CBusFFM(config);
+        var bus = new FFMI2CBus(config);
 
         if (logger.isDebugEnabled()) {
             var functions = bus.getFunctionalityMap();

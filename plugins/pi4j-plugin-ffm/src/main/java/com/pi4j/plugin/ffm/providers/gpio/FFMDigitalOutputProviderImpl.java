@@ -7,21 +7,21 @@ import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputProvider;
 import com.pi4j.io.gpio.digital.DigitalOutputProviderBase;
-import com.pi4j.plugin.ffm.common.PermissionHelper;
+import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 
-public class DigitalOutputFFMProviderImpl extends DigitalOutputProviderBase implements DigitalOutputProvider {
+public class FFMDigitalOutputProviderImpl extends DigitalOutputProviderBase implements DigitalOutputProvider {
 
-    public DigitalOutputFFMProviderImpl() {
+    public FFMDigitalOutputProviderImpl() {
         this.id = "ffm-digital-output";
         this.name = "FFM API Provider Digital Output";
-        PermissionHelper.checkUserPermissions(this);
+        FFMPermissionHelper.checkUserPermissions(this);
     }
 
 
     @Override
     public DigitalOutput create(DigitalOutputConfig config) {
         var chipName = context.config().properties().getOrDefault("gpio.chip.name", "unknown");
-        var digitalOutput = new DigitalOutputFFM(chipName, this, config);
+        var digitalOutput = new FFMDigitalOutput(chipName, this, config);
         this.context.registry().add(digitalOutput);
         return digitalOutput;
     }

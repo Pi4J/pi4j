@@ -11,7 +11,7 @@ import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.plugin.ffm.api.Pi4JApi;
 import com.pi4j.plugin.ffm.api.RaspberryPi;
-import com.pi4j.plugin.ffm.common.PermissionHelper;
+import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.gpio.PinEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineAttribute;
@@ -20,8 +20,8 @@ import com.pi4j.plugin.ffm.common.gpio.structs.LineInfo;
 import com.pi4j.plugin.ffm.common.poll.PollFlag;
 import com.pi4j.plugin.ffm.common.poll.structs.PollingData;
 import com.pi4j.plugin.ffm.mocks.*;
-import com.pi4j.plugin.ffm.providers.gpio.DigitalInputFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.gpio.DigitalOutputFFMProviderImpl;
+import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
+import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -43,20 +43,20 @@ public class GPIOTest {
     private static Context pi4jNonExistent;
 
     private static final FileDescriptorNativeMock.FileDescriptorTestData GPIOCHIP_FILE =
-        new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, "Test".getBytes());
+        new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, ("Test").getBytes());
 
-    private static final MockedStatic<PermissionHelper> permissionHelperMock = PermissionHelperMock.echo();
+    private static final MockedStatic<FFMPermissionHelper> permissionHelperMock = PermissionHelperMock.echo();
 
     @BeforeAll
     public static void setup() {
         pi4j0 = Pi4J.newContextBuilder()
-            .add(new DigitalInputFFMProviderImpl(), new DigitalOutputFFMProviderImpl())
+            .add(new FFMDigitalInputProviderImpl(), new FFMDigitalOutputProviderImpl())
             .build();
         pi4j1 = Pi4J.newContextBuilder()
-            .add(new DigitalInputFFMProviderImpl())
+            .add(new FFMDigitalInputProviderImpl())
             .build();
         pi4jNonExistent = Pi4J.newContextBuilder()
-            .add(new DigitalInputFFMProviderImpl())
+            .add(new FFMDigitalInputProviderImpl())
             .build();
     }
 
@@ -101,7 +101,7 @@ public class GPIOTest {
     public void testInputCreate() {
         var lineInfoTestData = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
             LineInfo lineInfo = answer.getArgument(2);
-            return new LineInfo("Test".getBytes(), "FFM-Test".getBytes(),
+            return new LineInfo(("Test").getBytes(), ("FFM-Test").getBytes(),
                 lineInfo.offset(), 0,
                 PinFlag.INPUT.getValue(),
                 new LineAttribute[0]);
@@ -120,7 +120,7 @@ public class GPIOTest {
     public void testInputState() {
         var lineInfoTestData = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
             LineInfo lineInfo = answer.getArgument(2);
-            return new LineInfo("Test".getBytes(), "FFM-Test".getBytes(),
+            return new LineInfo(("Test").getBytes(), ("FFM-Test").getBytes(),
                 lineInfo.offset(), 0,
                 PinFlag.INPUT.getValue(),
                 new LineAttribute[0]);
@@ -140,7 +140,7 @@ public class GPIOTest {
         var latch = new CountDownLatch(1);
         var lineInfoTestData = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
             LineInfo lineInfo = answer.getArgument(2);
-            return new LineInfo("Test".getBytes(), "FFM-Test".getBytes(),
+            return new LineInfo(("Test").getBytes(), ("FFM-Test").getBytes(),
                 lineInfo.offset(), 0,
                 PinFlag.INPUT.getValue(),
                 new LineAttribute[0]);
@@ -152,7 +152,7 @@ public class GPIOTest {
                 return new PollingData(pollingData.fd(), pollingData.events(), (short) PollFlag.POLLIN);
             }
         };
-        var pollingFile = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 42, "Test".getBytes(), (answer) -> {
+        var pollingFile = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 42, ("Test").getBytes(), (answer) -> {
             byte[] buffer = answer.getArgument(1);
             var lineEvent = new LineEvent(1, PinEvent.RISING.getValue(), 3, 4, 5);
             var memoryBuffer = Arena.ofAuto().allocate(LineEvent.LAYOUT);
@@ -189,7 +189,7 @@ public class GPIOTest {
     public void testInputIsOccupied() {
         var lineInfoOccupied = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
             LineInfo lineInfo = answer.getArgument(2);
-            return new LineInfo("Test".getBytes(), "FFM-Test".getBytes(),
+            return new LineInfo(("Test").getBytes(), ("FFM-Test").getBytes(),
                 lineInfo.offset(), 0,
                 PinFlag.USED.getValue(),
                 new LineAttribute[0]);
@@ -207,7 +207,7 @@ public class GPIOTest {
     public void testInputCustomConfig() {
         var lineInfoTestData = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
             LineInfo lineInfo = answer.getArgument(2);
-            return new LineInfo("Test".getBytes(), "FFM-Test".getBytes(),
+            return new LineInfo(("Test").getBytes(), ("FFM-Test").getBytes(),
                 lineInfo.offset(), 0,
                 PinFlag.INPUT.getValue(),
                 new LineAttribute[0]);
@@ -232,7 +232,7 @@ public class GPIOTest {
     public void testOutputCreate() {
         var lineInfoTestData = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
             LineInfo lineInfo = answer.getArgument(2);
-            return new LineInfo("Test".getBytes(), "FFM-Test".getBytes(),
+            return new LineInfo(("Test").getBytes(), ("FFM-Test").getBytes(),
                 lineInfo.offset(), 0,
                 PinFlag.OUTPUT.getValue(),
                 new LineAttribute[0]);
@@ -253,7 +253,7 @@ public class GPIOTest {
     public void testOutputChangeState() {
         var lineInfoTestData = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
             LineInfo lineInfo = answer.getArgument(2);
-            return new LineInfo("Test".getBytes(), "FFM-Test".getBytes(),
+            return new LineInfo(("Test").getBytes(), ("FFM-Test").getBytes(),
                 lineInfo.offset(), 0,
                 PinFlag.OUTPUT.getValue(),
                 new LineAttribute[0]);
@@ -277,7 +277,7 @@ public class GPIOTest {
     public void testApi() {
         var lineInfoTestData = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
             LineInfo lineInfo = answer.getArgument(2);
-            return new LineInfo("Test".getBytes(), "FFM-Test".getBytes(),
+            return new LineInfo(("Test").getBytes(), ("FFM-Test").getBytes(),
                 lineInfo.offset(), 0,
                 PinFlag.INPUT.getValue(),
                 new LineAttribute[0]);

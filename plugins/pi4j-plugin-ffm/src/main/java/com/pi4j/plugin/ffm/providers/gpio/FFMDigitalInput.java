@@ -5,7 +5,7 @@ import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.gpio.digital.*;
-import com.pi4j.plugin.ffm.common.PermissionHelper;
+import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.gpio.DetectedEvent;
@@ -36,8 +36,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
-    private static final Logger logger = LoggerFactory.getLogger(DigitalInputFFM.class);
+public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
+    private static final Logger logger = LoggerFactory.getLogger(FFMDigitalInput.class);
 
     // Graceful period for event watcher to shut down
     // NOTE: this value is used for poll operation inside watcher thread and should be always half of the timeout
@@ -60,13 +60,13 @@ public class DigitalInputFFM extends DigitalInputBase implements DigitalInput {
 
     private boolean closed = false;
 
-    public DigitalInputFFM(String chipName, DigitalInputProvider provider, DigitalInputConfig config) {
+    public FFMDigitalInput(String chipName, DigitalInputProvider provider, DigitalInputConfig config) {
         super(provider, config);
         this.pin = config.bcm();
         this.deviceName = "/dev/gpiochip" + config.bus();
         this.debounce = config.debounce();
         this.pull = config.pull();
-        PermissionHelper.checkDevicePermissions(deviceName, config);
+        FFMPermissionHelper.checkDevicePermissions(deviceName, config);
     }
 
     @Override

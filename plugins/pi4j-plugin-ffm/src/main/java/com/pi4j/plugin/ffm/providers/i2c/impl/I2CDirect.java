@@ -10,17 +10,17 @@ import com.pi4j.plugin.ffm.common.i2c.I2cConstants;
 import com.pi4j.plugin.ffm.common.i2c.rdwr.I2CMessage;
 import com.pi4j.plugin.ffm.common.i2c.rdwr.RDWRData;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
-import com.pi4j.plugin.ffm.providers.i2c.I2CBusFFM;
+import com.pi4j.plugin.ffm.providers.i2c.FFMI2CBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 
-public class I2CDirect extends I2CBase<I2CBusFFM> {
+public class I2CDirect extends I2CBase<FFMI2CBus> {
     private static final Logger logger = LoggerFactory.getLogger(I2CDirect.class);
     private final IoctlNative IOCTL = new IoctlNative();
 
-    public I2CDirect(I2CProvider provider, I2CConfig config, I2CBusFFM i2CBus) {
+    public I2CDirect(I2CProvider provider, I2CConfig config, FFMI2CBus i2CBus) {
         super(provider, config, i2CBus);
     }
 
