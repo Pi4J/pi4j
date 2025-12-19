@@ -9,7 +9,7 @@ import com.pi4j.io.spi.SpiBase;
 import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.io.spi.SpiProvider;
 import com.pi4j.plugin.ffm.common.HexFormatter;
-import com.pi4j.plugin.ffm.common.PermissionHelper;
+import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 
-public class SpiFFM extends SpiBase implements Spi {
-    private static final Logger logger = LoggerFactory.getLogger(SpiFFM.class);
+public class FFMSpi extends SpiBase implements Spi {
+    private static final Logger logger = LoggerFactory.getLogger(FFMSpi.class);
     private static final String SPI_BUS = "/dev/spidev";
     private final FileDescriptorNative FILE = new FileDescriptorNative();
     private final IoctlNative IOCTL = new IoctlNative();
@@ -30,10 +30,10 @@ public class SpiFFM extends SpiBase implements Spi {
     private int spiFileDescriptor;
     private final String path;
 
-    public SpiFFM(SpiProvider provider, SpiConfig config) {
+    public FFMSpi(SpiProvider provider, SpiConfig config) {
         super(provider, config);
         this.path = SPI_BUS + config.bus().getBus() + "." + config.channel();
-        PermissionHelper.checkDevicePermissions(path, config);
+        FFMPermissionHelper.checkDevicePermissions(path, config);
     }
 
     @Override

@@ -1,8 +1,7 @@
 package com.pi4j.plugin.jmh;
 
 import com.pi4j.Pi4J;
-import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
-import com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CProviderImpl;
+import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
 import org.openjdk.jmh.annotations.*;
 
 import java.io.IOException;
@@ -49,10 +48,10 @@ public class I2CPerformanceTest {
     @Warmup(iterations = 3)
     public void testFFMSMBusRoundTrip() {
         var pi4j = Pi4J.newContextBuilder()
-            .add(new I2CFFMProviderImpl())
+            .add(new FFMI2CProviderImpl())
             .build();
         var i2c = pi4j.i2c().create(1, 0x1C);
-        var writeBuffer = new byte[] {0x01, 0x02, 0x03};
+        var writeBuffer = new byte[]{0x01, 0x02, 0x03};
         i2c.writeRegister(0xFF, writeBuffer);
         var readBuffer = new byte[3];
         i2c.readRegister(0xFF, readBuffer);

@@ -23,10 +23,16 @@ public class PWMTestCase extends TestCase {
             .newConfigBuilder(providerContext.getContext())
             .channel(PWM_CHANNEL)
             .pwmType(PwmType.HARDWARE)
+            .initial(dutyCycle)
+            .frequency(frequency)
             .chip(chip)
             .shutdown(0)
             .build();
         var pwm = providerContext.getContext().create(configPwm);
+
+        if (pwm.getFrequency() != frequency || pwm.getDutyCycle() != dutyCycle) {
+            return new TestResult("PWM " + frequency + " " + dutyCycle, false, "The expected initial values are not correct");
+        }
 
         // Create input to listen for "flashes"
         DigitalInput gpioInMonitor = createDigitalInput(providerContext.getContext(), 23, PullResistance.PULL_DOWN);

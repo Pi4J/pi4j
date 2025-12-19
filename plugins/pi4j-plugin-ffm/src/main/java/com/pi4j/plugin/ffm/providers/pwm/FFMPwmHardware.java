@@ -6,7 +6,7 @@ import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.pwm.*;
-import com.pi4j.plugin.ffm.common.PermissionHelper;
+import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.util.DeferredDelay;
@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
-public class PwmFFMHardware extends PwmBase implements Pwm {
-    private final Logger logger = LoggerFactory.getLogger(PwmFFMHardware.class);
+public class FFMPwmHardware extends PwmBase implements Pwm {
+    private final Logger logger = LoggerFactory.getLogger(FFMPwmHardware.class);
 
     private final FileDescriptorNative file = new FileDescriptorNative();
 
@@ -42,11 +42,11 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
     private final int chip;
     private final int channel;
 
-    public PwmFFMHardware(PwmProvider provider, PwmConfig config) {
+    public FFMPwmHardware(PwmProvider provider, PwmConfig config) {
         super(provider, config);
         this.chip = config.chip();
         this.channel = config.channel();
-        PermissionHelper.checkDevicePermissions(CHIP_PATH + chip, config);
+        FFMPermissionHelper.checkDevicePermissions(CHIP_PATH + chip, config);
     }
 
     /**
@@ -104,6 +104,7 @@ public class PwmFFMHardware extends PwmBase implements Pwm {
             this.period = getIntegerContent(file.read(periodFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
             file.close(periodFd);
         }
+
         // [INITIALIZE STATE] initialize PWM pin state (via superclass impl)
         super.initialize(context);
 

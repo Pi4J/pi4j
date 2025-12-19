@@ -8,7 +8,7 @@ import com.pi4j.io.i2c.I2CBase;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CProvider;
 import com.pi4j.plugin.ffm.common.i2c.SMBusNative;
-import com.pi4j.plugin.ffm.providers.i2c.I2CBusFFM;
+import com.pi4j.plugin.ffm.providers.i2c.FFMI2CBus;
 import com.pi4j.plugin.ffm.providers.i2c.I2CFunctionality;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class I2CSMBus extends I2CBase<I2CBusFFM> {
+public class I2CSMBus extends I2CBase<FFMI2CBus> {
     private static final Logger logger = LoggerFactory.getLogger(I2CSMBus.class);
     private final SMBusNative SMBUS = new SMBusNative();
 
@@ -25,9 +25,9 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
      *
      * @param provider a {@link I2CProvider} object.
      * @param config   a {@link I2CConfig} object.
-     * @param i2CBus   a {@link I2CBusFFM} object.
+     * @param i2CBus   a {@link FFMI2CBus} object.
      */
-    public I2CSMBus(I2CProvider provider, I2CConfig config, I2CBusFFM i2CBus) {
+    public I2CSMBus(I2CProvider provider, I2CConfig config, FFMI2CBus i2CBus) {
         super(provider, config, i2CBus);
     }
 
@@ -53,8 +53,7 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
                 return SMBUS.writeBlockData(i2cFileDescriptor, (byte) register, data);
             } else if (i2CBus.hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_WRITE_WORD_DATA)) {
                 return SMBUS.writeWordData(i2cFileDescriptor, (byte) register, data[0]);
-            }
-            else {
+            } else {
                 throw new Pi4JException("No support any of I2C device write mode.");
             }
         });
@@ -71,11 +70,11 @@ public class I2CSMBus extends I2CBase<I2CBusFFM> {
         return i2CBus.execute(this, (i2cFileDescriptor) -> {
             logger.trace("{} - reading from register '{}' data size '{}'", i2CBus.getBusName(), Integer.toHexString(register), size);
             if (i2CBus.hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_QUICK) && size == 1) {
-                return new byte[] {SMBUS.readByteData(i2cFileDescriptor, (byte) register)};
+                return new byte[]{SMBUS.readByteData(i2cFileDescriptor, (byte) register)};
             } else if (i2CBus.hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_READ_BLOCK_DATA)) {
                 return SMBUS.readBlockData(i2cFileDescriptor, (byte) register, new byte[size]);
-            }  else if (i2CBus.hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_READ_WORD_DATA)) {
-                return new byte[] {(byte) SMBUS.readWordData(i2cFileDescriptor, (byte) register)};
+            } else if (i2CBus.hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_READ_WORD_DATA)) {
+                return new byte[]{(byte) SMBUS.readWordData(i2cFileDescriptor, (byte) register)};
             } else {
                 throw new Pi4JException("No support any of I2C device read mode.");
             }

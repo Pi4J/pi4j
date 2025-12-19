@@ -11,14 +11,14 @@ import com.pi4j.plugin.ffm.common.serial.*;
 
 import java.nio.ByteBuffer;
 
-public class SerialFFM extends SerialBase implements Serial {
+public class FFMSerial extends SerialBase implements Serial {
 
     private final FileDescriptorNative FILE = new FileDescriptorNative();
     private final IoctlNative IOCTL = new IoctlNative();
 
     private int fd;
 
-    public SerialFFM(SerialProvider provider, SerialConfig config) {
+    public FFMSerial(SerialProvider provider, SerialConfig config) {
         super(provider, config);
     }
 

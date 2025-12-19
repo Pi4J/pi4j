@@ -6,7 +6,7 @@ import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CBusBase;
 import com.pi4j.io.i2c.I2CConfig;
-import com.pi4j.plugin.ffm.common.PermissionHelper;
+import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-public class I2CBusFFM extends I2CBusBase {
-    private static final Logger logger = LoggerFactory.getLogger(I2CBusFFM.class);
+public class FFMI2CBus extends I2CBusBase {
+    private static final Logger logger = LoggerFactory.getLogger(FFMI2CBus.class);
     private final IoctlNative ioctl = new IoctlNative();
     private final FileDescriptorNative file = new FileDescriptorNative();
     private static final String I2C_BUS = "/dev/i2c-";
@@ -37,10 +37,10 @@ public class I2CBusFFM extends I2CBusBase {
     // selected device
     private int selectedDevice;
 
-    public I2CBusFFM(I2CConfig config) {
+    public FFMI2CBus(I2CConfig config) {
         super(config);
         this.busName = I2C_BUS + bus;
-        PermissionHelper.checkDevicePermissions(busName, config);
+        FFMPermissionHelper.checkDevicePermissions(busName, config);
         try {
             logger.debug("{} - setting up I2CBus...", busName);
             if (!canAccessDevice()) {
@@ -114,7 +114,7 @@ public class I2CBusFFM extends I2CBusBase {
     /**
      * Selects 10BIT device address for communication.
      *
-     * @param device        device address on the bus
+     * @param device         device address on the bus
      * @param tenBitsAddress true if the address is in 10 bits address map
      */
     private void selectDevice(int device, boolean tenBitsAddress) {

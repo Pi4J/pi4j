@@ -6,7 +6,7 @@ import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.gpio.digital.*;
-import com.pi4j.plugin.ffm.common.PermissionHelper;
+import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
@@ -21,8 +21,8 @@ import java.nio.file.Path;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermissions;
 
-public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput {
-    private static final Logger logger = LoggerFactory.getLogger(DigitalOutputFFM.class);
+public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput {
+    private static final Logger logger = LoggerFactory.getLogger(FFMDigitalOutput.class);
     private final IoctlNative ioctl = new IoctlNative();
     private final FileDescriptorNative file = new FileDescriptorNative();
 
@@ -31,11 +31,11 @@ public class DigitalOutputFFM extends DigitalOutputBase implements DigitalOutput
     private int chipFileDescriptor;
     private boolean closed = false;
 
-    public DigitalOutputFFM(String chipName, DigitalOutputProvider provider, DigitalOutputConfig config) {
+    public FFMDigitalOutput(String chipName, DigitalOutputProvider provider, DigitalOutputConfig config) {
         super(provider, config);
         this.pin = config.bcm();
         this.deviceName = "/dev/gpiochip" + config.bus();
-        PermissionHelper.checkDevicePermissions(deviceName, config);
+        FFMPermissionHelper.checkDevicePermissions(deviceName, config);
     }
 
     @Override

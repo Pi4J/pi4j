@@ -2,12 +2,12 @@ package com.pi4j.test;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
-import com.pi4j.plugin.ffm.providers.gpio.DigitalInputFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.gpio.DigitalOutputFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.pwm.PwmFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.serial.SerialFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.spi.SpiFFMProviderImpl;
+import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
+import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
+import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
+import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
+import com.pi4j.plugin.ffm.providers.serial.FFMSerialProviderImpl;
+import com.pi4j.plugin.ffm.providers.spi.FFMSpiProviderImpl;
 import com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalInputProvider;
 import com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalOutputProvider;
 import com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CProvider;
@@ -74,12 +74,12 @@ public class ProviderContext {
             }
             case FFM -> {
                 pi4j = Pi4J.newContextBuilder()
-                    .add(new DigitalOutputFFMProviderImpl())
-                    .add(new DigitalInputFFMProviderImpl())
-                    .add(new I2CFFMProviderImpl())
-                    .add(new SpiFFMProviderImpl())
-                    .add(new PwmFFMProviderImpl())
-                    .add(new SerialFFMProviderImpl())
+                    .add(new FFMDigitalOutputProviderImpl())
+                    .add(new FFMDigitalInputProviderImpl())
+                    .add(new FFMI2CProviderImpl())
+                    .add(new FFMSpiProviderImpl())
+                    .add(new FFMPwmProviderImpl())
+                    .add(new FFMSerialProviderImpl())
                     .build();
                 i2cProviderName = "ffm-i2c";
                 spiProviderName = "ffm-spi";

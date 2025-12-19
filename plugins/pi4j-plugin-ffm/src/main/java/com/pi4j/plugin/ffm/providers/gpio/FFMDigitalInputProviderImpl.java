@@ -7,20 +7,20 @@ import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalInputProvider;
 import com.pi4j.io.gpio.digital.DigitalInputProviderBase;
-import com.pi4j.plugin.ffm.common.PermissionHelper;
+import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 
-public class DigitalInputFFMProviderImpl extends DigitalInputProviderBase implements DigitalInputProvider {
+public class FFMDigitalInputProviderImpl extends DigitalInputProviderBase implements DigitalInputProvider {
 
-    public DigitalInputFFMProviderImpl() {
+    public FFMDigitalInputProviderImpl() {
         this.id = "ffm-digital-input";
         this.name = "FFM API Provider Digital Input";
-        PermissionHelper.checkUserPermissions(this);
+        FFMPermissionHelper.checkUserPermissions(this);
     }
 
     @Override
     public DigitalInput create(DigitalInputConfig config) {
         var chipName = context.config().properties().getOrDefault("gpio.chip.name", "unknown");
-        var digitalInput = new DigitalInputFFM(chipName, this, config);
+        var digitalInput = new FFMDigitalInput(chipName, this, config);
         this.context.registry().add(digitalInput);
         return digitalInput;
     }

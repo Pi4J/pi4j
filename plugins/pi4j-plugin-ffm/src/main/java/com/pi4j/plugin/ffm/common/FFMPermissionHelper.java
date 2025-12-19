@@ -9,12 +9,12 @@ import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.serial.SerialConfig;
 import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.plugin.ffm.common.permission.PermissionNative;
-import com.pi4j.plugin.ffm.providers.gpio.DigitalInputFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.gpio.DigitalOutputFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.pwm.PwmFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.serial.SerialFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.spi.SpiFFMProviderImpl;
+import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
+import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
+import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
+import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
+import com.pi4j.plugin.ffm.providers.serial.FFMSerialProviderImpl;
+import com.pi4j.plugin.ffm.providers.spi.FFMSpiProviderImpl;
 import com.pi4j.provider.ProviderBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +32,8 @@ import java.util.List;
 /**
  * Helper class to check permissions needed to run with FFM API
  */
-public class PermissionHelper {
-    private static final Logger logger = LoggerFactory.getLogger(PermissionHelper.class);
+public class FFMPermissionHelper {
+    private static final Logger logger = LoggerFactory.getLogger(FFMPermissionHelper.class);
 
     private static final boolean RUN_AS_SUDO = System.getenv("SUDO_COMMAND") != null;
     private static final String CURRENT_USER = System.getProperty("user.name");
@@ -62,6 +62,7 @@ public class PermissionHelper {
             logger.warn("* * * * * * * * * * * * * * * * * * * * * * * * * * *");
             return;
         }
+
         if (CURRENT_USER.equals("root")) {
             logger.warn("* * * * * * * * * * * WARNING * * * * * * * * * * * *");
             logger.warn("*      Pi4J provider is running using as root       *");
@@ -94,16 +95,16 @@ public class PermissionHelper {
             var userGroupIds = PERMISSION_NATIVE.getGroupList(CURRENT_USER);
             userGroups = Arrays.stream(userGroupIds).mapToObj(PERMISSION_NATIVE::getGroupData).map(g -> new String(g.grName())).toList();
         }
+
         // checking groups existence and user belonging to the groups
         switch (provider) {
-            case DigitalInputFFMProviderImpl _, DigitalOutputFFMProviderImpl _, PwmFFMProviderImpl _ ->
+            case FFMDigitalInputProviderImpl _, FFMDigitalOutputProviderImpl _, FFMPwmProviderImpl _ ->
                 checkGroups(osGroups, userGroups, "gpio", "dialout");
-            case I2CFFMProviderImpl _ -> checkGroups(osGroups, userGroups, "i2c");
-            case SerialFFMProviderImpl _ -> checkGroups(osGroups, userGroups, "serial");
-            case SpiFFMProviderImpl _ -> checkGroups(osGroups, userGroups, "spi");
+            case FFMI2CProviderImpl _ -> checkGroups(osGroups, userGroups, "i2c");
+            case FFMSerialProviderImpl _ -> checkGroups(osGroups, userGroups, "serial");
+            case FFMSpiProviderImpl _ -> checkGroups(osGroups, userGroups, "spi");
             default -> throw new Pi4JException("Unknown provider " + provider);
         }
-
     }
 
     private static void checkGroups(List<String> osGroups, List<String> userGroups, String... groupNames) {

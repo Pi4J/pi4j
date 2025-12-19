@@ -7,13 +7,13 @@ import com.pi4j.io.i2c.I2CBase;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CProvider;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
-import com.pi4j.plugin.ffm.providers.i2c.I2CBusFFM;
+import com.pi4j.plugin.ffm.providers.i2c.FFMI2CBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 
-public class I2CFile extends I2CBase<I2CBusFFM> {
+public class I2CFile extends I2CBase<FFMI2CBus> {
     private static final Logger logger = LoggerFactory.getLogger(I2CFile.class);
 
     private final FileDescriptorNative FILE = new FileDescriptorNative();
@@ -23,9 +23,9 @@ public class I2CFile extends I2CBase<I2CBusFFM> {
      *
      * @param provider a {@link I2CProvider} object.
      * @param config   a {@link I2CConfig} object.
-     * @param i2CBus   a {@link I2CBusFFM} object.
+     * @param i2CBus   a {@link FFMI2CBus} object.
      */
-    public I2CFile(I2CProvider provider, I2CConfig config, I2CBusFFM i2CBus) {
+    public I2CFile(I2CProvider provider, I2CConfig config, FFMI2CBus i2CBus) {
         super(provider, config, i2CBus);
     }
 

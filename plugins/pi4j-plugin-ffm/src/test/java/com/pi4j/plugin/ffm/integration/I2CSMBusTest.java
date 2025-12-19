@@ -5,7 +5,7 @@ import com.pi4j.context.Context;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfigBuilder;
 import com.pi4j.io.i2c.I2CImplementation;
-import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
+import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -44,7 +44,7 @@ public class I2CSMBusTest {
         }
 
         pi4j = Pi4J.newContextBuilder()
-            .add(new I2CFFMProviderImpl())
+            .add(new FFMI2CProviderImpl())
             .build();
         i2c = pi4j.i2c().create(I2CConfigBuilder.newInstance(pi4j).bus(1).device(0x1C).i2cImplementation(I2CImplementation.SMBUS));
 
@@ -86,7 +86,7 @@ public class I2CSMBusTest {
 
     @Test
     public void testI2CWriteReadBlockData() throws InterruptedException {
-        var writeBuffer = new byte[] {0x01, 0x02, 0x03};
+        var writeBuffer = new byte[]{0x01, 0x02, 0x03};
         var write = i2c.writeRegister(0xFF, writeBuffer);
         assertEquals(0, write);
         var readBuffer = new byte[3];
@@ -105,10 +105,10 @@ public class I2CSMBusTest {
 
     @Test
     public void testI2CWriteReadRegister() throws InterruptedException {
-       var write = i2c.writeRegister(0x324, 0xFF);
-       assertEquals(0, write);
-       var read = i2c.readRegister(0x324);
-       assertEquals(0xFF, read);
+        var write = i2c.writeRegister(0x324, 0xFF);
+        assertEquals(0, write);
+        var read = i2c.readRegister(0x324);
+        assertEquals(0xFF, read);
     }
 
 
