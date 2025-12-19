@@ -1,4 +1,4 @@
-package com.pi4j.test;
+package com.pi4j.test.smokeTest;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
@@ -39,38 +39,24 @@ public class ProviderContext {
 
     private Context pi4j = null;
 
-    private String i2cProviderName = "";
-    private String spiProviderName = "";
-    private String pwmProviderName = "";
-    private String digitalOutputProviderName = "";
-    private String digitalInputProviderName = "";
-    private String serialProviderName = "";
-
-    public static String DEFAULT_PWM_FILESYSTEM_PATH = "/sys/class/pwm";
+    private static final String DEFAULT_PWM_FILESYSTEM_PATH = "/sys/class/pwm";
 
     /**
      *
      * @param testProvider Identifies which set of providers to create
      */
-    ProviderContext(TestProvider testProvider) {
+    public ProviderContext(TestProvider testProvider) {
         this.testProvider = testProvider;
 
         switch (testProvider) {
             case LINUXFS -> {
-                String pwmFileSystemPath = DEFAULT_PWM_FILESYSTEM_PATH;
                 pi4j = Pi4J.newContextBuilder().add(LinuxFsI2CProvider.newInstance())
                     .add(GpioDDigitalInputProvider.newInstance())
                     .add(GpioDDigitalOutputProvider.newInstance())
-                    .add(LinuxFsPwmProvider.newInstance(pwmFileSystemPath))
+                    .add(LinuxFsPwmProvider.newInstance(DEFAULT_PWM_FILESYSTEM_PATH))
                     .add(LinuxFsI2CProvider.newInstance())
                     .add(LinuxFsSpiProvider.newInstance())
                     .build();
-                i2cProviderName = "linuxfs-i2c";
-                spiProviderName = "linuxfs-spi";
-                pwmProviderName = "linuxfs-pwm";
-                digitalOutputProviderName = "gpiod-digital-output";
-                digitalInputProviderName = "gpiod-digital-input";
-                serialProviderName = "NONE-serial";
             }
             case FFM -> {
                 pi4j = Pi4J.newContextBuilder()
@@ -81,12 +67,6 @@ public class ProviderContext {
                     .add(new FFMPwmProviderImpl())
                     .add(new FFMSerialProviderImpl())
                     .build();
-                i2cProviderName = "ffm-i2c";
-                spiProviderName = "ffm-spi";
-                pwmProviderName = "ffm-pwm";
-                digitalOutputProviderName = "ffm-digital-output";
-                digitalInputProviderName = "ffm-digital-input";
-                serialProviderName = "ffm-serial";
             }
             default -> logger.error("No test provider specified");
         }
@@ -98,29 +78,5 @@ public class ProviderContext {
 
     public Context getContext() {
         return pi4j;
-    }
-
-    public String getI2cProviderName() {
-        return i2cProviderName;
-    }
-
-    public String getSpiProviderName() {
-        return spiProviderName;
-    }
-
-    public String getPwmProviderName() {
-        return pwmProviderName;
-    }
-
-    public String getDigitalOutputProviderName() {
-        return digitalOutputProviderName;
-    }
-
-    public String getDigitalInputProviderName() {
-        return digitalInputProviderName;
-    }
-
-    public String getSerialProviderName() {
-        return serialProviderName;
     }
 }

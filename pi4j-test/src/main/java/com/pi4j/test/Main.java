@@ -24,7 +24,7 @@ package com.pi4j.test;/*-
  */
 
 import com.pi4j.io.IOType;
-import com.pi4j.test.type.*;
+import com.pi4j.test.smokeTest.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

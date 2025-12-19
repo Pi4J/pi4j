@@ -1,8 +1,6 @@
-package com.pi4j.test.type;
+package com.pi4j.test.smokeTest;
 
 import com.pi4j.io.i2c.I2C;
-import com.pi4j.test.ProviderContext;
-import com.pi4j.test.TestResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

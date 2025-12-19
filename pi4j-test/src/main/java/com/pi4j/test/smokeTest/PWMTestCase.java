@@ -1,11 +1,9 @@
-package com.pi4j.test.type;
+package com.pi4j.test.smokeTest;
 
 import com.pi4j.boardinfo.util.PwmChipUtil;
 import com.pi4j.io.gpio.digital.*;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmType;
-import com.pi4j.test.ProviderContext;
-import com.pi4j.test.TestResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

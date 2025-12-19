@@ -1,11 +1,9 @@
-package com.pi4j.test.type;
+package com.pi4j.test.smokeTest;
 
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBus;
 import com.pi4j.io.spi.SpiChipSelect;
 import com.pi4j.io.spi.SpiMode;
-import com.pi4j.test.ProviderContext;
-import com.pi4j.test.TestResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
