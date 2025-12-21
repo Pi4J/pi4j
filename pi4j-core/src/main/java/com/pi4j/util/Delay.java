@@ -86,7 +86,7 @@ public class Delay {
     }
 
     /**
-     * Sleeps until the delay time requested by setDelay has passed.
+     * Sleeps until the requested delay time has passed.
      * Depending on the remaining time and the high precision constructor setting,
      * active waiting or parking will be used for shorter time periods.
      * <p>
