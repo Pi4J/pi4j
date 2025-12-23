@@ -30,6 +30,7 @@ import com.pi4j.context.Context;
 import com.pi4j.io.IO;
 import com.pi4j.io.IODataReader;
 import com.pi4j.io.IODataWriter;
+import com.pi4j.io.SerialCircuitIO;
 
 import java.nio.ByteBuffer;
 
@@ -39,7 +40,7 @@ import java.nio.ByteBuffer;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IODataWriter, IODataReader {
+public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IODataWriter, IODataReader, SerialCircuitIO {
     /**
      * Constant <code>DEFAULT_BUS</code>
      */
@@ -382,6 +383,35 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
 
         // return actual number of bytes read
         return length;
+    }
+
+    // --------------------
+    // Disambiguation
+    // ---------------------
+
+    @Override
+    default int read(byte[] data) {
+        return SerialCircuitIO.super.read(data);
+    }
+
+    @Override
+    default int read(byte[] data, int offset, int length) {
+        return SerialCircuitIO.super.read(data, offset, length);
+    }
+
+    @Override
+    default int write(byte[] data) {
+        return SerialCircuitIO.super.write(data);
+    }
+
+    @Override
+    default int write(byte[] data, int offset, int length) {
+        return SerialCircuitIO.super.write(data, offset, length);
+    }
+
+    @Override
+    default void writeThenRead(byte[] write, int writeOffset, int writeLength, int delay, byte[] read, int readOffset, int readLength) {
+        writeThenRead(write, writeOffset, writeLength, (short) delay, read, readOffset, readLength, (short) 0);
     }
 
     // ------------------------------------------------------------------------------------
