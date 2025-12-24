@@ -31,7 +31,6 @@ import com.pi4j.io.IODataReader;
 import com.pi4j.io.IODataWriter;
 import com.pi4j.io.SerialCircuitIO;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 
@@ -115,12 +114,13 @@ public interface I2C
      * @param writeSize   the number of bytes to write
      * @param writeOffset the offset of the array to write
      * @param writeBuffer the buffer to write respecting the given length and offset
-     * @param readDelayUsec delay before reading after writing.
+     * @param writeDelayNanos delay after writing before reading; currently ignored for i2c.
      * @param readBuffer  the buffer into which to read the bytes
      * @param readOffset  the offset in the read buffer at which to insert the read bytes
      * @param readSize    the number of bytes to read
+     * @param readDelayNanos delay after reading; currently ignored for i2c.
      */
-    default void writeThenRead(byte[] writeBuffer, int writeOffset, int writeSize, int readDelayUsec, byte[] readBuffer, int readOffset, int readSize) {
+    default void writeThenRead(byte[] writeBuffer, int writeOffset, int writeSize, int writeDelayNanos, byte[] readBuffer, int readOffset, int readSize, int readDelayNanos) {
         // Ideally, new implementations support this call directly.
         // however, we can emulate it using the multi-byte register call
         if (writeSize != writeBuffer.length) {

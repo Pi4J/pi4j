@@ -397,7 +397,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
     }
 
     @Override
-    public void writeThenRead(byte[] write, int writeOffset, int writeLength, short writeDelayUsec, byte[] read, int readOffset, int readNumberOfBytes, short readDelayUsec) {
+    public void writeThenRead(byte[] write, int writeOffset, int writeLength, int writeDelayNanos, byte[] read, int readOffset, int readNumberOfBytes, int readDelayNanos) {
         final int firstRecord = 0;
         final int secondRecord = 1;
         final int totalRecords = 2;
@@ -419,7 +419,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         txEntry.rx_buf = 0;
         txEntry.bits_per_word = BITS8;
         txEntry.speed_hz = config.baud();
-        txEntry.delay_usecs = writeDelayUsec;
+        txEntry.delay_usecs = (short) ((writeDelayNanos * 500) / 1000);
         txEntry.cs_change = 0;
         txEntry.len = writeLength;
 
@@ -429,7 +429,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         rxEntry.tx_buf = 0;
         rxEntry.bits_per_word = BITS8;
         rxEntry.speed_hz = config.baud();
-        rxEntry.delay_usecs = readDelayUsec;
+        rxEntry.delay_usecs = (short) (readDelayNanos / 1000);
         rxEntry.cs_change = 0;
         rxEntry.len = readNumberOfBytes;
 

@@ -29,7 +29,7 @@ public interface SerialCircuitIO extends AutoCloseable {
      * Returns 'length' for historical reasons.
      */
     default int read(byte[] buffer, int offset, int length) {
-        writeThenRead(null, 0, 0, 0, buffer, offset, length);
+        writeThenRead(null, 0, 0, 0, buffer, offset, length, 0);
         return length;
     }
 
@@ -43,23 +43,35 @@ public interface SerialCircuitIO extends AutoCloseable {
      * Returns 'length' for historical reasons.
      */
     default int write(byte[] buffer, int offset, int length) {
-        writeThenRead(buffer, offset, length, 0, null, 0, 0);
+        writeThenRead(buffer, offset, length, 0, null, 0, 0, 0);
         return length;
     }
 
     default void writeThenRead(byte[] writeBuffer, byte[] readBuffer) {
-        writeThenRead(writeBuffer, 0, writeBuffer.length, 0, readBuffer, 0, readBuffer.length);
+        writeThenRead(writeBuffer, 0, writeBuffer.length, 0, readBuffer, 0, readBuffer.length, 0);
     }
 
     /**
+     * This function writes bytes to the SPI device and then reads bytes from the device.
+     * Write data is taken from the 'writeBuffer' byte array from the given 'writeOffset' index to
+     * the specified 'writeLength' (number of bytes).
      *
+     * <p>Data read back from the SPI device is then copied to the 'readBuffer' byte array starting
+     * at the given 'readOffset' using the 'readLength' (number of bytes).
+     * The 'buffer' and  'read' byte array must be at least the size of their defined 'length' + 'offset'.
+     * <p>
+     * In addition. both the write and read operation can provide a configurable delay
+     * allowing the effected SPI chip to complete any processing. The write operation and the read
+     * operation each have an individual delay value.
+     *      *
      * @param writeBuffer The write buffer. If null, only a read operation is performed.
      * @param writeOffset The start offset in the write buffer
      * @param writeLength The number of bytes to write.
-     * @param writeDelayUsecs Delay between write and read in usecs
+     * @param writeDelayNanos Delay between write and read in usecs
      * @param readBuffer The read buffer. If null, only a write operation is performed
      * @param readOffset The start offset in the read buffer.
      * @param readLength The number of bytes to read.
+     * @param readDelayNanos Delay between write and read in usecs
      */
-    void writeThenRead(byte[] writeBuffer, int writeOffset, int writeLength, int writeDelayUsecs, byte[] readBuffer, int readOffset, int readLength);
+    void writeThenRead(byte[] writeBuffer, int writeOffset, int writeLength, int writeDelayNanos, byte[] readBuffer, int readOffset, int readLength, int readDelayNanos);
 }
