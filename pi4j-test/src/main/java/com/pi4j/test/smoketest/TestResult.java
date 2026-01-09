@@ -1,4 +1,4 @@
-package com.pi4j.test;
+package com.pi4j.test.smoketest;
 
 public record TestResult(String name, boolean success, String message) {
     public String getLogOutput() {
