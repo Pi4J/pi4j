@@ -52,16 +52,16 @@ public interface SerialCircuitIO extends AutoCloseable {
     }
 
     /**
-     * This function writes bytes to the SPI device and then reads bytes from the device.
+     * This function writes bytes to the device and then reads bytes from the device.
      * Write data is taken from the 'writeBuffer' byte array from the given 'writeOffset' index to
      * the specified 'writeLength' (number of bytes).
      *
-     * <p>Data read back from the SPI device is then copied to the 'readBuffer' byte array starting
+     * <p>Data read back from the device is then copied to the 'readBuffer' byte array starting
      * at the given 'readOffset' using the 'readLength' (number of bytes).
      * The 'buffer' and  'read' byte array must be at least the size of their defined 'length' + 'offset'.
      * <p>
      * In addition. both the write and read operation can provide a configurable delay
-     * allowing the effected SPI chip to complete any processing. The write operation and the read
+     * allowing the effected chip to complete any processing. The write operation and the read
      * operation each have an individual delay value.
      * *
      *
