@@ -1,4 +1,4 @@
-package com.pi4j.test.type;
+package com.pi4j.test.smoketest;
 
 import com.pi4j.context.Context;
 import com.pi4j.io.gpio.digital.DigitalInput;
