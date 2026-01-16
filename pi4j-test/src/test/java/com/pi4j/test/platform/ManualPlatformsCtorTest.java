@@ -25,19 +25,18 @@ package com.pi4j.test.platform;
  * #L%
  */
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.test.provider.TestI2CProvider;
 import com.pi4j.test.provider.TestPwmProvider;
-import com.pi4j.test.provider.TestSerialProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class ManualPlatformsCtorTest {
@@ -50,7 +49,6 @@ public class ManualPlatformsCtorTest {
         // create our own custom provider implementation classes
         var pwmProvider = TestPwmProvider.newInstance();
         var i2CProvider = TestI2CProvider.newInstance();
-        var serialProvider = TestSerialProvider.newInstance();
 
         // create our own custom platform implementation classes
         var testPlatform = new TestPlatform("test-platform", "My Test Platform");
@@ -64,9 +62,9 @@ public class ManualPlatformsCtorTest {
         // Explicitly add the test providers into the
         // context for testing
         pi4j = Pi4J.newContextBuilder()
-                .addDefaultPlatform(testPlatform)
-                .add(pwmProvider, i2CProvider, serialProvider)
-                .build();
+            .addDefaultPlatform(testPlatform)
+            .add(pwmProvider, i2CProvider)
+            .build();
 
     }
 
@@ -89,12 +87,11 @@ public class ManualPlatformsCtorTest {
 
     @Test
     public void testPlatformCount() {
-
         // ensure that only one platform was detected/loaded into the Pi4J context
-        assertEquals(pi4j.platforms().all().size(), 1);
+        assertEquals(1, pi4j.platforms().all().size());
 
         // ensure that only 3 providers were detected/loaded into the Pi4J context
-        assertEquals(pi4j.providers().all().size(), 3);
+        assertEquals(2, pi4j.providers().all().size());
 
         // print out the detected Pi4J platforms
         pi4j.platforms().describe().print(System.out);
@@ -105,7 +102,6 @@ public class ManualPlatformsCtorTest {
 
     @Test
     public void testPlatformProviderCount() {
-
         // ensure that exactly 2 providers are associated with the single default platform in the Pi4J context
         assertEquals(2, pi4j.platform().providers().size());
 

@@ -37,7 +37,6 @@ import com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalInputProvider;
 import com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalOutputProvider;
 import com.pi4j.plugin.mock.provider.i2c.MockI2CProvider;
 import com.pi4j.plugin.mock.provider.pwm.MockPwmProvider;
-import com.pi4j.plugin.mock.provider.serial.MockSerialProvider;
 import com.pi4j.plugin.mock.provider.spi.MockSpiProvider;
 
 /**
@@ -52,13 +51,15 @@ public class MockPlatform extends PlatformBase<MockPlatform> implements Platform
     /**
      * <p>Constructor for MockPlatform.</p>
      */
-    public MockPlatform(){
+    public MockPlatform() {
         super(Mock.PLATFORM_ID,
-              Mock.PLATFORM_NAME,
-              Mock.PLATFORM_DESCRIPTION);
+            Mock.PLATFORM_NAME,
+            Mock.PLATFORM_DESCRIPTION);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int priority() {
         // the MOCK platform has a priority of -1000 to indicate that it has a very
@@ -67,7 +68,9 @@ public class MockPlatform extends PlatformBase<MockPlatform> implements Platform
         return -1000;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean enabled(Context context) {
         // the Mock Platform is always available when detected
@@ -76,17 +79,19 @@ public class MockPlatform extends PlatformBase<MockPlatform> implements Platform
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String[] getProviders() {
-        return new String[] {
+        return new String[]{
             MockAnalogInputProvider.ID,
             MockAnalogOutputProvider.ID,
             MockDigitalInputProvider.ID,
             MockDigitalOutputProvider.ID,
             MockPwmProvider.ID,
             MockSpiProvider.ID,
-            MockI2CProvider.ID,
-            MockSerialProvider.ID };
+            MockI2CProvider.ID
+        };
     }
 }

@@ -12,10 +12,6 @@ Usage parms:
 -p linuxfs (default), or ffm
 -h help
 ```
-## Enable UART
-# config.sys  for smoketest serial
-dtoverlay=disable-bt
-enable_uart=1
 
 ## Wiring
 
@@ -82,4 +78,3 @@ The PWM, input, output, and serial connections are M-M jumpers between T-cobbler
 | PWM | PWM0 |        12        | 18 | GPIO       | 16 | 23 | Green | 
 | Output | GPIO | 18 | 24 | GPIO | 22 | 25 | Blue  |
 | Input | GPIO | 36 | 16 | GPIO | 37 | 26 | White |
-| Serial | TX | 8 | 14 | RX | 10 | 15 | White |
