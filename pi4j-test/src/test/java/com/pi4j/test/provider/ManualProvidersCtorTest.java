@@ -25,20 +25,17 @@ package com.pi4j.test.provider;
  * #L%
  */
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
-import com.pi4j.io.i2c.I2CProvider;
-import com.pi4j.io.pwm.PwmProvider;
-import com.pi4j.io.serial.SerialProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class ManualProvidersCtorTest {
@@ -47,17 +44,14 @@ public class ManualProvidersCtorTest {
 
     @BeforeAll
     public void beforeTest() {
-
-        // create our own custom provider implementation classes
-        PwmProvider pwmProvider = TestPwmProvider.newInstance();
-        I2CProvider i2CProvider = TestI2CProvider.newInstance();
-        SerialProvider serialProvider = TestSerialProvider.newInstance();
-
         // Initialize Pi4J with a manually configured context
         // ...
         // Explicitly add the test providers into the
         // context for testing
-        pi4j = Pi4J.newContextBuilder().add(pwmProvider, i2CProvider, serialProvider).build();
+        pi4j = Pi4J.newContextBuilder().add(
+            TestPwmProvider.newInstance(),
+            TestI2CProvider.newInstance()
+        ).build();
     }
 
     @AfterAll
@@ -77,7 +71,7 @@ public class ManualProvidersCtorTest {
     @Test
     public void testProviderCount() {
         // ensure that only 3 providers were detected/loaded into the Pi4J context
-        assertEquals(3 , pi4j.providers().all().size());
+        assertEquals(2, pi4j.providers().all().size());
 
         // print out the detected Pi4J platforms
         pi4j.platforms().describe().print(System.out);

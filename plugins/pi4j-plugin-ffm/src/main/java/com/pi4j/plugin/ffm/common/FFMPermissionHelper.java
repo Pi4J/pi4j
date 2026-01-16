@@ -6,14 +6,12 @@ import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.pwm.PwmConfig;
-import com.pi4j.io.serial.SerialConfig;
 import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.plugin.ffm.common.permission.PermissionNative;
 import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
 import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
 import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
-import com.pi4j.plugin.ffm.providers.serial.FFMSerialProviderImpl;
 import com.pi4j.plugin.ffm.providers.spi.FFMSpiProviderImpl;
 import com.pi4j.provider.ProviderBase;
 import org.slf4j.Logger;
@@ -101,7 +99,6 @@ public class FFMPermissionHelper {
             case FFMDigitalInputProviderImpl _, FFMDigitalOutputProviderImpl _, FFMPwmProviderImpl _ ->
                 checkGroups(osGroups, userGroups, "gpio", "dialout");
             case FFMI2CProviderImpl _ -> checkGroups(osGroups, userGroups, "i2c");
-            case FFMSerialProviderImpl _ -> checkGroups(osGroups, userGroups, "serial");
             case FFMSpiProviderImpl _ -> checkGroups(osGroups, userGroups, "spi");
             default -> throw new Pi4JException("Unknown provider " + provider);
         }
@@ -183,12 +180,6 @@ public class FFMPermissionHelper {
                 if (!group.getName().equals("i2c")) {
                     printError("i2c");
                     throw new Pi4JException("Device '" + devicePath + "' (" + owner + ":" + group + ") does not belong to group 'i2c'.");
-                }
-            }
-            case SerialConfig _ -> {
-                if (!group.getName().equals("serial")) {
-                    printError("serial");
-                    throw new Pi4JException("Device '" + devicePath + "' (" + owner + ":" + group + ") does not belong to group 'serial'.");
                 }
             }
             case SpiConfig _ -> {

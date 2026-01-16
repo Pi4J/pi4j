@@ -97,8 +97,7 @@ public class Main {
             PWMTestCase.run(providerContext, 1, 50, 10),
             PWMTestCase.run(providerContext, 500, 50, 10 * 500),
             DigitalInputTestCase.run(providerContext),
-            DigitalOutputTestCase.run(providerContext),
-            SerialTestCase.run(providerContext)
+            DigitalOutputTestCase.run(providerContext)
         );
 
         // Output results

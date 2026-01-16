@@ -10,7 +10,7 @@ package com.pi4j.test.platform;
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
  * **********************************************************************
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,21 +25,9 @@ package com.pi4j.test.platform;
  * #L%
  */
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
-import com.pi4j.plugin.mock.platform.MockPlatform;
-import com.pi4j.plugin.mock.provider.gpio.analog.MockAnalogInputProvider;
-import com.pi4j.plugin.mock.provider.gpio.analog.MockAnalogOutputProvider;
-import com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalInputProvider;
-import com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalOutputProvider;
-import com.pi4j.plugin.mock.provider.i2c.MockI2CProvider;
-import com.pi4j.plugin.mock.provider.pwm.MockPwmProvider;
-import com.pi4j.plugin.mock.provider.serial.MockSerialProvider;
-import com.pi4j.plugin.mock.provider.spi.MockSpiProvider;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -47,6 +35,9 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class ManualPlatformsTest {
@@ -65,7 +56,7 @@ public class ManualPlatformsTest {
     }
 
     @AfterAll
-    public void afterTest()  {
+    public void afterTest() {
         try {
             pi4j.shutdown();
         } catch (Pi4JException e) { /* do nothing */ }

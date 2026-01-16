@@ -66,8 +66,6 @@ module com.pi4j.test {
     uses com.pi4j.plugin.mock.provider.i2c.MockI2CProvider;
     uses com.pi4j.plugin.mock.provider.spi.MockSpi;
     uses com.pi4j.plugin.mock.provider.spi.MockSpiProvider;
-    uses com.pi4j.plugin.mock.provider.serial.MockSerial;
-    uses com.pi4j.plugin.mock.provider.serial.MockSerialProvider;
 
     exports com.pi4j.test.platform;
     exports com.pi4j.test.provider;

@@ -6,7 +6,6 @@ import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
 import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
 import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
-import com.pi4j.plugin.ffm.providers.serial.FFMSerialProviderImpl;
 import com.pi4j.plugin.ffm.providers.spi.FFMSpiProviderImpl;
 import com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalInputProvider;
 import com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalOutputProvider;
@@ -65,7 +64,6 @@ public class ProviderContext {
                     .add(new FFMI2CProviderImpl())
                     .add(new FFMSpiProviderImpl())
                     .add(new FFMPwmProviderImpl())
-                    .add(new FFMSerialProviderImpl())
                     .build();
             }
             default -> logger.error("No test provider specified");
