@@ -14,7 +14,7 @@ import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
  * Source: include/linux/spi/spidev.h:70:0
  * Internal class representing SPI ioctl transfer object.
  */
-record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, short delayUsecs, byte bitsPerWord,
+record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, int delayUsecs, byte bitsPerWord,
                       byte csChange, byte txNbits, byte rxNbits, byte wordDelayUsecs,
                       byte pad) implements Pi4JLayout {
 
@@ -70,7 +70,7 @@ record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, short
             rxBuf != MemorySegment.NULL ? rxBuf.toArray(ValueLayout.JAVA_BYTE) : new byte[]{},
             (int) VH_LEN.get(buffer, 0L),
             (int) VH_SPEED_HZ.get(buffer, 0L),
-            (short) VH_DELAY_USECS.get(buffer, 0L),
+            (int) VH_DELAY_USECS.get(buffer, 0L),
             (byte) VH_BITS_PER_WORD.get(buffer, 0L),
             (byte) VH_CS_CHANGE.get(buffer, 0L),
             (byte) VH_TX_NBITS.get(buffer, 0L),
@@ -83,7 +83,7 @@ record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, short
     public void to(MemorySegment buffer) throws Throwable {
         VH_LEN.set(buffer, 0L, length);
         VH_SPEED_HZ.set(buffer, 0L, speedHz);
-        VH_DELAY_USECS.set(buffer, 0L, delayUsecs);
+        VH_DELAY_USECS.set(buffer, 0L, (short) delayUsecs);
         VH_BITS_PER_WORD.set(buffer, 0L, bitsPerWord);
         VH_CS_CHANGE.set(buffer, 0L, csChange);
         VH_TX_NBITS.set(buffer, 0L, txNbits);
