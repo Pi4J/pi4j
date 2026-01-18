@@ -143,7 +143,7 @@ public interface I2C
     }
 
     @Override
-    default int write(byte[] data) {
+    default int write(byte... data) {
         return SerialCircuitIO.super.write(data);
     }
 
