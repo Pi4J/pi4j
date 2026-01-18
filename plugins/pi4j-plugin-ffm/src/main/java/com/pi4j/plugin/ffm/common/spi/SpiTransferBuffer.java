@@ -17,8 +17,8 @@ public final class SpiTransferBuffer implements Pi4JLayout {
     private final byte[] txBuf;
     private final byte[] rxBuf;
 
-    private MemorySegment txMemorySegment;
-    private MemorySegment rxMemorySegment;
+    private MemorySegment txMemorySegment = MemorySegment.NULL;
+    private MemorySegment rxMemorySegment = MemorySegment.NULL;
 
     /**
      * Creates new transfer holder.
@@ -35,7 +35,7 @@ public final class SpiTransferBuffer implements Pi4JLayout {
      * @param wordDelayUsecs ?
      * @param pad            ?
      */
-    public SpiTransferBuffer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, short delayUsecs, byte bitsPerWord,
+    public SpiTransferBuffer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, int delayUsecs, byte bitsPerWord,
                              byte csChange, byte txNbits, byte rxNbits, byte wordDelayUsecs,
                              byte pad) {
         this.spiIocTransfer = new SpiIocTransfer(txBuf, rxBuf, length, speedHz, delayUsecs, bitsPerWord, csChange, txNbits, rxNbits, wordDelayUsecs, pad);
@@ -51,9 +51,23 @@ public final class SpiTransferBuffer implements Pi4JLayout {
      * @param length buffer length
      */
     public SpiTransferBuffer(byte[] txBuf, byte[] rxBuf, int length) {
-        this(txBuf, rxBuf, length, 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0);
+        this(txBuf, rxBuf, length, 0, 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0);
     }
 
+    /**
+     * Creates new transfer holder.
+     *
+     * @param txBuf  send buffer
+     * @param rxBuf  receive buffer
+     * @param length buffer length
+     */
+    public SpiTransferBuffer(byte[] txBuf, byte[] rxBuf, int length, int delayUsecs) {
+        this(txBuf, rxBuf, length, 0, delayUsecs, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0);
+    }
+
+    public static SpiTransferBuffer createEmpty() {
+        return new SpiTransferBuffer(new byte[0], new byte[0], 0);
+    }
 
     @Override
     public MemoryLayout getMemoryLayout() {

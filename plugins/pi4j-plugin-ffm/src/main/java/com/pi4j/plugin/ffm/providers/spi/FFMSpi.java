@@ -14,6 +14,7 @@ import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
+import com.pi4j.plugin.ffm.common.spi.SpiMultipleTransferBuffer;
 import com.pi4j.plugin.ffm.common.spi.SpiTransferBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,6 +100,29 @@ public class FFMSpi extends SpiBase implements Spi {
     @Override
     public int write(byte[] data, int offset, int length) {
         return transfer(data, offset, new byte[data.length], 0, length);
+    }
+
+
+    @Override
+    public void writeThenRead(byte[] write, byte[] read) {
+        writeThenRead(write, 0, write.length, 0, read, 0, read.length);
+    }
+
+
+    @Override
+    public void writeThenRead(byte[] write, int writeOffset, int writeLength, int readDelayNanos, byte[] read, int readOffset, int readLength) {
+        var inputBuffer = new SpiTransferBuffer(write, new byte[0], writeLength);
+        var outputBuffer = new SpiTransferBuffer(new byte[0], read, readLength, readDelayNanos);
+
+        var transferBuffer = new SpiMultipleTransferBuffer(inputBuffer, outputBuffer);
+        checkClosed();
+        logger.trace("{} - Transferring data (length '{}')", path, writeLength);
+        logger.trace("{} - Write buffer: {}", path, HexFormatter.format(write));
+
+        transferBuffer = IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(2), transferBuffer);
+        var readBytes = transferBuffer.transferBuffer()[1].getRxBuffer();
+        ByteBuffer.wrap(read).put(readBytes);
+        logger.trace("{} - Read buffer: {}", path, HexFormatter.format(read));
     }
 
     @Override
