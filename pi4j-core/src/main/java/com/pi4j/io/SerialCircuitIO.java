@@ -34,7 +34,7 @@ public interface SerialCircuitIO extends AutoCloseable {
     }
 
     /** Writes the full byte array. Returns the buffer size for historical reasons. */
-    default int write(byte[] buffer) {
+    default int write(byte... buffer) {
         return write(buffer, 0, buffer.length);
     }
 

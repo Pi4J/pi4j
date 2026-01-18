@@ -400,7 +400,7 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
     }
 
     @Override
-    default int write(byte[] data) {
+    default int write(byte... data) {
         return SerialCircuitIO.super.write(data);
     }
 
