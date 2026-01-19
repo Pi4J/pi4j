@@ -7,12 +7,14 @@ import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.pwm.*;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
+import com.pi4j.plugin.ffm.common.FileWatcher;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.util.DeferredDelay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
 public class FFMPwmHardware extends PwmBase implements Pwm {
@@ -59,23 +61,26 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         var pwmFile = pwmChipFile + PWM_PATH + channel;
         if (deviceNotExists(pwmFile)) {
             logger.trace("{} - no PWM Bus found... will try to export PWM Bus first.", pwmFile);
-            var npwmFd = file.open(pwmChipFile + CHIP_NPWM_PATH, FileFlag.O_RDONLY);
-            var maxChannel = getIntegerContent(file.read(npwmFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
-            file.close(npwmFd);
-            if (channel > maxChannel - 1) {
-                throw new IllegalArgumentException("PWM channel " + channel + " at path '" + pwmFile + "' cannot be exported! Max available channel is " + maxChannel);
-            }
-            var exportFd = file.open(pwmChipFile + CHIP_EXPORT_PATH, FileFlag.O_WRONLY);
-            file.write(exportFd, getByteContent(channel));
-            waitForFile(pwmFile, 0);
-            file.close(exportFd);
-            if (deviceNotExists(pwmFile)) {
-                throw new IllegalArgumentException("PWM channel " + channel + " at path '" + pwmFile + "' cannot be exported!");
+            try (var pwmFileWatcher = new FileWatcher(Path.of(pwmChipFile), PWM_PATH + channel, 100)) {
+                var npwmFd = file.open(pwmChipFile + CHIP_NPWM_PATH, FileFlag.O_RDONLY);
+                var maxChannel = getIntegerContent(file.read(npwmFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
+                file.close(npwmFd);
+                if (channel > maxChannel - 1) {
+                    throw new IllegalArgumentException("PWM channel " + channel + " at path '" + pwmFile + "' cannot be exported! Max available channel is " + maxChannel);
+                }
+                var exportFd = file.open(pwmChipFile + CHIP_EXPORT_PATH, FileFlag.O_WRONLY);
+                file.write(exportFd, getByteContent(channel));
+                file.close(exportFd);
+                if (!pwmFileWatcher.waitForCreation()) {
+                    throw new IllegalArgumentException("PWM channel " + channel + " at path '" + pwmFile + "' haven't created within timeout!");
+                }
+            } catch (java.io.IOException e) {
+                throw new Pi4JException(e);
             }
         }
         this.pwmPath = pwmFile;
 
-        waitForFile(this.pwmPath + ENABLE_PATH, 0);
+        waitForPermission(this.pwmPath + ENABLE_PATH, 0);
         var stateFd = file.open(this.pwmPath + ENABLE_PATH, FileFlag.O_RDONLY);
         this.onState = getIntegerContent(file.read(stateFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE)) == 1;
         file.close(stateFd);
@@ -207,17 +212,17 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
      * @param path    path of the file
      * @param timeout counting timeout
      */
-    private void waitForFile(String path, int timeout) {
+    private void waitForPermission(String path, int timeout) {
         if (timeout > 100) {
             throw new Pi4JException("Timeout occurred while waiting for file");
         }
         logger.trace("{} - Waiting for file '{}' for {}ms", pwmPath, path, timeout);
-        var access = file.access(path, FileFlag.R_OK | FileFlag.F_OK);
+        var access = file.access(path, FileFlag.R_OK);
         if (access != 0) {
             var deferredDelay = new DeferredDelay();
             deferredDelay.setDelayMillis(10);
             deferredDelay.materializeDelay();
-            waitForFile(path, timeout + 10);
+            waitForPermission(path, timeout + 10);
         }
     }
 }
