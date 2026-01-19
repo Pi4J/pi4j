@@ -16,11 +16,10 @@ import com.pi4j.io.pwm.PwmPolarity;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.io.spi.SpiMode;
-import com.pi4j.plugin.ffm.providers.gpio.DigitalInputFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.gpio.DigitalOutputFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.pwm.PwmFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.serial.SerialFFMProviderImpl;
+import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
+import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
+import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
+import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
 
 // Example interface for device family
 public interface RaspberryPi extends Pi4JApi.API {
@@ -38,8 +37,12 @@ public interface RaspberryPi extends Pi4JApi.API {
         // Package private, no external creation.
         Model4B() {
             this.context = Pi4J.newContextBuilder()
-                .add(new DigitalOutputFFMProviderImpl(), new DigitalInputFFMProviderImpl(), new SerialFFMProviderImpl(),
-                    new I2CFFMProviderImpl(), new PwmFFMProviderImpl())
+                .add(
+                    new FFMDigitalOutputProviderImpl(),
+                    new FFMDigitalInputProviderImpl(),
+                    new FFMI2CProviderImpl(),
+                    new FFMPwmProviderImpl()
+                )
                 .build();
         }
 

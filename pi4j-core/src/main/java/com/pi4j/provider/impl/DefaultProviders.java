@@ -32,7 +32,6 @@ import com.pi4j.io.gpio.digital.DigitalInputProvider;
 import com.pi4j.io.gpio.digital.DigitalOutputProvider;
 import com.pi4j.io.i2c.I2CProvider;
 import com.pi4j.io.pwm.PwmProvider;
-import com.pi4j.io.serial.SerialProvider;
 import com.pi4j.io.spi.SpiProvider;
 import com.pi4j.provider.Provider;
 import com.pi4j.provider.ProviderGroup;
@@ -45,9 +44,9 @@ import java.util.Map;
  * <p>
  * </p>
  *
- * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
+ * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
  */
 public class DefaultProviders implements Providers {
 
@@ -59,7 +58,7 @@ public class DefaultProviders implements Providers {
      * @param providers a {@link com.pi4j.provider.impl.RuntimeProviders} object.
      * @return a {@link com.pi4j.provider.Providers} object.
      */
-    public static Providers newInstance(RuntimeProviders providers){
+    public static Providers newInstance(RuntimeProviders providers) {
         return new DefaultProviders(providers);
     }
 
@@ -69,79 +68,97 @@ public class DefaultProviders implements Providers {
         this.providers = providers;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ProviderGroup<AnalogInputProvider> analogInput() {
         return providers.analogInput();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ProviderGroup<AnalogOutputProvider> analogOutput() {
         return providers.analogOutput();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ProviderGroup<DigitalInputProvider> digitalInput() {
         return providers.digitalInput();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ProviderGroup<DigitalOutputProvider> digitalOutput() {
         return providers.digitalOutput();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ProviderGroup<PwmProvider> pwm() {
         return providers.pwm();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ProviderGroup<SpiProvider> spi() {
         return providers.spi();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ProviderGroup<I2CProvider> i2c() {
         return providers.i2c();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ProviderGroup<SerialProvider> serial() {
-        return providers.serial();
-    }
-
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Map<String, Provider> all() {
         return providers.all();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends Provider> Map<String, T> all(Class<T> providerClass) throws ProviderNotFoundException {
         return providers.all(providerClass);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends Provider> Map<String, T> all(IOType ioType) throws ProviderNotFoundException {
         return providers.all(ioType);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean exists(String providerId) {
         return providers.exists(providerId);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public <T extends Provider> T get(String providerId) throws ProviderNotFoundException {
         return providers.get(providerId);

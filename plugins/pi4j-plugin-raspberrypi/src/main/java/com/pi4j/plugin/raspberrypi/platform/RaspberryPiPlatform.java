@@ -10,7 +10,7 @@ package com.pi4j.plugin.raspberrypi.platform;
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
  * **********************************************************************
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the
@@ -35,7 +35,6 @@ import com.pi4j.plugin.raspberrypi.provider.gpio.digital.RpiDigitalInputProvider
 import com.pi4j.plugin.raspberrypi.provider.gpio.digital.RpiDigitalOutputProvider;
 import com.pi4j.plugin.raspberrypi.provider.i2c.RpiI2CProvider;
 import com.pi4j.plugin.raspberrypi.provider.pwm.RpiPwmProvider;
-import com.pi4j.plugin.raspberrypi.provider.serial.RpiSerialProvider;
 import com.pi4j.plugin.raspberrypi.provider.spi.RpiSpiProvider;
 
 /**
@@ -50,13 +49,15 @@ public class RaspberryPiPlatform extends PlatformBase<RaspberryPiPlatform> imple
     /**
      * <p>Constructor for RaspberryPiPlatform.</p>
      */
-    public RaspberryPiPlatform(){
+    public RaspberryPiPlatform() {
         super(RaspberryPi.PLATFORM_ID,
-                RaspberryPi.PLATFORM_NAME,
-                RaspberryPi.PLATFORM_DESCRIPTION);
+            RaspberryPi.PLATFORM_NAME,
+            RaspberryPi.PLATFORM_DESCRIPTION);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int priority() {
         // this platform has a priority of 5 to indicate that it is likely to be used
@@ -64,7 +65,9 @@ public class RaspberryPiPlatform extends PlatformBase<RaspberryPiPlatform> imple
         return 5;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean enabled(Context context) {
         // the Mock Platform is always available when detected
@@ -73,15 +76,17 @@ public class RaspberryPiPlatform extends PlatformBase<RaspberryPiPlatform> imple
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected String[] getProviders() {
-        return new String[] {
-                RpiDigitalInputProvider.ID,
-                RpiDigitalOutputProvider.ID,
-                RpiPwmProvider.ID,
-                RpiI2CProvider.ID,
-                RpiSpiProvider.ID,
-                RpiSerialProvider.ID};
+        return new String[]{
+            RpiDigitalInputProvider.ID,
+            RpiDigitalOutputProvider.ID,
+            RpiPwmProvider.ID,
+            RpiI2CProvider.ID,
+            RpiSpiProvider.ID
+        };
     }
 }

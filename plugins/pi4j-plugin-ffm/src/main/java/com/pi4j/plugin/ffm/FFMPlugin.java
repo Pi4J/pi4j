@@ -4,12 +4,11 @@ import com.pi4j.context.Context;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.extension.Plugin;
 import com.pi4j.extension.PluginService;
-import com.pi4j.plugin.ffm.providers.gpio.DigitalInputFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.gpio.DigitalOutputFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.pwm.PwmFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.serial.SerialFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.spi.SpiFFMProviderImpl;
+import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
+import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
+import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
+import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
+import com.pi4j.plugin.ffm.providers.spi.FFMSpiProviderImpl;
 import com.pi4j.provider.Provider;
 
 import java.util.Arrays;
@@ -20,12 +19,11 @@ public class FFMPlugin implements Plugin {
     @Override
     public void initialize(PluginService service) {
         this.providers = new Provider[]{
-            new DigitalInputFFMProviderImpl(),
-            new DigitalOutputFFMProviderImpl(),
-            new I2CFFMProviderImpl(),
-            new SpiFFMProviderImpl(),
-            new PwmFFMProviderImpl(),
-            new SerialFFMProviderImpl()
+            new FFMDigitalInputProviderImpl(),
+            new FFMDigitalOutputProviderImpl(),
+            new FFMI2CProviderImpl(),
+            new FFMSpiProviderImpl(),
+            new FFMPwmProviderImpl()
         };
         service.register(providers);
     }

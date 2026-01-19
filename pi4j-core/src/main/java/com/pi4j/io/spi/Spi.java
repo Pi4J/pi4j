@@ -30,6 +30,7 @@ import com.pi4j.context.Context;
 import com.pi4j.io.IO;
 import com.pi4j.io.IODataReader;
 import com.pi4j.io.IODataWriter;
+import com.pi4j.io.SerialCircuitIO;
 
 import java.nio.ByteBuffer;
 
@@ -39,7 +40,7 @@ import java.nio.ByteBuffer;
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IODataWriter, IODataReader {
+public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IODataWriter, IODataReader, SerialCircuitIO {
     /**
      * Constant <code>DEFAULT_BUS</code>
      */
@@ -384,6 +385,30 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
         return length;
     }
 
+    // --------------------
+    // Disambiguation
+    // ---------------------
+
+    @Override
+    default int read(byte[] data) {
+        return SerialCircuitIO.super.read(data);
+    }
+
+    @Override
+    default int read(byte[] data, int offset, int length) {
+        return SerialCircuitIO.super.read(data, offset, length);
+    }
+
+    @Override
+    default int write(byte... data) {
+        return SerialCircuitIO.super.write(data);
+    }
+
+    @Override
+    default int write(byte[] data, int offset, int length) {
+        return SerialCircuitIO.super.write(data, offset, length);
+    }
+
     // ------------------------------------------------------------------------------------
     //  writeThenRead
     // ------------------------------------------------------------------------------------
@@ -397,21 +422,7 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * @param read  Buffer to contain read data
      */
     default void writeThenRead(byte[] write, byte[] read) {
-        writeThenRead(write, 0, write.length, (short) 0, read, 0, read.length, (short) 0);
-    }
-
-    /**
-     * This function writes bytes to the SPI device and then reads bytes from the device
-     * Write data is taken from the 'buffer' byte array, data
-     * read back from the SPI device is then copied to the 'read' byte array
-     *
-     * @param write       the array of bytes to write to the SPI device
-     * @param writeLength Number bytes written from buffer to the SPI
-     * @param read        Buffer to contain read data
-     * @param readlength  the number of bytes to read (read &amp; read))
-     */
-    default void writeThenRead(byte[] write, int writeLength, byte[] read, int readlength) {
-        writeThenRead(write, 0, writeLength, (short) 0, read, 0, readlength, (short) 0);
+        writeThenRead(write, 0, write.length, (short) 0, read, 0, read.length);
     }
 
 
@@ -427,22 +438,20 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * allowing the effected SPI chip to complete any processing. The write operation and the read
      * operation each have an individual delay value.
      *
-     * @param write           the array of bytes to write to the SPI device and to store read data
-     *                        back from the SPI device
-     * @param writeOffset     the starting offset position in the provided buffer to
-     *                        start writing to the SPI device from and the position
-     *                        used as the starting offset position to place data bytes
-     *                        read back from the SPI device.
-     * @param writeLength     Number of bytes written from write buffer
-     * @param writeDelayUsecs Delay after SPI write record processed by kernel before the
-     *                        read SPI record is processed. Value in usecs.
-     * @param read            Buffer to contain read data
-     * @param readOffset      Offset within the read buffer to begin placing read data
-     * @param readLength      The number of bytes to transfer/exchange (read &amp; read))
-     * @param readDelayUsecs  Delay after SPI read record processed by kernel before the
-     *                        read SPI record is processed. Value in usecs.
+     * @param write          the array of bytes to write to the SPI device and to store read data
+     *                       back from the SPI device
+     * @param writeOffset    the starting offset position in the provided buffer to
+     *                       start writing to the SPI device from and the position
+     *                       used as the starting offset position to place data bytes
+     *                       read back from the SPI device.
+     * @param writeLength    Number of bytes written from write buffer
+     * @param readDelayNanos Delay after SPI write record processed by kernel before the
+     *                       read SPI record is processed. Value in nanoseconds.
+     * @param read           Buffer to contain read data
+     * @param readOffset     Offset within the read buffer to begin placing read data
+     * @param readLength     The number of bytes to transfer/exchange (read &amp; read))
      */
-    default void writeThenRead(byte[] write, int writeOffset, int writeLength, short writeDelayUsecs, byte[] read, int readOffset, int readLength, short readDelayUsecs) {
+    default void writeThenRead(byte[] write, int writeOffset, int writeLength, int readDelayNanos, byte[] read, int readOffset, int readLength) {
         throw new IllegalStateException("writeThenRead Not supported in this provider. \n See https://www.pi4j.com/documentation/providers/");
     }
 }

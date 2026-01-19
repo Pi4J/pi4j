@@ -5,8 +5,8 @@ import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalStateChangeEvent;
 import com.pi4j.io.gpio.digital.PullResistance;
-import com.pi4j.plugin.ffm.providers.gpio.DigitalInputFFMProviderImpl;
-import com.pi4j.plugin.ffm.providers.gpio.DigitalOutputFFMProviderImpl;
+import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
+import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
 import com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalInputProviderImpl;
 import com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalOutputProviderImpl;
 import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalInputProviderImpl;
@@ -53,7 +53,7 @@ public class GPIOPerformanceTest {
     @Benchmark
     @Warmup(iterations = 3)
     public void testFFMInputRoundTrip() {
-        var pi4j = Pi4J.newContextBuilder().add(new DigitalInputFFMProviderImpl()).setGpioChipName("gpiochip0").build();
+        var pi4j = Pi4J.newContextBuilder().add(new FFMDigitalInputProviderImpl()).setGpioChipName("gpiochip0").build();
         var config = DigitalInputConfigBuilder.newInstance(pi4j)
             .bcm(0)
             .debounce(99L, TimeUnit.MICROSECONDS)
@@ -67,7 +67,7 @@ public class GPIOPerformanceTest {
     @Benchmark
     @Warmup(iterations = 3)
     public void testFFMInputWithListenerRoundTrip() {
-        var pi4j = Pi4J.newContextBuilder().add(new DigitalInputFFMProviderImpl()).setGpioChipName("gpiochip0").build();
+        var pi4j = Pi4J.newContextBuilder().add(new FFMDigitalInputProviderImpl()).setGpioChipName("gpiochip0").build();
         var config = DigitalInputConfigBuilder.newInstance(pi4j)
             .bcm(0)
             .debounce(99L, TimeUnit.MICROSECONDS)
@@ -82,7 +82,7 @@ public class GPIOPerformanceTest {
     @Benchmark
     @Warmup(iterations = 3)
     public void testFFMOutputRoundTrip() {
-        var pi4j = Pi4J.newContextBuilder().add(new DigitalOutputFFMProviderImpl()).setGpioChipName("gpiochip0").build();
+        var pi4j = Pi4J.newContextBuilder().add(new FFMDigitalOutputProviderImpl()).setGpioChipName("gpiochip0").build();
         var config = DigitalOutputConfigBuilder.newInstance(pi4j)
             .bcm(0)
             .build();

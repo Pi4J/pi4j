@@ -13,7 +13,10 @@ import java.time.temporal.ChronoUnit;
  * <p>
  * This class allows setting a delay after an operation imposing a delay -- but then defer its materialized until the
  * delay is actually required -- typically, immediately before the next IO operation.
+ *
+ * @deprecated Use Delay instead
  */
+@Deprecated(forRemoval = true)
 public class DeferredDelay {
 
     private Instant busyUntil = Instant.now();

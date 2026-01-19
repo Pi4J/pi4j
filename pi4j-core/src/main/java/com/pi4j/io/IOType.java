@@ -36,10 +36,6 @@ import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.pwm.PwmConfigBuilder;
 import com.pi4j.io.pwm.PwmProvider;
-import com.pi4j.io.serial.Serial;
-import com.pi4j.io.serial.SerialConfig;
-import com.pi4j.io.serial.SerialConfigBuilder;
-import com.pi4j.io.serial.SerialProvider;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiProvider;
 import com.pi4j.provider.Provider;
@@ -60,8 +56,7 @@ public enum IOType {
     DIGITAL_OUTPUT(DigitalOutputProvider.class, DigitalOutput.class, DigitalOutputConfig.class, DigitalOutputConfigBuilder.class),
     PWM(PwmProvider.class, Pwm.class, PwmConfig.class, PwmConfigBuilder.class),
     I2C(I2CProvider.class, com.pi4j.io.i2c.I2C.class, I2CConfig.class, I2CConfigBuilder.class),
-    SPI(SpiProvider.class, Spi.class, I2CConfig.class, I2CConfigBuilder.class),
-    SERIAL(SerialProvider.class, Serial.class, SerialConfig.class, SerialConfigBuilder.class);
+    SPI(SpiProvider.class, Spi.class, I2CConfig.class, I2CConfigBuilder.class);
 
     private Class<? extends Provider> providerClass;
     private Class<? extends IO> ioClass;
@@ -333,12 +328,6 @@ public enum IOType {
         if (ioType.equalsIgnoreCase("serial-peripheral-interface")) return SPI;
         if (ioType.equalsIgnoreCase("serial_peripheral_interface")) return SPI;
         if (ioType.equalsIgnoreCase("serial peripheral interface")) return SPI;
-
-        // SERIAL
-        if (ioType.equalsIgnoreCase("serial")) return SERIAL;
-        if (ioType.equalsIgnoreCase("uart")) return SERIAL;
-        if (ioType.equalsIgnoreCase("rs232")) return SERIAL;
-
 
         throw new IllegalArgumentException("Unknown IO TYPE: " + ioType);
     }

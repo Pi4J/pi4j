@@ -276,7 +276,6 @@
         <jsch.version>0.1.55</jsch.version>
         <junit.jupiter.version>5.12.1</junit.jupiter.version>
         <slf4j.version>2.0.17</slf4j.version>
-        <jserialcomm.version>2.11.0</jserialcomm.version>
         <jna.version>5.15.0</jna.version>
 
         <!-- PLUGIN VERSIONS -->
@@ -393,12 +392,6 @@
         </dependency>
 
         <!-- TEST DEPENDENCIES -->
-        <dependency>
-            <groupId>com.fazecast</groupId>
-            <artifactId>jSerialComm</artifactId>
-            <version>${jserialcomm.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>

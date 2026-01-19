@@ -33,10 +33,12 @@ public enum I2CFunctionality {
      * part of I2C_FUNC_PROTOCOL_MANGLING.
      */
     I2C_FUNC_NOSTART(0x00000010), /* I2C_M_NOSTART */
+
     /**
      * Set device as slave
      */
     I2C_FUNC_SLAVE(0x00000020),
+
     /**
      * SMBus 2.0
      */
@@ -101,6 +103,7 @@ public enum I2CFunctionality {
      * Handles the SMBus write_i2c_block_data command
      */
     I2C_FUNC_SMBUS_WRITE_I2C_BLOCK(0x08000000), /* w/ 1-byte reg. addr. */
+
     /**
      * notify host
      */
@@ -110,31 +113,31 @@ public enum I2CFunctionality {
      * Handles the SMBus read_byte and write_byte commands
      */
     I2C_FUNC_SMBUS_BYTE(I2C_FUNC_SMBUS_READ_BYTE,
-            I2C_FUNC_SMBUS_WRITE_BYTE),
+        I2C_FUNC_SMBUS_WRITE_BYTE),
 
     /**
      * Handles the SMBus read_byte_data and write_byte_data commands
      */
     I2C_FUNC_SMBUS_BYTE_DATA(I2C_FUNC_SMBUS_READ_BYTE_DATA,
-            I2C_FUNC_SMBUS_WRITE_BYTE_DATA),
+        I2C_FUNC_SMBUS_WRITE_BYTE_DATA),
 
     /**
      * Handles the SMBus read_word_data and write_word_data commands
      */
     I2C_FUNC_SMBUS_WORD_DATA(I2C_FUNC_SMBUS_READ_WORD_DATA,
-            I2C_FUNC_SMBUS_WRITE_WORD_DATA),
+        I2C_FUNC_SMBUS_WRITE_WORD_DATA),
 
     /**
      * Handles the SMBus read_block_data and write_block_data commands
      */
     I2C_FUNC_SMBUS_BLOCK_DATA(I2C_FUNC_SMBUS_READ_BLOCK_DATA,
-            I2C_FUNC_SMBUS_WRITE_BLOCK_DATA),
+        I2C_FUNC_SMBUS_WRITE_BLOCK_DATA),
 
     /**
      * Handles the SMBus read_i2c_block_data and write_i2c_block_data commands
      */
     I2C_FUNC_SMBUS_I2C_BLOCK(I2C_FUNC_SMBUS_READ_I2C_BLOCK,
-            I2C_FUNC_SMBUS_WRITE_I2C_BLOCK),
+        I2C_FUNC_SMBUS_WRITE_I2C_BLOCK),
 
     /**
      * Handles all SMBus commands that can be
@@ -142,13 +145,13 @@ public enum I2CFunctionality {
      * the transparent emulation layer)
      */
     I2C_FUNC_SMBUS_EMUL(I2C_FUNC_SMBUS_QUICK,
-            I2C_FUNC_SMBUS_BYTE,
-            I2C_FUNC_SMBUS_BYTE_DATA,
-            I2C_FUNC_SMBUS_WORD_DATA,
-            I2C_FUNC_SMBUS_PROC_CALL,
-            I2C_FUNC_SMBUS_WRITE_BLOCK_DATA,
-            I2C_FUNC_SMBUS_I2C_BLOCK,
-            I2C_FUNC_SMBUS_PEC);
+        I2C_FUNC_SMBUS_BYTE,
+        I2C_FUNC_SMBUS_BYTE_DATA,
+        I2C_FUNC_SMBUS_WORD_DATA,
+        I2C_FUNC_SMBUS_PROC_CALL,
+        I2C_FUNC_SMBUS_WRITE_BLOCK_DATA,
+        I2C_FUNC_SMBUS_I2C_BLOCK,
+        I2C_FUNC_SMBUS_PEC);
 
     int value;
 

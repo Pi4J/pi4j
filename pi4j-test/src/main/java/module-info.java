@@ -45,6 +45,7 @@ module com.pi4j.test {
 
     requires com.pi4j.plugin.linuxfs;
     requires com.pi4j.plugin.ffm;
+    requires jdk.incubator.vector;
     uses com.pi4j.plugin.linuxfs.LinuxFsPlugin;
     uses com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalOutput;
     uses com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalOutputProvider;
@@ -65,9 +66,8 @@ module com.pi4j.test {
     uses com.pi4j.plugin.mock.provider.i2c.MockI2CProvider;
     uses com.pi4j.plugin.mock.provider.spi.MockSpi;
     uses com.pi4j.plugin.mock.provider.spi.MockSpiProvider;
-    uses com.pi4j.plugin.mock.provider.serial.MockSerial;
-    uses com.pi4j.plugin.mock.provider.serial.MockSerialProvider;
 
     exports com.pi4j.test.platform;
     exports com.pi4j.test.provider;
+    exports com.pi4j.test.smoketest;
 }

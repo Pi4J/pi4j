@@ -10,7 +10,7 @@ package com.pi4j.plugin.raspberrypi;
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
  * **********************************************************************
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 3 of the
@@ -34,7 +34,6 @@ import com.pi4j.plugin.raspberrypi.provider.gpio.digital.RpiDigitalInputProvider
 import com.pi4j.plugin.raspberrypi.provider.gpio.digital.RpiDigitalOutputProvider;
 import com.pi4j.plugin.raspberrypi.provider.i2c.RpiI2CProvider;
 import com.pi4j.plugin.raspberrypi.provider.pwm.RpiPwmProvider;
-import com.pi4j.plugin.raspberrypi.provider.serial.RpiSerialProvider;
 import com.pi4j.plugin.raspberrypi.provider.spi.RpiSpiProvider;
 import com.pi4j.provider.Provider;
 
@@ -47,21 +46,22 @@ import com.pi4j.provider.Provider;
 public class RaspberryPiPlugin implements Plugin {
 
     private Provider providers[] = {
-            RpiDigitalInputProvider.newInstance(),
-            RpiDigitalOutputProvider.newInstance(),
-            RpiPwmProvider.newInstance(),
-            RpiI2CProvider.newInstance(),
-            RpiSpiProvider.newInstance(),
-            RpiSerialProvider.newInstance(),
+        RpiDigitalInputProvider.newInstance(),
+        RpiDigitalOutputProvider.newInstance(),
+        RpiPwmProvider.newInstance(),
+        RpiI2CProvider.newInstance(),
+        RpiSpiProvider.newInstance()
     };
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize(PluginService service) {
 
         // register the Mock Platform and all Mock I/O Providers with the plugin service
         service.register(new RaspberryPiPlatform())
-                .register(providers);
+            .register(providers);
 
     }
 }

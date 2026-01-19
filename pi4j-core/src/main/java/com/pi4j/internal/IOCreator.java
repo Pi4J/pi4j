@@ -37,9 +37,6 @@ import com.pi4j.io.i2c.I2CConfigBuilder;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.pwm.PwmConfigBuilder;
-import com.pi4j.io.serial.Serial;
-import com.pi4j.io.serial.SerialConfig;
-import com.pi4j.io.serial.SerialConfigBuilder;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.io.spi.SpiConfigBuilder;
@@ -141,16 +138,6 @@ public interface IOCreator {
     /**
      * <p>create.</p>
      *
-     * @param config a {@link com.pi4j.io.serial.SerialConfig} object.
-     * @return a {@link com.pi4j.io.serial.Serial} object.
-     */
-    default Serial create(SerialConfig config) {
-        return create(config, Serial.class);
-    }
-
-    /**
-     * <p>create.</p>
-     *
      * @param config a {@link com.pi4j.io.gpio.analog.AnalogOutputConfigBuilder} object.
      * @return a {@link com.pi4j.io.gpio.analog.AnalogOutput} object.
      */
@@ -215,16 +202,6 @@ public interface IOCreator {
      * @return a {@link com.pi4j.io.spi.Spi} object.
      */
     default Spi create(SpiConfigBuilder config) {
-        return create(config.build());
-    }
-
-    /**
-     * <p>create.</p>
-     *
-     * @param config a {@link com.pi4j.io.serial.SerialConfigBuilder} object.
-     * @return a {@link com.pi4j.io.serial.Serial} object.
-     */
-    default Serial create(SerialConfigBuilder config) {
         return create(config.build());
     }
 }
