@@ -10,7 +10,7 @@ import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.FileWatcher;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
-import com.pi4j.util.DeferredDelay;
+import com.pi4j.util.Delay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -219,9 +219,9 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         logger.trace("{} - Waiting for file '{}' for {}ms", pwmPath, path, timeout);
         var access = file.access(path, FileFlag.R_OK);
         if (access != 0) {
-            var deferredDelay = new DeferredDelay();
-            deferredDelay.setDelayMillis(10);
-            deferredDelay.materializeDelay();
+            var deferredDelay = new Delay();
+            deferredDelay.setMillis(10);
+            deferredDelay.materialize();
             waitForPermission(path, timeout + 10);
         }
     }
