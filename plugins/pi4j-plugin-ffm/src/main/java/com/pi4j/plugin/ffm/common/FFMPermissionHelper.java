@@ -56,7 +56,8 @@ public class FFMPermissionHelper {
             logger.warn("*       Pi4J provider is running using `sudo`       *");
             logger.warn("*                 This is not safe!                 *");
             logger.warn("* Please, consider setting up relevant permissions. *");
-            logger.warn("* For more, please visit https://                   *");
+            logger.warn("* For more, please visit                            *");
+            logger.warn("* https://www.pi4j.com/documentation/providers/ffm/ *");
             logger.warn("* * * * * * * * * * * * * * * * * * * * * * * * * * *");
             return;
         }
@@ -66,7 +67,8 @@ public class FFMPermissionHelper {
             logger.warn("*      Pi4J provider is running using as root       *");
             logger.warn("*                 This is not safe!                 *");
             logger.warn("* Please, consider setting up relevant permissions. *");
-            logger.warn("* For more, please visit https://                   *");
+            logger.warn("* For more, please visit                            *");
+            logger.warn("* https://www.pi4j.com/documentation/providers/ffm/ *");
             logger.warn("* * * * * * * * * * * * * * * * * * * * * * * * * * *");
             return;
         }
