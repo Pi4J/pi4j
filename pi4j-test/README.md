@@ -70,7 +70,7 @@ but your sensor may use different letter designations. Also, the are BMP sensors
 
 ### Direct Wiring
 
-The PWM, input, output, and serial connections are M-M jumpers between T-cobbler pins.
+The PWM, input, and output connections are M-M jumpers between T-cobbler pins.
 
 
 | Test | From RPi Pin |      Number      | BCM | To RPi Pin | Number | BCM  | Color |
