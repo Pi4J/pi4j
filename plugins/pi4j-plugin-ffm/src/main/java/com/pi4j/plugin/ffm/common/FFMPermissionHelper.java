@@ -56,7 +56,7 @@ public class FFMPermissionHelper {
             logger.warn("*       Pi4J provider is running using `sudo`       *");
             logger.warn("*                 This is not safe!                 *");
             logger.warn("* Please, consider setting up relevant permissions. *");
-            logger.warn("* For more, please visit                            *");
+            logger.warn("* For more, please visit:                           *");
             logger.warn("* https://www.pi4j.com/documentation/providers/ffm/ *");
             logger.warn("* * * * * * * * * * * * * * * * * * * * * * * * * * *");
             return;
@@ -67,7 +67,7 @@ public class FFMPermissionHelper {
             logger.warn("*      Pi4J provider is running using as root       *");
             logger.warn("*                 This is not safe!                 *");
             logger.warn("* Please, consider setting up relevant permissions. *");
-            logger.warn("* For more, please visit                            *");
+            logger.warn("* For more, please visit:                           *");
             logger.warn("* https://www.pi4j.com/documentation/providers/ffm/ *");
             logger.warn("* * * * * * * * * * * * * * * * * * * * * * * * * * *");
             return;
@@ -113,9 +113,8 @@ public class FFMPermissionHelper {
         if (!groupPresent) {
             logger.error("* * * No groups for provider is present in the system   * * *");
             logger.error("* You can run `sudo groupadd {}` and `sudo useradd {} {}`   *", groupString, CURRENT_USER, groupString);
-            logger.error("* Scripts are available on https://github.com/pi4J/pi4j-os  *");
-            logger.error("* to help you configure this.                               *");
-            logger.error("* Check the README in that repository.                      *");
+            logger.error("* Scripts to configure this, are available on:              *");
+            logger.error("* https://github.com/pi4J/pi4j-os (check the README)        *");
             logger.error("* * * * * * Do not forget to reboot the device!   * * * * * *");
             throw new Pi4JException("No suitable user group present for provider. Should be " + Arrays.toString(groupNames));
         }
@@ -123,9 +122,8 @@ public class FFMPermissionHelper {
         if (!userInGroup) {
             logger.error("* * * Current user does not belong to required groups!  * * *");
             logger.error("* You can run `sudo useradd {} {}`                          *", CURRENT_USER, groupString);
-            logger.error("* Scripts are available on https://github.com/pi4J/pi4j-os  *");
-            logger.error("* to help you configure this.                               *");
-            logger.error("* Check the README in that repository.                      *");
+            logger.error("* Scripts to configure this, are available on:              *");
+            logger.error("* https://github.com/pi4J/pi4j-os (check the README)        *");
             logger.error("* * * * * * Do not forget to reboot the device!   * * * * * *");
             throw new Pi4JException("Current user '" + CURRENT_USER + "' is not member of groups " + Arrays.toString(groupNames));
         }
@@ -209,7 +207,9 @@ public class FFMPermissionHelper {
     private static void printError(String hardware) {
         logger.error("* * * * * * * * * Device does not set up correctly! * * * * * * * * *");
         logger.error("* Please, use udev rules to setup device group permissions for '{}' *", hardware);
-        logger.error("* Scripts are available on https://github.com/pi4J/pi4j-os          *");
-        logger.error("* to help you configure this. Check the README in that repository.  *");
+        logger.error("* For more, please visit:                                           *");
+        logger.error("* https://www.pi4j.com/documentation/providers/ffm/                 *");
+        logger.error("* Scripts to configure this, are available on:                      *");
+        logger.error("* https://github.com/pi4J/pi4j-os (check the README)                *");
     }
 }
