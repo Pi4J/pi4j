@@ -85,7 +85,7 @@ public class DefaultI2CConfig
         if (properties.containsKey(I2C_IMPLEMENTATION)) {
             this.i2cImplementation = I2CImplementation.valueOf(properties.get(I2C_IMPLEMENTATION));
         } else {
-            this.i2cImplementation = I2CImplementation.SMBUS;
+            this.i2cImplementation = I2CImplementation.DIRECT;
         }
 
         // define default property values if any are missing (based on the required address value)
