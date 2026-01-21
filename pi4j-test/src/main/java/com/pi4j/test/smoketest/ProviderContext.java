@@ -22,7 +22,7 @@ public class ProviderContext {
     public enum TestProvider {
         FFM,
         LINUXFS,
-        UNDEFINED;
+        NEWAUTOCONTEXT;
 
         public static TestProvider getByName(String name) {
             for (TestProvider provider : TestProvider.values()) {
@@ -30,7 +30,9 @@ public class ProviderContext {
                     return provider;
                 }
             }
-            return UNDEFINED;
+
+            logger.warn("No test provider found for name: {}, using {}", name, NEWAUTOCONTEXT.name());
+            return NEWAUTOCONTEXT;
         }
     }
 
@@ -48,8 +50,11 @@ public class ProviderContext {
         this.testProvider = testProvider;
 
         switch (testProvider) {
+            case NEWAUTOCONTEXT -> pi4j = Pi4J.newAutoContext();
             case LINUXFS -> {
-                pi4j = Pi4J.newContextBuilder().add(LinuxFsI2CProvider.newInstance())
+                pi4j = Pi4J
+                    .newContextBuilder()
+                    .add(LinuxFsI2CProvider.newInstance())
                     .add(GpioDDigitalInputProvider.newInstance())
                     .add(GpioDDigitalOutputProvider.newInstance())
                     .add(LinuxFsPwmProvider.newInstance(DEFAULT_PWM_FILESYSTEM_PATH))
@@ -58,7 +63,8 @@ public class ProviderContext {
                     .build();
             }
             case FFM -> {
-                pi4j = Pi4J.newContextBuilder()
+                pi4j = Pi4J
+                    .newContextBuilder()
                     .add(new FFMDigitalOutputProviderImpl())
                     .add(new FFMDigitalInputProviderImpl())
                     .add(new FFMI2CProviderImpl())

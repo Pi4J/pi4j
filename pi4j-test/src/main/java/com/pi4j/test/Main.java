@@ -45,7 +45,7 @@ public class Main {
      * runs tests, and outputs results.
      *
      * @param args Command-line arguments for the application. Accepted parameters:
-     *             - "-p <provider>": Specifies the test provider, either "linuxfs" or "ffm".
+     *             - "-p <provider>": Specifies the test provider, either "newautocontext", "linuxfs" or "ffm".
      *             - "-h": Displays help information and exits the application.
      * @throws Exception If an error occurs during the execution of the application.
      */
@@ -58,7 +58,7 @@ public class Main {
         logger.info("==============================================================");
 
         ProviderContext providerContext = null;
-        String helpString = "params: -p linuxfs or ffm, -h help";
+        String helpString = "params: -p <newautocontext,linuxfs,ffm>, -h help";
         for (int i = 0; i < args.length; i++) {
             String o = args[i];
             if (o.contentEquals("-p")) {
@@ -77,7 +77,7 @@ public class Main {
 
         // Fallback in case no providerContext was specified with a parameter
         if (providerContext == null) {
-            providerContext = new ProviderContext(ProviderContext.TestProvider.LINUXFS);
+            providerContext = new ProviderContext(ProviderContext.TestProvider.NEWAUTOCONTEXT);
         }
 
         // create About class instance

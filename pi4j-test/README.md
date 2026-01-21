@@ -9,7 +9,7 @@ The `src/main/java/com/pi4j/test/Main.java` class verifies that the providers ca
 Usage parms:
 
 ```text
--p linuxfs (default), or ffm
+-p newautocontext (default), linuxfs, or ffm
 -h help
 ```
 
