@@ -425,6 +425,19 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
         writeThenRead(write, 0, write.length, (short) 0, read, 0, read.length);
     }
 
+    /**
+     * This function writes bytes to the SPI device and then reads bytes from the device
+     * Write data is taken from the 'buffer' byte array, data
+     * read back from the SPI device is then copied to the 'read' byte array
+     *
+     * @param write          the array of bytes to write to the SPI device
+     * @param readDelayNanos Delay after SPI write record processed by kernel before the
+     *                       read SPI record is processed. Value in nanoseconds.
+     * @param read           Buffer to contain read data
+     */
+    default void writeThenRead(byte[] write, int readDelayNanos, byte[] read) {
+        writeThenRead(write, 0, write.length, (short) readDelayNanos, read, 0, read.length);
+    }
 
     /**
      * This function writes bytes to the SPI device and then reads bytes from the device.

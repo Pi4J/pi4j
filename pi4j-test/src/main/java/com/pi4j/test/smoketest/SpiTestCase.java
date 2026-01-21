@@ -52,7 +52,7 @@ public class SpiTestCase extends TestCase {
     private static int readSpiRegister(Spi spi, int register) {
         byte[] data = new byte[]{(byte) (0b10000000 | register)};
         byte[] value = new byte[1];
-        spi.writeThenRead(data, value);
+        spi.writeThenRead(data, 0, value);
         return value[0];
     }
 }

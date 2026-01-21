@@ -8,8 +8,8 @@ import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBase;
 import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.io.spi.SpiProvider;
-import com.pi4j.plugin.ffm.common.HexFormatter;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
+import com.pi4j.plugin.ffm.common.HexFormatter;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
@@ -102,12 +102,15 @@ public class FFMSpi extends SpiBase implements Spi {
         return transfer(data, offset, new byte[data.length], 0, length);
     }
 
-
     @Override
     public void writeThenRead(byte[] write, byte[] read) {
         writeThenRead(write, 0, write.length, 0, read, 0, read.length);
     }
 
+    @Override
+    public void writeThenRead(byte[] write, int readDelayNanos, byte[] read) {
+        writeThenRead(write, 0, write.length, readDelayNanos, read, 0, read.length);
+    }
 
     @Override
     public void writeThenRead(byte[] write, int writeOffset, int writeLength, int readDelayNanos, byte[] read, int readOffset, int readLength) {

@@ -19,7 +19,9 @@ package com.pi4j.io;
  */
 public interface SerialCircuitIO extends AutoCloseable {
 
-    /** Reads the full data array. Returns the size of the buffer for historic reasons. */
+    /**
+     * Reads the full data array. Returns the size of the buffer for historic reasons.
+     */
     default int read(byte[] data) {
         return read(data, 0, data.length);
     }
@@ -33,7 +35,9 @@ public interface SerialCircuitIO extends AutoCloseable {
         return length;
     }
 
-    /** Writes the full byte array. Returns the buffer size for historical reasons. */
+    /**
+     * Writes the full byte array. Returns the buffer size for historical reasons.
+     */
     default int write(byte... buffer) {
         return write(buffer, 0, buffer.length);
     }
@@ -49,6 +53,10 @@ public interface SerialCircuitIO extends AutoCloseable {
 
     default void writeThenRead(byte[] writeBuffer, byte[] readBuffer) {
         writeThenRead(writeBuffer, 0, writeBuffer.length, 0, readBuffer, 0, readBuffer.length);
+    }
+
+    default void writeThenRead(byte[] writeBuffer, int readDelayNanos, byte[] readBuffer) {
+        writeThenRead(writeBuffer, 0, writeBuffer.length, readDelayNanos, readBuffer, 0, readBuffer.length);
     }
 
     /**
