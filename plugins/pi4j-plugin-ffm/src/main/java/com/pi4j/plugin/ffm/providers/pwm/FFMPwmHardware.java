@@ -88,6 +88,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         if (config.dutyCycle() != null) {
             this.dutyCycle = config.dutyCycle();
         } else {
+            waitForPermission(this.pwmPath + DUTY_CYCLE_PATH, 0);
             var dutyCycleFd = file.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_RDONLY);
             this.dutyCycle = getIntegerContent(file.read(dutyCycleFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
             file.close(dutyCycleFd);
@@ -96,6 +97,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         if (config.polarity() != null) {
             this.polarity = config.polarity();
         } else {
+            waitForPermission(this.pwmPath + POLARITY_PATH, 0);
             var polarityFd = file.open(this.pwmPath + POLARITY_PATH, FileFlag.O_RDONLY);
             this.polarity = PwmPolarity.parse(getStringContent(file.read(polarityFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE)));
             file.close(polarityFd);
@@ -105,6 +107,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
             this.frequency = config.frequency();
             this.period = NANOS_IN_SECOND / this.frequency;
         } else {
+            waitForPermission(this.pwmPath + PERIOD_PATH, 0);
             var periodFd = file.open(this.pwmPath + PERIOD_PATH, FileFlag.O_RDONLY);
             this.period = getIntegerContent(file.read(periodFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
             file.close(periodFd);
@@ -131,19 +134,23 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         this.period = (NANOS_IN_SECOND / frequency);
         logger.debug("{} - period is '{}', dutyCycle is '{}' and polarity '{}'.", pwmPath, period, dutyCycle, polarity);
 
+        waitForPermission(this.pwmPath + PERIOD_PATH, 0);
         var periodFd = file.open(this.pwmPath + PERIOD_PATH, FileFlag.O_WRONLY);
         file.write(periodFd, String.valueOf(period).getBytes());
         file.close(periodFd);
 
+        waitForPermission(this.pwmPath + DUTY_CYCLE_PATH, 0);
         var dutyCycleFd = file.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_WRONLY);
         var dCycle = Math.round((double) (period * dutyCycle) / 100);
         file.write(dutyCycleFd, String.valueOf(dCycle).getBytes());
         file.close(dutyCycleFd);
 
+        waitForPermission(this.pwmPath + POLARITY_PATH, 0);
         var polarityFd = file.open(this.pwmPath + POLARITY_PATH, FileFlag.O_WRONLY);
         file.write(polarityFd, polarity.getName().getBytes());
         file.close(polarityFd);
 
+        waitForPermission(this.pwmPath + ENABLE_PATH, 0);
         var enableFd = file.open(this.pwmPath + ENABLE_PATH, FileFlag.O_RDWR);
         file.write(enableFd, String.valueOf(1).getBytes());
         file.close(enableFd);
