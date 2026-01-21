@@ -111,8 +111,8 @@ public class FFMSpi extends SpiBase implements Spi {
 
     @Override
     public void writeThenRead(byte[] write, int writeOffset, int writeLength, int readDelayNanos, byte[] read, int readOffset, int readLength) {
-        var inputBuffer = new SpiTransferBuffer(write, new byte[0], writeLength);
-        var outputBuffer = new SpiTransferBuffer(new byte[0], read, readLength, readDelayNanos);
+        var inputBuffer = new SpiTransferBuffer(write, new byte[0], writeLength, readDelayNanos / 1000);
+        var outputBuffer = new SpiTransferBuffer(new byte[0], read, readLength, readDelayNanos / 1000);
 
         var transferBuffer = new SpiMultipleTransferBuffer(inputBuffer, outputBuffer);
         checkClosed();
