@@ -1,8 +1,12 @@
 package com.pi4j.test.smoketest;
 
 import com.pi4j.io.i2c.I2C;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class I2CTestCase extends TestCase {
+
+    private static final Logger logger = LoggerFactory.getLogger(I2CTestCase.class);
 
     private static final String TEST_NAME = "I2C";
 
@@ -27,6 +31,10 @@ public class I2CTestCase extends TestCase {
 
             // Read data from 0xD0 and check if the expected value is received
             int id = i2c.readRegister(0xD0);
+            logger.info("Device ID read: 0x{}, expected: 0x{} or 0x{}",
+                Integer.toHexString(id),
+                Integer.toHexString(ID_VALUE_MSK_BMP),
+                Integer.toHexString(ID_VALUE_MSK_BME));
             if (id == ID_VALUE_MSK_BMP || id == ID_VALUE_MSK_BME) {
                 return new TestResult(TEST_NAME, true, "Expected value found");
             } else {

@@ -4,8 +4,12 @@ import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBus;
 import com.pi4j.io.spi.SpiChipSelect;
 import com.pi4j.io.spi.SpiMode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SpiTestCase extends TestCase {
+
+    private static final Logger logger = LoggerFactory.getLogger(SpiTestCase.class);
 
     private static final String TEST_NAME = "SPI";
 
@@ -32,6 +36,10 @@ public class SpiTestCase extends TestCase {
 
             // Read data from 0xD0 and check if the expected value is received
             int id = readSpiRegister(spi, chipId);
+            logger.info("Device ID read: 0x{}, expected: 0x{} or 0x{}",
+                Integer.toHexString(id),
+                Integer.toHexString(ID_VALUE_MSK_BMP),
+                Integer.toHexString(ID_VALUE_MSK_BME));
             if (id == ID_VALUE_MSK_BMP || id == ID_VALUE_MSK_BME) {
                 return new TestResult(TEST_NAME, true, "Expected value found");
             } else {
