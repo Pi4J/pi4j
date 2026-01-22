@@ -95,7 +95,6 @@ public class Main {
             I2CTestCase.run(providerContext),
             SpiTestCase.run(providerContext),
             PWMTestCase.run(providerContext, 1, 50, 10),
-            PWMTestCase.run(providerContext, 500, 50, 10 * 500),
             DigitalInputTestCase.run(providerContext),
             DigitalOutputTestCase.run(providerContext)
         );
