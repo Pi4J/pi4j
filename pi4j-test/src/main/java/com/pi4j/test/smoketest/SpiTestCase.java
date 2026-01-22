@@ -10,9 +10,6 @@ public class SpiTestCase extends TestCase {
     private static final String TEST_NAME = "SPI";
 
     public static TestResult run(ProviderContext providerContext) {
-        if (providerContext.getTestProvider() == ProviderContext.TestProvider.FFM) {
-            return new TestResult("SPI", false, "Not implemented for FFM");
-        }
 
         Spi spi = null;
 
