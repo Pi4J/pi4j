@@ -14,6 +14,7 @@ public class SpiTestCase extends TestCase {
     private static final String TEST_NAME = "SPI";
 
     public static TestResult run(ProviderContext providerContext) {
+        logger.info("Starting SPI test");
 
         Spi spi = null;
 
@@ -46,6 +47,7 @@ public class SpiTestCase extends TestCase {
                 return new TestResult(TEST_NAME, false, "Value is not what was expected: " + id);
             }
         } catch (Exception e) {
+            logger.error("Test failure", e);
             return new TestResult(TEST_NAME, false, "Test failure: " + e.getMessage());
         } finally {
             if (spi != null) {

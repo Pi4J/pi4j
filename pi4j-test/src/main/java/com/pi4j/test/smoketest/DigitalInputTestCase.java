@@ -4,12 +4,18 @@ import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.digital.PullResistance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DigitalInputTestCase extends TestCase {
+
+    private static final Logger logger = LoggerFactory.getLogger(DigitalInputTestCase.class);
 
     private static final String TEST_NAME = "Digital Input";
 
     public static TestResult run(ProviderContext providerContext) {
+        logger.info("Starting Digital Input test");
+
         DigitalOutput gpioOutControl = null;
         DigitalInput gpioInTest = null;
 
@@ -39,6 +45,7 @@ public class DigitalInputTestCase extends TestCase {
                 return new TestResult(TEST_NAME, false, "Incorrect state: " + state);
             }
         } catch (Exception e) {
+            logger.error("Test failure", e);
             return new TestResult(TEST_NAME, false, "Test failure: " + e.getMessage());
         } finally {
             if (gpioOutControl != null) {

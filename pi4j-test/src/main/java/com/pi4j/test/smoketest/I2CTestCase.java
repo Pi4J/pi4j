@@ -14,6 +14,8 @@ public class I2CTestCase extends TestCase {
     private static final int BMP_I2C_ADDR = 0x76;
 
     public static TestResult run(ProviderContext providerContext) {
+        logger.info("Starting I2C test");
+
         I2C i2c = null;
 
         try {
@@ -41,6 +43,7 @@ public class I2CTestCase extends TestCase {
                 return new TestResult(TEST_NAME, false, "Value is not what was expected: 0x" + Integer.toHexString(id));
             }
         } catch (Exception e) {
+            logger.error("Test failure", e);
             return new TestResult(TEST_NAME, false, "Test failure: " + e.getMessage());
         } finally {
             if (i2c != null) {

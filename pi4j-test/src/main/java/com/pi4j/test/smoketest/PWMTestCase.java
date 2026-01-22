@@ -15,6 +15,7 @@ public class PWMTestCase extends TestCase {
     }
 
     public static TestResult run(ProviderContext providerContext, int chip, int channel, PwmType pwmType, int frequency, int dutyCycle, int expected) {
+        logger.info("Starting PWM test");
 
         Pwm pwm = null;
         DigitalInput gpioInMonitor = null;
@@ -45,11 +46,8 @@ public class PWMTestCase extends TestCase {
             var flashListener = new DataInGpioListener();
             gpioInMonitor.addListener(flashListener);
             Thread.sleep(100);
-            // Since the initial value is non zero, it is possible
-            // the PWM output could be low or high, no validation
-           /* if (gpioInMonitor.state() != DigitalState.LOW) {
-                return new TestResult(testName, false, "Input monitor has not the correct initial state");
-            }*/
+            // Since the initial value is non zero, it is possible that
+            // the PWM output could be low or high, no validation to be done here
 
             // Test
             logger.info("Starting to count flashes, please wait...");
@@ -66,6 +64,7 @@ public class PWMTestCase extends TestCase {
                     + flashListener.getPwmFlashes() + "/" + expected);
             }
         } catch (Exception e) {
+            logger.error("Test failure", e);
             return new TestResult(testName, false, "Test failure: " + e.getMessage());
         } finally {
             if (pwm != null) {

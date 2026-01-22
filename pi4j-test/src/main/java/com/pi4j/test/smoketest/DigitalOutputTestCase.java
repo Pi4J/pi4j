@@ -1,15 +1,21 @@
 package com.pi4j.test.smoketest;
 
 import com.pi4j.io.gpio.digital.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
 
 public class DigitalOutputTestCase extends TestCase {
 
+    private static final Logger logger = LoggerFactory.getLogger(DigitalOutputTestCase.class);
+
     private static final String TEST_NAME = "Digital Output";
 
     public static TestResult run(ProviderContext providerContext) {
+        logger.info("Starting Digital Output test");
+
         DigitalOutput gpioOutTest = null;
         DigitalInput gpioInMonitor = null;
         TimeData tdResult;
@@ -50,6 +56,7 @@ public class DigitalOutputTestCase extends TestCase {
                 return new TestResult(TEST_NAME, false, "Incorrect state: " + state);
             }
         } catch (Exception e) {
+            logger.error("Test failure", e);
             return new TestResult(TEST_NAME, false, "Test failure: " + e.getMessage());
         } finally {
             if (gpioInMonitor != null) {
