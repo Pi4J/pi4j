@@ -37,7 +37,7 @@ import java.util.List;
  */
 public class Main {
 
-    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+    private static Logger logger ;
 
     /**
      * The entry point for the application. This method processes command-line
@@ -52,6 +52,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
+        logger = LoggerFactory.getLogger(Main.class);
 
         logger.info("==============================================================");
         logger.info("startup  Main ");
