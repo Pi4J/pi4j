@@ -419,7 +419,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
         txEntry.rx_buf = 0;
         txEntry.bits_per_word = BITS8;
         txEntry.speed_hz = config.baud();
-        txEntry.delay_usecs = (short) ((readDelayNanos * 500) / 1000);
+        txEntry.delay_usecs = (short) (readDelayNanos / 1000);
         txEntry.cs_change = 0;
         txEntry.len = writeLength;
 
