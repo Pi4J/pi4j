@@ -36,15 +36,22 @@ public class SpiTestCase extends TestCase {
             Thread.sleep(100);
 
             // Read data from 0xD0 and check if the expected value is received
-            int id = readSpiRegister(spi, chipId);
-            logger.info("Device ID read: 0x{}, expected: 0x{} or 0x{}",
-                Integer.toHexString(id),
+            byte idFromRead = readSpiRegisterUsingRead(spi, chipId);
+            byte idFromReadThenWrite = readSpiRegisterUsingWriteThenRead(spi, chipId);
+
+            logger.info("Device ID read: 0x{} and 0x{}, expected: 0x{} or 0x{}",
+                Integer.toHexString(idFromRead),
+                Integer.toHexString(idFromReadThenWrite),
                 Integer.toHexString(ID_VALUE_MSK_BMP),
                 Integer.toHexString(ID_VALUE_MSK_BME));
-            if (id == ID_VALUE_MSK_BMP || id == ID_VALUE_MSK_BME) {
+            if (idFromRead != idFromReadThenWrite || idFromRead == ID_VALUE_MSK_BMP || idFromRead == ID_VALUE_MSK_BME) {
                 return new TestResult(TEST_NAME, true, "Expected value found");
             } else {
-                return new TestResult(TEST_NAME, false, "Value is not what was expected: " + id);
+                return new TestResult(TEST_NAME, false, "Value is not what was expected: "
+                    + Integer.toHexString(idFromRead) + "/"
+                    + Integer.toHexString(idFromReadThenWrite) + "/"
+                    + Integer.toHexString(ID_VALUE_MSK_BMP) + "/"
+                    + Integer.toHexString(ID_VALUE_MSK_BME));
             }
         } catch (Exception e) {
             logger.error("Test failure", e);
@@ -56,7 +63,16 @@ public class SpiTestCase extends TestCase {
         }
     }
 
-    private static int readSpiRegister(Spi spi, int register) {
+    private static byte readSpiRegisterUsingRead(Spi spi, int register) throws InterruptedException {
+        byte[] data = new byte[]{(byte) (0b10000000 | register)};
+        spi.write(data);
+        Thread.sleep(100);
+        byte[] value = new byte[1];
+        spi.read(value);
+        return value[0];
+    }
+
+    private static byte readSpiRegisterUsingWriteThenRead(Spi spi, int register) {
         byte[] data = new byte[]{(byte) (0b10000000 | register)};
         byte[] value = new byte[1];
         spi.writeThenRead(data, 0, value);
