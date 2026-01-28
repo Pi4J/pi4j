@@ -44,7 +44,8 @@ public class SpiTestCase extends TestCase {
                 Integer.toHexString(idFromReadThenWrite),
                 Integer.toHexString(ID_VALUE_MSK_BMP),
                 Integer.toHexString(ID_VALUE_MSK_BME));
-            if (idFromRead != idFromReadThenWrite || idFromRead == ID_VALUE_MSK_BMP || idFromRead == ID_VALUE_MSK_BME) {
+            if ((idFromRead == idFromReadThenWrite)
+                && (idFromRead == ID_VALUE_MSK_BMP || idFromRead == ID_VALUE_MSK_BME)) {
                 return new TestResult(TEST_NAME, true, "Expected value found");
             } else {
                 return new TestResult(TEST_NAME, false, "Value is not what was expected: "
