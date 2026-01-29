@@ -97,7 +97,8 @@ public class Main {
             SpiTestCase.run(providerContext),
             PWMTestCase.run(providerContext, 1, 50, 10),
             DigitalInputTestCase.run(providerContext),
-            DigitalOutputTestCase.run(providerContext)
+            DigitalOutputTestCase.run(providerContext),
+            DigitalDebounceTestCase.run(providerContext)
         );
 
         // Output results

@@ -42,7 +42,7 @@ public class PWMTestCase extends TestCase {
             }
 
             // Create input to listen for "flashes"
-            gpioInMonitor = createDigitalInput(providerContext.getContext(), 23, PullResistance.PULL_DOWN);
+            gpioInMonitor = createDigitalInput(providerContext.getContext(), 23, PullResistance.PULL_DOWN, 0);
             var flashListener = new DataInGpioListener();
             gpioInMonitor.addListener(flashListener);
             Thread.sleep(100);
@@ -52,6 +52,7 @@ public class PWMTestCase extends TestCase {
             // Test
             logger.info("Starting to count flashes, please wait...");
             pwm.on(dutyCycle, frequency);
+            flashListener.zeroPwmFlashes() ;
             Thread.sleep(10_000);  // wait 10 seconds while listener counts flashes
             pwm.off();
             logger.info("Number of flashes counted: {}", flashListener.getPwmFlashes());
@@ -83,10 +84,10 @@ public class PWMTestCase extends TestCase {
         @Override
         public void onDigitalStateChange(DigitalStateChangeEvent event) {
             if (event.state() == DigitalState.HIGH) {
-                logger.debug("onDigitalStateChange Pin went High");
-            } else if (event.state() == DigitalState.LOW) {
-                logger.debug("PWM flashed");
                 pwmFlashes++;
+                logger.debug("Pin went HIGH,PWM flashed on flashCount = " + pwmFlashes);
+            } else if (event.state() == DigitalState.LOW) {
+                logger.debug("Pin went LOW,PWM flashed off flashCount = " + pwmFlashes);
             } else {
                 logger.warn("Strange event state: {}", event.state());
             }
@@ -95,5 +96,10 @@ public class PWMTestCase extends TestCase {
         public int getPwmFlashes() {
             return pwmFlashes;
         }
+        public void zeroPwmFlashes() {
+            pwmFlashes = 0;
+            logger.debug("Zero flash count");
+        }
+
     }
 }
