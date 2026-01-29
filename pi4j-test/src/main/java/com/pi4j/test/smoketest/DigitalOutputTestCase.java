@@ -29,7 +29,7 @@ public class DigitalOutputTestCase extends TestCase {
             }
 
             // Initialize input
-            gpioInMonitor = createDigitalInput(providerContext.getContext(), 25, PullResistance.PULL_DOWN);
+            gpioInMonitor = createDigitalInput(providerContext.getContext(), 25, PullResistance.PULL_DOWN, 0);
             Thread.sleep(100);
             DigitalOutputTestCase.DataInGpioListener listener = new DataInGpioListener();
             gpioInMonitor.addListener(listener);
