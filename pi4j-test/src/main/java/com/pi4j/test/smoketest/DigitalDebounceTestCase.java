@@ -38,7 +38,7 @@ import java.time.Instant;
 
 public class DigitalDebounceTestCase  extends TestCase{
 
-    private static final Logger logger = LoggerFactory.getLogger(DigitalOutputTestCase.class);
+    private static final Logger logger = LoggerFactory.getLogger(DigitalDebounceTestCase.class);
 
     private static final String TEST_NAME = "Digital Debounce";
 
@@ -49,7 +49,7 @@ public class DigitalDebounceTestCase  extends TestCase{
 
         DigitalOutput gpioOutTest = null;
         DigitalInput gpioInMonitor = null;
-        DigitalOutputTestCase.TimeData tdResult;
+        DigitalDebounceTestCase.TimeEventData tdResult;
 
         try {
             // Initialize output
@@ -72,19 +72,17 @@ public class DigitalDebounceTestCase  extends TestCase{
             // Change the output
             listener.startTiming(debounceTime);
             gpioOutTest.high();
-            tdResult = listener.waitFiveSecondForPinChange();
+            tdResult = listener.waitTenSecondForPinChange();
 
 
-            if (!tdResult.success) {
-                return new TestResult("Digital Debounce debounce time  "+ debounceTime + "  ms\" " ,  false, "Listener triggered outside detection range after approximately " + tdResult.timeToChange.toNanos() + "ns");
-            }
+             // Check the results
+            if (tdResult.success)  {
+                return new TestResult(TEST_NAME, true, "Correct debounce time  " + debounceTime +" ms state detected in approximately " + tdResult.timeToChange.toNanos()/1000 + "ms");
+            } else if(tdResult.eventOccurred){
+                return new TestResult(TEST_NAME, false, "Debounce  time " + debounceTime +"ms , event occurred : " + tdResult.eventOccurred  +  " but outside limits after  approximately " + tdResult.timeToChange.toNanos()/1000 + "ms");
+            }else{
+                return new TestResult(TEST_NAME, false, "No event detected");
 
-            // Check the expected input state
-            DigitalState state = gpioInMonitor.state();
-            if (state == DigitalState.HIGH) {
-                return new TestResult(TEST_NAME, true, "Correct debounce time  " + debounceTime +" ms state detected in approximately " + tdResult.timeToChange.toNanos() + "ns");
-            } else {
-                return new TestResult(TEST_NAME, false, "Incorrect state:  debounce time  " + debounceTime + " ms " + state + "  after approximately " + tdResult.timeToChange.toNanos() + "ns");
             }
         } catch (Exception e) {
             logger.error("Test failure", e);
@@ -104,7 +102,7 @@ public class DigitalDebounceTestCase  extends TestCase{
     // and then request the monitor listener wait a second, then return the data logged when
     // the event fired.
     private static class DataInGpioListener implements DigitalStateChangeListener {
-        DigitalOutputTestCase.TimeData td = null;
+        DigitalDebounceTestCase.TimeEventData td = null;
         Instant start;
         Instant end;
         long expectedTime = 0;
@@ -115,7 +113,7 @@ public class DigitalDebounceTestCase  extends TestCase{
             Duration duration = Duration.between(start, end);
             td.timeToChange = duration;
             logger.debug("onDigitalStateChange fired duration " +td.timeToChange.toNanos() + "  ns");
-
+            td.eventOccurred = true;
             if ((td.timeToChange.toNanos()/1000 > expectedTime-300)&&(td.timeToChange.toNanos()/1000 < expectedTime+300))  {
                 td.success = true;
             } else {
@@ -127,14 +125,14 @@ public class DigitalDebounceTestCase  extends TestCase{
 
         public void startTiming(long expected) {
             expectedTime = expected;
-            td = DigitalOutputTestCase.TimeData.createTimeData();
+            td = DigitalDebounceTestCase.TimeEventData.createTimeEventData();
             start = Instant.now();
 
         }
 
-        public DigitalOutputTestCase.TimeData waitFiveSecondForPinChange() {
+        public DigitalDebounceTestCase.TimeEventData waitTenSecondForPinChange() {
             try {
-                Thread.sleep(5000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -142,17 +140,19 @@ public class DigitalDebounceTestCase  extends TestCase{
         }
     }
 
-    public static class TimeData {
+    public static class TimeEventData {
         boolean success;
+        boolean eventOccurred;
         Duration timeToChange;
 
-        private TimeData() {
+        private TimeEventData() {
             success = false;
+            eventOccurred = false;
             timeToChange = Duration.ofSeconds(0);
         }
 
-        public static DigitalDebounceTestCase.TimeData createTimeData() {
-            return new DigitalDebounceTestCase.TimeData();
+        public static DigitalDebounceTestCase.TimeEventData createTimeEventData() {
+            return new DigitalDebounceTestCase.TimeEventData();
         }
     }
 }

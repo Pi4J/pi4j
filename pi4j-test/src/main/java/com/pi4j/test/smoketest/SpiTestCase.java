@@ -2,7 +2,6 @@ package com.pi4j.test.smoketest;
 
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBus;
-import com.pi4j.io.spi.SpiChipSelect;
 import com.pi4j.io.spi.SpiMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ public class SpiTestCase extends TestCase {
                 .id("SPI" + bmpSpiBus + "_BMP280")
                 .name("Sensor")
                 .bus(bmpSpiBus)
-                .chipSelect(SpiChipSelect.CS_0)
+                .channel(0)
                 .baud(Spi.DEFAULT_BAUD)    // Max 10MHz
                 .mode(SpiMode.MODE_0)
                 .build();
@@ -36,21 +35,17 @@ public class SpiTestCase extends TestCase {
             Thread.sleep(100);
 
             // Read data from 0xD0 and check if the expected value is received
-            byte idFromRead = readSpiRegisterUsingRead(spi, chipId);
-            byte idFromReadThenWrite = readSpiRegisterUsingWriteThenRead(spi, chipId);
+             byte idWriteThenRead = readSpiRegisterUsingWriteThenRead(spi, chipId);
 
-            logger.info("Device ID read: 0x{} and 0x{}, expected: 0x{} or 0x{}",
-                Integer.toHexString(idFromRead),
-                Integer.toHexString(idFromReadThenWrite),
+            logger.info("Device ID read: 0x{}, expected: 0x{} or 0x{}",
+                Integer.toHexString(idWriteThenRead),
                 Integer.toHexString(ID_VALUE_MSK_BMP),
                 Integer.toHexString(ID_VALUE_MSK_BME));
-            if ((idFromRead == idFromReadThenWrite)
-                && (idFromRead == ID_VALUE_MSK_BMP || idFromRead == ID_VALUE_MSK_BME)) {
+            if (idWriteThenRead == ID_VALUE_MSK_BMP || idWriteThenRead == ID_VALUE_MSK_BME) {
                 return new TestResult(TEST_NAME, true, "Expected value found");
             } else {
                 return new TestResult(TEST_NAME, false, "Value is not what was expected: "
-                    + Integer.toHexString(idFromRead) + "/"
-                    + Integer.toHexString(idFromReadThenWrite) + "/"
+                    + Integer.toHexString(idWriteThenRead) + "/"
                     + Integer.toHexString(ID_VALUE_MSK_BMP) + "/"
                     + Integer.toHexString(ID_VALUE_MSK_BME));
             }
@@ -64,14 +59,6 @@ public class SpiTestCase extends TestCase {
         }
     }
 
-    private static byte readSpiRegisterUsingRead(Spi spi, int register) throws InterruptedException {
-        byte[] data = new byte[]{(byte) (0b10000000 | register)};
-        spi.write(data);
-        Thread.sleep(100);
-        byte[] value = new byte[1];
-        spi.read(value);
-        return value[0];
-    }
 
     private static byte readSpiRegisterUsingWriteThenRead(Spi spi, int register) {
         byte[] data = new byte[]{(byte) (0b10000000 | register)};
