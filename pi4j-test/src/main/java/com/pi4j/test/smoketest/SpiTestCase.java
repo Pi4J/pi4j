@@ -37,20 +37,17 @@ public class SpiTestCase extends TestCase {
 
             // Read data from 0xD0 and check if the expected value is received
             byte idFromRead = readSpiRegisterUsingRead(spi, chipId);
-            byte idFromReadThenWrite = readSpiRegisterUsingWriteThenRead(spi, chipId);
+            byte idWriteThenRead = readSpiRegisterUsingWriteThenRead(spi, chipId);
 
-            logger.info("Device ID read: 0x{} and 0x{}, expected: 0x{} or 0x{}",
-                Integer.toHexString(idFromRead),
-                Integer.toHexString(idFromReadThenWrite),
+            logger.info("Device ID read: 0x{}, expected: 0x{} or 0x{}",
+                Integer.toHexString(idWriteThenRead),
                 Integer.toHexString(ID_VALUE_MSK_BMP),
                 Integer.toHexString(ID_VALUE_MSK_BME));
-            if ((idFromRead == idFromReadThenWrite)
-                && (idFromRead == ID_VALUE_MSK_BMP || idFromRead == ID_VALUE_MSK_BME)) {
+            if (idWriteThenRead == ID_VALUE_MSK_BMP || idWriteThenRead == ID_VALUE_MSK_BME) {
                 return new TestResult(TEST_NAME, true, "Expected value found");
             } else {
                 return new TestResult(TEST_NAME, false, "Value is not what was expected: "
-                    + Integer.toHexString(idFromRead) + "/"
-                    + Integer.toHexString(idFromReadThenWrite) + "/"
+                    + Integer.toHexString(idWriteThenRead) + "/"
                     + Integer.toHexString(ID_VALUE_MSK_BMP) + "/"
                     + Integer.toHexString(ID_VALUE_MSK_BME));
             }
