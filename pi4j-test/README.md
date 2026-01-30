@@ -17,11 +17,11 @@ Usage parms:
 
 Two BMP280 (air pressure and temperature) or BME280 (air pressure, temperature, and humidity) are used as they are available as PCBs with both I2C and SPI interfaces. Some other wiring is added to connect GPIOs to each other, to test different types of communication. 
 
-![Wiring diagram](wiring/wiring-diagram.png)
+![Wiring diagram](https://github.com/Pi4J/pi4j/raw/develop/pi4j-test/wiring/wiring-diagram.png)
 
 Depending on the type of BMP-sensors, the actual wiring may look a bit different. Use the tables below for correct connections.
 
-![Example setup](wiring/test-setup.jpg)
+![Example setup](https://github.com/Pi4J/pi4j/raw/develop/pi4j-test/wiring/test-setup.jpg)
 
 Used for the wiring diagram:
 
