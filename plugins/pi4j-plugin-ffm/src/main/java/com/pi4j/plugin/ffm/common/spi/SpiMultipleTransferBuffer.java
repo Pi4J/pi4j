@@ -28,9 +28,9 @@ public record SpiMultipleTransferBuffer(SpiTransferBuffer... transferBuffer) imp
     public SpiMultipleTransferBuffer from(MemorySegment buffer, SegmentAllocator allocator) throws Throwable {
         // delegates all to underlying object
         for (int i = 0; i < transferBuffer.length; i++) {
-            var spiTransferBuffer = this.transferBuffer[i];
+            var spiTransferBuffer = transferBuffer[i];
             var slice = buffer.asSlice(i * spiTransferBuffer.getMemoryLayout().byteSize());
-            spiTransferBuffer.from(slice, allocator);
+            transferBuffer[i] = SpiTransferBuffer.createEmpty().from(slice, allocator);
         }
         return this;
     }
