@@ -40,8 +40,7 @@ public record SpiMultipleTransferBuffer(SpiTransferBuffer... transferBuffer) imp
         var memorySegments = buffer.elements(SpiIocTransfer.LAYOUT).toList();
         for (MemorySegment spiTransferBuffer : memorySegments) {
             var index = memorySegments.indexOf(spiTransferBuffer);
-            var newBuffer = SpiTransferBuffer.createEmpty().from(spiTransferBuffer, allocator);
-            transferBuffer[index] = newBuffer;
+            transferBuffer[index].to(spiTransferBuffer, allocator);
         }
     }
 }
