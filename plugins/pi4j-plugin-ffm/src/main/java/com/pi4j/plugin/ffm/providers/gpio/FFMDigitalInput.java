@@ -93,8 +93,12 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             var flags = PinFlag.INPUT.getValue() | PinFlag.EDGE_RISING.getValue() | PinFlag.EDGE_FALLING.getValue();
             var attributes = new ArrayList<LineConfigAttribute>();
             if (debounce > 0) {
-                var debounceAttribute = new LineAttribute(LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(), 0, 0, (int) debounce);
-                attributes.add(new LineConfigAttribute(debounceAttribute, pin));
+                // check conversion from ms to ns
+                if (debounce * 1000 > Integer.MAX_VALUE) {
+                    throw new InitializeException("Debounce value of " + debounce + " is too large");
+                }
+                var debounceAttribute = new LineAttribute(LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(), 0, 0, (int) debounce * 1000);
+                attributes.add(new LineConfigAttribute(debounceAttribute, 1L << pin));
             }
             flags |= switch (pull) {
                 case OFF -> 0;
@@ -294,7 +298,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         /**
          * Stops event watcher, end the task.
          */
-        public void stopWatching() {
+        public synchronized void stopWatching() {
             this.stopWatching = true;
         }
 
