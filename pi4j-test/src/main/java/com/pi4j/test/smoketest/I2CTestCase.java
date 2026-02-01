@@ -32,16 +32,29 @@ public class I2CTestCase extends TestCase {
             i2c = providerContext.getContext().create(i2cDeviceConfig);
 
             // Read data from 0xD0 and check if the expected value is received
-            int id = i2c.readRegister(0xD0);
-            logger.info("Device ID read: 0x{}, expected: 0x{} or 0x{}",
-                Integer.toHexString(id),
+            byte idFromRead = (byte) i2c.readRegister(0xD0);
+            byte[] wrData = new byte[1];
+            byte[] reg = new byte[1];
+            reg[0] = (byte) (0xD0 & 0xff);
+            i2c.writeThenRead(reg, wrData);
+            byte idFromReadThenWrite = wrData[0];
+
+            logger.info("Device ID read: 0x{} and 0x{}, expected: 0x{} or 0x{}",
+                Integer.toHexString(idFromRead),
+                Integer.toHexString(idFromReadThenWrite),
                 Integer.toHexString(ID_VALUE_MSK_BMP),
                 Integer.toHexString(ID_VALUE_MSK_BME));
-            if (id == ID_VALUE_MSK_BMP || id == ID_VALUE_MSK_BME) {
+            if ((idFromRead == idFromReadThenWrite)
+                && (idFromRead == ID_VALUE_MSK_BMP || idFromRead == ID_VALUE_MSK_BME)) {
                 return new TestResult(TEST_NAME, true, "Expected value found");
             } else {
-                return new TestResult(TEST_NAME, false, "Value is not what was expected: 0x" + Integer.toHexString(id));
+                return new TestResult(TEST_NAME, false, "Value is not what was expected: "
+                    + Integer.toHexString(idFromRead) + "/"
+                    + Integer.toHexString(idFromReadThenWrite) + "/"
+                    + Integer.toHexString(ID_VALUE_MSK_BMP) + "/"
+                    + Integer.toHexString(ID_VALUE_MSK_BME));
             }
+
         } catch (Exception e) {
             logger.error("Test failure", e);
             return new TestResult(TEST_NAME, false, "Test failure: " + e.getMessage());

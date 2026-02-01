@@ -51,18 +51,19 @@ public class PWMTestCase extends TestCase {
 
             // Test
             logger.info("Starting to count flashes, please wait...");
-            pwm.on(dutyCycle, frequency);
             flashListener.zeroPwmFlashes() ;
+            pwm.on(dutyCycle, frequency);
             Thread.sleep(10_000);  // wait 10 seconds while listener counts flashes
+            var flashCount = flashListener.getPwmFlashes();
             pwm.off();
-            logger.info("Number of flashes counted: {}", flashListener.getPwmFlashes());
+            logger.info("Number of flashes counted: {}", flashCount);
 
             // Check counted flashes versus expected
-            if (flashListener.getPwmFlashes() == expected) {
+            if (flashCount == expected) {
                 return new TestResult(testName, true, "Correct number of flashes detected");
             } else {
                 return new TestResult(testName, false, "Number of flashes is not correct: "
-                    + flashListener.getPwmFlashes() + "/" + expected);
+                    + flashCount + "/" + expected);
             }
         } catch (Exception e) {
             logger.error("Test failure", e);
