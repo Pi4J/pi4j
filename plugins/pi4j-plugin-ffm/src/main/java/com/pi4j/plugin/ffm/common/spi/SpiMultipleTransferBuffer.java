@@ -1,12 +1,15 @@
 package com.pi4j.plugin.ffm.common.spi;
 
 import com.pi4j.plugin.ffm.common.Pi4JLayout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.SegmentAllocator;
 
 public record SpiMultipleTransferBuffer(SpiTransferBuffer... transferBuffer) implements Pi4JLayout {
+    private static final Logger logger = LoggerFactory.getLogger(SpiMultipleTransferBuffer.class);
 
     @Override
     public MemoryLayout getMemoryLayout() {
@@ -31,6 +34,9 @@ public record SpiMultipleTransferBuffer(SpiTransferBuffer... transferBuffer) imp
             var spiTransferBuffer = transferBuffer[i];
             var slice = buffer.asSlice(i * spiTransferBuffer.getMemoryLayout().byteSize());
             transferBuffer[i] = SpiTransferBuffer.createEmpty().from(slice, allocator);
+            if (logger.isTraceEnabled()) {
+                logger.trace("SPI transfer buffer {}: {}", i, transferBuffer[i]);
+            }
         }
         return this;
     }
@@ -38,7 +44,11 @@ public record SpiMultipleTransferBuffer(SpiTransferBuffer... transferBuffer) imp
     @Override
     public void to(MemorySegment buffer, SegmentAllocator allocator) throws Throwable {
         var memorySegments = buffer.elements(SpiIocTransfer.LAYOUT).toList();
+        logger.debug("Number of SPI transfer buffers: {}", memorySegments.size());
         for (MemorySegment spiTransferBuffer : memorySegments) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("SPI transfer buffer size: {}, {}", spiTransferBuffer.byteSize(), spiTransferBuffer);
+            }
             var index = memorySegments.indexOf(spiTransferBuffer);
             transferBuffer[index].to(spiTransferBuffer, allocator);
         }
