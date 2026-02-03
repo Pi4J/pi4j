@@ -63,8 +63,8 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
 
     private int internalWrite(byte[] register, int offset, int length, byte[] data) {
         var buffer = new byte[register.length + data.length];
-        System.arraycopy(register, 0, buffer, offset, length);
-        System.arraycopy(data, 0, buffer, register.length, data.length);
+        System.arraycopy(register, 0, buffer, 0, register.length);
+        System.arraycopy(data, 0, buffer, offset, length);
         return internalWrite(buffer) - register.length;
     }
 
