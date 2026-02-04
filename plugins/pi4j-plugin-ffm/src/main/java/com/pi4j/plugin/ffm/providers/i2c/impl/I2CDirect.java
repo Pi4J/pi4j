@@ -34,6 +34,13 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
         return internalRead(0, buffer.length, buffer);
     }
 
+    /**
+     * Read data from the I/O device into the provided byte array at the given offset and up to the specified data length (number of bytes).
+     * @param offset position in the buffer for the read data
+     * @param length max data length to be added to the buffer
+     * @param buffer the buffer to read the data
+     * @return
+     */
     private byte[] internalRead(int offset, int length, byte[] buffer) {
         var messages = new I2CMessage[]{
             new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, buffer),
