@@ -79,6 +79,13 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
         return internalWrite(0, data.length, data);
     }
 
+    /**
+     * Write an array of byte values with given offset (starting position) and length in the provided data array.
+     * @param offset
+     * @param length
+     * @param data
+     * @return
+     */
     private int internalWrite(int offset, int length, byte[] data) {
         var messages = new I2CMessage[]{
             new I2CMessage(config.device(), 0, length, data)
