@@ -33,7 +33,6 @@ import com.pi4j.io.gpio.digital.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DigitalDebounceCountTestCase extends TestCase {
@@ -93,7 +92,7 @@ public class DigitalDebounceCountTestCase extends TestCase {
 
             // We should now have high 2 low 1     
             Thread.sleep(5);
-            logger.info("Step 3: {}/{}", listener.getCountsHigh(), listener.getCountsLow());       
+            logger.info("Step 3: {}/{}", listener.getCountsHigh(), listener.getCountsLow());
 
             // Check the results
             var highs = listener.getCountsHigh();
