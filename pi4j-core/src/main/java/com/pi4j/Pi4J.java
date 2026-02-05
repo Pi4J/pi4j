@@ -110,7 +110,7 @@ public class Pi4J {
     }
 
     private static void logBuildInfo(Properties props, String key) {
-        String value = props.getProperty("build.timestamp");
+        String value = props.getProperty(key);
         if (value != null) {
             logger.info("\t{}: {}", key, value);
         }
