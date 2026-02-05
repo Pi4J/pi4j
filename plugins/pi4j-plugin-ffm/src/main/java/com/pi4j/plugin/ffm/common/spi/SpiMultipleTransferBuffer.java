@@ -33,7 +33,7 @@ public record SpiMultipleTransferBuffer(SpiTransferBuffer... transferBuffer) imp
         for (int i = 0; i < transferBuffer.length; i++) {
             var spiTransferBuffer = transferBuffer[i];
             var slice = buffer.asSlice(i * spiTransferBuffer.getMemoryLayout().byteSize());
-            transferBuffer[i] = SpiTransferBuffer.createEmpty().from(slice, allocator);
+            transferBuffer[i] = transferBuffer[i].from(slice, allocator);
             if (logger.isTraceEnabled()) {
                 logger.trace("SPI transfer buffer {}: {}", i, transferBuffer[i]);
             }
