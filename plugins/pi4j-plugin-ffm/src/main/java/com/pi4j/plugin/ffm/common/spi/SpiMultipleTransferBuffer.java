@@ -1,12 +1,15 @@
 package com.pi4j.plugin.ffm.common.spi;
 
 import com.pi4j.plugin.ffm.common.Pi4JLayout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.SegmentAllocator;
 
 public record SpiMultipleTransferBuffer(SpiTransferBuffer... transferBuffer) implements Pi4JLayout {
+    private static final Logger logger = LoggerFactory.getLogger(SpiMultipleTransferBuffer.class);
 
     @Override
     public MemoryLayout getMemoryLayout() {
@@ -28,9 +31,12 @@ public record SpiMultipleTransferBuffer(SpiTransferBuffer... transferBuffer) imp
     public SpiMultipleTransferBuffer from(MemorySegment buffer, SegmentAllocator allocator) throws Throwable {
         // delegates all to underlying object
         for (int i = 0; i < transferBuffer.length; i++) {
-            var spiTransferBuffer = this.transferBuffer[i];
+            var spiTransferBuffer = transferBuffer[i];
             var slice = buffer.asSlice(i * spiTransferBuffer.getMemoryLayout().byteSize());
-            spiTransferBuffer.from(slice, allocator);
+            transferBuffer[i] = transferBuffer[i].from(slice, allocator);
+            if (logger.isTraceEnabled()) {
+                logger.trace("SPI transfer buffer {}: {}", i, transferBuffer[i]);
+            }
         }
         return this;
     }
@@ -38,10 +44,13 @@ public record SpiMultipleTransferBuffer(SpiTransferBuffer... transferBuffer) imp
     @Override
     public void to(MemorySegment buffer, SegmentAllocator allocator) throws Throwable {
         var memorySegments = buffer.elements(SpiIocTransfer.LAYOUT).toList();
+        logger.debug("Number of SPI transfer buffers: {}", memorySegments.size());
         for (MemorySegment spiTransferBuffer : memorySegments) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("SPI transfer buffer size: {}, {}", spiTransferBuffer.byteSize(), spiTransferBuffer);
+            }
             var index = memorySegments.indexOf(spiTransferBuffer);
-            var newBuffer = SpiTransferBuffer.createEmpty().from(spiTransferBuffer, allocator);
-            transferBuffer[index] = newBuffer;
+            transferBuffer[index].to(spiTransferBuffer, allocator);
         }
     }
 }
