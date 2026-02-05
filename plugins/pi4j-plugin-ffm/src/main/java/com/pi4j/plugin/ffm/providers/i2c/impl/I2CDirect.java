@@ -42,25 +42,31 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      * @return
      */
     private byte[] internalRead(int offset, int length, byte[] buffer) {
+        var readBuffer = new byte[length];
         var messages = new I2CMessage[]{
-            new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, buffer),
+            new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, readBuffer),
         };
         var packets = new RDWRData(messages, 1);
         return i2CBus.execute(this, i2cFileDescriptor -> {
             var result = ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
-            return result.msgs()[0].buf();
+            var resultBuffer = result.msgs()[0].buf();
+            System.arraycopy(resultBuffer, 0, buffer, offset, length);
+            return buffer;
         });
     }
 
     private byte[] internalRead(byte[] register, int offset, int length, byte[] buffer) {
+        var readBuffer = new byte[length];
         var messages = new I2CMessage[]{
             new I2CMessage(config.device(), 0, register.length, register),
-            new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, buffer),
+            new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, readBuffer),
         };
         var packets = new RDWRData(messages, 2);
         return i2CBus.execute(this, i2cFileDescriptor -> {
             var result = ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
-            return result.msgs()[1].buf();
+            var resultBuffer = result.msgs()[1].buf();
+            System.arraycopy(resultBuffer, 0, buffer, offset, length);
+            return buffer;
         });
     }
 
@@ -69,9 +75,9 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
     }
 
     private int internalWrite(byte[] register, int offset, int length, byte[] data) {
-        var buffer = new byte[register.length + data.length];
+        var buffer = new byte[register.length + length];
         System.arraycopy(register, 0, buffer, 0, register.length);
-        System.arraycopy(data, 0, buffer, offset, length);
+        System.arraycopy(data, offset, buffer, register.length, length);
         return internalWrite(buffer) - register.length;
     }
 
@@ -87,8 +93,10 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      * @return
      */
     private int internalWrite(int offset, int length, byte[] data) {
+        var writeBuffer = new byte[length];
+        System.arraycopy(data, offset, writeBuffer, 0, length);
         var messages = new I2CMessage[]{
-            new I2CMessage(config.device(), 0, length, data)
+            new I2CMessage(config.device(), 0, length, writeBuffer)
         };
         var packets = new RDWRData(messages, 1);
         return i2CBus.execute(this, i2cFileDescriptor -> {
@@ -119,9 +127,8 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      */
     @Override
     public int read(byte[] buffer, int offset, int length) {
-        var read = internalRead(offset, length, buffer);
-        ByteBuffer.wrap(buffer).put(read);
-        return read.length;
+        internalRead(offset, length, buffer);
+        return length;
     }
 
     /**
@@ -153,9 +160,8 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      */
     @Override
     public int readRegister(byte[] register, byte[] buffer, int offset, int length) {
-        var read = internalRead(register, offset, length, buffer);
-        ByteBuffer.wrap(buffer).put(read);
-        return read.length;
+        internalRead(register, offset, length, buffer);
+        return length;
     }
 
     /**
@@ -163,9 +169,8 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      */
     @Override
     public int readRegister(int register, byte[] buffer, int offset, int length) {
-        var read = internalRead(new byte[]{(byte) register}, offset, length, buffer);
-        ByteBuffer.wrap(buffer).put(read);
-        return read.length;
+        internalRead(new byte[]{(byte) register}, offset, length, buffer);
+        return length;
     }
 
     /**
