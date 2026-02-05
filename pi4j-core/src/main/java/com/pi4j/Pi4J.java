@@ -44,9 +44,9 @@ public class Pi4J {
 
     private static final Logger logger = LoggerFactory.getLogger(Pi4J.class);
 
-    // private constructor
+    // Private constructor
     private Pi4J() {
-        // forbid object construction
+        // Hide constructor
     }
 
     /**
@@ -73,7 +73,6 @@ public class Pi4J {
      */
     public static Context newAutoContext() {
         logger.info("New auto context");
-        logBuildInfo();
         return newContextBuilder().autoDetect().build();
     }
 
@@ -88,7 +87,6 @@ public class Pi4J {
      */
     public static Context newContext() {
         logger.info("New context");
-        logBuildInfo();
         return newContextBuilder().build();
     }
 
@@ -100,13 +98,21 @@ public class Pi4J {
             if (is != null) {
                 Properties props = new Properties();
                 props.load(is);
-                String buildTime = props.getProperty("build.timestamp");
-                if (buildTime != null) {
-                    logger.info("Pi4J library built at: {}", buildTime);
-                }
+                logger.info("Pi4J library build info:");
+                logBuildInfo(props, "git.branch");
+                logBuildInfo(props, "git.commit.id");
+                logBuildInfo(props, "build.version");
+                logBuildInfo(props, "build.timestamp");
             }
         } catch (IOException e) {
             logger.debug("Unable to load build properties", e);
+        }
+    }
+
+    private static void logBuildInfo(Properties props, String key) {
+        String value = props.getProperty(key);
+        if (value != null) {
+            logger.info("\t{}: {}", key, value);
         }
     }
 }

@@ -103,6 +103,8 @@ mvn package -Pnative,docker
 mvn package -Pnative -DskipTests
 ```
 
+With `package` all modules in the Pi4J project will be built and it shows you if the project can be successfully built. If you want to use the libraries locally on your Raspberry Pi, for example, for testing, replace `package` with `install`.
+
 > **NOTE:** A comprehensive set of build instructions can be found in
 > the [Pi4J Documentation](https://pi4j.com/architecture/about-the-code/build-instructions/).
 
