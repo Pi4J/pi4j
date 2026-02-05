@@ -56,7 +56,7 @@ public class DigitalDebounceCountTestCase extends TestCase {
             }
 
             // Initialize input
-            gpioInMonitor = createDigitalInput(providerContext.getContext(), 27, PullResistance.PULL_DOWN, 3000L);
+            gpioInMonitor = createDigitalInput(providerContext.getContext(), 27, PullResistance.PULL_DOWN, 100_000L);
             Thread.sleep(100);
             DigitalDebounceCountTestCase.DataInGpioListener listener = new DigitalDebounceCountTestCase.DataInGpioListener();
             gpioInMonitor.addListener(listener);
@@ -69,30 +69,30 @@ public class DigitalDebounceCountTestCase extends TestCase {
 
             // Change the output within debounce time should not be counted
             gpioOutTest.high();
-            Thread.sleep(1);
+            Thread.sleep(50);
             gpioOutTest.low();
-            Thread.sleep(1);
+            Thread.sleep(50);
             gpioOutTest.high();
 
             // We should now have high 1 low 0
-            Thread.sleep(5);
+            Thread.sleep(200);
             logger.info("Step 1: {}/{}", listener.getCountsHigh(), listener.getCountsLow());
 
             // Wait longer then debounce and set low
-            Thread.sleep(5);
+            Thread.sleep(200);
             gpioOutTest.low();
 
             // We should now have high 1 low 1
-            Thread.sleep(5);
+            Thread.sleep(200);
             logger.info("Step 2: {}/{}", listener.getCountsHigh(), listener.getCountsLow());
 
             // Wait longer then debounce and set high
-            Thread.sleep(5);
+            Thread.sleep(200);
             gpioOutTest.high();
 
             // We should now have high 2 low 1     
-            Thread.sleep(5);
-            logger.info("Step 3: {}/{}", listener.getCountsHigh(), listener.getCountsLow());
+            Thread.sleep(200);
+            logger.info("Step 3: {}/{}", listener.getCountsHigh(), listener.getCountsLow());       
 
             // Check the results
             var highs = listener.getCountsHigh();
