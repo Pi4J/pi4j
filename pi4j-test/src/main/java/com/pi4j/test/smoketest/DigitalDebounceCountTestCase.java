@@ -39,7 +39,7 @@ public class DigitalDebounceCountTestCase extends TestCase {
 
     private static final Logger logger = LoggerFactory.getLogger(DigitalDebounceCountTestCase.class);
 
-    private static final String TEST_NAME = "Digital Debounce";
+    private static final String TEST_NAME = "Digital Debounce Count";
 
     public static TestResult run(ProviderContext providerContext) {
         logger.info("Starting Digital Debounce Count test");

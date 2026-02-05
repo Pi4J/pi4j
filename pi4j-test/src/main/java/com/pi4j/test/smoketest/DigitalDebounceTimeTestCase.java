@@ -40,7 +40,7 @@ public class DigitalDebounceTimeTestCase extends TestCase {
 
     private static final Logger logger = LoggerFactory.getLogger(DigitalDebounceTimeTestCase.class);
 
-    private static final String TEST_NAME = "Digital Debounce";
+    private static final String TEST_NAME = "Digital Debounce Time";
 
     private static long debounceTime = 1000;
 
