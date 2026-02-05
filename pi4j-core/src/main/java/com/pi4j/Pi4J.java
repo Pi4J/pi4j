@@ -10,7 +10,7 @@ package com.pi4j;
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
  * **********************************************************************
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,6 +29,10 @@ import com.pi4j.context.Context;
 import com.pi4j.context.ContextBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * <p>Pi4J class.</p>
@@ -55,6 +59,7 @@ public class Pi4J {
      */
     public static ContextBuilder newContextBuilder() {
         logger.info("New context builder");
+        logBuildInfo();
         return ContextBuilder.newInstance();
     }
 
@@ -63,10 +68,12 @@ public class Pi4J {
      * state and lifecycle.   This 'Context' instance will automatically
      * load all detected 'Platforms' and 'Providers' that are detected
      * in the application's class-path.</p>
+     *
      * @return Context
      */
     public static Context newAutoContext() {
         logger.info("New auto context");
+        logBuildInfo();
         return newContextBuilder().autoDetect().build();
     }
 
@@ -81,6 +88,25 @@ public class Pi4J {
      */
     public static Context newContext() {
         logger.info("New context");
+        logBuildInfo();
         return newContextBuilder().build();
+    }
+
+    /**
+     * Output the build information for correct debugging of, e.g., SNAPSHOT versions.
+     */
+    private static void logBuildInfo() {
+        try (InputStream is = Pi4J.class.getResourceAsStream("/build.properties")) {
+            if (is != null) {
+                Properties props = new Properties();
+                props.load(is);
+                String buildTime = props.getProperty("build.timestamp");
+                if (buildTime != null) {
+                    logger.info("Pi4J library built at: {}", buildTime);
+                }
+            }
+        } catch (IOException e) {
+            logger.debug("Unable to load build properties", e);
+        }
     }
 }
