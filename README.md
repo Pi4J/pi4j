@@ -87,7 +87,7 @@ and [Java JDK 25 (since V4)](https://openjdk.java.net/).
 The following command can be used to build the Pi4J JARs:
 
 ```
-mvn clean install
+mvn package
 ```
 
 Pi4J V2+ also includes native libraries that will need to be compiled if you are modifying any native code.
@@ -96,11 +96,11 @@ when building the Pi4J JARs from Maven repositories. One of the following comman
 the Pi4J V2+ JARs and Native Libraries:
 
 ```
-mvn clean install -Pnative
-mvn clean install -Pnative,docker
+mvn package -Pnative
+mvn package -Pnative,docker
 
 # When you want to speed up...
-mvn clean install -Pnative -DskipTests
+mvn package -Pnative -DskipTests
 ```
 
 > **NOTE:** A comprehensive set of build instructions can be found in
