@@ -36,7 +36,7 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      * @param offset position in the buffer for the read data
      * @param length max data length to be added to the buffer
      * @param buffer the buffer to read the data
-     * @return
+     * @return byte array
      */
     private byte[] internalRead(int offset, int length, byte[] buffer) {
         var readBuffer = new byte[length];
@@ -87,7 +87,7 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      * @param offset
      * @param length
      * @param data
-     * @return
+     * @return the number of bytes successfully written
      */
     private int internalWrite(int offset, int length, byte[] data) {
         var writeBuffer = new byte[length];
