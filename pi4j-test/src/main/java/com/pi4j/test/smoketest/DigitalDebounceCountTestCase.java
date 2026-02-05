@@ -42,10 +42,8 @@ public class DigitalDebounceCountTestCase extends TestCase {
 
     private static final String TEST_NAME = "Digital Debounce";
 
-    private static long debounceTime = 1000L;
-
     public static TestResult run(ProviderContext providerContext) {
-        logger.info("Starting Digital Debounce Count test, debounce time  " + debounceTime + "  ms");
+        logger.info("Starting Digital Debounce Count test");
 
         DigitalOutput gpioOutTest = null;
         DigitalInput gpioInMonitor = null;
@@ -59,7 +57,7 @@ public class DigitalDebounceCountTestCase extends TestCase {
             }
 
             // Initialize input
-            gpioInMonitor = createDigitalInput(providerContext.getContext(), 27, PullResistance.PULL_DOWN, debounceTime);
+            gpioInMonitor = createDigitalInput(providerContext.getContext(), 27, PullResistance.PULL_DOWN, 3000L);
             Thread.sleep(100);
             DigitalDebounceCountTestCase.DataInGpioListener listener = new DigitalDebounceCountTestCase.DataInGpioListener();
             gpioInMonitor.addListener(listener);
@@ -68,21 +66,42 @@ public class DigitalDebounceCountTestCase extends TestCase {
                 return new TestResult(TEST_NAME, false, "Input has not the correct initial state");
             }
 
-            // Change the output
-            for (int i = 0; i < 10; i++) {
-                gpioOutTest.high();
-                Thread.sleep(debounceTime * 2);
-                gpioOutTest.low();
-                Thread.sleep(debounceTime * 2);
-            }
+            // Debounce is in microseconds, sleep in milliseconds
+
+            // Change the output within debounce time should not be counted
+            gpioOutTest.high();
+            Thread.sleep(1);
+            gpioOutTest.low();
+            Thread.sleep(1);
+            gpioOutTest.high();
+
+            // We should now have high 1 low 0
+            Thread.sleep(5);
+            logger.info("Step 1: {}/{}", listener.getCountsHigh(), listener.getCountsLow());
+
+            // Wait longer then debounce and set low
+            Thread.sleep(5);
+            gpioOutTest.low();
+
+            // We should now have high 1 low 1
+            Thread.sleep(5);
+            logger.info("Step 2: {}/{}", listener.getCountsHigh(), listener.getCountsLow());
+
+            // Wait longer then debounce and set high
+            Thread.sleep(5);
+            gpioOutTest.high();
+
+            // We should now have high 2 low 1     
+            Thread.sleep(5);
+            logger.info("Step 3: {}/{}", listener.getCountsHigh(), listener.getCountsLow());       
 
             // Check the results
-            var lows = listener.getCountsLow();
             var highs = listener.getCountsHigh();
-            if (lows == 10 && highs == 10) {
+            var lows = listener.getCountsLow();
+            if (lows == 1 && highs == 2) {
                 return new TestResult(TEST_NAME, true, "Correct state change counts detected");
             } else {
-                return new TestResult(TEST_NAME, false, "Incorrect state change counts detected, expected 10 high and 10 low, got" + highs + "/" + lows);
+                return new TestResult(TEST_NAME, false, "Incorrect state change counts detected, expected high and low 2/1, but got " + highs + "/" + lows);
             }
         } catch (Exception e) {
             logger.error("Test failure", e);
@@ -101,10 +120,6 @@ public class DigitalDebounceCountTestCase extends TestCase {
     private static class DataInGpioListener implements DigitalStateChangeListener {
         AtomicInteger counterHigh = new AtomicInteger(0);
         AtomicInteger counterLow = new AtomicInteger(0);
-
-        Instant start;
-        Instant end;
-        long expectedTime = 0;
 
         @Override
         public void onDigitalStateChange(DigitalStateChangeEvent event) {
