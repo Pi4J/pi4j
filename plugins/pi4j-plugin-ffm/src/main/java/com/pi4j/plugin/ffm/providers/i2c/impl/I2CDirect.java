@@ -12,14 +12,11 @@ import com.pi4j.plugin.ffm.common.i2c.rdwr.RDWRData;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CBus;
 
-import java.nio.ByteBuffer;
-
 public class I2CDirect extends I2CBase<FFMI2CBus> {
-    private final IoctlNative ioctl;
+    private final IoctlNative ioctl = new IoctlNative();
 
     public I2CDirect(I2CProvider provider, I2CConfig config, FFMI2CBus i2CBus) {
         super(provider, config, i2CBus);
-        ioctl = new IoctlNative();
     }
 
     /**
