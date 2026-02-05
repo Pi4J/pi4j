@@ -37,7 +37,7 @@ import java.util.List;
  */
 public class Main {
 
-    private static Logger logger ;
+    private static Logger logger;
 
     /**
      * The entry point for the application. This method processes command-line
@@ -98,7 +98,8 @@ public class Main {
             PWMTestCase.run(providerContext, 1, 50, 10),
             DigitalInputTestCase.run(providerContext),
             DigitalOutputTestCase.run(providerContext),
-            DigitalDebounceTestCase.run(providerContext)
+            DigitalDebounceTimeTestCase.run(providerContext),
+            DigitalDebounceCountTestCase.run(providerContext)
         );
 
         // Output results

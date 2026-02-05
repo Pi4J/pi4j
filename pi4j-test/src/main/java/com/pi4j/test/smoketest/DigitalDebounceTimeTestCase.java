@@ -36,20 +36,20 @@ import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.time.Instant;
 
-public class DigitalDebounceTestCase  extends TestCase{
+public class DigitalDebounceTimeTestCase extends TestCase {
 
-    private static final Logger logger = LoggerFactory.getLogger(DigitalDebounceTestCase.class);
+    private static final Logger logger = LoggerFactory.getLogger(DigitalDebounceTimeTestCase.class);
 
     private static final String TEST_NAME = "Digital Debounce";
 
     private static long debounceTime = 1000;
 
     public static TestResult run(ProviderContext providerContext) {
-        logger.info("Starting Digital Debounce test, debounce time  "+ debounceTime + "  ms");
+        logger.info("Starting Digital Debounce Time test, debounce time  " + debounceTime + "  ms");
 
         DigitalOutput gpioOutTest = null;
         DigitalInput gpioInMonitor = null;
-        DigitalDebounceTestCase.TimeEventData tdResult;
+        DigitalDebounceTimeTestCase.TimeEventData tdResult;
 
         try {
             // Initialize output
@@ -62,7 +62,7 @@ public class DigitalDebounceTestCase  extends TestCase{
             // Initialize input
             gpioInMonitor = createDigitalInput(providerContext.getContext(), 27, PullResistance.PULL_DOWN, debounceTime);
             Thread.sleep(100);
-            DigitalDebounceTestCase.DataInGpioListener listener = new DigitalDebounceTestCase.DataInGpioListener();
+            DigitalDebounceTimeTestCase.DataInGpioListener listener = new DigitalDebounceTimeTestCase.DataInGpioListener();
             gpioInMonitor.addListener(listener);
 
             if (gpioInMonitor.state() != DigitalState.LOW) {
@@ -75,12 +75,12 @@ public class DigitalDebounceTestCase  extends TestCase{
             tdResult = listener.waitTenSecondForPinChange();
 
 
-             // Check the results
-            if (tdResult.success)  {
-                return new TestResult(TEST_NAME, true, "Correct debounce time  " + debounceTime +" ms state detected in approximately " + tdResult.timeToChange.toNanos()/1000 + "ms");
-            } else if(tdResult.eventOccurred){
-                return new TestResult(TEST_NAME, false, "Debounce  time " + debounceTime +"ms , event occurred : " + tdResult.eventOccurred  +  " but outside limits after  approximately " + tdResult.timeToChange.toNanos()/1000 + "ms");
-            }else{
+            // Check the results
+            if (tdResult.success) {
+                return new TestResult(TEST_NAME, true, "Correct debounce time  " + debounceTime + " ms state detected in approximately " + tdResult.timeToChange.toNanos() / 1000 + "ms");
+            } else if (tdResult.eventOccurred) {
+                return new TestResult(TEST_NAME, false, "Debounce  time " + debounceTime + "ms , event occurred : " + tdResult.eventOccurred + " but outside limits after  approximately " + tdResult.timeToChange.toNanos() / 1000 + "ms");
+            } else {
                 return new TestResult(TEST_NAME, false, "No event detected");
 
             }
@@ -102,7 +102,7 @@ public class DigitalDebounceTestCase  extends TestCase{
     // and then request the monitor listener wait a second, then return the data logged when
     // the event fired.
     private static class DataInGpioListener implements DigitalStateChangeListener {
-        DigitalDebounceTestCase.TimeEventData td = null;
+        DigitalDebounceTimeTestCase.TimeEventData td = null;
         Instant start;
         Instant end;
         long expectedTime = 0;
@@ -112,9 +112,9 @@ public class DigitalDebounceTestCase  extends TestCase{
             end = Instant.now();
             Duration duration = Duration.between(start, end);
             td.timeToChange = duration;
-            logger.debug("onDigitalStateChange fired duration " +td.timeToChange.toNanos() + "  ns");
+            logger.debug("onDigitalStateChange fired duration " + td.timeToChange.toNanos() + "  ns");
             td.eventOccurred = true;
-            if ((td.timeToChange.toNanos()/1000 > expectedTime-300)&&(td.timeToChange.toNanos()/1000 < expectedTime+300))  {
+            if ((td.timeToChange.toNanos() / 1000 > expectedTime - 300) && (td.timeToChange.toNanos() / 1000 < expectedTime + 300)) {
                 td.success = true;
             } else {
                 td.success = false;
@@ -125,12 +125,12 @@ public class DigitalDebounceTestCase  extends TestCase{
 
         public void startTiming(long expected) {
             expectedTime = expected;
-            td = DigitalDebounceTestCase.TimeEventData.createTimeEventData();
+            td = DigitalDebounceTimeTestCase.TimeEventData.createTimeEventData();
             start = Instant.now();
 
         }
 
-        public DigitalDebounceTestCase.TimeEventData waitTenSecondForPinChange() {
+        public DigitalDebounceTimeTestCase.TimeEventData waitTenSecondForPinChange() {
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
@@ -151,8 +151,8 @@ public class DigitalDebounceTestCase  extends TestCase{
             timeToChange = Duration.ofSeconds(0);
         }
 
-        public static DigitalDebounceTestCase.TimeEventData createTimeEventData() {
-            return new DigitalDebounceTestCase.TimeEventData();
+        public static DigitalDebounceTimeTestCase.TimeEventData createTimeEventData() {
+            return new DigitalDebounceTimeTestCase.TimeEventData();
         }
     }
 }
