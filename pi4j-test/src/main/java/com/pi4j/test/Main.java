@@ -98,6 +98,7 @@ public class Main {
             PWMTestCase.run(providerContext, 1, 50, 10),
             DigitalInputTestCase.run(providerContext),
             DigitalOutputTestCase.run(providerContext),
+          //  DigitalDebounceMonitorTestCase.run(providerContext),
             DigitalDebounceTimeTestCase.run(providerContext),
             DigitalDebounceCountTestCase.run(providerContext)
         );
