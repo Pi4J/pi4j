@@ -176,7 +176,7 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      */
     @Override
     public int read() {
-        return internalRead(new byte[1], 0, 1)[0];
+        return Byte.toUnsignedInt(internalRead(new byte[1], 0, 1)[0]);
     }
 
     /**
