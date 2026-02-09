@@ -27,69 +27,129 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
         return super.initialize(context);
     }
 
-    private byte[] internalRead(byte[] buffer) {
-        return internalRead(0, buffer.length, buffer);
+    /**
+     * Read data from the I/O device into the provided byte array at the given offset and up to the specified data length (number of bytes).
+     *
+     * @param buffer the buffer to read the data
+     * @param offset position in the buffer for the read data
+     * @param length max data length to be added to the buffer
+     * @return the same buffer instance that was passed in, with read data written to it starting at the specified offset
+     */
+    private byte[] internalRead(byte[] buffer, int offset, int length) {
+        if (offset < 0) {
+            throw new IllegalArgumentException("Offset cannot be negative");
+        } else if (offset == 0 && length == buffer.length) {
+            // Direct read into buffer without intermediate allocation
+            var messages = new I2CMessage[]{
+                new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, buffer),
+            };
+            var packets = new RDWRData(messages, 1);
+            return i2CBus.execute(this, i2cFileDescriptor -> {
+                ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
+                return buffer;
+            });
+        } else {
+            // Read into an intermediate buffer, then copy to the target offset
+            var readBuffer = new byte[length];
+            var messages = new I2CMessage[]{
+                new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, readBuffer),
+            };
+            var packets = new RDWRData(messages, 1);
+            return i2CBus.execute(this, i2cFileDescriptor -> {
+                var result = ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
+                var resultBuffer = result.msgs()[0].buf();
+                System.arraycopy(resultBuffer, 0, buffer, offset, length);
+                return buffer;
+            });
+        }
     }
 
     /**
-     * Read data from the I/O device into the provided byte array at the given offset and up to the specified data length (number of bytes).
-     * @param offset position in the buffer for the read data
-     * @param length max data length to be added to the buffer
-     * @param buffer the buffer to read the data
-     * @return byte array
+     * Read data from the I/O device register into the provided byte array at the given offset and up to the specified data length (number of bytes).
+     *
+     * @param register the register address to read from
+     * @param buffer   the buffer to read the data
+     * @param offset   position in the buffer for the read data
+     * @param length   max data length to be added to the buffer
+     * @return the same buffer instance that was passed in, with read data written to it starting at the specified offset
      */
-    private byte[] internalRead(int offset, int length, byte[] buffer) {
-        var readBuffer = new byte[length];
-        var messages = new I2CMessage[]{
-            new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, readBuffer),
-        };
-        var packets = new RDWRData(messages, 1);
-        return i2CBus.execute(this, i2cFileDescriptor -> {
-            var result = ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
-            var resultBuffer = result.msgs()[0].buf();
-            System.arraycopy(resultBuffer, 0, buffer, offset, length);
-            return buffer;
-        });
+    private byte[] internalRead(byte[] register, byte[] buffer, int offset, int length) {
+        if (offset < 0) {
+            throw new IllegalArgumentException("Offset cannot be negative");
+        } else if (offset == 0 && length == buffer.length) {
+            // Direct read into buffer without intermediate allocation
+            var messages = new I2CMessage[]{
+                new I2CMessage(config.device(), 0, register.length, register),
+                new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, buffer),
+            };
+            var packets = new RDWRData(messages, 2);
+            return i2CBus.execute(this, i2cFileDescriptor -> {
+                ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
+                return buffer;
+            });
+        } else {
+            // Read into an intermediate buffer, then copy to the target offset
+            var readBuffer = new byte[length];
+            var messages = new I2CMessage[]{
+                new I2CMessage(config.device(), 0, register.length, register),
+                new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, readBuffer),
+            };
+            var packets = new RDWRData(messages, 2);
+            return i2CBus.execute(this, i2cFileDescriptor -> {
+                var result = ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
+                var resultBuffer = result.msgs()[1].buf();
+                System.arraycopy(resultBuffer, 0, buffer, offset, length);
+                return buffer;
+            });
+        }
     }
 
-    private byte[] internalRead(byte[] register, int offset, int length, byte[] buffer) {
-        var readBuffer = new byte[length];
-        var messages = new I2CMessage[]{
-            new I2CMessage(config.device(), 0, register.length, register),
-            new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, readBuffer),
-        };
-        var packets = new RDWRData(messages, 2);
-        return i2CBus.execute(this, i2cFileDescriptor -> {
-            var result = ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
-            var resultBuffer = result.msgs()[1].buf();
-            System.arraycopy(resultBuffer, 0, buffer, offset, length);
-            return buffer;
-        });
-    }
-
+    /**
+     * Write data to the I/O device register.
+     *
+     * @param register the register address to write to
+     * @param data     the data to write
+     * @return the number of data bytes successfully written (excluding register bytes)
+     */
     private int internalWrite(byte[] register, byte[] data) {
-        return internalWrite(register, 0, data.length, data);
+        return internalWrite(register, data, 0, data.length);
     }
 
-    private int internalWrite(byte[] register, int offset, int length, byte[] data) {
+    /**
+     * Write data to the I/O device register with a specified offset and length from the data array.
+     *
+     * @param register the register address to write to
+     * @param data     the data array to write from
+     * @param offset   starting position in the data array
+     * @param length   number of bytes to write from the data array
+     * @return the number of data bytes successfully written (excluding register bytes)
+     */
+    private int internalWrite(byte[] register, byte[] data, int offset, int length) {
         var buffer = new byte[register.length + length];
         System.arraycopy(register, 0, buffer, 0, register.length);
         System.arraycopy(data, offset, buffer, register.length, length);
         return internalWrite(buffer) - register.length;
     }
 
+    /**
+     * Write data to the I/O device.
+     *
+     * @param data the data to write
+     * @return the number of bytes successfully written
+     */
     private int internalWrite(byte[] data) {
-        return internalWrite(0, data.length, data);
+        return internalWrite(data, 0, data.length);
     }
 
     /**
      * Write an array of byte values with given offset (starting position) and length in the provided data array.
-     * @param offset
-     * @param length
-     * @param data
+     *
+     * @param data   the data array to write from
+     * @param offset starting position in the data array
+     * @param length number of bytes to write from the data array
      * @return the number of bytes successfully written
      */
-    private int internalWrite(int offset, int length, byte[] data) {
+    private int internalWrite(byte[] data, int offset, int length) {
         var writeBuffer = new byte[length];
         System.arraycopy(data, offset, writeBuffer, 0, length);
         var messages = new I2CMessage[]{
@@ -116,7 +176,7 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      */
     @Override
     public int read() {
-        return internalRead(new byte[1])[0];
+        return internalRead(new byte[1], 0, 1)[0];
     }
 
     /**
@@ -124,7 +184,7 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      */
     @Override
     public int read(byte[] buffer, int offset, int length) {
-        internalRead(offset, length, buffer);
+        internalRead(buffer, offset, length);
         return length;
     }
 
@@ -141,7 +201,7 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      */
     @Override
     public int write(byte[] data, int offset, int length) {
-        return internalWrite(offset, length, data);
+        return internalWrite(data, offset, length);
     }
 
     /**
@@ -149,7 +209,7 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      */
     @Override
     public int readRegister(int register) {
-        return Byte.toUnsignedInt(internalRead(new byte[]{(byte) register}, 0, 1, new byte[0])[0]);
+        return Byte.toUnsignedInt(internalRead(new byte[]{(byte) register}, new byte[0], 0, 1)[0]);
     }
 
     /**
@@ -157,7 +217,7 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      */
     @Override
     public int readRegister(byte[] register, byte[] buffer, int offset, int length) {
-        internalRead(register, offset, length, buffer);
+        internalRead(register, buffer, offset, length);
         return length;
     }
 
@@ -166,7 +226,7 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      */
     @Override
     public int readRegister(int register, byte[] buffer, int offset, int length) {
-        internalRead(new byte[]{(byte) register}, offset, length, buffer);
+        internalRead(new byte[]{(byte) register}, buffer, offset, length);
         return length;
     }
 
@@ -183,7 +243,7 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      */
     @Override
     public int writeRegister(int register, byte[] data, int offset, int length) {
-        return internalWrite(new byte[]{(byte) register}, offset, length, data);
+        return internalWrite(new byte[]{(byte) register}, data, offset, length);
     }
 
     /**
@@ -191,6 +251,6 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      */
     @Override
     public int writeRegister(byte[] register, byte[] data, int offset, int length) {
-        return internalWrite(register, offset, length, data);
+        return internalWrite(register, data, offset, length);
     }
 }
