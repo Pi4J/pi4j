@@ -36,9 +36,9 @@ import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.time.Instant;
 
-public class DigitalDebounceTimeTestCase extends TestCase {
+public class DigitalInputDebounceTimeTestCase extends TestCase {
 
-    private static final Logger logger = LoggerFactory.getLogger(DigitalDebounceTimeTestCase.class);
+    private static final Logger logger = LoggerFactory.getLogger(DigitalInputDebounceTimeTestCase.class);
 
     private static final String TEST_NAME = "Digital Debounce Time";
 
@@ -49,7 +49,7 @@ public class DigitalDebounceTimeTestCase extends TestCase {
 
         DigitalOutput gpioOutTest = null;
         DigitalInput gpioInMonitor = null;
-        DigitalDebounceTimeTestCase.TimeEventData tdResult;
+        DigitalInputDebounceTimeTestCase.TimeEventData tdResult;
 
         try {
             // Initialize output
@@ -62,7 +62,7 @@ public class DigitalDebounceTimeTestCase extends TestCase {
             // Initialize input
             gpioInMonitor = createDigitalInput(providerContext.getContext(), 27, PullResistance.PULL_DOWN, debounceTime);
             Thread.sleep(100);
-            DigitalDebounceTimeTestCase.DataInGpioListener listener = new DigitalDebounceTimeTestCase.DataInGpioListener();
+            DigitalInputDebounceTimeTestCase.DataInGpioListener listener = new DigitalInputDebounceTimeTestCase.DataInGpioListener();
             gpioInMonitor.addListener(listener);
 
             if (gpioInMonitor.state() != DigitalState.LOW) {
@@ -102,7 +102,7 @@ public class DigitalDebounceTimeTestCase extends TestCase {
     // and then request the monitor listener wait a second, then return the data logged when
     // the event fired.
     private static class DataInGpioListener implements DigitalStateChangeListener {
-        DigitalDebounceTimeTestCase.TimeEventData td = null;
+        DigitalInputDebounceTimeTestCase.TimeEventData td = null;
         Instant start;
         Instant end;
         long expectedTime = 0;
@@ -125,12 +125,12 @@ public class DigitalDebounceTimeTestCase extends TestCase {
 
         public void startTiming(long expected) {
             expectedTime = expected;
-            td = DigitalDebounceTimeTestCase.TimeEventData.createTimeEventData();
+            td = DigitalInputDebounceTimeTestCase.TimeEventData.createTimeEventData();
             start = Instant.now();
 
         }
 
-        public DigitalDebounceTimeTestCase.TimeEventData waitTenSecondForPinChange() {
+        public DigitalInputDebounceTimeTestCase.TimeEventData waitTenSecondForPinChange() {
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
@@ -151,8 +151,8 @@ public class DigitalDebounceTimeTestCase extends TestCase {
             timeToChange = Duration.ofSeconds(0);
         }
 
-        public static DigitalDebounceTimeTestCase.TimeEventData createTimeEventData() {
-            return new DigitalDebounceTimeTestCase.TimeEventData();
+        public static DigitalInputDebounceTimeTestCase.TimeEventData createTimeEventData() {
+            return new DigitalInputDebounceTimeTestCase.TimeEventData();
         }
     }
 }

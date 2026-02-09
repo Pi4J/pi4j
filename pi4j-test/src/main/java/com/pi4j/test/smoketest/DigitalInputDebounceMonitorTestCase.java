@@ -33,10 +33,10 @@ import com.pi4j.io.gpio.digital.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DigitalDebounceMonitorTestCase extends TestCase {
+public class DigitalInputDebounceMonitorTestCase extends TestCase {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(DigitalDebounceMonitorTestCase.class);
+    private static final Logger logger = LoggerFactory.getLogger(DigitalInputDebounceMonitorTestCase.class);
 
     private static final String TEST_NAME = "Digital Debounce Monitor";
     protected static DigitalOutput gpioOutLogic = null;
@@ -47,7 +47,7 @@ public class DigitalDebounceMonitorTestCase extends TestCase {
         int debounceSetting = 0;
         DigitalOutput gpioOutTest = null;
         DigitalInput gpioInMonitor = null;
-         try {
+        try {
             // Initialize output
             gpioOutTest = createDigitalOutput(providerContext.getContext(), 12, DigitalState.LOW, DigitalState.LOW);
             Thread.sleep(100);
@@ -59,12 +59,12 @@ public class DigitalDebounceMonitorTestCase extends TestCase {
             if (gpioOutLogic.state() != DigitalState.LOW) {
                 return new TestResult(TEST_NAME, false, "Output Logic GPIO not the correct initial state");
             }
-            DigitalDebounceMonitorTestCase.DataInGpioListener listener = new DigitalDebounceMonitorTestCase.DataInGpioListener();
+            DigitalInputDebounceMonitorTestCase.DataInGpioListener listener = new DigitalInputDebounceMonitorTestCase.DataInGpioListener();
             debounceSetting = waitForInput(logger, "Engage Logic Analyzer pin BCM12 and BCM20 \n Enter numeric debounce value, 0 to exit");
 
-            while (debounceSetting > 0 ){
+            while (debounceSetting > 0) {
                 // Initialize input
-                gpioInMonitor = createDigitalInput(providerContext.getContext(), 16, PullResistance.PULL_DOWN, debounceSetting);
+                gpioInMonitor = createDigitalInput(providerContext.getContext(), 19, PullResistance.PULL_DOWN, debounceSetting);
                 Thread.sleep(100);
                 gpioInMonitor.addListener(listener);
 
@@ -72,7 +72,7 @@ public class DigitalDebounceMonitorTestCase extends TestCase {
                     return new TestResult(TEST_NAME, false, "Input has not the correct initial state");
                 }
 
-               logger.info("Engage Logic Analyzer pin BCM12 and BCM20");
+                logger.info("Engage Logic Analyzer pin BCM12 and BCM20");
 
                 // Change the output within debounce time should not be counted
                 gpioOutTest.high();

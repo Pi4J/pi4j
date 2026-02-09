@@ -35,9 +35,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class DigitalDebounceCountTestCase extends TestCase {
+public class DigitalInputDebounceCountTestCase extends TestCase {
 
-    private static final Logger logger = LoggerFactory.getLogger(DigitalDebounceCountTestCase.class);
+    private static final Logger logger = LoggerFactory.getLogger(DigitalInputDebounceCountTestCase.class);
 
     private static final String TEST_NAME = "Digital Debounce Count";
 
@@ -58,7 +58,7 @@ public class DigitalDebounceCountTestCase extends TestCase {
             // Initialize input
             gpioInMonitor = createDigitalInput(providerContext.getContext(), 27, PullResistance.PULL_DOWN, 100_000L);
             Thread.sleep(100);
-            DigitalDebounceCountTestCase.DataInGpioListener listener = new DigitalDebounceCountTestCase.DataInGpioListener();
+            DigitalInputDebounceCountTestCase.DataInGpioListener listener = new DigitalInputDebounceCountTestCase.DataInGpioListener();
             gpioInMonitor.addListener(listener);
 
             if (gpioInMonitor.state() != DigitalState.LOW) {
@@ -92,7 +92,7 @@ public class DigitalDebounceCountTestCase extends TestCase {
 
             // We should now have high 2 low 1     
             Thread.sleep(200);
-            logger.info("Step 3: {}/{}", listener.getCountsHigh(), listener.getCountsLow());       
+            logger.info("Step 3: {}/{}", listener.getCountsHigh(), listener.getCountsLow());
 
             // Check the results
             var highs = listener.getCountsHigh();

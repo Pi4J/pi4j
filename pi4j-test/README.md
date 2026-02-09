@@ -90,9 +90,8 @@ The PWM, input, output and debounce connections are M-M jumpers between T-cobble
 
 | Test      | From RPi Pin | Number | BCM  | To RPi Pin | Number | BCM | Color |
 |:----------|:-------------|:------:|:----:|:-----------|:------:|:---:|:------|
-| Debounce  | GPIO         | 32     | 12   | GPIO       |   36   | 16  | Brown |
+| Debounce  | GPIO         | 32     | 12   | GPIO       |  35    | 19 | Brown |
 |           |              |        |      | GPIO       |   38   | 20  | LOGIC |
 
 
 
-12 16 20
