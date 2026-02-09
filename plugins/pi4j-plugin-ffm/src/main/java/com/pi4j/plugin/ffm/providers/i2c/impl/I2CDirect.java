@@ -45,7 +45,9 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
             };
             var packets = new RDWRData(messages, 1);
             return i2CBus.execute(this, i2cFileDescriptor -> {
-                ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
+                var result = ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
+                var resultBuffer = result.msgs()[0].buf();
+                System.arraycopy(resultBuffer, 0, buffer, 0, length);
                 return buffer;
             });
         } else {
@@ -84,7 +86,9 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
             };
             var packets = new RDWRData(messages, 2);
             return i2CBus.execute(this, i2cFileDescriptor -> {
-                ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
+                var result = ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
+                var resultBuffer = result.msgs()[1].buf();
+                System.arraycopy(resultBuffer, 0, buffer, 0, length);
                 return buffer;
             });
         } else {
@@ -176,7 +180,7 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      */
     @Override
     public int read() {
-        return Byte.toUnsignedInt(internalRead(new byte[1], 0, 1)[0]);
+        return internalRead(new byte[1], 0, 1)[0];
     }
 
     /**
@@ -209,7 +213,7 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      */
     @Override
     public int readRegister(int register) {
-        return Byte.toUnsignedInt(internalRead(new byte[]{(byte) register}, new byte[0], 0, 1)[0]);
+        return Byte.toUnsignedInt(internalRead(new byte[]{(byte) register}, new byte[1], 0, 1)[0]);
     }
 
     /**
