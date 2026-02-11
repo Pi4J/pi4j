@@ -241,6 +241,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             List<DetectedEvent> eventList = new ArrayList<>();
             DetectedEvent lastDebouncedEvent = null;
             PinEvent lastDebouncedState = null;
+            long lastEventReceivedTimeNs = 0; // Track when we last received an event (using System.nanoTime)
             logger.trace("{} - Start polling GPIO data on BCM {} at {}",
                 Thread.currentThread().getName(), bcm, timestamp);
             while (!stopWatching) {
@@ -254,6 +255,20 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                         var duration = timestamp.until(Instant.now()).toMillis();
                         logger.trace("{} - No events detected on BCM {}: polling timeout at {} (took {}ms)",
                             Thread.currentThread().getName(), bcm, timestamp, duration);
+                        // Check if there's a pending debounced event that should be dispatched
+                        if (lastDebouncedEvent != null && debounceNs > 0 && lastEventReceivedTimeNs > 0) {
+                            long currentTimeNs = System.nanoTime();
+                            long timeSinceLastEventNs = currentTimeNs - lastEventReceivedTimeNs;
+                            if (timeSinceLastEventNs >= debounceNs) {
+                                logger.trace("{} - Dispatching pending debounced event on BCM {} after timeout ({}ns >= {}ns)",
+                                    Thread.currentThread().getName(), bcm, timeSinceLastEventNs, debounceNs);
+                                eventList.add(lastDebouncedEvent);
+                                eventProcessor.process(eventList);
+                                eventList.clear();
+                                lastDebouncedEvent = null;
+                                lastEventReceivedTimeNs = 0;
+                            }
+                        }
                         timestamp = Instant.now();
                         continue;
                     }
@@ -291,10 +306,12 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
 
                                 // Apply software debounce if configured
                                 if (debounceNs > 0) {
+                                    long currentTimeNs = System.nanoTime();
                                     if (lastDebouncedEvent == null) {
                                         // First event, start debounce period
                                         lastDebouncedEvent = detectedEvent;
                                         lastDebouncedState = pinEvent;
+                                        lastEventReceivedTimeNs = currentTimeNs;
                                         logger.trace("{} - Starting debounce period on BCM {} for {}",
                                             Thread.currentThread().getName(), bcm, pinEvent);
                                     } else {
@@ -307,6 +324,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                                                 Thread.currentThread().getName(), bcm, timeSinceLastEventNs, debounceNs);
                                             lastDebouncedEvent = detectedEvent;
                                             lastDebouncedState = pinEvent;
+                                            lastEventReceivedTimeNs = currentTimeNs;
                                         } else {
                                             // Debounce period passed - dispatch previous event and start new debounce
                                             logger.trace("{} - Debounce period passed on BCM {} ({}ns >= {}ns), dispatching event",
@@ -317,6 +335,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                                             }
                                             lastDebouncedEvent = detectedEvent;
                                             lastDebouncedState = pinEvent;
+                                            lastEventReceivedTimeNs = currentTimeNs;
                                         }
                                     }
                                 } else {
