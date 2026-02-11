@@ -1,6 +1,7 @@
 package com.pi4j.test.smoketest;
 
 import com.pi4j.Pi4J;
+import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.context.Context;
 import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
 import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
@@ -54,7 +55,7 @@ public class ProviderContext {
         switch (testProvider) {
             case NEWAUTOCONTEXT -> pi4j = Pi4J.newAutoContext();
             case LINUXFS -> {
-                if (pi4j.boardInfo().getBoardModel().usesRP1()) {
+                if (BoardInfoHelper.current().getBoardModel().usesRP1()) {
                     logger.warn("RP1 board detected, using GpioDDigitalInputProvider and GpioDDigitalOutputProvider instead of LinuxFS");
                     pi4j = Pi4J
                         .newContextBuilder()
