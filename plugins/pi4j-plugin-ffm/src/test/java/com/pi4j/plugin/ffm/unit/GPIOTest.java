@@ -1,6 +1,5 @@
 package com.pi4j.plugin.ffm.unit;
 
-
 import com.pi4j.Pi4J;
 import com.pi4j.boardinfo.definition.BoardModel;
 import com.pi4j.boardinfo.util.BoardInfoHelper;
@@ -186,6 +185,65 @@ public class GPIOTest {
         }
     }
 
+    @Test
+    public void testInputEventProcessingWithDebounce() throws InterruptedException {
+        var latch = new CountDownLatch(1);
+        var lineInfoTestData = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
+            LineInfo lineInfo = answer.getArgument(2);
+            return new LineInfo(("Test").getBytes(), ("FFM-Test").getBytes(),
+                lineInfo.offset(), 0,
+                PinFlag.INPUT.getValue(),
+                new LineAttribute[0]);
+        });
+        var pollingCallback = new Function<InvocationOnMock, PollingData>() {
+            private int callCount = 0;
+
+            @Override
+            public PollingData apply(InvocationOnMock answer) {
+                PollingData pollingData = answer.getArgument(0);
+                callCount++;
+                // Return event on first call, then timeout (null) on subsequent calls
+                if (callCount == 1) {
+                    return new PollingData(pollingData.fd(), pollingData.events(), (short) PollFlag.POLLIN);
+                }
+                return null;
+            }
+        };
+        var pollingFile = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 42, ("Test").getBytes(), (answer) -> {
+            byte[] buffer = answer.getArgument(1);
+            long timestampNs = System.nanoTime();
+            var lineEvent = new LineEvent(timestampNs, PinEvent.RISING.getValue(), 3, 4, 5);
+            var memoryBuffer = Arena.ofAuto().allocate(LineEvent.LAYOUT);
+            try {
+                lineEvent.to(memoryBuffer);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+            var lineBuffer = new byte[(int) LineEvent.LAYOUT.byteSize()];
+            ByteBuffer.wrap(lineBuffer).put(memoryBuffer.asByteBuffer());
+            System.arraycopy(lineBuffer, 0, buffer, 0, lineBuffer.length);
+            return buffer;
+        });
+        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE, pollingFile);
+             var _ = IoctlNativeMock.echo(lineInfoTestData);
+             var _ = PollNativeMock.echo(pollingCallback)) {
+            var builder = DigitalInputConfigBuilder.newInstance(pi4j0)
+                .bus(-1)
+                .bcm(8)
+                .debounce(50L) // 50ms debounce
+                .build();
+            var pin = pi4j0.digitalInput().create(builder);
+            assertEquals(DigitalState.LOW, pin.state());
+            var passed = new AtomicBoolean(false);
+            pin.addListener(event -> {
+                passed.set(event.state() == DigitalState.HIGH);
+                latch.countDown();
+            });
+            // Event should be dispatched after debounce timeout
+            assertTrue(latch.await(5, TimeUnit.SECONDS));
+            assertTrue(passed.get());
+        }
+    }
 
     @Test
     public void testInputIsOccupied() {
