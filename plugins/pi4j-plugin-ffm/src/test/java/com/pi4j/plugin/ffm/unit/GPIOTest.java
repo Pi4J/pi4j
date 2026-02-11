@@ -169,9 +169,11 @@ public class GPIOTest {
         try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE, pollingFile);
              var _ = IoctlNativeMock.echo(lineInfoTestData);
              var _ = PollNativeMock.echo(pollingCallback)) {
-
-            var builder = DigitalInputConfigBuilder.newInstance(pi4j0).bus(-1)
-                .bcm(7).build();
+            var builder = DigitalInputConfigBuilder.newInstance(pi4j0)
+                .bus(-1)
+                .bcm(7)
+                .debounce(0L)
+                .build();
             var pin = pi4j0.digitalInput().create(builder);
             assertEquals(DigitalState.LOW, pin.state());
             var passed = new AtomicBoolean(false);

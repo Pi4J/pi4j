@@ -64,7 +64,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         super(provider, config);
         this.pin = config.bcm();
         this.deviceName = "/dev/gpiochip" + config.bus();
-        this.debounce = config.debounce();
+        this.debounce = (config.debounce() != null && config.debounce() >= 0) ? config.debounce() : DigitalInput.DEFAULT_DEBOUNCE;
         this.pull = config.pull();
         FFMPermissionHelper.checkDevicePermissions(deviceName, config);
     }
@@ -301,6 +301,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                                         lastDebouncedState = pinEvent;
                                         logger.trace("{} - Starting debounce period for {}", Thread.currentThread().getName(), pinEvent);
                                     } else {
+                                        // Check if enough time has passed since last event (using kernel timestamps)
                                         long timeSinceLastEventNs = detectedEvent.timestampInNanos() - lastDebouncedEvent.timestampInNanos();
 
                                         if (timeSinceLastEventNs < debounceNs) {
