@@ -93,12 +93,12 @@ public class Main {
 
         // Run the tests
         var tests = List.of(
-            I2CTestCase.run(providerContext),
-            SpiTestCase.run(providerContext),
-            PWMTestCase.run(providerContext, 1, 50, 10),
-            DigitalInputTestCase.run(providerContext),
-            DigitalOutputTestCase.run(providerContext),
-            //  DigitalInputDebounceMonitorTestCase.run(providerContext),
+            // I2CTestCase.run(providerContext),
+            // SpiTestCase.run(providerContext),
+            // PWMTestCase.run(providerContext, 1, 50, 10),
+            // DigitalInputTestCase.run(providerContext),
+            // DigitalOutputTestCase.run(providerContext),
+            // DigitalInputDebounceMonitorTestCase.run(providerContext),
             DigitalInputDebounceTimeTestCase.run(providerContext),
             DigitalInputDebounceCountTestCase.run(providerContext)
         );

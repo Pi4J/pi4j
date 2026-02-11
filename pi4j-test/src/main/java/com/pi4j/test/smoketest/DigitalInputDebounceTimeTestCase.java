@@ -71,18 +71,22 @@ public class DigitalInputDebounceTimeTestCase extends TestCase {
 
             // Change the output
             listener.startTiming(debounceTime);
+            Thread.sleep(100);
             gpioOutTest.high();
-            tdResult = listener.waitTenSecondForPinChange();
 
+            // The event should be detected immediately, but adding a sleep here in case something is delaying the change
+            Thread.sleep(10_000);
 
             // Check the results
-            if (tdResult.success) {
-                return new TestResult(TEST_NAME, true, "Correct debounce time  " + debounceTime + " ms state detected in approximately " + tdResult.timeToChange.toNanos() / 1000 + "ms");
-            } else if (tdResult.eventOccurred) {
-                return new TestResult(TEST_NAME, false, "Debounce  time " + debounceTime + "ms , event occurred : " + tdResult.eventOccurred + " but outside limits after  approximately " + tdResult.timeToChange.toNanos() / 1000 + "ms");
+            if (listener.getResult().success) {
+                return new TestResult(TEST_NAME, true, "Correct debounce time " + debounceTime
+                    + "ms state detected in approximately " + listener.getResult().timeToChange.toNanos() / 1000 + "ms");
+            } else if (listener.getResult().eventOccurred) {
+                return new TestResult(TEST_NAME, false, "Debounce  time " + debounceTime
+                    + "ms, event occurred but outside the limits after "
+                    + listener.getResult().timeToChange.toNanos() / 1000 + "ms");
             } else {
                 return new TestResult(TEST_NAME, false, "No event detected");
-
             }
         } catch (Exception e) {
             logger.error("Test failure", e);
@@ -98,45 +102,36 @@ public class DigitalInputDebounceTimeTestCase extends TestCase {
     }
 
     // Prior to driving the output pin high.  the monitor input pin listener
-    // is set to track the NS until the pin changes.  The test code immediately drives the output pin
-    // and then request the monitor listener wait a second, then return the data logged when
+    // is set to track the NS until the pin changes. The test code immediately drives the output pin
+    // and then requests the monitor listener to wait a second, then return the data logged when
     // the event fired.
     private static class DataInGpioListener implements DigitalStateChangeListener {
-        DigitalInputDebounceTimeTestCase.TimeEventData td = null;
-        Instant start;
-        Instant end;
-        long expectedTime = 0;
+        private TimeEventData result = new TimeEventData();
+        private Instant start;
+        private Instant end;
+        private long expectedTime = 0;
 
         @Override
         public void onDigitalStateChange(DigitalStateChangeEvent event) {
             end = Instant.now();
             Duration duration = Duration.between(start, end);
-            td.timeToChange = duration;
-            logger.debug("onDigitalStateChange fired duration " + td.timeToChange.toNanos() + "  ns");
-            td.eventOccurred = true;
-            if ((td.timeToChange.toNanos() / 1000 > expectedTime - 300) && (td.timeToChange.toNanos() / 1000 < expectedTime + 300)) {
-                td.success = true;
+            result.timeToChange = duration;
+            logger.debug("onDigitalStateChange fired duration " + result.timeToChange.toNanos() + "  ns");
+            result.eventOccurred = true;
+            if ((result.timeToChange.toNanos() / 1000 > expectedTime - 300) && (result.timeToChange.toNanos() / 1000 < expectedTime + 300)) {
+                result.success = true;
             } else {
-                td.success = false;
+                result.success = false;
             }
-
         }
-
 
         public void startTiming(long expected) {
             expectedTime = expected;
-            td = DigitalInputDebounceTimeTestCase.TimeEventData.createTimeEventData();
             start = Instant.now();
-
         }
 
-        public DigitalInputDebounceTimeTestCase.TimeEventData waitTenSecondForPinChange() {
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            return td;
+        public TimeEventData getResult() {
+            return result;
         }
     }
 
@@ -145,14 +140,10 @@ public class DigitalInputDebounceTimeTestCase extends TestCase {
         boolean eventOccurred;
         Duration timeToChange;
 
-        private TimeEventData() {
+        public TimeEventData() {
             success = false;
             eventOccurred = false;
             timeToChange = Duration.ofSeconds(0);
-        }
-
-        public static DigitalInputDebounceTimeTestCase.TimeEventData createTimeEventData() {
-            return new DigitalInputDebounceTimeTestCase.TimeEventData();
         }
     }
 }
