@@ -70,9 +70,8 @@ public class DigitalInputDebounceTimeTestCase extends TestCase {
             }
 
             // Change the output
-            listener.startTiming(debounceTime);
-            Thread.sleep(100);
             gpioOutTest.high();
+            listener.startTiming(debounceTime);
 
             // The event should be detected immediately, but adding a sleep here in case something is delaying the change
             Thread.sleep(10_000);
