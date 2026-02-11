@@ -50,8 +50,8 @@ public class Main {
      * @throws Exception If an error occurs during the execution of the application.
      */
     public static void main(String[] args) throws Exception {
-
-        System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
+        System.setProperty(org.slf4j.simple.SimpleLogger.LOG_FILE_KEY, "trace.log");
+        System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
         logger = LoggerFactory.getLogger(Main.class);
 
         logger.info("==============================================================");
@@ -93,12 +93,12 @@ public class Main {
 
         // Run the tests
         var tests = List.of(
-            // I2CTestCase.run(providerContext),
-            // SpiTestCase.run(providerContext),
-            // PWMTestCase.run(providerContext, 1, 50, 10),
-            // DigitalInputTestCase.run(providerContext),
-            // DigitalOutputTestCase.run(providerContext),
-            // DigitalInputDebounceMonitorTestCase.run(providerContext),
+            I2CTestCase.run(providerContext),
+            SpiTestCase.run(providerContext),
+            PWMTestCase.run(providerContext, 1, 50, 10),
+            DigitalInputTestCase.run(providerContext),
+            DigitalOutputTestCase.run(providerContext),
+            // DigitalInputDebounceMonitorTestCase.run(providerContext), // This test needs a Logic Analyzer
             DigitalInputDebounceTimeTestCase.run(providerContext),
             DigitalInputDebounceCountTestCase.run(providerContext)
         );
