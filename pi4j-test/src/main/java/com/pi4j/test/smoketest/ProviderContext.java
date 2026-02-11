@@ -7,8 +7,8 @@ import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
 import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
 import com.pi4j.plugin.ffm.providers.spi.FFMSpiProviderImpl;
-import com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalInputProvider;
-import com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalOutputProvider;
+import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalInputProvider;
+import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalOutputProvider;
 import com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CProvider;
 import com.pi4j.plugin.linuxfs.provider.pwm.LinuxFsPwmProvider;
 import com.pi4j.plugin.linuxfs.provider.spi.LinuxFsSpiProvider;
@@ -51,27 +51,22 @@ public class ProviderContext {
 
         switch (testProvider) {
             case NEWAUTOCONTEXT -> pi4j = Pi4J.newAutoContext();
-            case LINUXFS -> {
-                pi4j = Pi4J
-                    .newContextBuilder()
-                    .add(LinuxFsI2CProvider.newInstance())
-                    .add(GpioDDigitalInputProvider.newInstance())
-                    .add(GpioDDigitalOutputProvider.newInstance())
-                    .add(LinuxFsPwmProvider.newInstance(DEFAULT_PWM_FILESYSTEM_PATH))
-                    .add(LinuxFsI2CProvider.newInstance())
-                    .add(LinuxFsSpiProvider.newInstance())
-                    .build();
-            }
-            case FFM -> {
-                pi4j = Pi4J
-                    .newContextBuilder()
-                    .add(new FFMDigitalOutputProviderImpl())
-                    .add(new FFMDigitalInputProviderImpl())
-                    .add(new FFMI2CProviderImpl())
-                    .add(new FFMSpiProviderImpl())
-                    .add(new FFMPwmProviderImpl())
-                    .build();
-            }
+            case LINUXFS -> pi4j = Pi4J
+                .newContextBuilder()
+                .add(LinuxFsDigitalInputProvider.newInstance())
+                .add(LinuxFsDigitalOutputProvider.newInstance())
+                .add(LinuxFsI2CProvider.newInstance())
+                .add(LinuxFsSpiProvider.newInstance())
+                .add(LinuxFsPwmProvider.newInstance(DEFAULT_PWM_FILESYSTEM_PATH))
+                .build();
+            case FFM -> pi4j = Pi4J
+                .newContextBuilder()
+                .add(new FFMDigitalOutputProviderImpl())
+                .add(new FFMDigitalInputProviderImpl())
+                .add(new FFMI2CProviderImpl())
+                .add(new FFMSpiProviderImpl())
+                .add(new FFMPwmProviderImpl())
+                .build();
             default -> logger.error("No test provider specified");
         }
     }
