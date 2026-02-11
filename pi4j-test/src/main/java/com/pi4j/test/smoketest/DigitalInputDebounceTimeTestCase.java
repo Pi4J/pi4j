@@ -42,10 +42,10 @@ public class DigitalInputDebounceTimeTestCase extends TestCase {
 
     private static final String TEST_NAME = "Digital Debounce Time";
 
-    private static long debounceTime = 1000;
+    private static long debounceTimeMs = 1000;
 
     public static TestResult run(ProviderContext providerContext) {
-        logger.info("Starting Digital Debounce Time test, debounce time  " + debounceTime + "  ms");
+        logger.info("Starting Digital Debounce Time test, debounce time  " + debounceTimeMs + "  ms");
 
         DigitalOutput gpioOutTest = null;
         DigitalInput gpioInMonitor = null;
@@ -58,8 +58,9 @@ public class DigitalInputDebounceTimeTestCase extends TestCase {
                 return new TestResult(TEST_NAME, false, "Output has not the correct initial state");
             }
 
-            // Initialize input
-            gpioInMonitor = createDigitalInput(providerContext.getContext(), 27, PullResistance.PULL_DOWN, debounceTime);
+            // Initialize input with debounce in microseconds (API expects microseconds)
+            long debounceTimeMicros = debounceTimeMs * 1000;
+            gpioInMonitor = createDigitalInput(providerContext.getContext(), 27, PullResistance.PULL_DOWN, debounceTimeMicros);
             Thread.sleep(100);
             DigitalInputDebounceTimeTestCase.DataInGpioListener listener = new DigitalInputDebounceTimeTestCase.DataInGpioListener();
             gpioInMonitor.addListener(listener);
@@ -72,8 +73,8 @@ public class DigitalInputDebounceTimeTestCase extends TestCase {
             listener.startTiming();
             gpioOutTest.high();
 
-            // Wait for the debounced event - should take at least debounceTime to fire
-            Thread.sleep(debounceTime + 5000);
+            // Wait for the debounced event - should take at least debounceTimeMs to fire
+            Thread.sleep(debounceTimeMs + 5000);
 
             // Check the results
             if (!listener.getResult().eventOccurred) {
