@@ -254,7 +254,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                         // timeout happened, process pending debounced event if any
                         if (lastDebouncedEvent != null && debounceNs > 0) {
                             long currentTimeNs = System.nanoTime();
-                            if (currentTimeNs - lastDebouncedEvent.timestampNs() >= debounceNs) {
+                            if (currentTimeNs - lastDebouncedEvent.timestampInNanos() >= debounceNs) {
                                 eventList.add(lastDebouncedEvent);
                                 eventProcessor.process(eventList);
                                 eventList.clear();
@@ -276,7 +276,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                         var buf = file.read(fd, new byte[16 * eventSize], 16 * eventSize);
                         var holder = new byte[eventSize];
                         for (int i = 0; i < 16 * LineEvent.LAYOUT.byteSize(); i += eventSize) {
-                            // check if timestamp is 0, then there is no event present, we can skip
+                            // check if timestampInNanos is 0, then there is no event present, we can skip
                             if (buf[i] == 0) {
                                 continue;
                             }
@@ -301,7 +301,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                                         lastDebouncedState = pinEvent;
                                         logger.trace("{} - Starting debounce period for {}", Thread.currentThread().getName(), pinEvent);
                                     } else {
-                                        long timeSinceLastEventNs = detectedEvent.timestampNs() - lastDebouncedEvent.timestampNs();
+                                        long timeSinceLastEventNs = detectedEvent.timestampInNanos() - lastDebouncedEvent.timestampInNanos();
 
                                         if (timeSinceLastEventNs < debounceNs) {
                                             // Event within debounce period - update to latest event and reset timer
