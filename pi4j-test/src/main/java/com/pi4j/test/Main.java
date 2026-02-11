@@ -37,7 +37,7 @@ import java.util.List;
  */
 public class Main {
 
-    private static Logger logger ;
+    private static Logger logger;
 
     /**
      * The entry point for the application. This method processes command-line
@@ -47,11 +47,11 @@ public class Main {
      * @param args Command-line arguments for the application. Accepted parameters:
      *             - "-p <provider>": Specifies the test provider, either "newautocontext", "linuxfs" or "ffm".
      *             - "-h": Displays help information and exits the application.
-     * @throws Exception If an error occurs during the execution of the application.
      */
-    public static void main(String[] args) throws Exception {
-
-        System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
+    public static void main(String[] args) {
+        // Use the line below if you want to store the output of the smoke test in a file
+        // System.setProperty(org.slf4j.simple.SimpleLogger.LOG_FILE_KEY, "trace.log");
+        System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
         logger = LoggerFactory.getLogger(Main.class);
 
         logger.info("==============================================================");
@@ -98,7 +98,9 @@ public class Main {
             PWMTestCase.run(providerContext, 1, 50, 10),
             DigitalInputTestCase.run(providerContext),
             DigitalOutputTestCase.run(providerContext),
-            DigitalDebounceTestCase.run(providerContext)
+            // DigitalInputDebounceMonitorTestCase.run(providerContext), // This test needs a Logic Analyzer
+            DigitalInputDebounceTimeTestCase.run(providerContext),
+            DigitalInputDebounceCountTestCase.run(providerContext)
         );
 
         // Output results

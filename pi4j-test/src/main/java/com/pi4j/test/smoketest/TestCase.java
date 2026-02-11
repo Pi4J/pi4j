@@ -5,6 +5,9 @@ import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.digital.PullResistance;
+import org.slf4j.Logger;
+
+import java.util.Scanner;
 
 public class TestCase {
 
@@ -25,5 +28,15 @@ public class TestCase {
             .initial(initial)
             .shutdown(shutDown);
         return pi4j.create(outputConfig3);
+    }
+
+    protected static int waitForInput(Logger logger, String msg) {
+        int rval = 0;
+        Scanner scan = new Scanner(System.in);
+
+        logger.info(msg);
+        rval = Integer.parseInt(scan.next());
+
+        return (rval);
     }
 }

@@ -27,13 +27,13 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
     private final FileDescriptorNative file = new FileDescriptorNative();
 
     private final String deviceName;
-    private final int pin;
+    private final int bcm;
     private int chipFileDescriptor;
     private boolean closed = false;
 
     public FFMDigitalOutput(String chipName, DigitalOutputProvider provider, DigitalOutputConfig config) {
         super(provider, config);
-        this.pin = config.bcm();
+        this.bcm = config.bcm();
         this.deviceName = "/dev/gpiochip" + config.bus();
         FFMPermissionHelper.checkDevicePermissions(deviceName, config);
     }
@@ -47,27 +47,27 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
                 logger.error("Please, read the documentation <link> to setup right permissions.");
                 throw new InitializeException("Device '" + deviceName + "' cannot be accessed with current user.");
             }
-            logger.info("{}-{} - setting up DigitalOutput Pin...", deviceName, pin);
-            logger.trace("{}-{} - opening device file.", deviceName, pin);
+            logger.info("{}-{} - setting up DigitalOutput BCM...", deviceName, bcm);
+            logger.trace("{}-{} - opening device file.", deviceName, bcm);
             var fd = file.open(deviceName, FileFlag.O_RDONLY | FileFlag.O_CLOEXEC);
-            var lineInfo = new LineInfo(new byte[]{}, new byte[]{}, pin, 0, 0, new LineAttribute[]{});
-            logger.trace("{}-{} - getting line info.", deviceName, pin);
+            var lineInfo = new LineInfo(new byte[]{}, new byte[]{}, bcm, 0, 0, new LineAttribute[]{});
+            logger.trace("{}-{} - getting line info.", deviceName, bcm);
             lineInfo = ioctl.call(fd, Command.getGpioV2GetLineInfoIoctl(), lineInfo);
             if ((lineInfo.flags() & PinFlag.USED.getValue()) > 0) {
                 this.shutdownInternal(context());
-                throw new InitializeException("Pin " + pin + " is in use");
+                throw new InitializeException("BCM " + bcm + " is in use");
             }
-            logger.trace("{}-{} - DigitalOutput Pin line info: {}", deviceName, pin, lineInfo);
+            logger.trace("{}-{} - DigitalOutput BCM line info: {}", deviceName, bcm, lineInfo);
             var flags = PinFlag.OUTPUT.getValue();
             var lineConfig = new LineConfig(flags, 0, new LineConfigAttribute[]{});
-            var lineRequest = new LineRequest(new int[]{pin}, ("pi4j." + getClass().getSimpleName()).getBytes(), lineConfig, 1, 0, 0);
+            var lineRequest = new LineRequest(new int[]{bcm}, ("pi4j." + getClass().getSimpleName()).getBytes(), lineConfig, 1, 0, 0);
             var result = ioctl.call(fd, Command.getGpioV2GetLineIoctl(), lineRequest);
             this.chipFileDescriptor = result.fd();
 
             file.close(fd);
-            logger.info("{}-{} - DigitalOutput Pin configured: {}", deviceName, pin, result);
+            logger.info("{}-{} - DigitalOutput BCM configured: {}", deviceName, bcm, result);
         } catch (java.io.IOException e) {
-            logger.error("{}-{} - DigitalOutput Pin Initialization error: {}", deviceName, pin, e.getMessage());
+            logger.error("{}-{} - DigitalOutput BCM Initialization error: {}", deviceName, bcm, e.getMessage());
             throw new InitializeException(e);
         }
         return super.initialize(context);
@@ -76,7 +76,7 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
     @Override
     public DigitalOutput shutdownInternal(Context context) throws ShutdownException {
         super.shutdownInternal(context);
-        logger.info("{}-{} - closing GPIO Pin.", deviceName, pin);
+        logger.info("{}-{} - closing GPIO BCM.", deviceName, bcm);
         try {
             if (chipFileDescriptor > 0) {
                 file.close(chipFileDescriptor);
@@ -86,14 +86,14 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
             throw new ShutdownException(e);
         }
         this.closed = true;
-        logger.info("{}-{} - GPIO Pin is closed. Recreate the pin object to reuse.", deviceName, pin);
+        logger.info("{}-{} - GPIO BCM is closed. Recreate the pin object to reuse.", deviceName, bcm);
         return this;
     }
 
     @Override
     public DigitalOutput state(DigitalState state) throws IOException {
         checkClosed();
-        logger.trace("{}-{} - writing GPIO Pin {}.", deviceName, pin, state);
+        logger.trace("{}-{} - writing GPIO BCM {}.", deviceName, bcm, state);
         var lineValues = new LineValues(state.getValue().intValue(), 1);
         try {
             ioctl.call(chipFileDescriptor, Command.getGpioV2SetValuesIoctl(), lineValues);
@@ -108,7 +108,7 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
      */
     private void checkClosed() {
         if (closed) {
-            throw new Pi4JException("Pin " + pin + " is closed");
+            throw new Pi4JException("BCM " + bcm + " is closed");
         }
     }
 
