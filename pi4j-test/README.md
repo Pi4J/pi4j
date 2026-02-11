@@ -61,7 +61,6 @@ but your sensor may use different letter designations. Also, the are BMP sensors
 | Gnd     | 9      |  -  | Black     | Gnd        |
 | SDA     | 3      |  2  | Orange    | SDA        |
 | SCL     | 5      |  3  | Yellow    | SCK or SCL |
-| 3.3v    | 1      |  -  | Red       | CS         |
 
 **SPI** connection using 4-wire SPI
 
