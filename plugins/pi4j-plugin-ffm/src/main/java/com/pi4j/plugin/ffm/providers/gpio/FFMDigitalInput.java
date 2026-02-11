@@ -215,6 +215,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         private final int fd;
         private final PinEvent pinEvent;
         private final PinEventProcessing eventProcessor;
+        private final long debounceNs;
 
         private boolean stopWatching = false;
 
@@ -228,6 +229,8 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             this.fd = fd;
             this.pinEvent = pinEvent;
             this.eventProcessor = eventProcessor;
+            // Convert microseconds to nanoseconds for software debounce
+            this.debounceNs = debounce * 1000L;
         }
 
         @Override
@@ -235,6 +238,8 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             var eventSize = (int) LineEvent.LAYOUT.byteSize();
             var timestamp = Instant.now();
             List<DetectedEvent> eventList = new ArrayList<>();
+            DetectedEvent lastDebouncedEvent = null;
+            PinEvent lastDebouncedState = null;
             logger.trace("{} - Start polling GPIO Pin data at {}", Thread.currentThread().getName(), timestamp);
             while (!stopWatching) {
                 try {
@@ -246,9 +251,16 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                     if (pollData == null) {
                         var duration = timestamp.until(Instant.now()).toMillis();
                         logger.trace("{} - No events detected: polling timeout at {} (took {}ms)", Thread.currentThread().getName(), timestamp, duration);
-                        // timeout happened, process all left events, update timestamp
-                        eventProcessor.process(eventList);
-                        eventList.clear();
+                        // timeout happened, process pending debounced event if any
+                        if (lastDebouncedEvent != null && debounceNs > 0) {
+                            long currentTimeNs = System.nanoTime();
+                            if (currentTimeNs - lastDebouncedEvent.timestampNs() >= debounceNs) {
+                                eventList.add(lastDebouncedEvent);
+                                eventProcessor.process(eventList);
+                                eventList.clear();
+                                lastDebouncedEvent = null;
+                            }
+                        }
                         timestamp = Instant.now();
                         continue;
                     }
@@ -278,13 +290,49 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                             if ((event.id() & this.pinEvent.getValue()) != 0) {
                                 var pinEvent = PinEvent.getByValue(event.id());
                                 logger.trace("{} - Added to event list new state {}", Thread.currentThread().getName(), pinEvent);
-                                eventList.add(new DetectedEvent(event.timestampNs(), pinEvent, event.lineSeqno()));
+
+                                DetectedEvent detectedEvent = new DetectedEvent(event.timestampNs(), pinEvent, event.lineSeqno());
+
+                                // Apply software debounce if configured
+                                if (debounceNs > 0) {
+                                    if (lastDebouncedEvent == null) {
+                                        // First event, start debounce period
+                                        lastDebouncedEvent = detectedEvent;
+                                        lastDebouncedState = pinEvent;
+                                        logger.trace("{} - Starting debounce period for {}", Thread.currentThread().getName(), pinEvent);
+                                    } else {
+                                        long timeSinceLastEventNs = detectedEvent.timestampNs() - lastDebouncedEvent.timestampNs();
+
+                                        if (timeSinceLastEventNs < debounceNs) {
+                                            // Event within debounce period - update to latest event and reset timer
+                                            logger.trace("{} - Event within debounce period ({}ns < {}ns), updating to latest",
+                                                Thread.currentThread().getName(), timeSinceLastEventNs, debounceNs);
+                                            lastDebouncedEvent = detectedEvent;
+                                            lastDebouncedState = pinEvent;
+                                        } else {
+                                            // Debounce period passed - dispatch previous event and start new debounce
+                                            logger.trace("{} - Debounce period passed ({}ns >= {}ns), dispatching event",
+                                                Thread.currentThread().getName(), timeSinceLastEventNs, debounceNs);
+                                            // Only dispatch if state actually changed
+                                            if (lastDebouncedState != null) {
+                                                eventList.add(lastDebouncedEvent);
+                                            }
+                                            lastDebouncedEvent = detectedEvent;
+                                            lastDebouncedState = pinEvent;
+                                        }
+                                    }
+                                } else {
+                                    // No debounce configured - add event directly
+                                    eventList.add(detectedEvent);
+                                }
                             }
                         }
                         logger.trace("{} - Total events: {}", Thread.currentThread().getName(), eventList.size());
-                        // process by number of events
-                        eventProcessor.process(eventList);
-                        eventList.clear();
+                        // process events that have passed debounce
+                        if (!eventList.isEmpty()) {
+                            eventProcessor.process(eventList);
+                            eventList.clear();
+                        }
                         logger.trace("{} - Total processing took {}ms", Thread.currentThread().getName(), timestamp.until(Instant.now()).toMillis());
                         timestamp = Instant.now();
                     }
