@@ -48,6 +48,11 @@ Buying examples:
 * [Amazon: BME280, 3-pack](https://www.amazon.com.be/dp/B08BC2NGVV?ref=ppx_yo2ov_dt_b_fed_asin_title)
 * [Sparkfun: BME280](https://www.sparkfun.com/sparkfun-atmospheric-sensor-breakout-bme280.html)
 
+### Datasheets
+https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp280-ds001.pdf
+
+https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme280-ds002.pdf
+
 ### Sensor Wiring
 
 The I2C and SPI BMP280 charts refers to connection points on the breakout board
@@ -55,12 +60,18 @@ but your sensor may use different letter designations. Also, the are BMP sensors
 
 **I2C**
 
-| RPi Pin | Number | BCM | Color     | Sensor     |
-|:--------|:------:|:---:|:----------|:-----------|
-| 3.3V    | 1      |  -  | Red       | Vin or Vcc or 3.3V        |
-| Gnd     | 9      |  -  | Black     | Gnd        |
-| SDA     | 3      |  2  | Orange    | SDA        |
-| SCL     | 5      |  3  | Yellow    | SCK or SCL |
+* **Note1**  3.3v connection to CS. If the sensor supports both the SPI and I2C interface, the CS pin controls 
+ the I2C interface enablement. From the datasheet: 
+  _**Interface selection is done automatically based on CSB (chip select) status. If CSB is connected
+  to VDDIO, the I²C interface is active.**_
+
+| RPi Pin | Number | BCM | Color     | Sensor             |
+|:--------|:------:|:---:|:----------|:-------------------|
+| 3.3V    | 1      |  -  | Red       | Vin or Vcc or 3.3V |
+| Gnd     | 9      |  -  | Black     | Gnd                |
+| SDA     | 3      |  2  | Orange    | SDA                |
+| SCL     | 5      |  3  | Yellow    | SCK or SCL         |
+| 3.3v    | 1      |  -  | Red       | CS    (see Note1)  |   
 
 **SPI** connection using 4-wire SPI
 
