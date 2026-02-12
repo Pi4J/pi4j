@@ -55,12 +55,18 @@ but your sensor may use different letter designations. Also, the are BMP sensors
 
 **I2C**
 
-| RPi Pin | Number | BCM | Color     | Sensor     |
-|:--------|:------:|:---:|:----------|:-----------|
-| 3.3V    | 1      |  -  | Red       | Vin or Vcc or 3.3V        |
-| Gnd     | 9      |  -  | Black     | Gnd        |
-| SDA     | 3      |  2  | Orange    | SDA        |
-| SCL     | 5      |  3  | Yellow    | SCK or SCL |
+* **Note1**  3.3v connection to CS. If the sensor supports both the SPI and I2C interface, the CS pin controls 
+ the I2C interface enablement. From the datasheet: 
+  _**Interface selection is done automatically based on CSB (chip select) status. If CSB is connected
+  to VDDIO, the I²C interface is active.**_
+
+| RPi Pin | Number | BCM | Color     | Sensor             |
+|:--------|:------:|:---:|:----------|:-------------------|
+| 3.3V    | 1      |  -  | Red       | Vin or Vcc or 3.3V |
+| Gnd     | 9      |  -  | Black     | Gnd                |
+| SDA     | 3      |  2  | Orange    | SDA                |
+| SCL     | 5      |  3  | Yellow    | SCK or SCL         |
+| 3.3v    | 1      |  -  | Red       | CS    (see Note1)  |   
 
 **SPI** connection using 4-wire SPI
 
