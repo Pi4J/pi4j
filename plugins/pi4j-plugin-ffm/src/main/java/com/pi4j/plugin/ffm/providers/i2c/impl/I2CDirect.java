@@ -12,6 +12,8 @@ import com.pi4j.plugin.ffm.common.i2c.rdwr.RDWRData;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CBus;
 
+import java.util.Objects;
+
 public class I2CDirect extends I2CBase<FFMI2CBus> {
     private final IoctlNative ioctl = new IoctlNative();
 
@@ -27,85 +29,33 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
         return super.initialize(context);
     }
 
-    /**
-     * Read data from the I/O device into the provided byte array at the given offset and up to the specified data length (number of bytes).
-     *
-     * @param buffer the buffer to read the data
-     * @param offset position in the buffer for the read data
-     * @param length max data length to be added to the buffer
-     * @return the same buffer instance that was passed in, with read data written to it starting at the specified offset
-     */
     private byte[] internalRead(byte[] buffer, int offset, int length) {
-        if (offset < 0) {
-            throw new IllegalArgumentException("Offset cannot be negative");
-        } else if (offset == 0 && length == buffer.length) {
-            // Direct read into buffer without intermediate allocation
-            var messages = new I2CMessage[]{
-                new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, buffer),
-            };
-            var packets = new RDWRData(messages, 1);
-            return i2CBus.execute(this, i2cFileDescriptor -> {
-                var result = ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
-                var resultBuffer = result.msgs()[0].buf();
-                System.arraycopy(resultBuffer, 0, buffer, 0, length);
-                return buffer;
-            });
-        } else {
-            // Read into an intermediate buffer, then copy to the target offset
-            var readBuffer = new byte[length];
-            var messages = new I2CMessage[]{
-                new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, readBuffer),
-            };
-            var packets = new RDWRData(messages, 1);
-            return i2CBus.execute(this, i2cFileDescriptor -> {
-                var result = ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
-                var resultBuffer = result.msgs()[0].buf();
-                System.arraycopy(resultBuffer, 0, buffer, offset, length);
-                return buffer;
-            });
-        }
+        Objects.checkFromIndexSize(offset, buffer.length, length);
+        var messages = new I2CMessage[]{
+            new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, buffer),
+        };
+        var packets = new RDWRData(messages, 1);
+        return i2CBus.execute(this, i2cFileDescriptor -> {
+            var result = ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
+            var resultBuffer = result.msgs()[0].buf();
+            System.arraycopy(resultBuffer, 0, buffer, offset, length);
+            return buffer;
+        });
     }
 
-    /**
-     * Read data from the I/O device register into the provided byte array at the given offset and up to the specified data length (number of bytes).
-     *
-     * @param register the register address to read from
-     * @param buffer   the buffer to read the data
-     * @param offset   position in the buffer for the read data
-     * @param length   max data length to be added to the buffer
-     * @return the same buffer instance that was passed in, with read data written to it starting at the specified offset
-     */
     private byte[] internalRead(byte[] register, byte[] buffer, int offset, int length) {
-        if (offset < 0) {
-            throw new IllegalArgumentException("Offset cannot be negative");
-        } else if (offset == 0 && length == buffer.length) {
-            // Direct read into buffer without intermediate allocation
-            var messages = new I2CMessage[]{
-                new I2CMessage(config.device(), 0, register.length, register),
-                new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, buffer),
-            };
-            var packets = new RDWRData(messages, 2);
-            return i2CBus.execute(this, i2cFileDescriptor -> {
-                var result = ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
-                var resultBuffer = result.msgs()[1].buf();
-                System.arraycopy(resultBuffer, 0, buffer, 0, length);
-                return buffer;
-            });
-        } else {
-            // Read into an intermediate buffer, then copy to the target offset
-            var readBuffer = new byte[length];
-            var messages = new I2CMessage[]{
-                new I2CMessage(config.device(), 0, register.length, register),
-                new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, readBuffer),
-            };
-            var packets = new RDWRData(messages, 2);
-            return i2CBus.execute(this, i2cFileDescriptor -> {
-                var result = ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
-                var resultBuffer = result.msgs()[1].buf();
-                System.arraycopy(resultBuffer, 0, buffer, offset, length);
-                return buffer;
-            });
-        }
+        Objects.checkFromIndexSize(offset, buffer.length, length);
+        var messages = new I2CMessage[]{
+            new I2CMessage(config.device(), 0, register.length, register),
+            new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, buffer),
+        };
+        var packets = new RDWRData(messages, 2);
+        return i2CBus.execute(this, i2cFileDescriptor -> {
+            var result = ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
+            var resultBuffer = result.msgs()[1].buf();
+            System.arraycopy(resultBuffer, 0, buffer, offset, length);
+            return buffer;
+        });
     }
 
     /**
