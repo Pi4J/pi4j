@@ -94,6 +94,7 @@ public class Main {
         // Run the tests
         var tests = List.of(
             I2CTestCase.run(providerContext),
+            I2CWithOffsetTestCase.run(providerContext),
             SpiTestCase.run(providerContext),
             PWMTestCase.run(providerContext, 1, 50, 10),
             DigitalInputTestCase.run(providerContext),

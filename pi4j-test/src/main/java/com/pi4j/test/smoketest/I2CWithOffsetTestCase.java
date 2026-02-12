@@ -4,17 +4,17 @@ import com.pi4j.io.i2c.I2C;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class I2CTestCase extends TestCase {
+public class I2CWithOffsetTestCase extends TestCase {
 
-    private static final Logger logger = LoggerFactory.getLogger(I2CTestCase.class);
+    private static final Logger logger = LoggerFactory.getLogger(I2CWithOffsetTestCase.class);
 
-    private static final String TEST_NAME = "I2C";
+    private static final String TEST_NAME = "I2C with Offset";
 
     private static final int BMP_I2C_BUS = 1;
     private static final int BMP_I2C_ADDR = 0x76;
 
     public static TestResult run(ProviderContext providerContext) {
-        logger.info("Starting I2C test");
+        logger.info("Starting I2C with offset test");
 
         I2C i2c = null;
 
@@ -31,26 +31,21 @@ public class I2CTestCase extends TestCase {
                 .build();
             i2c = providerContext.getContext().create(i2cDeviceConfig);
 
-            // Read data from 0xD0 and check if the expected value is received
-            byte idFromRead = (byte) i2c.readRegister(0xD0);
-            byte[] wrData = new byte[1];
-            byte[] reg = new byte[1];
-            reg[0] = (byte) (0xD0 & 0xff);
-            i2c.writeThenRead(reg, wrData);
-            byte idFromReadThenWrite = wrData[0];
+            // Read data from 0xD0 with offset parameter
+            byte[] register = new byte[]{0x00, 0x00, (byte) 0xd0};
+            byte[] readData = new byte[7];
+            i2c.writeThenRead(register, 2, 1, 0, readData, 3, 1);
+            byte idFromReadThenWriteWithOffset = readData[3];
 
-            logger.info("Device ID read: 0x{} and 0x{}, expected: 0x{} or 0x{}",
-                Integer.toHexString(idFromRead),
-                Integer.toHexString(idFromReadThenWrite),
+            logger.info("Device ID read with offset: 0x{}, expected: 0x{} or 0x{}",
+                Integer.toHexString(idFromReadThenWriteWithOffset),
                 Integer.toHexString(ID_VALUE_MSK_BMP),
                 Integer.toHexString(ID_VALUE_MSK_BME));
-            if ((idFromRead == idFromReadThenWrite)
-                && (idFromRead == ID_VALUE_MSK_BMP || idFromRead == ID_VALUE_MSK_BME)) {
+            if (idFromReadThenWriteWithOffset == ID_VALUE_MSK_BMP || idFromReadThenWriteWithOffset == ID_VALUE_MSK_BME) {
                 return new TestResult(TEST_NAME, true, "Expected value found");
             } else {
                 return new TestResult(TEST_NAME, false, "Value is not what was expected: "
-                    + Integer.toHexString(idFromRead) + "/"
-                    + Integer.toHexString(idFromReadThenWrite) + "/"
+                    + Integer.toHexString(idFromReadThenWriteWithOffset) + "/"
                     + Integer.toHexString(ID_VALUE_MSK_BMP) + "/"
                     + Integer.toHexString(ID_VALUE_MSK_BME));
             }
