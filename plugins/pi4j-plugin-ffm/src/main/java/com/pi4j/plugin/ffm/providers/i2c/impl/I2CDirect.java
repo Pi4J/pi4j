@@ -30,7 +30,7 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
     }
 
     private byte[] internalRead(byte[] buffer, int offset, int length) {
-        Objects.checkFromIndexSize(offset, buffer.length, length);
+        Objects.checkFromIndexSize(offset, length, buffer.length);
         var messages = new I2CMessage[]{
             new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, buffer),
         };
@@ -44,7 +44,7 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
     }
 
     private byte[] internalRead(byte[] register, byte[] buffer, int offset, int length) {
-        Objects.checkFromIndexSize(offset, buffer.length, length);
+        Objects.checkFromIndexSize(offset, length, buffer.length);
         var messages = new I2CMessage[]{
             new I2CMessage(config.device(), 0, register.length, register),
             new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, buffer),
