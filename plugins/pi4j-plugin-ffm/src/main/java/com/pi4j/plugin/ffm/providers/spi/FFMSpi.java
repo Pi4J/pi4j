@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 public class FFMSpi extends SpiBase implements Spi {
     private static final Logger logger = LoggerFactory.getLogger(FFMSpi.class);
@@ -114,6 +115,9 @@ public class FFMSpi extends SpiBase implements Spi {
 
     @Override
     public void writeThenRead(byte[] write, int writeOffset, int writeLength, int readDelayNanos, byte[] read, int readOffset, int readLength) {
+        Objects.checkFromIndexSize(readOffset, readLength, read.length);
+        Objects.checkFromIndexSize(writeOffset, writeLength, write.length);
+
         var inputBuffer = new SpiTransferBuffer(write, new byte[0], writeLength, readDelayNanos / 1000);
         var outputBuffer = new SpiTransferBuffer(new byte[0], read, readLength, readDelayNanos / 1000);
 

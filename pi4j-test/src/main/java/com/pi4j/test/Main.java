@@ -96,6 +96,8 @@ public class Main {
             I2CTestCase.run(providerContext),
             I2CWithOffsetTestCase.run(providerContext),
             SpiTestCase.run(providerContext),
+            SpiWithOffsetTestCase.run(providerContext),
+           //  SpiWriteReadTestCase.run(providerContext),  // requires logic analyzer verification
             PWMTestCase.run(providerContext, 1, 50, 10),
             DigitalInputTestCase.run(providerContext),
             DigitalOutputTestCase.run(providerContext),
