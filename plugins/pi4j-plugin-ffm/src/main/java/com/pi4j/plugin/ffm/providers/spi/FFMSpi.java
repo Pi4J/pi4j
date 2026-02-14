@@ -20,6 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class FFMSpi extends SpiBase implements Spi {
     private static final Logger logger = LoggerFactory.getLogger(FFMSpi.class);
@@ -114,7 +116,10 @@ public class FFMSpi extends SpiBase implements Spi {
 
     @Override
     public void writeThenRead(byte[] write, int writeOffset, int writeLength, int readDelayNanos, byte[] read, int readOffset, int readLength) {
-        var inputBuffer = new SpiTransferBuffer(write, new byte[0], writeLength, readDelayNanos / 1000);
+        Objects.checkFromIndexSize(readOffset, readLength, read.length);
+        Objects.checkFromIndexSize(writeOffset, writeLength, write.length);
+        byte[] writeData = Arrays.copyOfRange(write, writeOffset, writeLength+writeOffset);
+        var inputBuffer = new SpiTransferBuffer(writeData, new byte[0], writeLength, readDelayNanos / 1000);
         var outputBuffer = new SpiTransferBuffer(new byte[0], read, readLength, readDelayNanos / 1000);
 
         var transferBuffer = new SpiMultipleTransferBuffer(inputBuffer, outputBuffer);
@@ -124,7 +129,9 @@ public class FFMSpi extends SpiBase implements Spi {
 
         transferBuffer = IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(2), transferBuffer);
         var readBytes = transferBuffer.transferBuffer()[1].getRxBuffer();
-        ByteBuffer.wrap(read).put(readBytes);
+      //    ByteBuffer.wrap(read).put(readBytes);
+        System.arraycopy(readBytes, 0, read,  readOffset, readLength);
+
         logger.trace("{} - Read buffer: {}", path, HexFormatter.format(read));
     }
 

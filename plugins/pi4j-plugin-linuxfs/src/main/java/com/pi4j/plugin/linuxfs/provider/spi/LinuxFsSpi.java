@@ -411,7 +411,7 @@ public class LinuxFsSpi extends SpiBase implements Spi {
 
            //    PeerAccessible
       //  Memory writeBuf = peerArray[firstRecord];//new PeerAccessibleMemory(SPI_BUFFSIZ);
-        txBuf.write(0, write, 0, writeLength);
+        txBuf.write(0, write, writeOffset, writeLength);
         spi_ioc_transfer txEntry = transferArray[firstRecord]; //new spi_ioc_transfer();
 
         // set fields in the tx transfer msg

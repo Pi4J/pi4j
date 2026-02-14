@@ -1,3 +1,32 @@
+/*
+ *
+ *
+ *  #%L
+ *  **********************************************************************
+ *  ORGANIZATION  :  Pi4J
+ *  PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
+ *  FILENAME      :  SpiWriteReadTestCase.java
+ *
+ *  This file is part of the Pi4J project. More information about
+ *  this project can be found here:  https://pi4j.com/
+ *  **********************************************************************
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *  #L%
+ *
+ *
+ */
+
 package com.pi4j.test.smoketest;
 
 import com.pi4j.io.spi.Spi;
@@ -6,14 +35,14 @@ import com.pi4j.io.spi.SpiMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SpiTestCase extends TestCase {
+public class SpiWriteReadTestCase   extends TestCase{
 
-    private static final Logger logger = LoggerFactory.getLogger(SpiTestCase.class);
+    private static final Logger logger = LoggerFactory.getLogger(SpiWriteReadTestCase.class);
 
-    private static final String TEST_NAME = "SPI";
+    private static final String TEST_NAME = "SPI Write Read";
 
     public static TestResult run(ProviderContext providerContext) {
-        logger.info("Starting SPI test");
+        logger.info("Starting SPI Write Read test");
 
         Spi spi = null;
 
@@ -35,7 +64,7 @@ public class SpiTestCase extends TestCase {
             Thread.sleep(100);
 
             // Read data from 0xD0 and check if the expected value is received
-             byte idWriteThenRead = readSpiRegisterUsingWriteThenRead(spi, chipId);
+            byte idWriteThenRead = readSpiRegisterUsingWriteRead(spi, chipId);
 
             logger.info("Device ID read: 0x{}, expected: 0x{} or 0x{}",
                 Integer.toHexString(idWriteThenRead),
@@ -57,15 +86,17 @@ public class SpiTestCase extends TestCase {
                 spi.close();
                 providerContext.getContext().registry().remove(spi.id());
             }
-
         }
     }
 
 
-    private static byte readSpiRegisterUsingWriteThenRead(Spi spi, int register) {
-        byte[] data = new byte[]{(byte) (0b10000000 | register)};
-        byte[] value = new byte[1];
-        spi.writeThenRead(data, 0, value);
-        return value[0];
+    private static byte readSpiRegisterUsingWriteRead(Spi spi, int register) {
+        // Read data from 0xD0 with offset parameter
+        byte[] writeData = new byte[]{ 0x00, 0x00, (byte) (0b10000000 | register)};
+        byte[] readData = new byte[7];
+        spi.write(writeData, 2, 1);
+        spi.read(readData, 3, 1);
+        return  readData[3];
+
     }
 }
