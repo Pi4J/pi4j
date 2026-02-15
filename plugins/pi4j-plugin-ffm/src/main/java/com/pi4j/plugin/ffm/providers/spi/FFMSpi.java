@@ -18,8 +18,6 @@ import com.pi4j.plugin.ffm.common.spi.SpiMultipleTransferBuffer;
 import com.pi4j.plugin.ffm.common.spi.SpiTransferBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -80,15 +78,19 @@ public class FFMSpi extends SpiBase implements Spi {
     @Override
     public int transfer(byte[] write, int writeOffset, byte[] read, int readOffset, int numberOfBytes) {
         checkClosed();
+        Objects.checkFromIndexSize(readOffset, numberOfBytes, read.length);
+        Objects.checkFromIndexSize(writeOffset, numberOfBytes, write.length);
+        byte[] writeData = Arrays.copyOfRange(write, writeOffset, numberOfBytes+writeOffset);
+
         logger.trace("{} - Transferring data (length '{}')", path, numberOfBytes);
         if (write != null) {
             logger.trace("{} - Write buffer: {}", path, HexFormatter.format(write));
         }
-        var spiTransfer = new SpiTransferBuffer(write, read, numberOfBytes);
+        var spiTransfer = new SpiTransferBuffer(writeData, read, numberOfBytes);
         spiTransfer = IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(1), spiTransfer);
         var readBytes = spiTransfer.getRxBuffer();
         if (read != null) {
-            ByteBuffer.wrap(read).put(readBytes);
+            System.arraycopy(readBytes, 0, read,  readOffset, numberOfBytes);
             logger.trace("{} - Read buffer: {}", path, HexFormatter.format(read));
         }
         return readBytes.length;
@@ -129,7 +131,6 @@ public class FFMSpi extends SpiBase implements Spi {
 
         transferBuffer = IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(2), transferBuffer);
         var readBytes = transferBuffer.transferBuffer()[1].getRxBuffer();
-      //    ByteBuffer.wrap(read).put(readBytes);
         System.arraycopy(readBytes, 0, read,  readOffset, readLength);
 
         logger.trace("{} - Read buffer: {}", path, HexFormatter.format(read));
@@ -142,14 +143,14 @@ public class FFMSpi extends SpiBase implements Spi {
 
     @Override
     public int read(byte[] buffer, int offset, int length) {
-        return transfer(null, 0, buffer, offset, length);
+        return transfer(new byte[length], 0, buffer, offset, length);
     }
 
 
     @Override
     public byte readByte() {
         var buffer = new byte[1];
-        transfer(null, 0, buffer, 0, 1);
+        transfer(new byte[1], 0, buffer, 0, 1);
         return buffer[0];
     }
 
