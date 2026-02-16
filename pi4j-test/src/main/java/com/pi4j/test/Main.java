@@ -97,7 +97,7 @@ public class Main {
             I2CWithOffsetTestCase.run(providerContext),
             SpiTestCase.run(providerContext),
             SpiWithOffsetTestCase.run(providerContext),
-         //   SpiWriteReadTestCase.run(providerContext), // requires manual CS across write/read operation
+            //SpiWriteReadTestCase.run(providerContext), // requires manual CS across write/read operation
             PWMTestCase.run(providerContext, 1, 50, 10),
             DigitalInputTestCase.run(providerContext),
             DigitalOutputTestCase.run(providerContext),

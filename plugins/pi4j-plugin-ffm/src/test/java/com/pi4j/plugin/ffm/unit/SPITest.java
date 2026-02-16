@@ -138,7 +138,6 @@ public class SPITest {
         });
         try (var _ = FileDescriptorNativeMock.echo();
              var _ = IoctlNativeMock.echo(spiTestData)) {
-
             var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
                 .bus(SpiBus.BUS_0)
                 .channel(4)
