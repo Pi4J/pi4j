@@ -18,6 +18,7 @@ import com.pi4j.plugin.ffm.common.spi.SpiMultipleTransferBuffer;
 import com.pi4j.plugin.ffm.common.spi.SpiTransferBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -37,6 +38,9 @@ public class FFMSpi extends SpiBase implements Spi {
         FFMPermissionHelper.checkDevicePermissions(path, config);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Spi initialize(Context context) throws InitializeException {
         super.initialize(context);
@@ -69,18 +73,24 @@ public class FFMSpi extends SpiBase implements Spi {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Spi shutdownInternal(Context context) throws ShutdownException {
         FILE.close(spiFileDescriptor);
         return super.shutdownInternal(context);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int transfer(byte[] write, int writeOffset, byte[] read, int readOffset, int numberOfBytes) {
         checkClosed();
         Objects.checkFromIndexSize(readOffset, numberOfBytes, read.length);
         Objects.checkFromIndexSize(writeOffset, numberOfBytes, write.length);
-        byte[] writeData = Arrays.copyOfRange(write, writeOffset, numberOfBytes+writeOffset);
+        byte[] writeData = Arrays.copyOfRange(write, writeOffset, numberOfBytes + writeOffset);
 
         logger.trace("{} - Transferring data (length '{}')", path, numberOfBytes);
         if (write != null) {
@@ -90,37 +100,52 @@ public class FFMSpi extends SpiBase implements Spi {
         spiTransfer = IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(1), spiTransfer);
         var readBytes = spiTransfer.getRxBuffer();
         if (read != null) {
-            System.arraycopy(readBytes, 0, read,  readOffset, numberOfBytes);
+            System.arraycopy(readBytes, 0, read, readOffset, numberOfBytes);
             logger.trace("{} - Read buffer: {}", path, HexFormatter.format(read));
         }
         return readBytes.length;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int write(byte data) {
         return write(new byte[]{data}, 0, 1);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int write(byte[] data, int offset, int length) {
         return transfer(data, offset, new byte[data.length], 0, length);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeThenRead(byte[] write, byte[] read) {
         writeThenRead(write, 0, write.length, 0, read, 0, read.length);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeThenRead(byte[] write, int readDelayNanos, byte[] read) {
         writeThenRead(write, 0, write.length, readDelayNanos, read, 0, read.length);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeThenRead(byte[] write, int writeOffset, int writeLength, int readDelayNanos, byte[] read, int readOffset, int readLength) {
         Objects.checkFromIndexSize(readOffset, readLength, read.length);
         Objects.checkFromIndexSize(writeOffset, writeLength, write.length);
-        byte[] writeData = Arrays.copyOfRange(write, writeOffset, writeLength+writeOffset);
+        byte[] writeData = Arrays.copyOfRange(write, writeOffset, writeLength + writeOffset);
         var inputBuffer = new SpiTransferBuffer(writeData, new byte[0], writeLength, readDelayNanos / 1000);
         var outputBuffer = new SpiTransferBuffer(new byte[0], read, readLength, readDelayNanos / 1000);
 
@@ -131,22 +156,30 @@ public class FFMSpi extends SpiBase implements Spi {
 
         transferBuffer = IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(2), transferBuffer);
         var readBytes = transferBuffer.transferBuffer()[1].getRxBuffer();
-        System.arraycopy(readBytes, 0, read,  readOffset, readLength);
+        System.arraycopy(readBytes, 0, read, readOffset, readLength);
 
         logger.trace("{} - Read buffer: {}", path, HexFormatter.format(read));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read() {
         return readByte();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read(byte[] buffer, int offset, int length) {
         return transfer(new byte[length], 0, buffer, offset, length);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public byte readByte() {
         var buffer = new byte[1];
