@@ -106,6 +106,16 @@ public class Main {
             DigitalInputDebounceCountTestCase.run(providerContext)
         );
 
+        // Overall results
+        logger.info("");
+        logger.info("==============================================================");
+        logger.info("Test Results:");
+        logger.info("\tTotal Tests: {}", tests.size());
+        logger.info("\tPassed: {}", tests.stream().filter(TestResult::success).count());
+        logger.info("\tFailed: {}", tests.stream().filter(t -> !t.success()).count());
+        logger.info("==============================================================");
+        logger.info("");
+
         // Output results
         tests.forEach(t -> logger.info(t.getLogOutput()));
 
