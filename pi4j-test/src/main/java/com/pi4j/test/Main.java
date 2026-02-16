@@ -117,7 +117,7 @@ public class Main {
         logger.info("");
 
         // Output results
-        tests.forEach(t -> logger.info(t.log(logger)));
+        tests.forEach(t -> t.log(logger));
 
         providerContext.getContext().shutdown();
     }
