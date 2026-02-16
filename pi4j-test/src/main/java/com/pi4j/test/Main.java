@@ -109,7 +109,7 @@ public class Main {
         // Overall results
         logger.info("");
         logger.info("==============================================================");
-        logger.info("Test Results:");
+        logger.info("Test results with {}:", providerContext.getTestProvider().name());
         logger.info("\tTotal Tests: {}", tests.size());
         logger.info("\tPassed: {}", tests.stream().filter(TestResult::success).count());
         logger.info("\tFailed: {}", tests.stream().filter(t -> !t.success()).count());
@@ -117,7 +117,7 @@ public class Main {
         logger.info("");
 
         // Output results
-        tests.forEach(t -> logger.info(t.getLogOutput()));
+        tests.forEach(t -> logger.info(t.log(logger)));
 
         providerContext.getContext().shutdown();
     }
