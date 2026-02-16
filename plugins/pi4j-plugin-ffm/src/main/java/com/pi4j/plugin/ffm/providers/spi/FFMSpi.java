@@ -90,7 +90,7 @@ public class FFMSpi extends SpiBase implements Spi {
         checkClosed();
         Objects.checkFromIndexSize(readOffset, numberOfBytes, read.length);
         Objects.checkFromIndexSize(writeOffset, numberOfBytes, write.length);
-        byte[] writeData = Arrays.copyOfRange(write, writeOffset, numberOfBytes + writeOffset);
+        var writeData = Arrays.copyOfRange(write, writeOffset, numberOfBytes + writeOffset);
 
         logger.trace("{} - Transferring data (length '{}')", path, numberOfBytes);
         if (write != null) {
@@ -145,7 +145,7 @@ public class FFMSpi extends SpiBase implements Spi {
     public void writeThenRead(byte[] write, int writeOffset, int writeLength, int readDelayNanos, byte[] read, int readOffset, int readLength) {
         Objects.checkFromIndexSize(readOffset, readLength, read.length);
         Objects.checkFromIndexSize(writeOffset, writeLength, write.length);
-        byte[] writeData = Arrays.copyOfRange(write, writeOffset, writeLength + writeOffset);
+        var writeData = Arrays.copyOfRange(write, writeOffset, writeLength + writeOffset);
         var inputBuffer = new SpiTransferBuffer(writeData, new byte[0], writeLength, readDelayNanos / 1000);
         var outputBuffer = new SpiTransferBuffer(new byte[0], read, readLength, readDelayNanos / 1000);
 
