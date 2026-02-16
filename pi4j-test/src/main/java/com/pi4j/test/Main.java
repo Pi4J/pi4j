@@ -96,16 +96,28 @@ public class Main {
             I2CTestCase.run(providerContext),
             I2CWithOffsetTestCase.run(providerContext),
             SpiTestCase.run(providerContext),
+            SpiWithOffsetTestCase.run(providerContext),
+            //SpiWriteReadTestCase.run(providerContext), // requires manual CS across write/read operation
             PWMTestCase.run(providerContext, 1, 50, 10),
             DigitalInputTestCase.run(providerContext),
             DigitalOutputTestCase.run(providerContext),
-            // DigitalInputDebounceMonitorTestCase.run(providerContext), // This test needs a Logic Analyzer
+            //DigitalInputDebounceMonitorTestCase.run(providerContext), // This test needs a Logic Analyzer
             DigitalInputDebounceTimeTestCase.run(providerContext),
             DigitalInputDebounceCountTestCase.run(providerContext)
         );
 
+        // Overall results
+        logger.info("");
+        logger.info("==============================================================");
+        logger.info("Test results with {}:", providerContext.getTestProvider().name());
+        logger.info("\tTotal Tests: {}", tests.size());
+        logger.info("\tPassed: {}", tests.stream().filter(TestResult::success).count());
+        logger.info("\tFailed: {}", tests.stream().filter(t -> !t.success()).count());
+        logger.info("==============================================================");
+        logger.info("");
+
         // Output results
-        tests.forEach(t -> logger.info(t.getLogOutput()));
+        tests.forEach(t -> t.log(logger));
 
         providerContext.getContext().shutdown();
     }

@@ -19,7 +19,8 @@ import com.pi4j.plugin.ffm.common.spi.SpiTransferBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class FFMSpi extends SpiBase implements Spi {
     private static final Logger logger = LoggerFactory.getLogger(FFMSpi.class);
@@ -37,6 +38,9 @@ public class FFMSpi extends SpiBase implements Spi {
         FFMPermissionHelper.checkDevicePermissions(path, config);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Spi initialize(Context context) throws InitializeException {
         super.initialize(context);
@@ -69,52 +73,80 @@ public class FFMSpi extends SpiBase implements Spi {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Spi shutdownInternal(Context context) throws ShutdownException {
         FILE.close(spiFileDescriptor);
         return super.shutdownInternal(context);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int transfer(byte[] write, int writeOffset, byte[] read, int readOffset, int numberOfBytes) {
         checkClosed();
+        Objects.checkFromIndexSize(readOffset, numberOfBytes, read.length);
+        Objects.checkFromIndexSize(writeOffset, numberOfBytes, write.length);
+        var writeData = Arrays.copyOfRange(write, writeOffset, numberOfBytes + writeOffset);
+
         logger.trace("{} - Transferring data (length '{}')", path, numberOfBytes);
         if (write != null) {
             logger.trace("{} - Write buffer: {}", path, HexFormatter.format(write));
         }
-        var spiTransfer = new SpiTransferBuffer(write, read, numberOfBytes);
+        var spiTransfer = new SpiTransferBuffer(writeData, read, numberOfBytes);
         spiTransfer = IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(1), spiTransfer);
         var readBytes = spiTransfer.getRxBuffer();
         if (read != null) {
-            ByteBuffer.wrap(read).put(readBytes);
+            System.arraycopy(readBytes, 0, read, readOffset, numberOfBytes);
             logger.trace("{} - Read buffer: {}", path, HexFormatter.format(read));
         }
         return readBytes.length;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int write(byte data) {
         return write(new byte[]{data}, 0, 1);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int write(byte[] data, int offset, int length) {
         return transfer(data, offset, new byte[data.length], 0, length);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeThenRead(byte[] write, byte[] read) {
         writeThenRead(write, 0, write.length, 0, read, 0, read.length);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeThenRead(byte[] write, int readDelayNanos, byte[] read) {
         writeThenRead(write, 0, write.length, readDelayNanos, read, 0, read.length);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeThenRead(byte[] write, int writeOffset, int writeLength, int readDelayNanos, byte[] read, int readOffset, int readLength) {
-        var inputBuffer = new SpiTransferBuffer(write, new byte[0], writeLength, readDelayNanos / 1000);
+        Objects.checkFromIndexSize(readOffset, readLength, read.length);
+        Objects.checkFromIndexSize(writeOffset, writeLength, write.length);
+        var writeData = Arrays.copyOfRange(write, writeOffset, writeLength + writeOffset);
+        var inputBuffer = new SpiTransferBuffer(writeData, new byte[0], writeLength, readDelayNanos / 1000);
         var outputBuffer = new SpiTransferBuffer(new byte[0], read, readLength, readDelayNanos / 1000);
 
         var transferBuffer = new SpiMultipleTransferBuffer(inputBuffer, outputBuffer);
@@ -124,25 +156,34 @@ public class FFMSpi extends SpiBase implements Spi {
 
         transferBuffer = IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(2), transferBuffer);
         var readBytes = transferBuffer.transferBuffer()[1].getRxBuffer();
-        ByteBuffer.wrap(read).put(readBytes);
+        System.arraycopy(readBytes, 0, read, readOffset, readLength);
+
         logger.trace("{} - Read buffer: {}", path, HexFormatter.format(read));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read() {
         return readByte();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read(byte[] buffer, int offset, int length) {
-        return transfer(null, 0, buffer, offset, length);
+        return transfer(new byte[length], 0, buffer, offset, length);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public byte readByte() {
         var buffer = new byte[1];
-        transfer(null, 0, buffer, 0, 1);
+        transfer(new byte[1], 0, buffer, 0, 1);
         return buffer[0];
     }
 

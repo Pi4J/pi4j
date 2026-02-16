@@ -133,12 +133,11 @@ public class SPITest {
         var spiTestData = new IoctlNativeMock.IoctlTestData(SpiMultipleTransferBuffer.class, (answer) -> {
             SpiMultipleTransferBuffer buffer = answer.getArgument(2);
             var inputBuffer = buffer.transferBuffer()[0];
-            var outputBuffer =  buffer.transferBuffer()[1];
+            var outputBuffer = buffer.transferBuffer()[1];
             return new SpiMultipleTransferBuffer(inputBuffer, new SpiTransferBuffer(outputBuffer.getTxBuffer(), inputBuffer.getTxBuffer(), outputBuffer.getTxBuffer().length, 1000));
         });
         try (var _ = FileDescriptorNativeMock.echo();
              var _ = IoctlNativeMock.echo(spiTestData)) {
-
             var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
                 .bus(SpiBus.BUS_0)
                 .channel(4)
@@ -146,7 +145,7 @@ public class SPITest {
                 .baud(50_000)
                 .build());
             var buffer = new byte[4];
-            spi.writeThenRead("Test".getBytes(), 0, 4, 500, buffer, 4, 0);
+            spi.writeThenRead("Test".getBytes(), 0, 4, 500, buffer, 0, 4);
             assertEquals(4, buffer.length);
             assertArrayEquals("Test".getBytes(), buffer);
         }
