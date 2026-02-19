@@ -1,5 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.1.0 http://maven.apache.org/xsd/maven-4.1.0.xsd" root="true">
-    <modelVersion>4.1.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.pi4j</groupId>
     <artifactId>pi4j-parent</artifactId>
@@ -261,12 +262,12 @@
 
         <!-- SPECIAL ACCESS PROPERTIES -->
         <!-- These are only used by project committer/publisher -->
-        <pi4j.aws.access.key />
-        <pi4j.aws.secret.key />
+        <pi4j.aws.access.key></pi4j.aws.access.key>
+        <pi4j.aws.secret.key></pi4j.aws.secret.key>
         <pi4j.gpg.sign>false</pi4j.gpg.sign>
-        <pi4j.gpg.key />
-        <pi4j.gpg.keyring />
-        <pi4j.gpg.passphrase />
+        <pi4j.gpg.key></pi4j.gpg.key>
+        <pi4j.gpg.keyring></pi4j.gpg.keyring>
+        <pi4j.gpg.passphrase></pi4j.gpg.passphrase>
         <gpg.keyname>${pi4j.gpg.key}</gpg.keyname>
 
         <!-- Project Properties -->
@@ -280,7 +281,7 @@
         <raspberrypi.username>pi</raspberrypi.username>
         <raspberrypi.password>raspberry</raspberrypi.password>
         <raspberrypi.deploydirectory>/home/pi/deploy</raspberrypi.deploydirectory>
-        <raspberrypi.jvmOptions />
+        <raspberrypi.jvmOptions/>
     </properties>
 
     <!-- PROJECT DEPENDENCIES -->
@@ -421,7 +422,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
-                        <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory" />
+                        <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
                         <excludes>
                             <exclude>**/*UsingTestHarness.java</exclude>
                         </excludes>

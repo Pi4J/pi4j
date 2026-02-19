@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.1.0 https://maven.apache.org/xsd/maven-4.1.0.xsd">
-    <modelVersion>4.1.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
     <!-- MAVEN PARENT POM -->
     <parent>
@@ -112,20 +114,26 @@
                         </goals>
                         <configuration>
                             <target>
-                                <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="maven.plugin.classpath" />
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+                                         classpathref="maven.plugin.classpath"/>
                                 <if>
-                                    <equals arg1="${pi4j.dev.transfer}" arg2="true" />
+                                    <equals arg1="${pi4j.dev.transfer}" arg2="true"/>
                                     <then>
                                         <!-- ensure the target directory exists on the Raspberry Pi -->
-                                        <sshexec host="${pi4j.dev.host}" port="${pi4j.dev.port}" username="${pi4j.dev.user}" password="${pi4j.dev.password}" trust="true" failonerror="false" verbose="false" command="mkdir --parents ${pi4j.dev.directory}" />
+                                        <sshexec host="${pi4j.dev.host}" port="${pi4j.dev.port}"
+                                                 username="${pi4j.dev.user}"
+                                                 password="${pi4j.dev.password}" trust="true" failonerror="false"
+                                                 verbose="false" command="mkdir --parents ${pi4j.dev.directory}"/>
 
                                         <!-- copy the JAR file(s) to the Raspberry Pi -->
-                                        <scp todir="${pi4j.dev.user}:${pi4j.dev.password}@${pi4j.dev.host}:${pi4j.dev.directory}" port="${pi4j.dev.port}" trust="true" verbose="false" failonerror="true">
+                                        <scp
+                                            todir="${pi4j.dev.user}:${pi4j.dev.password}@${pi4j.dev.host}:${pi4j.dev.directory}"
+                                            port="${pi4j.dev.port}" trust="true" verbose="false" failonerror="true">
                                             <fileset dir="${project.build.directory}">
-                                                <include name="${project.build.finalName}.jar" />
+                                                <include name="${project.build.finalName}.jar"/>
                                             </fileset>
                                             <fileset dir="${project.build.directory}/dependencies">
-                                                <include name="*.jar" />
+                                                <include name="*.jar"/>
                                             </fileset>
                                         </scp>
                                     </then>

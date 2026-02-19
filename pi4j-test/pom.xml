@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.1.0 https://maven.apache.org/xsd/maven-4.1.0.xsd">
-    <modelVersion>4.1.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
     <!-- MAVEN PARENT POM -->
     <parent>
@@ -208,18 +210,32 @@
                                 <configuration>
                                     <target>
                                         <!-- Stop all running Java processes -->
-                                        <sshexec host="${raspberrypi.ipnumber}" port="${raspberrypi.port}" username="${raspberrypi.username}" password="${raspberrypi.password}" trust="true" failonerror="false" usepty="true" useSystemIn="false" suppresssystemerr="true" suppresssystemout="true" command="sudo killall -9 java" />
+                                        <sshexec host="${raspberrypi.ipnumber}" port="${raspberrypi.port}"
+                                                 username="${raspberrypi.username}" password="${raspberrypi.password}"
+                                                 trust="true"
+                                                 failonerror="false" usepty="true" useSystemIn="false"
+                                                 suppresssystemerr="true" suppresssystemout="true"
+                                                 command="sudo killall -9 java"/>
 
                                         <!-- Ensure target directory exists on raspberrypi -->
-                                        <sshexec host="${raspberrypi.ipnumber}" port="${raspberrypi.port}" username="${raspberrypi.username}" password="${raspberrypi.password}" trust="true" command="mkdir --parents ${raspberrypi.deploydirectory}; rm -f ${raspberrypi.deploydirectory}/*" />
+                                        <sshexec host="${raspberrypi.ipnumber}" port="${raspberrypi.port}"
+                                                 username="${raspberrypi.username}" password="${raspberrypi.password}"
+                                                 trust="true"
+                                                 command="mkdir --parents ${raspberrypi.deploydirectory}; rm -f ${raspberrypi.deploydirectory}/*"/>
 
                                         <!-- Transfer distribution folder to raspberrypi via SCP -->
-                                        <scp trust="true" todir="${raspberrypi.username}:${raspberrypi.password}@${raspberrypi.ipnumber}:${raspberrypi.deploydirectory}" port="${raspberrypi.port}">
-                                            <fileset dir="${project.build.directory}/distribution" />
+                                        <scp trust="true"
+                                             todir="${raspberrypi.username}:${raspberrypi.password}@${raspberrypi.ipnumber}:${raspberrypi.deploydirectory}"
+                                             port="${raspberrypi.port}">
+                                            <fileset dir="${project.build.directory}/distribution"/>
                                         </scp>
 
                                         <!-- Run application on Raspberry Pi -->
-                                        <sshexec host="${raspberrypi.ipnumber}" port="${raspberrypi.port}" username="${raspberrypi.username}" password="${raspberrypi.password}" trust="true" failonerror="false" usepty="true" useSystemIn="true" command="sudo java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 --module-path ${raspberrypi.deploydirectory} --module ${launcher.class} ${launcher.args}" />
+                                        <sshexec host="${raspberrypi.ipnumber}" port="${raspberrypi.port}"
+                                                 username="${raspberrypi.username}" password="${raspberrypi.password}"
+                                                 trust="true"
+                                                 failonerror="false" usepty="true" useSystemIn="true"
+                                                 command="sudo java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 --module-path ${raspberrypi.deploydirectory} --module ${launcher.class} ${launcher.args}"/>
                                     </target>
                                 </configuration>
                             </execution>
