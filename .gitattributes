@@ -14,7 +14,6 @@ postrm          eol=lf
 preinst         eol=lf
 prerm           eol=lf
 
-
 #
 ## These files are binary and should be left untouched
 #
@@ -39,3 +38,4 @@ prerm           eol=lf
 *.woff binary
 *.pyc binary
 *.pdf binary
+*.fzz binary
