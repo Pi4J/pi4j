@@ -58,8 +58,13 @@
             <artifactId>pi4j-plugin-gpiod</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.pi4j</groupId>
+            <artifactId>pi4j-plugin-ffm</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-        <!-- include Pi4J Plugins (Platforms and I/O Providers) -->
+        <!-- include Pi4J Libraries (Platforms and I/O Providers) -->
         <dependency>
             <groupId>com.pi4j</groupId>
             <artifactId>pi4j-library-pigpio</artifactId>
