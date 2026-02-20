@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.pi4j</groupId>
         <artifactId>pi4j-library</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.0</version>
         <relativePath>../pi4j-library/pom.xml</relativePath>
     </parent>
 
