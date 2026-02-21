@@ -33,7 +33,7 @@ To create a new snapshot version on `develop` branch, use the following two comm
 
 ```shell
 mvn versions:set -DgenerateBackupPoms=false -DnewVersion="${newVersion}"
-mvn clean install -Pnative,docker
+mvn clean install
 ```
 
 Then commit and push the changed ``pom.xml`` files.

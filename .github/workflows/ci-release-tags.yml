@@ -19,7 +19,7 @@ jobs:
           java-version: '25'
           distribution: 'zulu'
 
-      - name: Build entire Pi4J Project in Docker
+      - name: Build entire Pi4J Project
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
