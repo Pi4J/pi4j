@@ -37,14 +37,11 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
 
-      - name: Get latest Docker image
-        run: docker pull pi4j/pi4j-builder:2.0
-
       - name: Build entire Pi4J Project in Docker
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-        run: docker run --env MAVEN_USERNAME=$MAVEN_USERNAME --env MAVEN_PASSWORD=$MAVEN_PASSWORD --user "$(id -u):$(id -g)" --rm --volume $(pwd):/build pi4j/pi4j-builder:2.0 clean deploy -Pnative,cross-compile --batch-mode
+        run: mvn deploy
 
       - name: Make staging directory
         run: mkdir staging
