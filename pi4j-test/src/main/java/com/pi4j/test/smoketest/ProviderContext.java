@@ -16,7 +16,6 @@ public class ProviderContext {
 
     public enum TestProvider {
         FFM,
-        LINUXFS,
         NEWAUTOCONTEXT;
 
         public static TestProvider getByName(String name) {

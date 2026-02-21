@@ -313,7 +313,7 @@
         <gpg.keyname>${pi4j.gpg.key}</gpg.keyname>
 
         <!-- Project Properties -->
-        <launcher.class>com.pi4j.test/com.pi4j.test.GpiodTest</launcher.class>
+        <launcher.class>com.pi4j.test/com.pi4j.test.Main</launcher.class>
         <launcher.args></launcher.args>
         <!-- <launcher.args>ButtonApp</launcher.args>  -->
 
