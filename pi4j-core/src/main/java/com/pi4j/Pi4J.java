@@ -93,10 +93,10 @@ public class Pi4J {
     /**
      * Record representing the Pi4J library build information.
      *
-     * @param branch
-     * @param commitId
-     * @param version
-     * @param timestamp
+     * @param branch    The git branch name from which this build was created.
+     * @param commitId  The git commit ID identifying the exact source revision.
+     * @param version   The version string of the Pi4J library (e.g., "2.7.0").
+     * @param timestamp The date and time when this build was produced.
      */
     public record BuildInfo(String branch, String commitId, String version, String timestamp) {
         public void log() {
