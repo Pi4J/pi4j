@@ -134,9 +134,9 @@ public class Pi4J {
     /**
      * Helper to avoid null values from properties.
      *
-     * @param props
-     * @param key
-     * @return String
+     * @param props Properties read from build.properties file.
+     * @param key   Property key.
+     * @return String with property value or empty string if not found.
      */
     private static String getProp(Properties props, String key) {
         String value = props.getProperty(key);
