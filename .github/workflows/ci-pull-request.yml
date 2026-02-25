@@ -12,11 +12,36 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get remove --purge man-db
+          sudo apt-get install --yes build-essential linux-headers-$(uname -r) sudo libi2c-dev linux-modules-extra-$(uname -r)
+
       - name: Set up Zulu JDK 25
         uses: actions/setup-java@v4
         with:
           java-version: '25'
           distribution: 'zulu'
+
+      - name: Create and add current user to suitable groups
+        run: |
+          sudo addgroup spi
+          sudo adduser $USER spi
+          sudo adduser $USER i2c
+          sudo adduser $USER dialout
+
+      - name: Add proper udev rules and trigger udevadm
+        run: |
+          sudo cp udev.rules /etc/udev/rules.d/99-pi4j-io.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
 
       - name: Build entire Pi4J Project
         env:
