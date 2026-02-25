@@ -43,6 +43,7 @@ import java.util.Properties;
 public class Pi4J {
 
     private static final Logger logger = LoggerFactory.getLogger(Pi4J.class);
+    private static BuildInfo buildInfo = null;
 
     // Private constructor
     private Pi4J() {
@@ -109,16 +110,21 @@ public class Pi4J {
     }
 
     /**
-     * Reads the build info from the build.properties file.
+     * Reads the build info from the build.properties file or returns the already read info.
      *
      * @return {@link BuildInfo}
      */
     public static BuildInfo getBuildInfo() {
+        if (buildInfo != null) {
+            return buildInfo;
+        }
+
+        // Still need to load the build info
         try (InputStream is = Pi4J.class.getResourceAsStream("/build.properties")) {
             if (is != null) {
                 Properties props = new Properties();
                 props.load(is);
-                return new BuildInfo(
+                buildInfo = new BuildInfo(
                     getProp(props, "git.branch"),
                     getProp(props, "git.commit.id"),
                     getProp(props, "build.version"),
@@ -127,8 +133,9 @@ public class Pi4J {
             }
         } catch (IOException e) {
             logger.debug("Unable to load build properties", e);
+            buildInfo = new BuildInfo("", "", "UNKNOWN", "");
         }
-        return new BuildInfo("", "", "UNKNOWN", "");
+        return buildInfo;
     }
 
     /**
