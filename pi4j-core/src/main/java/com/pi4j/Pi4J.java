@@ -121,7 +121,7 @@ public class Pi4J {
      *
      * @return {@link BuildInfo}
      */
-    public static BuildInfo loadBuildInfo() {
+    private static BuildInfo loadBuildInfo() {
         try (InputStream is = Pi4J.class.getResourceAsStream("/build.properties")) {
             if (is != null) {
                 Properties props = new Properties();
