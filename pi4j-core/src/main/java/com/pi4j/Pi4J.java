@@ -43,6 +43,7 @@ import java.util.Properties;
 public class Pi4J {
 
     private static final Logger logger = LoggerFactory.getLogger(Pi4J.class);
+    private static final BuildInfo buildInfo = loadBuildInfo();
 
     // Private constructor
     private Pi4J() {
@@ -59,7 +60,7 @@ public class Pi4J {
      */
     public static ContextBuilder newContextBuilder() {
         logger.info("New context builder");
-        logBuildInfo();
+        buildInfo.log();
         return ContextBuilder.newInstance();
     }
 
@@ -91,28 +92,62 @@ public class Pi4J {
     }
 
     /**
-     * Output the build information for correct debugging of, e.g., SNAPSHOT versions.
+     * Record representing the Pi4J library build information.
+     *
+     * @param branch    The git branch name from which this build was created.
+     * @param commitId  The git commit ID identifying the exact source revision.
+     * @param version   The version string of the Pi4J library (e.g., "2.7.0").
+     * @param timestamp The date and time when this build was produced.
      */
-    private static void logBuildInfo() {
+    public record BuildInfo(String branch, String commitId, String version, String timestamp) {
+        public void log() {
+            logger.info("Pi4J library build info:");
+            logger.info("\tBranch: {}", branch);
+            logger.info("\tCommit ID: {}", commitId);
+            logger.info("\tVersion: {}", version);
+            logger.info("\tTimestamp: {}", timestamp);
+        }
+    }
+
+    /**
+     * @return {@link BuildInfo}
+     */
+    public static BuildInfo getBuildInfo() {
+        return buildInfo;
+    }
+
+    /**
+     * Reads the build info from the build.properties file.
+     *
+     * @return {@link BuildInfo}
+     */
+    private static BuildInfo loadBuildInfo() {
         try (InputStream is = Pi4J.class.getResourceAsStream("/build.properties")) {
             if (is != null) {
                 Properties props = new Properties();
                 props.load(is);
-                logger.info("Pi4J library build info:");
-                logBuildInfo(props, "git.branch");
-                logBuildInfo(props, "git.commit.id");
-                logBuildInfo(props, "build.version");
-                logBuildInfo(props, "build.timestamp");
+                return new BuildInfo(
+                    getProp(props, "git.branch"),
+                    getProp(props, "git.commit.id"),
+                    getProp(props, "build.version"),
+                    getProp(props, "build.timestamp")
+                );
             }
         } catch (IOException e) {
             logger.debug("Unable to load build properties", e);
         }
+        return new BuildInfo("", "", "UNKNOWN", "");
     }
 
-    private static void logBuildInfo(Properties props, String key) {
+    /**
+     * Helper to avoid null values from properties.
+     *
+     * @param props Properties read from build.properties file.
+     * @param key   Property key.
+     * @return String with property value or empty string if not found.
+     */
+    private static String getProp(Properties props, String key) {
         String value = props.getProperty(key);
-        if (value != null) {
-            logger.info("\t{}: {}", key, value);
-        }
+        return value == null ? "" : value;
     }
 }

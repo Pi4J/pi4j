@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 
 public class DigitalInputDebounceMonitorTestCase extends TestCase {
 
-
     private static final Logger logger = LoggerFactory.getLogger(DigitalInputDebounceMonitorTestCase.class);
 
     private static final String TEST_NAME = "Digital Debounce Monitor";
