@@ -95,12 +95,12 @@ The PWM, input, output and debounce connections are M-M jumpers between T-cobble
 | Input     | GPIO         |   36   | 16  | GPIO       |   37   | 26  | White |
 | Debounce  | GPIO         |   15   | 22  | GPIO       |   17   | 27  | Grey  |
 
-Only needed for DigitalInputDebounceMonitorTestCase:
+Only needed for `DigitalInputDebounceMonitorTestCase` (not added to the wiring diagram and pictures).
 
-| Test      | From RPi Pin | Number | BCM  | To RPi Pin | Number | BCM | Color |
-|:----------|:-------------|:------:|:----:|:-----------|:------:|:---:|:------|
-| Debounce  | GPIO         | 32     | 12   | GPIO       |  35    | 19 | Brown |
-|           |              |        |      | GPIO       |   38   | 20  | LOGIC |
+| Test      | From RPi Pin | Number | BCM  | To RPi Pin | Number | BCM  | Color |
+|:----------|:-------------|:------:|:----:|:-----------|:------:|:----:|:------|
+| Debounce  | GPIO         | 32     | 12   | GPIO       |  35    | 19   | Brown |
+|           |              |        |      | GPIO       |   38   |  20  | LOGIC |
 
 
 
