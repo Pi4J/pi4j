@@ -150,9 +150,6 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         super.shutdownInternal(context);
         logger.info("{}-{} - closing GPIO BCM.", deviceName, bcm);
         try {
-            if (chipFileDescriptor > 0) {
-                file.close(chipFileDescriptor);
-            }
             logger.trace("{}-{} - Stopping event watchers", deviceName, bcm);
             for (EventWatcher watcher : watchers) {
                 watcher.stopWatching();
@@ -168,9 +165,14 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         } catch (Exception e) {
             this.closed = true;
             throw new ShutdownException(e);
+        } finally {
+            if (chipFileDescriptor > 0) {
+                logger.trace("{}-{} - closing GPIO file descriptor '{}'.", deviceName, bcm, chipFileDescriptor);
+                file.close(chipFileDescriptor);
+            }
         }
         this.closed = true;
-        logger.info("{}-{} - GPIO BCM is closed. Recreate the pin object to reuse.", deviceName, bcm);
+        logger.info("{}-{} - GPIO BCM is closed.", deviceName, bcm);
         return this;
     }
 
