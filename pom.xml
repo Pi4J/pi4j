@@ -95,6 +95,13 @@
                 <role>developer</role>
             </roles>
         </developer>
+        <developer>
+            <id>DigitalSmile</id>
+            <name>Nick Gritsenko</name>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
     </developers>
 
     <contributors>
