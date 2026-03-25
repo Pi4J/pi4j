@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -357,10 +358,31 @@ public class GPIOTest {
 
     @Test
     public void testMoreThanFourInputsReceiveEvents() throws InterruptedException {
-        // Regression test: virtual threads pinned to carrier threads limited concurrent digital inputs to
-        // the number of CPU cores (4 on Raspberry Pi 4). Platform daemon threads avoid this constraint.
+        // Regression test for the carrier-thread-pinning bug:
+        //
+        // Before the fix, EventWatcher used virtual threads. Virtual threads that call a
+        // blocking native method (poll()) are *pinned* to a ForkJoinPool carrier thread
+        // for the duration of the call. The carrier pool size defaults to the number of
+        // available CPU cores (4 on a Raspberry Pi 4). Once 4 pins are listening, all
+        // carrier threads are pinned and the 5th+ EventWatcher can never be scheduled.
+        //
+        // This test makes each watcher's first poll() call block until ALL numPins
+        // watchers are simultaneously blocked, then releases them. That directly mirrors
+        // the real scenario: concurrent blocking native poll() calls.
+        //
+        // With the old virtual-thread code on a <=4-core machine the test would time out
+        // at allWatchersBlockingLatch because the 5th watcher can never enter poll().
+        // With the fixed platform-daemon-thread code every watcher runs on its own OS
+        // thread, all 5 block simultaneously, and the test completes.
         int numPins = 5;
-        var latch = new CountDownLatch(numPins);
+
+        // Latch that counts down once per watcher that reaches (and blocks inside) poll()
+        var allWatchersBlockingLatch = new CountDownLatch(numPins);
+        // Released by the test thread once all watchers are simultaneously blocking
+        var releaseWatchersLatch = new CountDownLatch(1);
+        // Counts down as each pin's listener fires the first HIGH event
+        var eventsDeliveredLatch = new CountDownLatch(numPins);
+
         var pinReceivedEvent = new AtomicBoolean[numPins];
         for (int i = 0; i < numPins; i++) {
             pinReceivedEvent[i] = new AtomicBoolean(false);
@@ -372,10 +394,25 @@ public class GPIOTest {
                 PinFlag.INPUT.getValue(),
                 new LineAttribute[0]);
         });
+
+        // Each of the first numPins poll() calls (one per watcher thread) blocks until
+        // the test thread sees all watchers are blocked and releases them.  Subsequent
+        // calls return immediately so the loop can continue delivering events.
+        var blockedWatcherCount = new AtomicInteger(0);
         var pollingCallback = new Function<InvocationOnMock, PollingData>() {
             @Override
             public PollingData apply(InvocationOnMock answer) {
                 PollingData pollingData = answer.getArgument(0);
+                if (blockedWatcherCount.incrementAndGet() <= numPins) {
+                    // Signal: this watcher is now blocked in poll(), simulating the real
+                    // blocking native syscall that pins a virtual-thread carrier thread.
+                    allWatchersBlockingLatch.countDown();
+                    try {
+                        releaseWatchersLatch.await(5, TimeUnit.SECONDS);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
                 return new PollingData(pollingData.fd(), pollingData.events(), (short) PollFlag.POLLIN);
             }
         };
@@ -407,14 +444,27 @@ public class GPIOTest {
                 final int pinIndex = i;
                 pin.addListener(event -> {
                     if (event.state() == DigitalState.HIGH && pinReceivedEvent[pinIndex].compareAndSet(false, true)) {
-                        latch.countDown();
+                        eventsDeliveredLatch.countDown();
                     }
                 });
                 pins.add(pin);
             }
-            assertTrue(latch.await(5, TimeUnit.SECONDS),
-                "All " + numPins + " digital inputs must receive events. Only " +
-                    (numPins - latch.getCount()) + " did. Possible carrier thread pinning by blocking native poll.");
+
+            // All numPins watcher threads must reach poll() simultaneously.
+            // With virtual threads on <=4 cores this assertion would time out because the
+            // 5th+ watcher is never scheduled while the first 4 pin the carrier pool.
+            assertTrue(allWatchersBlockingLatch.await(5, TimeUnit.SECONDS),
+                (numPins - allWatchersBlockingLatch.getCount()) + " of " + numPins +
+                    " watcher threads reached poll(). " +
+                    "Carrier thread pinning may have prevented remaining watchers from being scheduled.");
+
+            // Release all watchers so they return from poll() and process the event.
+            releaseWatchersLatch.countDown();
+
+            // All numPins pins must deliver a state change event.
+            assertTrue(eventsDeliveredLatch.await(5, TimeUnit.SECONDS),
+                "Only " + (numPins - eventsDeliveredLatch.getCount()) + " of " + numPins +
+                    " digital inputs delivered a state change event after poll() was released.");
         }
     }
 }
