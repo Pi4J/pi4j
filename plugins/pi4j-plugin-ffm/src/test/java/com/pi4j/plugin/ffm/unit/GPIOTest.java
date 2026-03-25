@@ -29,6 +29,8 @@ import org.mockito.invocation.InvocationOnMock;
 
 import java.lang.foreign.Arena;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -350,6 +352,69 @@ public class GPIOTest {
             var mockingBoard = Pi4JApi.board(RaspberryPi.Model4B.class);
             var pin = mockingBoard.input(5);
             assertEquals(5, pin.bcm());
+        }
+    }
+
+    @Test
+    public void testMoreThanFourInputsReceiveEvents() throws InterruptedException {
+        // Regression test: virtual threads pinned to carrier threads limited concurrent digital inputs to
+        // the number of CPU cores (4 on Raspberry Pi 4). Platform daemon threads avoid this constraint.
+        int numPins = 5;
+        var latch = new CountDownLatch(numPins);
+        var pinReceivedEvent = new AtomicBoolean[numPins];
+        for (int i = 0; i < numPins; i++) {
+            pinReceivedEvent[i] = new AtomicBoolean(false);
+        }
+        var lineInfoTestData = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
+            LineInfo lineInfo = answer.getArgument(2);
+            return new LineInfo(("Test").getBytes(), ("FFM-Test").getBytes(),
+                lineInfo.offset(), 0,
+                PinFlag.INPUT.getValue(),
+                new LineAttribute[0]);
+        });
+        var pollingCallback = new Function<InvocationOnMock, PollingData>() {
+            @Override
+            public PollingData apply(InvocationOnMock answer) {
+                PollingData pollingData = answer.getArgument(0);
+                return new PollingData(pollingData.fd(), pollingData.events(), (short) PollFlag.POLLIN);
+            }
+        };
+        var pollingFile = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 42, ("Test").getBytes(), (answer) -> {
+            byte[] buffer = answer.getArgument(1);
+            var lineEvent = new LineEvent(1, PinEvent.RISING.getValue(), 3, 4, 5);
+            var memoryBuffer = Arena.ofAuto().allocate(LineEvent.LAYOUT);
+            try {
+                lineEvent.to(memoryBuffer);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+            var lineBuffer = new byte[(int) LineEvent.LAYOUT.byteSize()];
+            ByteBuffer.wrap(lineBuffer).put(memoryBuffer.asByteBuffer());
+            System.arraycopy(lineBuffer, 0, buffer, 0, lineBuffer.length);
+            return buffer;
+        });
+        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE, pollingFile);
+             var _ = IoctlNativeMock.echo(lineInfoTestData);
+             var _ = PollNativeMock.echo(pollingCallback)) {
+            List<Object> pins = new ArrayList<>();
+            for (int i = 0; i < numPins; i++) {
+                var builder = DigitalInputConfigBuilder.newInstance(pi4j0)
+                    .bus(-1)
+                    .bcm(20 + i)
+                    .debounce(0L)
+                    .build();
+                var pin = pi4j0.digitalInput().create(builder);
+                final int pinIndex = i;
+                pin.addListener(event -> {
+                    if (event.state() == DigitalState.HIGH && pinReceivedEvent[pinIndex].compareAndSet(false, true)) {
+                        latch.countDown();
+                    }
+                });
+                pins.add(pin);
+            }
+            assertTrue(latch.await(5, TimeUnit.SECONDS),
+                "All " + numPins + " digital inputs must receive events. Only " +
+                    (numPins - latch.getCount()) + " did. Possible carrier thread pinning by blocking native poll.");
         }
     }
 }
