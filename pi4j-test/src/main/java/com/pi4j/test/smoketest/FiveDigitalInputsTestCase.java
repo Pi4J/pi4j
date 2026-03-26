@@ -5,23 +5,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.time.Instant;
 
 /**
  * https://github.com/Pi4J/pi4j/issues/622
  *
  * In V4.0.0, the FFM plugin uses Virtual Threads to listen for input events.
  * But because native calls get "pinned", only the first four inputs work as they get linked to a CPU core.
- * This test creates 5 inputs, and checks if the 5the indeed doesn't recieve input events.
+ * This test creates 5 inputs and checks if the fifth receives input events.
  */
 public class FiveDigitalInputsTestCase extends TestCase {
 
     private static final Logger logger = LoggerFactory.getLogger(FiveDigitalInputsTestCase.class);
 
     private static final String TEST_NAME = "Event on Fifth Digital Input";
+    private static final Duration EVENT_TIMEOUT = Duration.ofSeconds(2);
+
+    // true: validate #623 fix (fifth listener should receive event)
+    // false: reproduce #622 bug (fifth listener should not receive event)
+    private static final boolean EXPECT_EVENT_ON_FIFTH_INPUT = Boolean.parseBoolean(
+        System.getProperty("pi4j.test.fiveinput.expectEvent", "true")
+    );
 
     public static TestResult run(ProviderContext providerContext) {
-        logger.info("Starting Fifth Digital Input test");
+        logger.info("Starting Fifth Digital Input test (expect event on fifth input: {})", EXPECT_EVENT_ON_FIFTH_INPUT);
 
         DigitalOutput gpioOutControl = null;
         DataInGpioListener input1 = null;
@@ -42,7 +48,7 @@ public class FiveDigitalInputsTestCase extends TestCase {
             input1 = createInputListener( providerContext, 5);
             input2 = createInputListener( providerContext, 6);
             input3 = createInputListener( providerContext, 13);
-            //input4 = createInputListener( providerContext, 19);
+            input4 = createInputListener( providerContext, 19);
             Thread.sleep(100);
 
             // Initialize 5th input, to validate a future fix
@@ -52,15 +58,30 @@ public class FiveDigitalInputsTestCase extends TestCase {
                 return new TestResult(TEST_NAME, false, "Input listener event should be null");
             }
 
+            // Ignore any stale event that might have been emitted during startup.
+            input1.clearEvent();
+            input2.clearEvent();
+            input3.clearEvent();
+            input4.clearEvent();
+            gpioInTest.clearEvent();
+
             // Change the output
             gpioOutControl.high();
 
-            // Check the expected input state
-            if (gpioInTest.getEvent() != null) {
-                return new TestResult(TEST_NAME, true, "The listener received an event as expected");
-            } else {
-                return new TestResult(TEST_NAME, false, "The listener didn't receive an event");
+            // Event delivery is asynchronous; wait with timeout to avoid race conditions.
+            var receivedEvent = gpioInTest.awaitEvent(EVENT_TIMEOUT);
+
+            if (receivedEvent == EXPECT_EVENT_ON_FIFTH_INPUT) {
+                var message = receivedEvent
+                    ? "The fifth listener received an event as expected"
+                    : "The fifth listener did not receive an event as expected";
+                return new TestResult(TEST_NAME, true, message);
             }
+
+            var message = receivedEvent
+                ? "The fifth listener unexpectedly received an event"
+                : "The fifth listener did not receive an event before timeout " + EVENT_TIMEOUT;
+            return new TestResult(TEST_NAME, false, message);
         } catch (Exception e) {
             logger.error("Test failure", e);
             return new TestResult(TEST_NAME, false, "Test failure: " + e.getMessage());
@@ -94,20 +115,44 @@ public class FiveDigitalInputsTestCase extends TestCase {
     }
 
     private static class DataInGpioListener implements DigitalStateChangeListener {
-        DigitalInput input;
-        DigitalStateChangeEvent event = null;
+        private final DigitalInput input;
+        private DigitalStateChangeEvent event = null;
 
         public DataInGpioListener(DigitalInput input) {
             this.input = input;
         }
 
         @Override
-        public void onDigitalStateChange(DigitalStateChangeEvent event) {
+        public synchronized void onDigitalStateChange(DigitalStateChangeEvent event) {
             this.event = event;
+            notifyAll();
         }
 
-        public DigitalStateChangeEvent getEvent() {
+        public synchronized DigitalStateChangeEvent getEvent() {
             return event;
+        }
+
+        public synchronized void clearEvent() {
+            event = null;
+        }
+
+        public synchronized boolean awaitEvent(Duration timeout) throws InterruptedException {
+            if (event != null) {
+                return true;
+            }
+
+            final long timeoutNanos = timeout.toNanos();
+            final long deadline = System.nanoTime() + timeoutNanos;
+            long remainingNanos = timeoutNanos;
+
+            while (event == null && remainingNanos > 0) {
+                long millis = remainingNanos / 1_000_000;
+                int nanos = (int) (remainingNanos % 1_000_000);
+                wait(millis, nanos);
+                remainingNanos = deadline - System.nanoTime();
+            }
+
+            return event != null;
         }
 
         public void close() {
