@@ -8,7 +8,7 @@ import java.time.Duration;
 
 /**
  * https://github.com/Pi4J/pi4j/issues/622
- *
+ * <p>
  * In V4.0.0, the FFM plugin uses Virtual Threads to listen for input events.
  * But because native calls get "pinned", only the first four inputs work as they get linked to a CPU core.
  * This test creates 5 inputs and checks if the fifth receives input events.
@@ -19,12 +19,6 @@ public class FiveDigitalInputsTestCase extends TestCase {
 
     private static final String TEST_NAME = "Event on Fifth Digital Input";
     private static final Duration EVENT_TIMEOUT = Duration.ofSeconds(2);
-
-    // true: validate #623 fix (fifth listener should receive event)
-    // false: reproduce #622 bug (fifth listener should not receive event)
-    private static final boolean EXPECT_EVENT_ON_FIFTH_INPUT = Boolean.parseBoolean(
-        System.getProperty("pi4j.test.fiveinput.expectEvent", "true")
-    );
 
     public static TestResult run(ProviderContext providerContext) {
         logger.info("Starting Fifth Digital Input test (expect event on fifth input: {})", EXPECT_EVENT_ON_FIFTH_INPUT);
@@ -45,14 +39,14 @@ public class FiveDigitalInputsTestCase extends TestCase {
             }
 
             // Initialize 4 inputs to fill up the available cores (4 on a Raspberry Pi 5)
-            input1 = createInputListener( providerContext, 5);
-            input2 = createInputListener( providerContext, 6);
-            input3 = createInputListener( providerContext, 13);
-            input4 = createInputListener( providerContext, 19);
+            input1 = createInputListener(providerContext, 5);
+            input2 = createInputListener(providerContext, 6);
+            input3 = createInputListener(providerContext, 13);
+            input4 = createInputListener(providerContext, 19);
             Thread.sleep(100);
 
             // Initialize 5th input, to validate a future fix
-            gpioInTest = createInputListener( providerContext, 16);
+            gpioInTest = createInputListener(providerContext, 16);
             Thread.sleep(100);
             if (gpioInTest.getEvent() != null) {
                 return new TestResult(TEST_NAME, false, "Input listener event should be null");
@@ -69,19 +63,11 @@ public class FiveDigitalInputsTestCase extends TestCase {
             gpioOutControl.high();
 
             // Event delivery is asynchronous; wait with timeout to avoid race conditions.
-            var receivedEvent = gpioInTest.awaitEvent(EVENT_TIMEOUT);
-
-            if (receivedEvent == EXPECT_EVENT_ON_FIFTH_INPUT) {
-                var message = receivedEvent
-                    ? "The fifth listener received an event as expected"
-                    : "The fifth listener did not receive an event as expected";
-                return new TestResult(TEST_NAME, true, message);
+            if (gpioInTest.awaitEvent(EVENT_TIMEOUT)) {
+                return new TestResult(TEST_NAME, true, "The fifth listener received an event as expected");
+            } else {
+                return new TestResult(TEST_NAME, false, "The fifth listener did not receive an event before timeout " + EVENT_TIMEOUT);
             }
-
-            var message = receivedEvent
-                ? "The fifth listener unexpectedly received an event"
-                : "The fifth listener did not receive an event before timeout " + EVENT_TIMEOUT;
-            return new TestResult(TEST_NAME, false, message);
         } catch (Exception e) {
             logger.error("Test failure", e);
             return new TestResult(TEST_NAME, false, "Test failure: " + e.getMessage());
