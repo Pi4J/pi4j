@@ -51,7 +51,7 @@ public class Main {
     public static void main(String[] args) {
         // Use the line below if you want to store the output of the smoke test in a file
         // System.setProperty(org.slf4j.simple.SimpleLogger.LOG_FILE_KEY, "trace.log");
-        System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
+        System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
         logger = LoggerFactory.getLogger(Main.class);
 
         logger.info("==============================================================");
@@ -93,17 +93,18 @@ public class Main {
 
         // Run the tests
         var tests = List.of(
-            I2CTestCase.run(providerContext),
-            I2CWithOffsetTestCase.run(providerContext),
-            SpiTestCase.run(providerContext),
-            SpiWithOffsetTestCase.run(providerContext),
+            //I2CTestCase.run(providerContext),
+            //I2CWithOffsetTestCase.run(providerContext),
+            //SpiTestCase.run(providerContext),
+            //SpiWithOffsetTestCase.run(providerContext),
             //SpiWriteReadTestCase.run(providerContext), // requires manual CS across write/read operation
-            PWMTestCase.run(providerContext, 1, 50, 10),
-            DigitalInputTestCase.run(providerContext),
-            DigitalOutputTestCase.run(providerContext),
+            //PWMTestCase.run(providerContext, 1, 50, 10),
+            //DigitalInputTestCase.run(providerContext),
+            FiveDigitalInputsTestCase.run(providerContext)
+            //DigitalOutputTestCase.run(providerContext),
             //DigitalInputDebounceMonitorTestCase.run(providerContext), // This test needs a Logic Analyzer
-            DigitalInputDebounceTimeTestCase.run(providerContext),
-            DigitalInputDebounceCountTestCase.run(providerContext)
+            //DigitalInputDebounceTimeTestCase.run(providerContext),
+            //DigitalInputDebounceCountTestCase.run(providerContext)
         );
 
         // Overall results
