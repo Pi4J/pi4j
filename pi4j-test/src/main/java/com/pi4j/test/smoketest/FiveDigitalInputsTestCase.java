@@ -21,7 +21,7 @@ public class FiveDigitalInputsTestCase extends TestCase {
     private static final Duration EVENT_TIMEOUT = Duration.ofSeconds(2);
 
     public static TestResult run(ProviderContext providerContext) {
-        logger.info("Starting Fifth Digital Input test (expect event on fifth input: {})", EXPECT_EVENT_ON_FIFTH_INPUT);
+        logger.info("Starting Fifth Digital Input test, expecting an event on the fifth input");
 
         DigitalOutput gpioOutControl = null;
         DataInGpioListener input1 = null;
