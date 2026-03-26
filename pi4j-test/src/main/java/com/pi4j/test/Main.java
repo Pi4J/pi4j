@@ -100,6 +100,7 @@ public class Main {
             //SpiWriteReadTestCase.run(providerContext), // requires manual CS across write/read operation
             PWMTestCase.run(providerContext, 1, 50, 10),
             DigitalInputTestCase.run(providerContext),
+            FiveDigitalInputsTestCase.run(providerContext),
             DigitalOutputTestCase.run(providerContext),
             //DigitalInputDebounceMonitorTestCase.run(providerContext), // This test needs a Logic Analyzer
             DigitalInputDebounceTimeTestCase.run(providerContext),
