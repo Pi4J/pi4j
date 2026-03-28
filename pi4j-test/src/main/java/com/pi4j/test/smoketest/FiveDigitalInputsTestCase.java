@@ -1,4 +1,3 @@
-
 package com.pi4j.test.smoketest;
 
 import com.pi4j.io.gpio.digital.*;

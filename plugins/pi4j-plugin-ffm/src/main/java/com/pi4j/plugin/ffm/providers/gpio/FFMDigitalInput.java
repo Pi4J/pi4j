@@ -99,7 +99,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                     throw new InitializeException("Debounce value of " + debounce + " is too large");
                 }
                 var debounceAttribute = new LineAttribute(LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(), 0, 0, (int) debounce * 1000);
-                attributes.add(new LineConfigAttribute(debounceAttribute, 1L << bcm));
+                attributes.add(new LineConfigAttribute(debounceAttribute, 1L));
             }
             flags |= switch (pull) {
                 case OFF -> 0;
@@ -124,10 +124,11 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
     public DigitalInput addListener(DigitalStateChangeListener... listener) {
         logger.trace("{}-{} - Adding new listener", deviceName, bcm);
         if (threadFactory == null) {
-            this.threadFactory = Thread.ofVirtual().name(deviceName + "-event-detection-pin-", bcm)
+            this.threadFactory = Thread.ofPlatform().name(deviceName + "-event-detection-pin-", bcm)
+                .daemon(true)
                 .uncaughtExceptionHandler(((_, e) -> logger.error(e.getMessage(), e)))
                 .factory();
-            this.eventTaskProcessor = Executors.newThreadPerTaskExecutor(threadFactory);
+            this.eventTaskProcessor = Executors.newCachedThreadPool(threadFactory);
         }
         var watcher = new EventWatcher(chipFileDescriptor, PinEvent.BOTH, events -> {
             for (DetectedEvent detectedEvent : events) {
