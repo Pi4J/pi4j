@@ -288,8 +288,11 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                         var buf = file.read(fd, new byte[16 * eventSize], 16 * eventSize);
                         var holder = new byte[eventSize];
                         for (int i = 0; i < 16 * LineEvent.LAYOUT.byteSize(); i += eventSize) {
-                            // check if timestampInNanos is 0, then there is no event present, we can skip
-                            if (buf[i] == 0) {
+                            // check if timestamp_ns is 0 (all 8 bytes), then there is no event present, we can skip
+                            // note: checking only buf[i] (the LSB) is insufficient because a valid timestamp divisible
+                            // by 256 ns will have a zero LSB, causing real events to be incorrectly dropped
+                            if ((buf[i] | buf[i + 1] | buf[i + 2] | buf[i + 3]
+                                    | buf[i + 4] | buf[i + 5] | buf[i + 6] | buf[i + 7]) == 0) {
                                 continue;
                             }
                             // convert byte array of events to java object with memory segment
