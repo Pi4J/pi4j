@@ -189,6 +189,63 @@ public class GPIOTest {
     }
 
     @Test
+    public void testInputEventProcessingWithZeroTimestampLSB() throws InterruptedException {
+        // Regression test: a GPIO event whose timestamp_ns is divisible by 256 has a zero LSB.
+        // Previously the EventWatcher only checked buf[i] == 0 (the LSB), which incorrectly
+        // skipped valid events and caused RISING events to be silently dropped.
+        var latch = new CountDownLatch(1);
+        var lineInfoTestData = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
+            LineInfo lineInfo = answer.getArgument(2);
+            return new LineInfo(("Test").getBytes(), ("FFM-Test").getBytes(),
+                lineInfo.offset(), 0,
+                PinFlag.INPUT.getValue(),
+                new LineAttribute[0]);
+        });
+        var pollingCallback = new Function<InvocationOnMock, PollingData>() {
+            @Override
+            public PollingData apply(InvocationOnMock answer) {
+                PollingData pollingData = answer.getArgument(0);
+                return new PollingData(pollingData.fd(), pollingData.events(), (short) PollFlag.POLLIN);
+            }
+        };
+        // Use a timestamp whose LSB is 0 (i.e. divisible by 256); this exposed the bug.
+        // fd=42 must match the chipFileDescriptor returned by IoctlNativeMock for LineRequest.
+        long timestampWithZeroLSB = 256L;
+        var pollingFile = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 42, ("Test").getBytes(), (answer) -> {
+            byte[] buffer = answer.getArgument(1);
+            var lineEvent = new LineEvent(timestampWithZeroLSB, PinEvent.RISING.getValue(), 3, 4, 5);
+            var memoryBuffer = Arena.ofAuto().allocate(LineEvent.LAYOUT);
+            try {
+                lineEvent.to(memoryBuffer);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+            var lineBuffer = new byte[(int) LineEvent.LAYOUT.byteSize()];
+            ByteBuffer.wrap(lineBuffer).put(memoryBuffer.asByteBuffer());
+            System.arraycopy(lineBuffer, 0, buffer, 0, lineBuffer.length);
+            return buffer;
+        });
+        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE, pollingFile);
+             var _ = IoctlNativeMock.echo(lineInfoTestData);
+             var _ = PollNativeMock.echo(pollingCallback)) {
+            var builder = DigitalInputConfigBuilder.newInstance(pi4j0)
+                .bus(-1)
+                .bcm(17)
+                .debounce(0L)
+                .build();
+            var pin = pi4j0.digitalInput().create(builder);
+            assertEquals(DigitalState.LOW, pin.state());
+            var passed = new AtomicBoolean(false);
+            pin.addListener(event -> {
+                passed.set(event.state() == DigitalState.HIGH);
+                latch.countDown();
+            });
+            assertTrue(latch.await(5, TimeUnit.SECONDS), "Event with zero-LSB timestamp was not dispatched");
+            assertTrue(passed.get());
+        }
+    }
+
+    @Test
     public void testInputEventProcessingWithDebounce() throws InterruptedException {
         var latch = new CountDownLatch(1);
         var lineInfoTestData = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
