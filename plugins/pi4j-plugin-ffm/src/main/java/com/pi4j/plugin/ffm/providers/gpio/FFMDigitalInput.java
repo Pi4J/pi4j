@@ -99,7 +99,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                     throw new InitializeException("Debounce value of " + debounce + " is too large");
                 }
                 var debounceAttribute = new LineAttribute(LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(), 0, 0, (int) debounce * 1000);
-                attributes.add(new LineConfigAttribute(debounceAttribute, 1L));
+                attributes.add(new LineConfigAttribute(debounceAttribute, 1L << bcm ));
             }
             flags |= switch (pull) {
                 case OFF -> 0;
