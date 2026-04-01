@@ -6,6 +6,15 @@ Testing the full Pi4J library is hard because it requires real hardware devices 
 
 The `src/main/java/com/pi4j/test/Main.java` class verifies that the providers can be loaded and used. The use is very basic, but just enough to know it worked. 
 
+## Build and Run
+
+In top directory
+``` text
+mvn clean install -Pnative
+cd pi4j-test/target/distribution
+./runSmoketest.sh 
+```
+
 Usage parms:
 
 ```text
