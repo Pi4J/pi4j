@@ -193,6 +193,55 @@
                     </arguments>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${maven-antrun-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy-assetsPYSH</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.directory}/distribution"/>
+                                <copy todir="${project.build.directory}/distribution" overwrite="true" flatten="true">
+                                    <fileset dir="assets" includes="*.py"> </fileset>
+                                </copy>
+                                <copy todir="${project.build.directory}/distribution" overwrite="true" flatten="true">
+                                    <fileset dir="assets" includes="*.sh"> </fileset>
+                                </copy>
+                                <chmod dir="${project.build.directory}/distribution" perm="ugo+rx" includes="**/*.py"/>
+                                <chmod dir="${project.build.directory}/distribution" perm="ugo+rx" includes="**/*.sh"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${maven-dependency-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/distribution</outputDirectory>
+                            <includeScope>runtime</includeScope>
+                            <excludeTransitive>false</excludeTransitive>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
