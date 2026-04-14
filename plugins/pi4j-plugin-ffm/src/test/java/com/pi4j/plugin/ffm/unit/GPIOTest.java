@@ -29,9 +29,12 @@ import org.mockito.invocation.InvocationOnMock;
 
 import java.lang.foreign.Arena;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -181,6 +184,63 @@ public class GPIOTest {
                 latch.countDown();
             });
             assertTrue(latch.await(5, TimeUnit.SECONDS));
+            assertTrue(passed.get());
+        }
+    }
+
+    @Test
+    public void testInputEventProcessingWithZeroTimestampLSB() throws InterruptedException {
+        // Regression test: a GPIO event whose timestamp_ns is divisible by 256 has a zero LSB.
+        // Previously the EventWatcher only checked buf[i] == 0 (the LSB), which incorrectly
+        // skipped valid events and caused RISING events to be silently dropped.
+        var latch = new CountDownLatch(1);
+        var lineInfoTestData = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
+            LineInfo lineInfo = answer.getArgument(2);
+            return new LineInfo(("Test").getBytes(), ("FFM-Test").getBytes(),
+                lineInfo.offset(), 0,
+                PinFlag.INPUT.getValue(),
+                new LineAttribute[0]);
+        });
+        var pollingCallback = new Function<InvocationOnMock, PollingData>() {
+            @Override
+            public PollingData apply(InvocationOnMock answer) {
+                PollingData pollingData = answer.getArgument(0);
+                return new PollingData(pollingData.fd(), pollingData.events(), (short) PollFlag.POLLIN);
+            }
+        };
+        // Use a timestamp whose LSB is 0 (i.e. divisible by 256); this exposed the bug.
+        // fd=42 must match the chipFileDescriptor returned by IoctlNativeMock for LineRequest.
+        long timestampWithZeroLSB = 256L;
+        var pollingFile = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 42, ("Test").getBytes(), (answer) -> {
+            byte[] buffer = answer.getArgument(1);
+            var lineEvent = new LineEvent(timestampWithZeroLSB, PinEvent.RISING.getValue(), 3, 4, 5);
+            var memoryBuffer = Arena.ofAuto().allocate(LineEvent.LAYOUT);
+            try {
+                lineEvent.to(memoryBuffer);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+            var lineBuffer = new byte[(int) LineEvent.LAYOUT.byteSize()];
+            ByteBuffer.wrap(lineBuffer).put(memoryBuffer.asByteBuffer());
+            System.arraycopy(lineBuffer, 0, buffer, 0, lineBuffer.length);
+            return buffer;
+        });
+        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE, pollingFile);
+             var _ = IoctlNativeMock.echo(lineInfoTestData);
+             var _ = PollNativeMock.echo(pollingCallback)) {
+            var builder = DigitalInputConfigBuilder.newInstance(pi4j0)
+                .bus(-1)
+                .bcm(17)
+                .debounce(0L)
+                .build();
+            var pin = pi4j0.digitalInput().create(builder);
+            assertEquals(DigitalState.LOW, pin.state());
+            var passed = new AtomicBoolean(false);
+            pin.addListener(event -> {
+                passed.set(event.state() == DigitalState.HIGH);
+                latch.countDown();
+            });
+            assertTrue(latch.await(5, TimeUnit.SECONDS), "Event with zero-LSB timestamp was not dispatched");
             assertTrue(passed.get());
         }
     }
@@ -350,6 +410,118 @@ public class GPIOTest {
             var mockingBoard = Pi4JApi.board(RaspberryPi.Model4B.class);
             var pin = mockingBoard.input(5);
             assertEquals(5, pin.bcm());
+        }
+    }
+
+    @Test
+    public void testMoreThanFourInputsReceiveEvents() throws InterruptedException {
+        // Regression test for the carrier-thread-pinning bug:
+        //
+        // Before the fix, EventWatcher used virtual threads. Virtual threads that call a
+        // blocking native method (poll()) are *pinned* to a ForkJoinPool carrier thread
+        // for the duration of the call. The carrier pool size defaults to the number of
+        // available CPU cores (4 on a Raspberry Pi 4). Once 4 pins are listening, all
+        // carrier threads are pinned and the 5th+ EventWatcher can never be scheduled.
+        //
+        // This test makes each watcher's first poll() call block until ALL numPins
+        // watchers are simultaneously blocked, then releases them. That directly mirrors
+        // the real scenario: concurrent blocking native poll() calls.
+        //
+        // With the old virtual-thread code on a <=4-core machine the test would time out
+        // at allWatchersBlockingLatch because the 5th watcher can never enter poll().
+        // With the fixed platform-daemon-thread code every watcher runs on its own OS
+        // thread, all 5 block simultaneously, and the test completes.
+        int numPins = 5;
+
+        // Latch that counts down once per watcher that reaches (and blocks inside) poll()
+        var allWatchersBlockingLatch = new CountDownLatch(numPins);
+        // Released by the test thread once all watchers are simultaneously blocking
+        var releaseWatchersLatch = new CountDownLatch(1);
+        // Counts down as each pin's listener fires the first HIGH event
+        var eventsDeliveredLatch = new CountDownLatch(numPins);
+
+        var pinReceivedEvent = new AtomicBoolean[numPins];
+        for (int i = 0; i < numPins; i++) {
+            pinReceivedEvent[i] = new AtomicBoolean(false);
+        }
+        var lineInfoTestData = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
+            LineInfo lineInfo = answer.getArgument(2);
+            return new LineInfo(("Test").getBytes(), ("FFM-Test").getBytes(),
+                lineInfo.offset(), 0,
+                PinFlag.INPUT.getValue(),
+                new LineAttribute[0]);
+        });
+
+        // Each of the first numPins poll() calls (one per watcher thread) blocks until
+        // the test thread sees all watchers are blocked and releases them.  Subsequent
+        // calls return immediately so the loop can continue delivering events.
+        var blockedWatcherCount = new AtomicInteger(0);
+        var pollingCallback = new Function<InvocationOnMock, PollingData>() {
+            @Override
+            public PollingData apply(InvocationOnMock answer) {
+                PollingData pollingData = answer.getArgument(0);
+                if (blockedWatcherCount.incrementAndGet() <= numPins) {
+                    // Signal: this watcher is now blocked in poll(), simulating the real
+                    // blocking native syscall that pins a virtual-thread carrier thread.
+                    allWatchersBlockingLatch.countDown();
+                    try {
+                        releaseWatchersLatch.await(5, TimeUnit.SECONDS);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+                return new PollingData(pollingData.fd(), pollingData.events(), (short) PollFlag.POLLIN);
+            }
+        };
+        var pollingFile = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 42, ("Test").getBytes(), (answer) -> {
+            byte[] buffer = answer.getArgument(1);
+            var lineEvent = new LineEvent(1, PinEvent.RISING.getValue(), 3, 4, 5);
+            var memoryBuffer = Arena.ofAuto().allocate(LineEvent.LAYOUT);
+            try {
+                lineEvent.to(memoryBuffer);
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+            var lineBuffer = new byte[(int) LineEvent.LAYOUT.byteSize()];
+            ByteBuffer.wrap(lineBuffer).put(memoryBuffer.asByteBuffer());
+            System.arraycopy(lineBuffer, 0, buffer, 0, lineBuffer.length);
+            return buffer;
+        });
+        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE, pollingFile);
+             var _ = IoctlNativeMock.echo(lineInfoTestData);
+             var _ = PollNativeMock.echo(pollingCallback)) {
+            List<Object> pins = new ArrayList<>();
+            for (int i = 0; i < numPins; i++) {
+                var builder = DigitalInputConfigBuilder.newInstance(pi4j0)
+                    .bus(-1)
+                    .bcm(20 + i)
+                    .debounce(0L)
+                    .build();
+                var pin = pi4j0.digitalInput().create(builder);
+                final int pinIndex = i;
+                pin.addListener(event -> {
+                    if (event.state() == DigitalState.HIGH && pinReceivedEvent[pinIndex].compareAndSet(false, true)) {
+                        eventsDeliveredLatch.countDown();
+                    }
+                });
+                pins.add(pin);
+            }
+
+            // All numPins watcher threads must reach poll() simultaneously.
+            // With virtual threads on <=4 cores this assertion would time out because the
+            // 5th+ watcher is never scheduled while the first 4 pin the carrier pool.
+            assertTrue(allWatchersBlockingLatch.await(5, TimeUnit.SECONDS),
+                (numPins - allWatchersBlockingLatch.getCount()) + " of " + numPins +
+                    " watcher threads reached poll(). " +
+                    "Carrier thread pinning may have prevented remaining watchers from being scheduled.");
+
+            // Release all watchers so they return from poll() and process the event.
+            releaseWatchersLatch.countDown();
+
+            // All numPins pins must deliver a state change event.
+            assertTrue(eventsDeliveredLatch.await(5, TimeUnit.SECONDS),
+                "Only " + (numPins - eventsDeliveredLatch.getCount()) + " of " + numPins +
+                    " digital inputs delivered a state change event after poll() was released.");
         }
     }
 }

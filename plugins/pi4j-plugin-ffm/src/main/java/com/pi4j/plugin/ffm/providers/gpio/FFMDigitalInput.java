@@ -99,7 +99,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                     throw new InitializeException("Debounce value of " + debounce + " is too large");
                 }
                 var debounceAttribute = new LineAttribute(LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(), 0, 0, (int) debounce * 1000);
-                attributes.add(new LineConfigAttribute(debounceAttribute, 1L << bcm));
+                attributes.add(new LineConfigAttribute(debounceAttribute, 1L << bcm ));
             }
             flags |= switch (pull) {
                 case OFF -> 0;
@@ -124,10 +124,11 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
     public DigitalInput addListener(DigitalStateChangeListener... listener) {
         logger.trace("{}-{} - Adding new listener", deviceName, bcm);
         if (threadFactory == null) {
-            this.threadFactory = Thread.ofVirtual().name(deviceName + "-event-detection-pin-", bcm)
+            this.threadFactory = Thread.ofPlatform().name(deviceName + "-event-detection-pin-", bcm)
+                .daemon(true)
                 .uncaughtExceptionHandler(((_, e) -> logger.error(e.getMessage(), e)))
                 .factory();
-            this.eventTaskProcessor = Executors.newThreadPerTaskExecutor(threadFactory);
+            this.eventTaskProcessor = Executors.newCachedThreadPool(threadFactory);
         }
         var watcher = new EventWatcher(chipFileDescriptor, PinEvent.BOTH, events -> {
             for (DetectedEvent detectedEvent : events) {
@@ -150,9 +151,6 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         super.shutdownInternal(context);
         logger.info("{}-{} - closing GPIO BCM.", deviceName, bcm);
         try {
-            if (chipFileDescriptor > 0) {
-                file.close(chipFileDescriptor);
-            }
             logger.trace("{}-{} - Stopping event watchers", deviceName, bcm);
             for (EventWatcher watcher : watchers) {
                 watcher.stopWatching();
@@ -168,9 +166,14 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         } catch (Exception e) {
             this.closed = true;
             throw new ShutdownException(e);
+        } finally {
+            if (chipFileDescriptor > 0) {
+                logger.trace("{}-{} - closing GPIO file descriptor '{}'.", deviceName, bcm, chipFileDescriptor);
+                file.close(chipFileDescriptor);
+            }
         }
         this.closed = true;
-        logger.info("{}-{} - GPIO BCM is closed. Recreate the pin object to reuse.", deviceName, bcm);
+        logger.info("{}-{} - GPIO BCM is closed.", deviceName, bcm);
         return this;
     }
 
@@ -285,8 +288,11 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                         var buf = file.read(fd, new byte[16 * eventSize], 16 * eventSize);
                         var holder = new byte[eventSize];
                         for (int i = 0; i < 16 * LineEvent.LAYOUT.byteSize(); i += eventSize) {
-                            // check if timestampInNanos is 0, then there is no event present, we can skip
-                            if (buf[i] == 0) {
+                            // check if timestamp_ns is 0 (all 8 bytes), then there is no event present, we can skip
+                            // note: checking only buf[i] (the LSB) is insufficient because a valid timestamp divisible
+                            // by 256 ns will have a zero LSB, causing real events to be incorrectly dropped
+                            if ((buf[i] | buf[i + 1] | buf[i + 2] | buf[i + 3]
+                                    | buf[i + 4] | buf[i + 5] | buf[i + 6] | buf[i + 7]) == 0) {
                                 continue;
                             }
                             // convert byte array of events to java object with memory segment
