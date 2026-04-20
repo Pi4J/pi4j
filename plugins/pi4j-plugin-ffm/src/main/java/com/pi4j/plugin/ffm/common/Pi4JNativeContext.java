@@ -71,7 +71,7 @@ public class Pi4JNativeContext implements SegmentAllocator {
      * @deprecated Use {@code arena.allocate(CAPTURED_STATE_LAYOUT)} with a per-call
      *             {@link Arena#ofConfined()} arena to avoid unbounded memory growth.
      */
-    @Deprecated
+    @Deprecated(since = "4.1.0", forRemoval = true)
     public MemorySegment allocateCapturedState() {
         return allocate(CAPTURED_STATE_LAYOUT);
     }
