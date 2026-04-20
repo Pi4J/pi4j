@@ -8,25 +8,27 @@ import java.lang.invoke.VarHandle;
 import java.util.Arrays;
 
 /**
- * Class that represents the custom segment allocator with underlying {@link Arena}, some base methods of errno/stderr
- * and error processing.
- * The Arena type is auto, meaning any MemorySegment that is allocated within context will be garbage collected
- * like any java object.
+ * Class that provides native method handles, errno processing utilities, and a long-lived Arena
+ * exclusively for native library lookups.
+ * <p>
+ * Per-call memory allocations (errno capture buffers, data buffers, etc.) must use a
+ * short-lived {@link Arena#ofConfined()} created with try-with-resources inside each native
+ * method call.  Using the global {@link #ARENA} for per-call allocations would cause all
+ * segments to accumulate until JVM exit, resulting in an OutOfMemoryError.
  */
 public class Pi4JNativeContext implements SegmentAllocator {
-    //TODO: make Arena object customizable
-    /*
-    The current design is lack of flexibility - the memory allocator will keep memory segments until hte JVM is stopped.
-    We need to add parameters to the API interface, that can make Arena object customizable, e.g.
-        - make Arena sharable between different native calls (so that memory segments can be chained and passed from one native call to the other)
-        - make Arena more strict, depending on case of usage - shared, single-threaded, multi-threaded
-        - make Arena a RingBuffer to guarantee the Arena size will not be growing, while JVM and native code is working
+    /**
+     * Global arena used <em>only</em> for long-lived allocations such as native library lookups
+     * (e.g. {@link SymbolLookup#libraryLookup}).  Must not be used for per-call allocations.
      */
     protected static final Arena ARENA = Arena.ofAuto();
     protected static final SymbolLookup LIBC_LIB = Linker.nativeLinker().defaultLookup();
 
-    // Captured state for errno
-    private static final StructLayout CAPTURED_STATE_LAYOUT = Linker.Option.captureStateLayout();
+    /**
+     * Layout of the errno captured-state struct.  Exposed so that Native classes can allocate
+     * it in a per-call confined arena: {@code arena.allocate(CAPTURED_STATE_LAYOUT)}.
+     */
+    public static final StructLayout CAPTURED_STATE_LAYOUT = Linker.Option.captureStateLayout();
     // Errno var handle
     private static final VarHandle ERRNO_HANDLE = CAPTURED_STATE_LAYOUT.varHandle(
         MemoryLayout.PathElement.groupElement("errno"));
@@ -66,17 +68,23 @@ public class Pi4JNativeContext implements SegmentAllocator {
      * Create MemorySegment for capturing errno.
      *
      * @return memory segment used to capture errno
+     * @deprecated Use {@code arena.allocate(CAPTURED_STATE_LAYOUT)} with a per-call
+     *             {@link Arena#ofConfined()} arena to avoid unbounded memory growth.
      */
+    @Deprecated
     public MemorySegment allocateCapturedState() {
         return allocate(CAPTURED_STATE_LAYOUT);
     }
 
     /**
-     * Closes underlying Arena.
+     * No-op.  The global {@link #ARENA} is used solely for library lookups and is
+     * managed by the GC; it does not require explicit closing.
      */
     public void close() {
-        // do nothing :(
-        // see comments to Arena object above
+        // The global ARENA is only used for library lookups (e.g. SymbolLookup.libraryLookup)
+        // and is intentionally kept alive for the JVM lifetime.  Per-call allocations use
+        // short-lived Arena.ofConfined() arenas in each native method, so there is nothing
+        // to release here.
     }
 
 }

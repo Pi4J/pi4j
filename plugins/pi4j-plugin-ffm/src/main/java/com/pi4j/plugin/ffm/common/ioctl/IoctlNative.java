@@ -3,20 +3,24 @@ package com.pi4j.plugin.ffm.common.ioctl;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.plugin.ffm.common.Pi4JLayout;
 
+import java.lang.foreign.Arena;
 import java.lang.foreign.ValueLayout;
 
+import static com.pi4j.plugin.ffm.common.Pi4JNativeContext.CAPTURED_STATE_LAYOUT;
 import static com.pi4j.plugin.ffm.common.Pi4JNativeContext.processError;
 
 /**
  * Class for calling native ioctl methods.
  * The logic behind the class is follows:
- * - allocate the needed buffers from Arena object with method parameters
+ * - allocate the needed buffers from a per-call {@link Arena#ofConfined()} arena
  * - optionally add 'errno' context to caller
  * - call native function with 'invoke'
  * - process errors if any captured by 'errno'
  * - return call result if needed
  */
 public class IoctlNative {
+    // Keep the context field to trigger IoctlContext class loading (and thus MethodHandle init).
+    @SuppressWarnings("unused")
     private final IoctlContext context = new IoctlContext();
 
     /**
@@ -28,8 +32,8 @@ public class IoctlNative {
      * @return int ioctl call result
      */
     public int callByValue(int fd, long command, long data) {
-        try {
-            var capturedState = context.allocateCapturedState();
+        try (var arena = Arena.ofConfined()) {
+            var capturedState = arena.allocate(CAPTURED_STATE_LAYOUT);
             var callResult = (int) IoctlContext.IOCTL.invoke(capturedState, fd, command, data);
             processError(callResult, capturedState, "callByValue", fd, command, data);
             return callResult;
@@ -47,10 +51,10 @@ public class IoctlNative {
      * @return long ioctl call result
      */
     public long call(int fd, long command, long data) {
-        try {
-            var dataMemorySegment = context.allocate(ValueLayout.JAVA_LONG);
+        try (var arena = Arena.ofConfined()) {
+            var dataMemorySegment = arena.allocate(ValueLayout.JAVA_LONG);
             dataMemorySegment.set(ValueLayout.JAVA_LONG, 0, data);
-            var capturedState = context.allocateCapturedState();
+            var capturedState = arena.allocate(CAPTURED_STATE_LAYOUT);
             var callResult = (int) IoctlContext.IOCTL_0.invoke(capturedState, fd, command, dataMemorySegment);
             processError(callResult, capturedState, "call", fd, command, data);
             return dataMemorySegment.get(ValueLayout.JAVA_LONG, 0);
@@ -68,10 +72,10 @@ public class IoctlNative {
      * @return int ioctl call result
      */
     public int call(int fd, long command, int data) {
-        try {
-            var dataMemorySegment = context.allocate(ValueLayout.JAVA_INT);
+        try (var arena = Arena.ofConfined()) {
+            var dataMemorySegment = arena.allocate(ValueLayout.JAVA_INT);
             dataMemorySegment.set(ValueLayout.JAVA_INT, 0, data);
-            var capturedState = context.allocateCapturedState();
+            var capturedState = arena.allocate(CAPTURED_STATE_LAYOUT);
             var callResult = (int) IoctlContext.IOCTL_1.invoke(capturedState, fd, command, dataMemorySegment);
             processError(callResult, capturedState, "call", fd, command, data);
             return dataMemorySegment.get(ValueLayout.JAVA_INT, 0);
@@ -91,13 +95,13 @@ public class IoctlNative {
      * @return dereferenced value of data provided in argument
      */
     public <T extends Pi4JLayout> T call(int fd, long command, T data) {
-        try {
-            var dataMemorySegment = context.allocate(data.getMemoryLayout());
-            data.to(dataMemorySegment, context);
-            var capturedState = context.allocateCapturedState();
+        try (var arena = Arena.ofConfined()) {
+            var dataMemorySegment = arena.allocate(data.getMemoryLayout());
+            data.to(dataMemorySegment, arena);
+            var capturedState = arena.allocate(CAPTURED_STATE_LAYOUT);
             var callResult = (int) IoctlContext.IOCTL_1.invoke(capturedState, fd, command, dataMemorySegment);
             processError(callResult, capturedState, "call", fd, command, data);
-            return data.from(dataMemorySegment, context);
+            return data.from(dataMemorySegment, arena);
         } catch (Throwable e) {
             throw new Pi4JException(e.getMessage(), e);
         }
