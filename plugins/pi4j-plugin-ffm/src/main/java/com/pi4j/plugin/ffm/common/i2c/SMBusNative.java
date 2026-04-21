@@ -4,15 +4,17 @@ import com.pi4j.exception.Pi4JException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.foreign.Arena;
 import java.lang.foreign.ValueLayout;
 
+import static com.pi4j.plugin.ffm.common.Pi4JNativeContext.CAPTURED_STATE_LAYOUT;
 import static com.pi4j.plugin.ffm.common.Pi4JNativeContext.processError;
 import static com.pi4j.plugin.ffm.common.i2c.SMBusContext.*;
 
 /**
  * Class for calling native SMBus native methods with libi2c-dev.
  * The logic behind the class is follows:
- * - allocate the needed buffers from Arena object with method parameters
+ * - allocate the needed buffers from a per-call {@link Arena#ofConfined()} arena
  * - optionally add 'errno' context to caller
  * - call native function with 'invoke'
  * - process errors if any captured by 'errno'
@@ -21,6 +23,8 @@ import static com.pi4j.plugin.ffm.common.i2c.SMBusContext.*;
 public class SMBusNative implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(SMBusNative.class);
 
+    // Keep the context field to trigger SMBusContext class loading (loads libi2c library).
+    @SuppressWarnings("unused")
     private final SMBusContext context = new SMBusContext();
 
     /**
@@ -31,8 +35,8 @@ public class SMBusNative implements AutoCloseable {
      * @return size of data written
      */
     public int writeByte(int fd, byte data) {
-        try {
-            var capturedState = context.allocateCapturedState();
+        try (var arena = Arena.ofConfined()) {
+            var capturedState = arena.allocate(CAPTURED_STATE_LAYOUT);
             var callResult = (int) WRITE_BYTE.invoke(capturedState, fd, data);
             processError(callResult, capturedState, "writeByte", fd, data);
             return callResult;
@@ -49,8 +53,8 @@ public class SMBusNative implements AutoCloseable {
      * @return one byte from bus
      */
     public byte readByte(int fd) {
-        try {
-            var capturedState = context.allocateCapturedState();
+        try (var arena = Arena.ofConfined()) {
+            var capturedState = arena.allocate(CAPTURED_STATE_LAYOUT);
             var callResult = (byte) READ_BYTE.invoke(capturedState, fd);
             processError(callResult, capturedState, "readByte", fd);
             return callResult;
@@ -68,8 +72,8 @@ public class SMBusNative implements AutoCloseable {
      * @return size of data written
      */
     public int writeByteData(int fd, byte register, byte data) {
-        try {
-            var capturedState = context.allocateCapturedState();
+        try (var arena = Arena.ofConfined()) {
+            var capturedState = arena.allocate(CAPTURED_STATE_LAYOUT);
             var callResult = (int) WRITE_BYTE_DATA.invoke(capturedState, fd, register, data);
             processError(callResult, capturedState, "writeByteData", fd, register, data);
             return callResult;
@@ -86,8 +90,8 @@ public class SMBusNative implements AutoCloseable {
      * @return one byte from bus
      */
     public byte readByteData(int fd, byte register) {
-        try {
-            var capturedState = context.allocateCapturedState();
+        try (var arena = Arena.ofConfined()) {
+            var capturedState = arena.allocate(CAPTURED_STATE_LAYOUT);
             var callResult = (byte) READ_BYTE_DATA.invoke(capturedState, fd, register);
             processError(Byte.toUnsignedInt(callResult), capturedState, "readByteData", fd, register);
             return callResult;
@@ -105,9 +109,9 @@ public class SMBusNative implements AutoCloseable {
      * @return size of data written
      */
     public int writeBlockData(int fd, byte register, byte[] data) {
-        try {
-            var capturedState = context.allocateCapturedState();
-            var memoryBuffer = context.allocateFrom(ValueLayout.JAVA_BYTE, data);
+        try (var arena = Arena.ofConfined()) {
+            var capturedState = arena.allocate(CAPTURED_STATE_LAYOUT);
+            var memoryBuffer = arena.allocateFrom(ValueLayout.JAVA_BYTE, data);
             var callResult = (int) WRITE_BLOCK_DATA.invoke(capturedState, fd, register, data.length, memoryBuffer);
             processError(callResult, capturedState, "writeBlockData", fd, register, data.length, data);
             return callResult;
@@ -125,9 +129,9 @@ public class SMBusNative implements AutoCloseable {
      * @return byte array of data from bus
      */
     public byte[] readBlockData(int fd, byte register, byte[] data) {
-        try {
-            var capturedState = context.allocateCapturedState();
-            var memoryBuffer = context.allocateFrom(ValueLayout.JAVA_BYTE, data);
+        try (var arena = Arena.ofConfined()) {
+            var capturedState = arena.allocate(CAPTURED_STATE_LAYOUT);
+            var memoryBuffer = arena.allocateFrom(ValueLayout.JAVA_BYTE, data);
             var callResult = (int) READ_BLOCK_DATA.invoke(capturedState, fd, register, memoryBuffer);
             processError(callResult, capturedState, "readBlockData", fd, register, data);
             return memoryBuffer.toArray(ValueLayout.JAVA_BYTE);
@@ -145,8 +149,8 @@ public class SMBusNative implements AutoCloseable {
      * @return size of data written
      */
     public int writeWordData(int fd, byte register, int data) {
-        try {
-            var capturedState = context.allocateCapturedState();
+        try (var arena = Arena.ofConfined()) {
+            var capturedState = arena.allocate(CAPTURED_STATE_LAYOUT);
             var callResult = (int) WRITE_WORD_DATA.invoke(capturedState, fd, register, data);
             processError(callResult, capturedState, "writeWordData", fd, register, data);
             return callResult;
@@ -163,8 +167,8 @@ public class SMBusNative implements AutoCloseable {
      * @return one int data read from bus
      */
     public int readWordData(int fd, byte register) {
-        try {
-            var capturedState = context.allocateCapturedState();
+        try (var arena = Arena.ofConfined()) {
+            var capturedState = arena.allocate(CAPTURED_STATE_LAYOUT);
             var callResult = (int) READ_WORD_DATA.invoke(capturedState, fd, register);
             processError(callResult, capturedState, "readWordData", fd, register);
             return callResult;
@@ -175,6 +179,6 @@ public class SMBusNative implements AutoCloseable {
 
     @Override
     public void close() {
-        context.close();
+        // The global Arena (used for library lookups) does not need explicit closing.
     }
 }
