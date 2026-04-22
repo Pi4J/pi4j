@@ -332,18 +332,18 @@ public class LinuxFsSpi extends SpiBase implements Spi {
     }
 
 
-    /**
+   /**
      * {@inheritDoc}
      * write
-     *
-     *   SPI_BUFFSIZ most often is set to 4096.  See initialize()
+     * <p>
+     * SPI_BUFFSIZ most often is set to 4096.  See initialize()
      * This implementation can write blocks greater than 4096 byte
      * 'however', read and understand how this is accomplished.
-     *
+     * <p>
      * A write of data no greater than 4096 bytes is accomplished with
      * a single SPI write operation.
      * So CE line low, write bytes, CE line high
-     *
+     * <p>
      * A write greater than 4096 bytes will be segmented to multiple writes
      * each 4096  bytes in length, the last write is the MOD value.
      * So, CE line low, write first 4096 bytes CE line high.  This
@@ -354,41 +354,47 @@ public class LinuxFsSpi extends SpiBase implements Spi {
      * application keep the CE pin low during the duration of the call to
      * spi,write.
      *
-     * 
-     * @param data data array of bytes to be written
+     * @param data   data array of bytes to be written
      * @param offset offset in data buffer to start at
      * @param length number of bytes to be written
-     * @return
+     * @return Returns 0 if OK, -1 on error. Error details available in last errno or
+     *                   rerunning the program with log level "TRACE",
+     *                   See : https://www.pi4j.com/documentation/logging/
+     *
      */
     @Override
     public int write(byte[] data, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, data.length);
 
-        int start = offset;
-        while (start < data.length) {
-            PeerAccessibleMemory buf = new PeerAccessibleMemory(SPI_BUFFSIZ);
-            spi_ioc_transfer txEntry = new spi_ioc_transfer() ;
-            int end = Math.min(data.length, start + SPI_BUFFSIZ);
-            byte[] chunk = Arrays.copyOfRange(data, start, end);
-            buf.write(0, chunk, 0 , chunk.length);
+        int rCode = 0;
+        int position = offset;
+        int dataEnd = offset + length;
+        PeerAccessibleMemory buf = new PeerAccessibleMemory(SPI_BUFFSIZ);
+        spi_ioc_transfer txEntry = new spi_ioc_transfer();
+        txEntry.tx_buf = buf.getPeer();
+        txEntry.rx_buf = 0;
+        txEntry.bits_per_word = BITS8;
+        txEntry.speed_hz = config.baud();
+        txEntry.delay_usecs = 0;
+        txEntry.cs_change = 0;
+
+        while (position < dataEnd) {
+            int chunkEnd = Math.min(dataEnd, position + SPI_BUFFSIZ);
+            int chunkLength = chunkEnd - position;
+            buf.write(0, data, position, chunkLength);
             // set fields in transfer msg
-            txEntry.tx_buf = buf.getPeer();
-            txEntry.rx_buf = 0;
-            txEntry.bits_per_word = BITS8;
-            txEntry.speed_hz = config.baud();
-            txEntry.delay_usecs = 0;
-            txEntry.len = chunk.length ;
-            txEntry.cs_change = 1 ;
+            txEntry.len = chunkLength;
             int ret = libc.ioctl(fd, SPI_IOC_MESSAGE(1), txEntry);
             logger.trace("[SPI::WRITE] <- Number bytes {} ", ret);
             if (ret < 0) {
                 logger.error("Could not write SPI message. ret {}, error: {}", ret, Native.getLastError());
-                length = 0;
+                rCode = -1;
+                break;
             }
-            start += SPI_BUFFSIZ;
+            position += chunkLength;
         }
 
-        return length;
+        return rCode;
     }
 
     /**
