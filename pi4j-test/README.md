@@ -95,19 +95,16 @@ but your sensor may use different letter designations. Also, there are BMP senso
 
 The PWM, input, output, and debounce connections are M-M jumpers between T-cobbler pins.
 
-| Test      | From RPi Pin | Number | BCM | To RPi Pin | Number | BCM | Color |
-|:----------|:-------------|:------:|:---:|:-----------|:------:|:---:|:------|
-| PWM       | PWM0         |   12   | 18  | GPIO       |   16   | 23  | Green | 
-| Output    | GPIO         |   18   | 24  | GPIO       |   22   | 25  | Blue  |
-| Input     | GPIO         |   36   | 16  | GPIO       |   37   | 26  | White |
-| Debounce  | GPIO         |   15   | 22  | GPIO       |   13   | 27  | Grey  |
+| Test      | From RPi Pin | Number | BCM | To RPi Pin | Number | BCM | Color | LED |
+|:----------|:-------------|:------:|:---:|:-----------|:------:|:---:|:------|-----|
+| PWM       | PWM0         |   12   | 18  | GPIO       |   16   | 23  | Green | 1   |
+| Output    | GPIO         |   18   | 24  | GPIO       |   22   | 25  | Blue  | 2   |
+| Input     | GPIO         |   36   | 16  | GPIO       |   37   | 26  | White | 3   |
+| Debounce  | GPIO         |   15   | 22  | GPIO       |   13   | 27  | Grey  | 4   |
 
 Only needed for `DigitalInputDebounceMonitorTestCase` (not added to the wiring diagram and pictures).
 
-| Test      | From RPi Pin | Number | BCM  | To RPi Pin | Number | BCM | Color |
-|:----------|:-------------|:------:|:----:|:-----------|:------:|:---:|:------|
-| Debounce  | GPIO         | 32     | 12   | GPIO       |   35   | 19  | Brown |
-|           |              |        |      | GPIO       |   38   | 20  | LOGIC |
-
-
-
+| Test      | From RPi Pin | Number | BCM  | To RPi Pin | Number | BCM | Color | LED |
+|:----------|:-------------|:------:|:----:|:-----------|:------:|:---:|:------|-----|
+| Debounce  | GPIO         | 32     | 12   | GPIO       |   35   | 19  | Brown | 5   |
+|           |              |        |      | GPIO       |   38   | 20  | LOGIC | 6   |
