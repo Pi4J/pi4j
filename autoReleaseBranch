@@ -90,7 +90,7 @@ fi
 # have user update pom.xml if necessary
 echo -n "INFO: Merge complete. Please update versions in pom.xml: <enter>"
 read a
-if ! editor ./pom.xml ; then
+if ! nano ./pom.xml ; then
   echo "ERROR: pom.xml failed"
   exit 1
 fi
