@@ -183,6 +183,7 @@ public abstract class ConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONF
         // if the configuration object allows inherited properties ... AND
         // the configuration object 'id' is defined (valid), then=
         // we can augment the config with inherited properties now
+        /*
         if(this.inheritProperties && StringUtil.isNotNullOrEmpty(id())){
 
             // get property candidates from context properties that may
@@ -201,7 +202,8 @@ public abstract class ConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONF
                 });
             }
         }
-
+*/
+        
         // return a copy of all the resolved properties
         return Collections.unmodifiableMap(allProperties);
     }
