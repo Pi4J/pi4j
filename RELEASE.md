@@ -22,6 +22,8 @@ To deploy to maven, use the following commands:
 
 This checks out the given tag and used the ``deploy`` profile to build and push the artifacts to maven central.
 
+Now don't forget to publish the release on Maven central: https://central.sonatype.com/publishing/deployments
+
 ## Update snapshot version
 To create a new snapshot version on ``develop`` branch, use the following two commands:
 
