@@ -29,7 +29,6 @@ import com.pi4j.config.BcmConfigBuilder;
 import com.pi4j.config.Config;
 import com.pi4j.config.ConfigBuilder;
 import com.pi4j.config.impl.BcmConfigBuilderBase;
-import com.pi4j.context.Context;
 import com.pi4j.io.IOConfig;
 import com.pi4j.io.IOConfigBuilder;
 import com.pi4j.platform.Platform;

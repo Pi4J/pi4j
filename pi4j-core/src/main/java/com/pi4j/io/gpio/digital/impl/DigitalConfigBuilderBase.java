@@ -25,7 +25,6 @@ package com.pi4j.io.gpio.digital.impl;
  * #L%
  */
 
-import com.pi4j.context.Context;
 import com.pi4j.io.gpio.digital.DigitalConfig;
 import com.pi4j.io.gpio.digital.DigitalConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;

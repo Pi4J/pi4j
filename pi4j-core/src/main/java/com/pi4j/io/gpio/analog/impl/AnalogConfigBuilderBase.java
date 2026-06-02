@@ -25,7 +25,6 @@ package com.pi4j.io.gpio.analog.impl;
  * #L%
  */
 
-import com.pi4j.context.Context;
 import com.pi4j.io.gpio.analog.AnalogConfig;
 import com.pi4j.io.gpio.analog.AnalogConfigBuilder;
 import com.pi4j.io.gpio.analog.AnalogOutputConfig;
