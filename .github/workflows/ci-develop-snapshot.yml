@@ -80,3 +80,54 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
         run: mvn deploy
 
+      - name: Make staging directory
+        run: mkdir staging
+
+      - name: Build download archive
+        run: |
+          VERSION=$(grep -m1 '<version>' pom.xml | sed -E 's/.*<version>([^<]+)<\/version>.*/\1/')
+          mkdir -p bundle/core bundle/plugins bundle/test bundle/docs
+
+          cp -v LICENSE.txt NOTICE.txt README.md bundle/docs/
+          cp -v pi4j-core/target/pi4j-core-*.jar bundle/core/ || true
+          cp -v pi4j-test/target/pi4j-test-*.jar bundle/test/ || true
+
+          find plugins -type f -path '*/target/pi4j-*.jar' -exec cp -v {} bundle/plugins/ \;
+
+          (cd bundle && zip -r "../staging/pi4j-${VERSION}.zip" .)
+          ls -lh staging
+
+      - name: Upload distribution files to staging
+        uses: actions/upload-artifact@v4
+        with:
+          name: pi4j-dist
+          path: staging
+
+  DeployPackages:
+    name: Deploy to Download Repo
+    needs: [ Build ]
+    runs-on: ubuntu-latest
+    environment:
+      name: Staging
+      url: 'https://github.com/Pi4J/download'
+    steps:
+      - name: Download staged artifacts from build
+        uses: actions/download-artifact@v4
+        with:
+          name: pi4j-dist
+
+      - name: Display downloaded build artifacts
+        shell: bash
+        run: tree
+
+      - name: Publish build archives to download repository
+        uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: 'pi4j-*.zip'
+          destination_repo: 'pi4j/download'
+          destination_branch: 'main'
+          user_email: 'team@pi4j.com'
+          user_name: 'Pi4J Build'
+

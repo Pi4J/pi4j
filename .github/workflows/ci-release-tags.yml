@@ -53,6 +53,26 @@ jobs:
       - name: Make staging directory
         run: mkdir staging
 
+      - name: Build download archive
+        run: |
+          VERSION="${GITHUB_REF_NAME}"
+          mkdir -p bundle/core bundle/plugins bundle/test bundle/docs
+
+          cp -v LICENSE.txt NOTICE.txt README.md bundle/docs/
+          cp -v pi4j-core/target/pi4j-core-*.jar bundle/core/ || true
+          cp -v pi4j-test/target/pi4j-test-*.jar bundle/test/ || true
+
+          find plugins -type f -path '*/target/pi4j-*.jar' -exec cp -v {} bundle/plugins/ \;
+
+          (cd bundle && zip -r "../staging/pi4j-${VERSION}.zip" .)
+          ls -lh staging
+
+      - name: Upload distribution files to staging
+        uses: actions/upload-artifact@v4
+        with:
+          name: pi4j-dist
+          path: staging
+
   DeployPackages:
     name: Deploy to APT/Download Repo
     needs: [ Build ]
@@ -68,12 +88,12 @@ jobs:
       - name: Display downloaded build artifacts
         shell: bash
         run: tree
-      - name: Publish build packages to APT download repository
+      - name: Publish build archives to download repository
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source_file: 'pi4j-*.*'
+          source_file: 'pi4j-*.zip'
           destination_repo: 'pi4j/download'
           destination_branch: 'main'
           user_email: 'team@pi4j.com'
