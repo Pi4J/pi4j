@@ -32,7 +32,6 @@ import com.pi4j.util.StringUtil;
 
 import java.io.*;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
