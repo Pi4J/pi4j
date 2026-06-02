@@ -51,8 +51,7 @@ public abstract class IODeviceConfigBuilderBase<BUILDER_TYPE extends ConfigBuild
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected IODeviceConfigBuilderBase(Context context){
-        super(context);
+    protected IODeviceConfigBuilderBase(){
     }
 
     /** {@inheritDoc} */

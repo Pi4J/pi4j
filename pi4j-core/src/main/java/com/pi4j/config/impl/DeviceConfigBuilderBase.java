@@ -46,8 +46,7 @@ public abstract class DeviceConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DeviceConfigBuilderBase(Context context) {
-        super(context);
+    protected DeviceConfigBuilderBase() {
     }
 
     /**

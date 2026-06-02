@@ -46,8 +46,7 @@ public abstract class BcmConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, C
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected BcmConfigBuilderBase(Context context) {
-        super(context);
+    protected BcmConfigBuilderBase() {
     }
 
     /**

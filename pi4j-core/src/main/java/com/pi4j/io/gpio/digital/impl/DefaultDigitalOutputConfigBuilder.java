@@ -44,8 +44,7 @@ public class DefaultDigitalOutputConfigBuilder
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DefaultDigitalOutputConfigBuilder(Context context) {
-        super(context);
+    protected DefaultDigitalOutputConfigBuilder() {
     }
 
     /**
@@ -54,9 +53,20 @@ public class DefaultDigitalOutputConfigBuilder
      * @param context
      * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder} object.
      */
+    @Deprecated
     public static DigitalOutputConfigBuilder newInstance(Context context) {
-        return new DefaultDigitalOutputConfigBuilder(context);
+        return newInstance();
     }
+
+    /**
+     * <p>newInstance.</p>
+     *
+     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder} object.
+     */
+    public static DigitalOutputConfigBuilder newInstance() {
+        return new DefaultDigitalOutputConfigBuilder();
+    }
+
 
     /**
      * {@inheritDoc}

@@ -46,8 +46,7 @@ public abstract class DigitalConfigBuilderBase<BUILDER_TYPE extends DigitalConfi
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DigitalConfigBuilderBase(Context context) {
-        super(context);
+    protected DigitalConfigBuilderBase() {
     }
 
     /**

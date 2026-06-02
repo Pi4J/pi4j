@@ -47,8 +47,7 @@ public class DefaultPwmConfigBuilder
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DefaultPwmConfigBuilder(Context context) {
-        super(context);
+    protected DefaultPwmConfigBuilder() {
     }
 
     /**
@@ -57,8 +56,19 @@ public class DefaultPwmConfigBuilder
      * @param context
      * @return a {@link com.pi4j.io.pwm.PwmConfigBuilder} object.
      */
+    @Deprecated
     public static PwmConfigBuilder newInstance(Context context) {
-        return new DefaultPwmConfigBuilder(context);
+        return newInstance();
+    }
+
+
+    /**
+     * <p>newInstance.</p>
+     *
+     * @return a {@link com.pi4j.io.pwm.PwmConfigBuilder} object.
+     */
+    public static PwmConfigBuilder newInstance() {
+        return new DefaultPwmConfigBuilder();
     }
 
     /**

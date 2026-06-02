@@ -51,8 +51,7 @@ public abstract class IOBcmConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder,
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected IOBcmConfigBuilderBase(Context context) {
-        super(context);
+    protected IOBcmConfigBuilderBase() {
     }
 
     /**

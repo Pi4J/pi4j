@@ -67,32 +67,6 @@ public interface ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends Builder<CONFIG
     BUILDER_TYPE description(String description);
 
     /**
-     * <p>inheritProperties.</p>
-     *
-     * @param allow a {@link java.lang.Boolean} object.
-     * @return a BUILDER_TYPE object.
-     */
-    BUILDER_TYPE inheritProperties(Boolean allow);
-
-    /**
-     * <p>allowInheritProperties.</p>
-     *
-     * @return a BUILDER_TYPE object.
-     */
-    default BUILDER_TYPE allowInheritProperties(){
-        return inheritProperties(true);
-    }
-
-    /**
-     * <p>disallowInheritProperties.</p>
-     *
-     * @return a BUILDER_TYPE object.
-     */
-    default BUILDER_TYPE disallowInheritProperties(){
-        return inheritProperties(false);
-    }
-
-    /**
      * <p>load.</p>
      *
      * @param properties a {@link java.util.Map} object.

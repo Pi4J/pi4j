@@ -51,14 +51,15 @@ public abstract class ConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONF
 
     // private configuration variables
     protected final ConcurrentHashMap<String, String> properties = new ConcurrentHashMap<>();
-    protected Boolean inheritProperties = true;
-    protected Context context = null;
 
     /**
      * PRIVATE CONSTRUCTOR
      */
+    @Deprecated
     protected ConfigBuilderBase(Context context){
-        this.context = context;
+    }
+
+    protected ConfigBuilderBase() {
     }
 
     /** {@inheritDoc} */
@@ -85,12 +86,6 @@ public abstract class ConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONF
     @Override
     public BUILDER_TYPE description(String description){
         this.properties.put(Config.DESCRIPTION_KEY, description);
-        return (BUILDER_TYPE) this;
-    }
-
-    /** {@inheritDoc} */
-    public BUILDER_TYPE inheritProperties(Boolean allow){
-        this.inheritProperties = allow;
         return (BUILDER_TYPE) this;
     }
 
@@ -177,33 +172,6 @@ public abstract class ConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONF
     }
 
     protected  Map<String,String> getResolvedProperties(){
-        Map<String,String> allProperties = new HashMap<>(this.properties);
-
-        // if the configuration object allows inherited properties ... AND
-        // the configuration object 'id' is defined (valid), then=
-        // we can augment the config with inherited properties now
-        /*
-        if(this.inheritProperties && StringUtil.isNotNullOrEmpty(id())){
-
-            // get property candidates from context properties that may
-            // be applicable/eligible for this IO instance (by 'id')
-            Map<String,String> candidateProperties = PropertiesUtil.subProperties(context.properties().all(), id());
-
-            // make sure there are eligible candidate and then iterate over the candidates
-            // and check each one to make sure the property is not already defined for this
-            // configuration object instance and then add the property to this instance and
-            // add it to the applied properties return map collection
-            if(!candidateProperties.isEmpty()) {
-                candidateProperties.forEach((key,value)->{
-                    if(!allProperties.containsKey(key)){
-                        allProperties.put(key, value);
-                    }
-                });
-            }
-        }
-*/
-        
-        // return a copy of all the resolved properties
-        return Collections.unmodifiableMap(allProperties);
+        return Collections.unmodifiableMap(this.properties);
     }
 }

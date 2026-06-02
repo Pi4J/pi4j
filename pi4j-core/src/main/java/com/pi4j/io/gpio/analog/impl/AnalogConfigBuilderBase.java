@@ -46,8 +46,7 @@ public abstract class AnalogConfigBuilderBase<BUILDER_TYPE extends AnalogConfigB
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected AnalogConfigBuilderBase(Context context) {
-        super(context);
+    protected AnalogConfigBuilderBase() {
     }
 
     /**

@@ -49,8 +49,7 @@ public abstract class IOConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CO
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected IOConfigBuilderBase(Context context){
-        super(context);
+    protected IOConfigBuilderBase(){
     }
 
     /** {@inheritDoc} */
