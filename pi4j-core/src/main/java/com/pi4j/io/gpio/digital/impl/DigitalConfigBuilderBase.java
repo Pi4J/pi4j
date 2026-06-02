@@ -25,7 +25,6 @@ package com.pi4j.io.gpio.digital.impl;
  * #L%
  */
 
-import com.pi4j.context.Context;
 import com.pi4j.io.gpio.digital.DigitalConfig;
 import com.pi4j.io.gpio.digital.DigitalConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
@@ -46,8 +45,7 @@ public abstract class DigitalConfigBuilderBase<BUILDER_TYPE extends DigitalConfi
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DigitalConfigBuilderBase(Context context) {
-        super(context);
+    protected DigitalConfigBuilderBase() {
     }
 
     /**

@@ -42,8 +42,7 @@ public class DefaultSpiConfigBuilder
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DefaultSpiConfigBuilder(Context context) {
-        super(context);
+    protected DefaultSpiConfigBuilder() {
     }
 
     /**
@@ -52,9 +51,20 @@ public class DefaultSpiConfigBuilder
      * @param context
      * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
      */
+    @Deprecated
     public static SpiConfigBuilder newInstance(Context context) {
-        return new DefaultSpiConfigBuilder(context);
+        return newInstance();
     }
+
+    /**
+     * <p>newInstance.</p>
+     *
+     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
+     */
+    public static SpiConfigBuilder newInstance() {
+        return new DefaultSpiConfigBuilder();
+    }
+
 
     /**
      * {@inheritDoc}

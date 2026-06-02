@@ -46,8 +46,8 @@ public class DefaultDigitalInputConfigBuilder
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DefaultDigitalInputConfigBuilder(Context context) {
-        super(context);
+    protected DefaultDigitalInputConfigBuilder() {
+
     }
 
     /**
@@ -57,7 +57,16 @@ public class DefaultDigitalInputConfigBuilder
      * @return a {@link com.pi4j.io.gpio.digital.DigitalInputConfigBuilder} object.
      */
     public static DigitalInputConfigBuilder newInstance(Context context) {
-        return new DefaultDigitalInputConfigBuilder(context);
+        return newInstance();
+    }
+
+    /**
+     * <p>newInstance.</p>
+     *
+     * @return a {@link com.pi4j.io.gpio.digital.DigitalInputConfigBuilder} object.
+     */
+    public static DigitalInputConfigBuilder newInstance() {
+        return new DefaultDigitalInputConfigBuilder();
     }
 
     /**

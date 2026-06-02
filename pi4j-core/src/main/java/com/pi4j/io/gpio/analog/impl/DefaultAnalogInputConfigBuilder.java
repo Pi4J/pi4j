@@ -43,8 +43,7 @@ public class DefaultAnalogInputConfigBuilder
     /**
      * PRIVATE CONSTRUCTOR
      */
-    private DefaultAnalogInputConfigBuilder(Context context) {
-        super(context);
+    private DefaultAnalogInputConfigBuilder() {
     }
 
     /**
@@ -53,8 +52,18 @@ public class DefaultAnalogInputConfigBuilder
      * @param context
      * @return a {@link com.pi4j.io.gpio.analog.AnalogInputConfigBuilder} object.
      */
+    @Deprecated
     public static AnalogInputConfigBuilder newInstance(Context context) {
-        return new DefaultAnalogInputConfigBuilder(context);
+        return newInstance();
+    }
+
+    /**
+     * <p>newInstance.</p>
+     *
+     * @return a {@link com.pi4j.io.gpio.analog.AnalogInputConfigBuilder} object.
+     */
+    public static AnalogInputConfigBuilder newInstance() {
+        return new DefaultAnalogInputConfigBuilder();
     }
 
     /**

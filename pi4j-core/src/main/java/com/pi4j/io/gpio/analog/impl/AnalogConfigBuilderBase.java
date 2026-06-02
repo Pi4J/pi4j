@@ -25,7 +25,6 @@ package com.pi4j.io.gpio.analog.impl;
  * #L%
  */
 
-import com.pi4j.context.Context;
 import com.pi4j.io.gpio.analog.AnalogConfig;
 import com.pi4j.io.gpio.analog.AnalogConfigBuilder;
 import com.pi4j.io.gpio.analog.AnalogOutputConfig;
@@ -46,8 +45,7 @@ public abstract class AnalogConfigBuilderBase<BUILDER_TYPE extends AnalogConfigB
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected AnalogConfigBuilderBase(Context context) {
-        super(context);
+    protected AnalogConfigBuilderBase() {
     }
 
     /**

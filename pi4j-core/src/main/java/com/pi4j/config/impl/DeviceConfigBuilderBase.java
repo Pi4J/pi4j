@@ -29,7 +29,6 @@ import com.pi4j.config.Config;
 import com.pi4j.config.ConfigBuilder;
 import com.pi4j.config.DeviceConfig;
 import com.pi4j.config.DeviceConfigBuilder;
-import com.pi4j.context.Context;
 
 /**
  * <p>Abstract DeviceConfigBuilderBase class.</p>
@@ -46,8 +45,7 @@ public abstract class DeviceConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DeviceConfigBuilderBase(Context context) {
-        super(context);
+    protected DeviceConfigBuilderBase() {
     }
 
     /**

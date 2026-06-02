@@ -29,7 +29,6 @@ import com.pi4j.config.BcmConfig;
 import com.pi4j.config.BcmConfigBuilder;
 import com.pi4j.config.Config;
 import com.pi4j.config.ConfigBuilder;
-import com.pi4j.context.Context;
 
 /**
  * <p>Abstract AddressConfigBuilderBase class.</p>
@@ -46,8 +45,7 @@ public abstract class BcmConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, C
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected BcmConfigBuilderBase(Context context) {
-        super(context);
+    protected BcmConfigBuilderBase() {
     }
 
     /**

@@ -42,8 +42,7 @@ public class DefaultI2CConfigBuilder
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DefaultI2CConfigBuilder(Context context){
-        super(context);
+    protected DefaultI2CConfigBuilder(){
     }
 
     /**
@@ -52,8 +51,19 @@ public class DefaultI2CConfigBuilder
      * @param context
      * @return a {@link com.pi4j.io.i2c.I2CConfigBuilder} object.
      */
+    @Deprecated
     public static I2CConfigBuilder newInstance(Context context) {
-        return new DefaultI2CConfigBuilder(context);
+        return newInstance();
+    }
+
+
+    /**
+     * <p>newInstance.</p>
+     *
+     * @return a {@link com.pi4j.io.i2c.I2CConfigBuilder} object.
+     */
+    public static I2CConfigBuilder newInstance() {
+        return new DefaultI2CConfigBuilder();
     }
 
     /** {@inheritDoc} */
