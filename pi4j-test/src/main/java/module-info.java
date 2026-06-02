@@ -38,17 +38,8 @@ module com.pi4j.test {
     requires com.pi4j.plugin.mock;
 
     // TEST
-    requires com.pi4j.plugin.gpiod;
-    uses com.pi4j.plugin.gpiod.GpioDPlugin;
-    uses com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalOutput;
-    uses com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalOutputProvider;
-
-    requires com.pi4j.plugin.linuxfs;
     requires com.pi4j.plugin.ffm;
     requires jdk.incubator.vector;
-    uses com.pi4j.plugin.linuxfs.LinuxFsPlugin;
-    uses com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalOutput;
-    uses com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalOutputProvider;
     // TEST END
 
     uses com.pi4j.plugin.mock.platform.MockPlatform;

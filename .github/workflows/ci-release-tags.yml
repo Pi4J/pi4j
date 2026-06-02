@@ -13,22 +13,59 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Get latest Docker image
-        run: docker pull pi4j/pi4j-builder:2.0
+      - name: Install dependencies
+        run: |
+          sudo apt-get remove --purge man-db
+          sudo apt-get install --yes build-essential linux-headers-$(uname -r) sudo libi2c-dev linux-modules-extra-$(uname -r)
 
-      - name: Build entire Pi4J Project in Docker
+      - name: Set up Zulu JDK 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'zulu'
+
+      - name: Create and add current user to suitable groups
+        run: |
+          sudo addgroup spi
+          sudo adduser $USER spi
+          sudo adduser $USER i2c
+          sudo adduser $USER dialout
+
+      - name: Add proper udev rules and trigger udevadm
+        run: |
+          sudo cp udev.rules /etc/udev/rules.d/99-pi4j-io.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build entire Pi4J Project
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-        run: docker run --env MAVEN_USERNAME=$MAVEN_USERNAME --env MAVEN_PASSWORD=$MAVEN_PASSWORD --user "$(id -u):$(id -g)" --rm --volume $(pwd):/build pi4j/pi4j-builder:2.0 clean install -Pnative,cross-compile --batch-mode
+        run: mvn clean package
 
       - name: Make staging directory
         run: mkdir staging
 
-      - name: Copy distribution files to staging
+      - name: Build download archive
         run: |
-          cp -r pi4j-distribution/target/*.deb staging
-          cp -r pi4j-distribution/target/*.zip staging
+          VERSION="${GITHUB_REF_NAME}"
+          mkdir -p bundle/core bundle/plugins bundle/test bundle/docs
+
+          cp -v LICENSE.txt NOTICE.txt README.md bundle/docs/
+          cp -v pi4j-core/target/pi4j-core-*.jar bundle/core/ || true
+          cp -v pi4j-test/target/pi4j-test-*.jar bundle/test/ || true
+
+          find plugins -type f -path '*/target/pi4j-*.jar' -exec cp -v {} bundle/plugins/ \;
+
+          (cd bundle && zip -r "../staging/pi4j-${VERSION}.zip" .)
+          ls -lh staging
 
       - name: Upload distribution files to staging
         uses: actions/upload-artifact@v4
@@ -51,12 +88,12 @@ jobs:
       - name: Display downloaded build artifacts
         shell: bash
         run: tree
-      - name: Publish build packages to APT download repository
+      - name: Publish build archives to download repository
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source_file: 'pi4j-*.*'
+          source_file: 'pi4j-*.zip'
           destination_repo: 'pi4j/download'
           destination_branch: 'main'
           user_email: 'team@pi4j.com'

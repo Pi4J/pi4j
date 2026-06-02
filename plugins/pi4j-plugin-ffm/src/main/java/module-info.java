@@ -4,7 +4,7 @@ import com.pi4j.plugin.ffm.FFMPlugin;
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: PLUGIN   :: LinuxFS I/O Providers
+ * PROJECT       :  Pi4J :: PLUGIN   :: FFM I/O Providers
  * FILENAME      :  module-info.java
  *
  * This file is part of the Pi4J project. More information about

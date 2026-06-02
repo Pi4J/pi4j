@@ -547,7 +547,7 @@ public interface ContextBuilder extends Builder<Context> {
     }
 
     /**
-     * Sets the GPIO chip name to be used by GpioDContext.
+     * Sets the GPIO chip name to be used by the Context.
      *
      * @param chipName The name of the GPIO chip (e.g., "gpiochip0").
      * @return a {@link com.pi4j.context.ContextBuilder} object.

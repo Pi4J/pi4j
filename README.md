@@ -90,20 +90,8 @@ The following command can be used to build the Pi4J JARs:
 mvn package
 ```
 
-Pi4J V2+ also includes native libraries that will need to be compiled if you are modifying any native code.
-Most users will never need to compile the native libraries as these artifacts are automatically downloaded  
-when building the Pi4J JARs from Maven repositories. One of the following commands can be used to build
-the Pi4J V2+ JARs and Native Libraries:
-
-```
-mvn package -Pnative
-mvn package -Pnative,docker
-
-# When you want to speed up...
-mvn package -Pnative -DskipTests
-```
-
-With `package` all modules in the Pi4J project will be built and it shows you if the project can be successfully built. If you want to use the libraries locally on your Raspberry Pi, for example, for testing, replace `package` with `install`.
+With `package` all modules in the Pi4J project will be built, and it shows you if the project can be successfully built. 
+If you want to use the libraries locally on your Raspberry Pi, for example, for testing, replace `package` with `install`.
 
 > **NOTE:** A comprehensive set of build instructions can be found in
 > the [Pi4J Documentation](https://pi4j.com/architecture/about-the-code/build-instructions/).

@@ -1,8 +1,0 @@
-#!/bin/sh
-
-# CREATE DIRECTORIES
-mkdir -p /opt/pi4j
-mkdir -p /opt/pi4j/lib
-mkdir -p /opt/pi4j/bin
-
-

@@ -1,20 +1,12 @@
 package com.pi4j.test.smoketest;
 
 import com.pi4j.Pi4J;
-import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.context.Context;
 import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
 import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
 import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
 import com.pi4j.plugin.ffm.providers.spi.FFMSpiProviderImpl;
-import com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalInputProvider;
-import com.pi4j.plugin.gpiod.provider.gpio.digital.GpioDDigitalOutputProvider;
-import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalInputProvider;
-import com.pi4j.plugin.linuxfs.provider.gpio.digital.LinuxFsDigitalOutputProvider;
-import com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CProvider;
-import com.pi4j.plugin.linuxfs.provider.pwm.LinuxFsPwmProvider;
-import com.pi4j.plugin.linuxfs.provider.spi.LinuxFsSpiProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +16,6 @@ public class ProviderContext {
 
     public enum TestProvider {
         FFM,
-        LINUXFS,
         NEWAUTOCONTEXT;
 
         public static TestProvider getByName(String name) {
@@ -43,8 +34,6 @@ public class ProviderContext {
 
     private Context pi4j = null;
 
-    private static final String DEFAULT_PWM_FILESYSTEM_PATH = "/sys/class/pwm";
-
     /**
      *
      * @param testProvider Identifies which set of providers to create
@@ -54,28 +43,6 @@ public class ProviderContext {
 
         switch (testProvider) {
             case NEWAUTOCONTEXT -> pi4j = Pi4J.newAutoContext();
-            case LINUXFS -> {
-                if (BoardInfoHelper.current().getBoardModel().usesRP1()) {
-                    logger.warn("RP1 board detected, using GpioDDigitalInputProvider and GpioDDigitalOutputProvider instead of LinuxFS");
-                    pi4j = Pi4J
-                        .newContextBuilder()
-                        .add(GpioDDigitalInputProvider.newInstance())
-                        .add(GpioDDigitalOutputProvider.newInstance())
-                        .add(LinuxFsI2CProvider.newInstance())
-                        .add(LinuxFsSpiProvider.newInstance())
-                        .add(LinuxFsPwmProvider.newInstance(DEFAULT_PWM_FILESYSTEM_PATH))
-                        .build();
-                } else {
-                    pi4j = Pi4J
-                        .newContextBuilder()
-                        .add(LinuxFsDigitalInputProvider.newInstance())
-                        .add(LinuxFsDigitalOutputProvider.newInstance())
-                        .add(LinuxFsI2CProvider.newInstance())
-                        .add(LinuxFsSpiProvider.newInstance())
-                        .add(LinuxFsPwmProvider.newInstance(DEFAULT_PWM_FILESYSTEM_PATH))
-                        .build();
-                }
-            }
             case FFM -> pi4j = Pi4J
                 .newContextBuilder()
                 .add(new FFMDigitalOutputProviderImpl())

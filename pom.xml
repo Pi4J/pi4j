@@ -4,7 +4,7 @@
 
     <groupId>com.pi4j</groupId>
     <artifactId>pi4j-parent</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
     <name>Pi4J :: Parent POM</name>
     <description>Parent Maven POM for the Pi4J Project</description>
     <url>https://pi4j.com</url>
@@ -173,63 +173,14 @@
     <!-- PROJECT MODULES -->
     <modules>
         <!-- THE FOLLOWING ARE THE Pi4J MODULES -->
-        <module>libraries/pi4j-library</module>
         <module>pi4j-core</module>
         <module>plugins/pi4j-plugin</module>
         <module>pi4j-test</module>
-        <module>pi4j-distribution</module>
     </modules>
 
     <!-- BUILD PROPERTIES -->
     <properties>
-        <!-- =================================================================== -->
-        <!-- SELECT THE PROPER COMPILER OPTION FOR THE NATIVE LIBRARY BUILDS     -->
-        <!-- The supported options are:                                          -->
-        <!--    "CROSS-COMPILER"  for cross-compiling on your host with a cross  -->
-        <!--                      compiler environment setup for 64-bit (aarch64)-->
-        <!--                      and 32-bit (armhf) platforms.  The host must   -->
-        <!--                      be a Linux-based system with an Intel/AMD or   -->
-        <!--                      ARM 64-bit CPU and Operating System.  The host -->
-        <!--                      can be a RaspberryPi 3B or 4B that is running  -->
-        <!--                      Pi OS 64-bit. (Unable to cross-compile for     -->
-        <!--                      64-bit library on 32-bit only hosts.)          -->
-        <!--                      [THIS IS THE DEFAULT IF NOT SPECIFIED]         -->
-        <!--                                                                     -->
-        <!--    "DOCKER-COMPILER" for cross-compiling inside a Docker container  -->
-        <!--                      best option when compiling on MacOS or Windows -->
-        <!--                      This option is also suitable for a Linux-based -->
-        <!--                      system where you would prefer not to install   -->
-        <!--                      ARM-based cross-compilers and other build      -->
-        <!--                      environment requirements like Java/JDK and     -->
-        <!--                      Maven.  This open only requires that you have  -->
-        <!--                      Docker (https://www.docker.com/) or Docker     -->
-        <!--                      Desktop installed and running on a 64-bit      -->
-        <!--                      Intel/AMD or ARM host system.                  -->
-        <!--                                                                     -->
-        <!-- (Note: you should override these options in a custom active profile -->
-        <!--        in your local M2 settings.xml file or use one of the         -->
-        <!--        associated profiles with the '-P' flag.  -->
-        <!-- =================================================================== -->
-
-        <!-- YOU CAN DEFINE ONE OF THE FOLLOWING YOU A CUSTOM ACTIVE PROFILE
-             IN YOU ~/.m2/settings.xml file TO PERMANENTLY APPLY THE DESIRED
-             COMPILER BEHAVIOR -->
-        <!-- <pi4j.native.compiler>CROSS-COMPILER</pi4j.native.compiler> -->
-        <!-- <pi4j.native.compiler>DOCKER-COMPILER</pi4j.native.compiler> -->
-
-        <!-- OR YOU CAN DEFINE THE PROPERTY VALUE USING THE '-D' FLAG ON YOUR MAVEN COMMAND -->
-        <!-- i.e.:   mvn clean install -Pnative -Dpi4j.native.compiler=CROSS-COMPILER -->
-        <!-- i.e.:   mvn clean install -Pnative -Dpi4j.native.compiler=DOCKER-COMPILER -->
-
-        <!-- OR YOU CAN DEFINE THE ASSOCIATED PROFILE VALUE USING THE '-P' FLAG ON YOUR MAVEN COMMAND -->
-        <!-- i.e.:   mvn clean install -Pnative -Pcross-compile -->
-        <!-- i.e.:   mvn clean install -Pnative -Pdocker -->
-
-        <!-- used internally; do not change value here -->
-        <!-- BY DEFAULT, ENABLE THE 'CROSS-COMPILER' FOR NATIVE BUILDS -->
-        <pi4j.native.compiler.effective>CROSS-COMPILER</pi4j.native.compiler.effective>
-
-        <!-- DEFAULT SETTINGS FOR REMOTELY BUILDING NATIVE LIBRARY ON A REMOTE PLATFORM -->
+        <!-- DEFAULT SETTINGS FOR REMOTELY BUILDING ON A REMOTE PLATFORM -->
         <pi4j.default.host>192.168.1.1</pi4j.default.host>
         <pi4j.default.port>22</pi4j.default.port>
         <pi4j.default.user>pi</pi4j.default.user>
@@ -305,7 +256,6 @@
         <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
         <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
-        <native-maven-plugin.version>1.0-alpha-9</native-maven-plugin.version>
         <central-publishing-maven-plugin.version>0.9.0</central-publishing-maven-plugin.version>
 
         <!-- REPORTS VERSIONS -->
@@ -322,7 +272,7 @@
         <gpg.keyname>${pi4j.gpg.key}</gpg.keyname>
 
         <!-- Project Properties -->
-        <launcher.class>com.pi4j.test/com.pi4j.test.GpiodTest</launcher.class>
+        <launcher.class>com.pi4j.test/com.pi4j.test.Main</launcher.class>
         <launcher.args></launcher.args>
         <!-- <launcher.args>ButtonApp</launcher.args>  -->
 
@@ -612,13 +562,6 @@
                     <artifactId>maven-bundle-plugin</artifactId>
                     <version>${maven-bundle-plugin.version}</version>
                     <extensions>true</extensions>
-                </plugin>
-
-                <!-- USED TO GENERATE HEADER FILES FOR NATIVE LIBS -->
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>native-maven-plugin</artifactId>
-                    <version>${native-maven-plugin.version}</version>
                 </plugin>
 
                 <!-- GENERATE SITE DOCUMENTATION -->
@@ -938,71 +881,6 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
-
-        <!-- BUILD NATIVE SOURCES -->
-        <profile>
-            <id>native</id>
-            <activation>
-                <property>
-                    <name>release-build</name>
-                </property>
-            </activation>
-            <properties/>
-        </profile>
-
-        <!-- SPECIAL PROFILE TO ENABLE DOCKER-COMPILER NATIVE BUILDS BY DEFAULT IF RUNNING ON MACOS -->
-        <profile>
-            <id>mac</id>
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
-            <properties>
-                <pi4j.native.compiler.effective>DOCKER-COMPILER</pi4j.native.compiler.effective>
-            </properties>
-        </profile>
-
-        <!-- SPECIAL PROFILE TO ENABLE DOCKER-COMPILER NATIVE BUILDS BY DEFAULT IF RUNNING ON WINDOWS -->
-        <profile>
-            <id>windows</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                </os>
-            </activation>
-            <properties>
-                <pi4j.native.compiler.effective>DOCKER-COMPILER</pi4j.native.compiler.effective>
-            </properties>
-        </profile>
-
-        <!-- SPECIAL PROFILE TO SUPPORT DOCKER-COMPILER NATIVE BUILDS -->
-        <profile>
-            <id>docker</id>
-            <activation>
-                <property>
-                    <name>pi4j.native.compiler</name>
-                    <value>DOCKER-COMPILER</value>
-                </property>
-            </activation>
-            <properties>
-                <pi4j.native.compiler.effective>DOCKER-COMPILER</pi4j.native.compiler.effective>
-            </properties>
-        </profile>
-
-        <!-- SPECIAL PROFILE TO SUPPORT CROSS-COMPILER NATIVE BUILDS -->
-        <profile>
-            <id>cross-compile</id>
-            <activation>
-                <property>
-                    <name>pi4j.native.compiler</name>
-                    <value>CROSS-COMPILER</value>
-                </property>
-            </activation>
-            <properties>
-                <pi4j.native.compiler.effective>CROSS-COMPILER</pi4j.native.compiler.effective>
-            </properties>
         </profile>
 
         <!-- TRANSFER DEVELOPMENT ARTIFACTS TO HARDWARE TESTING PLATFORM -->

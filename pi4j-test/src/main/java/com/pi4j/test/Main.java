@@ -47,7 +47,7 @@ public class Main {
      * runs tests, and outputs results.
      *
      * @param args Command-line arguments for the application. Accepted parameters:
-     *             - "-p <provider>": Specifies the test provider, either "newautocontext", "linuxfs" or "ffm".
+     *             - "-p <provider>": Specifies the test provider, either "newautocontext", or "ffm".
      *             - "-h": Displays help information and exits the application.
      */
     public static void main(String[] args) {
@@ -61,7 +61,7 @@ public class Main {
         logger.info("==============================================================");
 
         ProviderContext providerContext = null;
-        String helpString = "params: -p <newautocontext,linuxfs,ffm>, -h help";
+        String helpString = "params: -p <newautocontext,ffm>, -h help";
         for (int i = 0; i < args.length; i++) {
             String o = args[i];
             if (o.contentEquals("-p")) {
