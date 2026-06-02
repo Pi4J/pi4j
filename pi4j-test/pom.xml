@@ -8,7 +8,7 @@
     <parent>
         <artifactId>pi4j-parent</artifactId>
         <groupId>com.pi4j</groupId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>5.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -33,90 +33,11 @@
             <artifactId>pi4j-plugin-mock</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <!-- include Pi4J Plugins (Platforms and I/O Providers) -->
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-pigpio</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-linuxfs</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-gpiod</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <!--
-            include Pi4J native libraries
-        -->
-        <!-- pigpio -->
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-pigpio</artifactId>
-            <version>${project.version}</version>
-            <classifier>armhf</classifier>
-            <type>so</type>
-        </dependency>
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-pigpio</artifactId>
-            <version>${project.version}</version>
-            <classifier>aarch64</classifier>
-            <type>so</type>
-        </dependency>
-
-        <!-- linuxfs -->
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-linuxfs</artifactId>
-            <version>${project.version}</version>
-            <classifier>armhf</classifier>
-            <type>so</type>
-        </dependency>
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-linuxfs</artifactId>
-            <version>${project.version}</version>
-            <classifier>aarch64</classifier>
-            <type>so</type>
-        </dependency>
-
-        <!-- gpiod -->
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-gpiod</artifactId>
-            <version>${project.version}</version>
-            <classifier>armhf</classifier>
-            <type>so</type>
-        </dependency>
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-gpiod</artifactId>
-            <version>${project.version}</version>
-            <classifier>aarch64</classifier>
-            <type>so</type>
-        </dependency>
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-plugin-gpiod</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-plugin-linuxfs</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.pi4j</groupId>
             <artifactId>pi4j-plugin-ffm</artifactId>
             <version>${project.version}</version>
         </dependency>
-
     </dependencies>
 
     <build>

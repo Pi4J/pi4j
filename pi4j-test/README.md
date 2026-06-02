@@ -18,7 +18,7 @@ cd pi4j-test/target/distribution
 Usage parms:
 
 ```text
--p newautocontext (default), linuxfs, or ffm
+-p newautocontext (default), or ffm
 -h help
 ```
 
