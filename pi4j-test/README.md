@@ -8,11 +8,11 @@ The `src/main/java/com/pi4j/test/Main.java` class verifies that the providers ca
 
 ## Build and Run
 
-In top directory
-``` text
-mvn clean install -Pnative
+In the top-level project directory:
+```shell
+./mvnw -pl pi4j-test -am -DskipTests package
 cd pi4j-test/target/distribution
-./runSmoketest.sh 
+./runSmoketest.sh
 ```
 
 Usage parms:
