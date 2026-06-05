@@ -59,8 +59,6 @@ public class DefaultDigitalOutputBuilder implements DigitalOutputBuilder {
 
     /**
      * PRIVATE CONSTRUCTOR
-     *
-     * @param context a {@link com.pi4j.context.Context} object.
      */
     protected DefaultDigitalOutputBuilder() {
         this.builder = DigitalOutputConfigBuilder.newInstance();
