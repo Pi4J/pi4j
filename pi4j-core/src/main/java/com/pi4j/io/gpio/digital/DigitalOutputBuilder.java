@@ -120,6 +120,9 @@ public interface DigitalOutputBuilder {
         return DefaultDigitalOutputBuilder.newInstance(context);
     }
 
+    static DigitalOutputBuilder newInstance()  {
+        return DefaultDigitalOutputBuilder.newInstance();
+    }
     /**
      * <p>build.</p>
      *

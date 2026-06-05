@@ -90,7 +90,12 @@ public interface DigitalOutputConfig extends DigitalConfig<DigitalOutputConfig> 
      * @param context {@link Context}
      * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder} object.
      */
+    @Deprecated
     static DigitalOutputConfigBuilder newBuilder(Context context)  {
         return DigitalOutputConfigBuilder.newInstance(context);
+    }
+
+    static DigitalOutputConfigBuilder newBuilder()  {
+        return DigitalOutputConfigBuilder.newInstance();
     }
 }

@@ -43,8 +43,13 @@ public interface SpiConfigBuilder extends
      * @param context {@link Context}
      * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
      */
+    @Deprecated
     static SpiConfigBuilder newInstance(Context context) {
         return DefaultSpiConfigBuilder.newInstance(context);
+    }
+
+    static SpiConfigBuilder newInstance() {
+        return DefaultSpiConfigBuilder.newInstance();
     }
 
     /**

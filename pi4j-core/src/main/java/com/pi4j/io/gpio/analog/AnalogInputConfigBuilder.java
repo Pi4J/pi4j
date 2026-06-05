@@ -41,7 +41,12 @@ public interface AnalogInputConfigBuilder extends AnalogConfigBuilder<AnalogInpu
      * @param context {@link Context}
      * @return a {@link com.pi4j.io.gpio.analog.AnalogInputConfigBuilder} object.
      */
+    @Deprecated
     static AnalogInputConfigBuilder newInstance(Context context) {
         return DefaultAnalogInputConfigBuilder.newInstance(context);
+    }
+
+    static AnalogInputConfigBuilder newInstance() {
+        return DefaultAnalogInputConfigBuilder.newInstance();
     }
 }

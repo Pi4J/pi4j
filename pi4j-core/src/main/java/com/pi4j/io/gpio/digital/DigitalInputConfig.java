@@ -74,8 +74,14 @@ public interface DigitalInputConfig extends DigitalConfig<DigitalInputConfig> {
      *
      * @param context {@link Context}
      * @return a {@link com.pi4j.io.gpio.digital.DigitalInputConfigBuilder} object.
+     * @deprecated use {@link #newBuilder()}
      */
+    @Deprecated
     static DigitalInputConfigBuilder newBuilder(Context context)  {
         return DigitalInputConfigBuilder.newInstance(context);
+    }
+
+    static DigitalInputConfigBuilder newBuilder()  {
+        return DigitalInputConfigBuilder.newInstance();
     }
 }

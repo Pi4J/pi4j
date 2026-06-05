@@ -40,7 +40,6 @@ import com.pi4j.util.StringUtil;
  */
 public class DefaultDigitalOutputBuilder implements DigitalOutputBuilder {
 
-    private final Context context;
     private final DigitalOutputConfigBuilder builder;
 
     private String platformId = null;
@@ -55,7 +54,7 @@ public class DefaultDigitalOutputBuilder implements DigitalOutputBuilder {
      * @return a new instance of {@link DigitalOutputBuilder}
      */
     public static DigitalOutputBuilder newInstance(Context context) {
-        return new DefaultDigitalOutputBuilder(context);
+        return new DefaultDigitalOutputBuilder();
     }
 
     /**
@@ -63,10 +62,8 @@ public class DefaultDigitalOutputBuilder implements DigitalOutputBuilder {
      *
      * @param context a {@link com.pi4j.context.Context} object.
      */
-    protected DefaultDigitalOutputBuilder(Context context) {
-        super();
-        this.context = context;
-        this.builder = DigitalOutputConfigBuilder.newInstance(context);
+    protected DefaultDigitalOutputBuilder() {
+        this.builder = DigitalOutputConfigBuilder.newInstance();
     }
 
     /**
