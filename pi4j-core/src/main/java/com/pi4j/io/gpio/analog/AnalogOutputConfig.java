@@ -125,7 +125,12 @@ public interface AnalogOutputConfig
      * @param context {@link Context}
      * @return a {@link com.pi4j.io.gpio.analog.AnalogOutputConfigBuilder} object.
      */
+    @Deprecated
     static AnalogOutputConfigBuilder newBuilder(Context context)  {
         return AnalogOutputConfigBuilder.newInstance(context);
+    }
+
+    static AnalogOutputConfigBuilder newBuilder()  {
+        return AnalogOutputConfigBuilder.newInstance();
     }
 }

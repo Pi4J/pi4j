@@ -45,8 +45,13 @@ public interface I2CConfigBuilder extends
      * @param context {@link Context}
      * @return a {@link com.pi4j.io.i2c.I2CConfigBuilder} object.
      */
+    @Deprecated
     static I2CConfigBuilder newInstance(Context context)  {
         return DefaultI2CConfigBuilder.newInstance(context);
+    }
+
+    static I2CConfigBuilder newInstance()  {
+        return DefaultI2CConfigBuilder.newInstance();
     }
 
     /**

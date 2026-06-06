@@ -50,9 +50,15 @@ public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfi
      * @param context {@link Context}
      * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder} object.
      */
+    @Deprecated
     static DigitalOutputConfigBuilder newConfigBuilder(Context context){
         return DigitalOutputConfigBuilder.newInstance(context);
     }
+
+    static DigitalOutputConfigBuilder newConfigBuilder(){
+        return DigitalOutputConfigBuilder.newInstance();
+    }
+
     /**
      * <p>newBuilder.</p>
      *
@@ -62,6 +68,7 @@ public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfi
     static DigitalOutputBuilder newBuilder(Context context){
         return DigitalOutputBuilder.newInstance(context);
     }
+
 
     /**
      * <p>state.</p>
