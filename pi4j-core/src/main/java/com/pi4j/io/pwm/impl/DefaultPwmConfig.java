@@ -53,7 +53,7 @@ public class DefaultPwmConfig
     protected Integer bcm = null;
 
     // private configuration properties
-    protected Integer dutyCycle = null;
+    protected Double dutyCycle = null;
     protected Integer frequency = null;
     protected PwmType pwmType = PwmType.SOFTWARE;
     protected PwmPolarity polarity = PwmPolarity.NORMAL;
@@ -104,7 +104,7 @@ public class DefaultPwmConfig
 
         // load optional pwm duty-cycle from properties
         if (properties.containsKey(DUTY_CYCLE_KEY)) {
-            this.dutyCycle = Integer.parseInt(properties.get(DUTY_CYCLE_KEY));
+            this.dutyCycle = Double.parseDouble(properties.get(DUTY_CYCLE_KEY));
         }
 
         // load optional pwm frequency from properties
@@ -134,12 +134,12 @@ public class DefaultPwmConfig
 
         // bounds checking
         if (this.dutyCycle != null && this.dutyCycle > 100) {
-            this.dutyCycle = 100;
+            this.dutyCycle = 100.0;
         }
 
         // bounds checking
         if (this.dutyCycle != null && this.dutyCycle < 0) {
-            this.dutyCycle = (int) 0;
+            this.dutyCycle = 0.0;
         }
 
         // define default property values if any are missing (based on the required address value)
@@ -186,7 +186,7 @@ public class DefaultPwmConfig
      * {@inheritDoc}
      */
     @Override
-    public Integer dutyCycle() {
+    public Double dutyCycle() {
         return this.dutyCycle;
     }
 

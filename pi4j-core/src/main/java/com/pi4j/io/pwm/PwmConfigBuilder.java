@@ -105,7 +105,11 @@ public interface PwmConfigBuilder extends
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      * @return this builder instance
      */
-    PwmConfigBuilder dutyCycle(Integer dutyCycle);
+    PwmConfigBuilder dutyCycle(Double dutyCycle);
+
+    default PwmConfigBuilder dutyCycle(Integer dutyCycle) {
+        return dutyCycle(dutyCycle == null ? null : (double) dutyCycle);
+    }
 
     /**
      * Set the PwmType of this PWM instance. (Hardware/Software)
@@ -139,8 +143,11 @@ public interface PwmConfigBuilder extends
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      * @return this builder instance
      */
-    PwmConfigBuilder shutdown(Integer dutyCycle);
+    PwmConfigBuilder shutdown(Double dutyCycle);
 
+    default PwmConfigBuilder shutdown(Integer dutyCycle) {
+        return shutdown(dutyCycle == null ? null : (double) dutyCycle);
+    };
     /**
      * Optionally configure a PWM duty-cycle value that should automatically
      * be applied to the PWM instance when this PWM instance is created and initialized.
@@ -152,8 +159,11 @@ public interface PwmConfigBuilder extends
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      * @return this builder instance
      */
-    PwmConfigBuilder initial(Integer dutyCycle);
+    PwmConfigBuilder initial(Double dutyCycle);
 
+    default PwmConfigBuilder initial(Integer dutyCycle) {
+        return initial(dutyCycle == null ? null : (double) dutyCycle);
+    }
     /**
      * Add one or more PwmPresets to this PWM instance. You can create new PWM
      * preset instance using the 'PwmPreset::newBuilder(name)' static

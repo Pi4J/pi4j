@@ -237,7 +237,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default Integer dutyCycle() throws IOException {
+    default double dutyCycle() throws IOException {
         return getDutyCycle();
     }
 
