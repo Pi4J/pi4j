@@ -168,7 +168,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * @return returns this PWM instance
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default Pwm on(Integer dutyCycle) throws IOException {
+    default Pwm on(double dutyCycle) throws IOException {
         if (dutyCycle > 0) {
             setDutyCycle(dutyCycle);
             return on();
@@ -222,7 +222,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      * @throws IOException if fails to communicate with the PWM pin
      */
-    Integer getDutyCycle() throws IOException;
+    double getDutyCycle() throws IOException;
 
     /**
      * Get the duty-cycle value as an Integer value that represents the
@@ -257,7 +257,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      * @throws IOException if fails to communicate with the PWM pin
      */
-    void setDutyCycle(Integer dutyCycle) throws IOException;
+    void setDutyCycle(double dutyCycle) throws IOException;
 
     /**
      * Set the duty-cycle value as an Integer value that represents the
@@ -276,7 +276,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * @return returns this PWM instance
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default Pwm dutyCycle(Integer dutyCycle) throws IOException {
+    default Pwm dutyCycle(double dutyCycle) throws IOException {
         setDutyCycle(dutyCycle);
         return this;
     }

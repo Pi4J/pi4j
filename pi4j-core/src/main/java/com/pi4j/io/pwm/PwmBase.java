@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implements Pwm {
 
     protected int frequency = 100;
-    protected Integer dutyCycle = 50;
+    protected double dutyCycle = 50;
     protected long period = TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / frequency;
     protected boolean onState = false;
     protected PwmPolarity polarity = PwmPolarity.NORMAL;
@@ -68,7 +68,7 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
      * {@inheritDoc}
      */
     @Override
-    public Integer getDutyCycle() throws IOException {
+    public double getDutyCycle() throws IOException {
         return this.dutyCycle;
     }
 
@@ -92,8 +92,8 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
      * {@inheritDoc}
      */
     @Override
-    public void setDutyCycle(Integer dutyCycle) throws IOException {
-        Integer dc = dutyCycle;
+    public void setDutyCycle(double dutyCycle) throws IOException {
+        double dc = dutyCycle;
 
         // bounds check the duty-cycle value
         if (dc < 0) dc = 0;

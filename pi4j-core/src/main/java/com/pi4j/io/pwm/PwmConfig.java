@@ -114,7 +114,7 @@ public interface PwmConfig extends ChipConfig<PwmConfig>, ChannelConfig<PwmConfi
      *
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      */
-    Integer dutyCycle();
+    Double dutyCycle();
 
     /**
      * Get the configured duty-cycle value as a decimal value that represents
@@ -127,7 +127,7 @@ public interface PwmConfig extends ChipConfig<PwmConfig>, ChannelConfig<PwmConfi
      *
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      */
-    default Integer getDutyCycle() {
+    default Double getDutyCycle() {
         return dutyCycle();
     }
 
