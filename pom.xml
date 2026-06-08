@@ -4,7 +4,7 @@
 
     <groupId>com.pi4j</groupId>
     <artifactId>pi4j-parent</artifactId>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.2</version>
     <name>Pi4J :: Parent POM</name>
     <description>Parent Maven POM for the Pi4J Project</description>
     <url>https://pi4j.com</url>
