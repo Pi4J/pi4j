@@ -89,7 +89,7 @@ public interface RaspberryPi extends Pi4JApi.API {
             return context.create(config);
         }
 
-        public Pwm pwm0(PwmPolarity pwmPolarity, int frequency, int dutyCycle) {
+        public Pwm pwm0(PwmPolarity pwmPolarity, int frequency, double dutyCycle) {
             var config = PwmConfigBuilder.newInstance(context)
                 .chip(0)
                 .channel(0)
@@ -104,7 +104,7 @@ public interface RaspberryPi extends Pi4JApi.API {
             return pwm0(PwmPolarity.NORMAL, 10_000, 5_000);
         }
 
-        public Pwm pwm1(PwmPolarity pwmPolarity, int frequency, int dutyCycle) {
+        public Pwm pwm1(PwmPolarity pwmPolarity, int frequency, double dutyCycle) {
             var config = PwmConfigBuilder.newInstance(context)
                 .chip(0)
                 .channel(1)

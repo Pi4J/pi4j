@@ -123,13 +123,13 @@ public class DefaultPwmConfigBuilder
      * {@inheritDoc}
      */
     @Override
-    public PwmConfigBuilder dutyCycle(Integer dutyCycle) {
+    public PwmConfigBuilder dutyCycle(Double dutyCycle) {
         // bounds check the duty-cycle value
-        Integer dc = dutyCycle;
+        double dc = dutyCycle;
         if (dc < 0) dc = 0;
         if (dc > 100) dc = 100;
 
-        this.properties.put(PwmConfig.DUTY_CYCLE_KEY, Integer.toString(dc));
+        this.properties.put(PwmConfig.DUTY_CYCLE_KEY, Double.toString(dc));
         return this;
     }
 
@@ -155,13 +155,13 @@ public class DefaultPwmConfigBuilder
      * {@inheritDoc}
      */
     @Override
-    public PwmConfigBuilder shutdown(Integer dutyCycle) {
+    public PwmConfigBuilder shutdown(Double dutyCycle) {
         // bounds check the duty-cycle value
-        Integer dc = dutyCycle;
-        if (dc < 0) dc = 0;
-        if (dc > 100) dc = 100;
+        Double dc = dutyCycle;
+        if (dc < 0) dc = 0.0;
+        if (dc > 100) dc = 100.0;
 
-        this.properties.put(PwmConfig.SHUTDOWN_VALUE_KEY, Integer.toString(dc));
+        this.properties.put(PwmConfig.SHUTDOWN_VALUE_KEY, Double.toString(dc));
         return this;
     }
 
@@ -169,13 +169,13 @@ public class DefaultPwmConfigBuilder
      * {@inheritDoc}
      */
     @Override
-    public PwmConfigBuilder initial(Integer dutyCycle) {
+    public PwmConfigBuilder initial(Double dutyCycle) {
         // bounds check the duty-cycle value
-        Integer dc = dutyCycle;
-        if (dc < 0) dc = 0;
-        if (dc > 100) dc = 100;
+        Double dc = dutyCycle;
+        if (dc < 0) dc = 0.0;
+        if (dc > 100) dc = 100.0;
 
-        this.properties.put(PwmConfig.INITIAL_VALUE_KEY, Integer.toString(dc));
+        this.properties.put(PwmConfig.INITIAL_VALUE_KEY, Double.toString(dc));
         return this;
     }
 
