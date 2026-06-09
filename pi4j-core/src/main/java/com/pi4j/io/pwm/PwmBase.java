@@ -44,9 +44,9 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implements Pwm {
 
-    protected int frequency = 100;
+    protected double frequency = 100;
     protected double dutyCycle = 50;
-    protected long period = TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / frequency;
+    protected long period = Math.round(TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / frequency);
     protected boolean onState = false;
     protected PwmPolarity polarity = PwmPolarity.NORMAL;
     protected Map<String, PwmPreset> presets = Collections.synchronizedMap(new HashMap<>());
@@ -76,7 +76,7 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
      * {@inheritDoc}
      */
     @Override
-    public int getFrequency() throws IOException {
+    public double getFrequency() throws IOException {
         return this.frequency;
     }
 
@@ -84,7 +84,7 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
      * {@inheritDoc}
      */
     @Override
-    public int getActualFrequency() throws IOException {
+    public double getActualFrequency() throws IOException {
         return this.frequency;
     }
 
@@ -107,7 +107,7 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
      * {@inheritDoc}
      */
     @Override
-    public void setFrequency(int frequency) throws IOException {
+    public void setFrequency(double frequency) throws IOException {
         this.frequency = frequency;
     }
 

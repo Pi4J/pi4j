@@ -296,7 +296,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * PWM signal to the 'ON' state.
      * @throws IOException if fails to communicate with the PWM pin
      */
-    int getFrequency() throws IOException;
+    double getFrequency() throws IOException;
 
     /**
      * Get the configured frequency value in Hertz (number of cycles per second)
@@ -313,7 +313,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * PWM signal to the 'ON' state.
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default int frequency() throws IOException {
+    default double frequency() throws IOException {
         return getFrequency();
     }
 
@@ -330,7 +330,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * PWM signal is set to the 'ON' state.
      * @throws IOException if fails to communicate with the PWM pin
      */
-    int getActualFrequency() throws IOException;
+    double getActualFrequency() throws IOException;
 
     /**
      * Get the actual frequency value in Hertz (number of cycles per second)
@@ -345,7 +345,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * PWM signal is set to the 'ON' state.
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default int actualFrequency() throws IOException {
+    default double actualFrequency() throws IOException {
         return getActualFrequency();
     }
 
@@ -361,7 +361,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * @param frequency the number of cycles per second (Hertz)
      * @throws IOException if fails to communicate with the PWM pin
      */
-    void setFrequency(int frequency) throws IOException;
+    void setFrequency(double frequency) throws IOException;
 
     /**
      * Set the configured frequency value in Hertz (number of cycles per second)
@@ -376,7 +376,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * @return returns this PWM instance
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default Pwm frequency(int frequency) throws IOException {
+    default Pwm frequency(double frequency) throws IOException {
         setFrequency(frequency);
         return this;
     }

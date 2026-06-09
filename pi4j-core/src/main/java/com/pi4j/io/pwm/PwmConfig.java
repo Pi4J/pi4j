@@ -138,7 +138,7 @@ public interface PwmConfig extends ChipConfig<PwmConfig>, ChannelConfig<PwmConfi
      *
      * @return frequency value in Hz (number of cycles per second)
      */
-    Integer frequency();
+    Double frequency();
 
     /**
      * Get the configured frequency value in Hertz (number of cycles per second)
@@ -147,7 +147,7 @@ public interface PwmConfig extends ChipConfig<PwmConfig>, ChannelConfig<PwmConfi
      *
      * @return frequency value in Hz (number of cycles per second)
      */
-    default Integer getFrequency() {
+    default Double getFrequency() {
         return frequency();
     }
 

@@ -114,7 +114,7 @@ public class DefaultPwmConfigBuilder
      * {@inheritDoc}
      */
     @Override
-    public PwmConfigBuilder frequency(Integer frequency) {
+    public PwmConfigBuilder frequency(Double frequency) {
         this.properties.put(PwmConfig.FREQUENCY_KEY, frequency.toString());
         return this;
     }

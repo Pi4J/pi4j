@@ -105,7 +105,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
 
         if (config.frequency() != null) {
             this.frequency = config.frequency();
-            this.period = NANOS_IN_SECOND / this.frequency;
+            this.period = Math.round(NANOS_IN_SECOND / this.frequency);
         } else {
             waitForPermission(this.pwmPath + PERIOD_PATH, 0);
             var periodFd = file.open(this.pwmPath + PERIOD_PATH, FileFlag.O_RDONLY);
@@ -131,7 +131,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
             throw new Pi4JException("cannot set frequency '" + frequency + "', required more then 0.");
         }
 
-        this.period = (NANOS_IN_SECOND / frequency);
+        this.period = Math.round(NANOS_IN_SECOND / frequency);
         logger.debug("{} - period is '{}', dutyCycle is '{}' and polarity '{}'.", pwmPath, period, dutyCycle, polarity);
 
         waitForPermission(this.pwmPath + PERIOD_PATH, 0);

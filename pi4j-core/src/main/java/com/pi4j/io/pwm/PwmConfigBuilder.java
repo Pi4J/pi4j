@@ -90,7 +90,12 @@ public interface PwmConfigBuilder extends
      * @param frequency the number of cycles per second (Hertz)
      * @return this builder instance
      */
-    PwmConfigBuilder frequency(Integer frequency);
+    PwmConfigBuilder frequency(Double frequency);
+
+    /** Provided for backward compatibility with Pi4J 4.x */
+    default PwmConfigBuilder frequency(Integer frequency) {
+        return frequency(frequency == null ? null : frequency.doubleValue());
+    }
 
     /**
      * Set the duty-cycle value as a decimal value that represents the
@@ -107,6 +112,7 @@ public interface PwmConfigBuilder extends
      */
     PwmConfigBuilder dutyCycle(Double dutyCycle);
 
+    /** Provided for backward compatibility with Pi4J 4.x */
     default PwmConfigBuilder dutyCycle(Integer dutyCycle) {
         return dutyCycle(dutyCycle == null ? null : (double) dutyCycle);
     }
