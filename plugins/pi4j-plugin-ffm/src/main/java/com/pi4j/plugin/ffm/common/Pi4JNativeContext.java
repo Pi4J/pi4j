@@ -50,7 +50,7 @@ public class Pi4JNativeContext implements SegmentAllocator {
      * @param method        string representation of called method
      * @param args          arguments called to function
      */
-    public static void processError(int callResult, MemorySegment capturedState, String method, Object... args) throws Throwable {
+    public static void processError(long callResult, MemorySegment capturedState, String method, Object... args) throws Throwable {
         if (callResult < 0) {
             int errno = (int) ERRNO_HANDLE.get(capturedState, 0L);
             var errnoStr = (MemorySegment) STR_ERROR.invokeExact(errno);
