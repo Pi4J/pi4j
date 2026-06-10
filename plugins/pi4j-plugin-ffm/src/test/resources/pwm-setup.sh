@@ -8,3 +8,6 @@ insmod pwm-mock.ko
 
 # Sleep a second to let udev rules to be applied
 sleep 1
+
+echo "123"
+ls -la /sys/class/pwm/pwmchip*
