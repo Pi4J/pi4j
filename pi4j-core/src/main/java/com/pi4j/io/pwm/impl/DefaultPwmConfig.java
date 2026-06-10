@@ -54,7 +54,7 @@ public class DefaultPwmConfig
 
     // private configuration properties
     protected Double dutyCycle = null;
-    protected Integer frequency = null;
+    protected Double frequency = null;
     protected PwmType pwmType = PwmType.SOFTWARE;
     protected PwmPolarity polarity = PwmPolarity.NORMAL;
     protected Integer shutdownValue = null;
@@ -109,7 +109,7 @@ public class DefaultPwmConfig
 
         // load optional pwm frequency from properties
         if (properties.containsKey(FREQUENCY_KEY)) {
-            this.frequency = Integer.parseInt(properties.get(FREQUENCY_KEY));
+            this.frequency = Double.parseDouble(properties.get(FREQUENCY_KEY));
         }
 
         // load optional pwm type from properties
@@ -194,7 +194,7 @@ public class DefaultPwmConfig
      * {@inheritDoc}
      */
     @Override
-    public Integer frequency() {
+    public Double frequency() {
         return this.frequency;
     }
 
