@@ -5,7 +5,7 @@ import com.pi4j.context.Context;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfigBuilder;
 import com.pi4j.io.i2c.I2CImplementation;
-import com.pi4j.plugin.ffm.providers.i2c.I2CFFMProviderImpl;
+import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -38,16 +38,21 @@ public class I2CDirectTest {
         }
 
         pi4j = Pi4J.newContextBuilder()
-            .add(new I2CFFMProviderImpl())
+            .add(new FFMI2CProviderImpl())
             .build();
-        i2c = pi4j.i2c().create(I2CConfigBuilder.newInstance(pi4j).bus(99).device(0x1C).i2cImplementation(I2CImplementation.DIRECT));
+        i2c = pi4j.i2c()
+            .create(I2CConfigBuilder
+                .newInstance(pi4j)
+                .bus(99)
+                .device(0x1C)
+                .i2cImplementation(I2CImplementation.DIRECT));
 
     }
 
     @AfterAll
     public static void shutdown() throws InterruptedException, IOException {
         pi4j.shutdown();
-        var scriptPath = Paths.get("src/test/resources/").toFile().getAbsoluteFile();;
+        var scriptPath = Paths.get("src/test/resources/").toFile().getAbsoluteFile();
         var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.getAbsolutePath() + "/i2c-clean.sh");
         setupScript.directory(scriptPath);
         var process = setupScript.start();
@@ -74,14 +79,14 @@ public class I2CDirectTest {
 
     @Test
     public void testI2CWriteBytes() {
-        var buf = new byte[] {0x01, 0x02, 0x03, 0x04};
+        var buf = new byte[]{0x01, 0x02, 0x03, 0x04};
         var write = i2c.write(buf);
         assertEquals(4, write);
     }
 
     @Test
     public void testI2CWriteReadRegisterData() {
-        var writeBuffer = new byte[] {0x0A, 0x0B, 0x0C};
+        var writeBuffer = new byte[]{0x0A, 0x0B, 0x0C};
         var write = i2c.writeRegister(0xFF, writeBuffer);
         assertEquals(3, write);
         var readBuffer = new byte[3];
@@ -89,7 +94,7 @@ public class I2CDirectTest {
         assertEquals(3, read);
         assertArrayEquals(writeBuffer, readBuffer);
 
-        var writeBuffer2 = new byte[] {0x0D, 0x0E, 0x0F};
+        var writeBuffer2 = new byte[]{0x0D, 0x0E, 0x0F};
         var write2 = i2c.writeRegister(0x1F, writeBuffer2);
         assertEquals(3, write2);
         var readBuffer2 = new byte[3];

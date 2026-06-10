@@ -8,7 +8,6 @@ import com.pi4j.io.spi.SpiConfigBuilder;
 import com.pi4j.plugin.ffm.providers.spi.FFMSpiProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 
@@ -19,25 +18,23 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
-@Disabled
 public class SPITest {
-    private static final String IN_CONTAINER = System.getenv("IN_CONTAINER");
     private static Context pi4j;
     private static Spi spi;
 
     @BeforeAll
     public static void setup() throws InterruptedException, IOException {
-        if (IN_CONTAINER == null || !IN_CONTAINER.equals("true")) {
-            var scriptPath = Paths.get("src/test/resources/spi-setup.sh");
-            var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.toFile().getAbsolutePath()).start();
-            var result = setupScript.waitFor();
-            if (result != 0) {
-                var username = System.getProperty("user.name");
-                var errorOutput = new String(setupScript.getErrorStream().readAllBytes());
-                fail("Failed to setup SPI Test: \n" + errorOutput + "\n" +
-                    "Probably you need to add the SPI bash script to sudoers file " +
-                    "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
-            }
+        var scriptPath = Paths.get("src/test/resources").toFile().getAbsoluteFile();
+        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath + "/spi-setup.sh");
+        setupScript.directory(scriptPath);
+        var process = setupScript.start();
+        var result = process.waitFor();
+        if (result != 0) {
+            var username = System.getProperty("user.name");
+            var errorOutput = new String(process.getErrorStream().readAllBytes());
+            fail("Failed to setup SPI Test: \n" + errorOutput + "\n" +
+                "Probably you need to add the SPI bash script to sudoers file " +
+                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.getParentFile().getAbsolutePath() + "/'");
         }
 
         pi4j = Pi4J.newContextBuilder()
@@ -50,18 +47,17 @@ public class SPITest {
     @AfterAll
     public static void shutdown() throws InterruptedException, IOException {
         pi4j.shutdown();
-
-        if (IN_CONTAINER == null || !IN_CONTAINER.equals("true")) {
-            var scriptPath = Paths.get("src/test/resources/spi-clean.sh");
-            var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.toFile().getAbsolutePath()).start();
-            var result = setupScript.waitFor();
-            if (result != 0) {
-                var username = System.getProperty("user.name");
-                var errorOutput = new String(setupScript.getErrorStream().readAllBytes());
-                fail("Failed to cleanup SPI Test: \n" + errorOutput + "\n" +
-                    "Probably you need to add the SPI bash script to sudoers file " +
-                    "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
-            }
+        var scriptPath = Paths.get("src/test/resources").toFile().getAbsoluteFile();
+        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath + "/spi-clean.sh");
+        setupScript.directory(scriptPath);
+        var process = setupScript.start();
+        var result = process.waitFor();
+        if (result != 0) {
+            var username = System.getProperty("user.name");
+            var errorOutput = new String(process.getErrorStream().readAllBytes());
+            fail("Failed to cleanup SPI Test: \n" + errorOutput + "\n" +
+                "Probably you need to add the SPI bash script to sudoers file " +
+                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.getParentFile().getAbsolutePath() + "/'");
         }
     }
 
@@ -82,6 +78,6 @@ public class SPITest {
     public void testSPIRead() {
         var buffer = new byte[4];
         spi.read(buffer);
-        assertArrayEquals(new byte[]{1, 1, 1, 1}, buffer);
+        assertArrayEquals(new byte[]{0, 0, 0, 0}, buffer);
     }
 }

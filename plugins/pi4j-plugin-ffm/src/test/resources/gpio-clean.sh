@@ -1,18 +1,9 @@
 #!/bin/sh
-# SPDX-FileCopyrightText: 2023 Kent Gibson <warthog618@gmail.com>
-#
-# SPDX-License-Identifier: Apache-2.0 OR MIT
 
-# A helper to remove any orphaned gpio-sims from the system.
-# This should only be necessary if a test was killed abnormally
-# preventing it from cleaning up the sims it created, or if you
-# created a sim using basic_sim.sh.
+# Remove any fixed-number symlinks created by gpio-setup.sh. Real gpiochip nodes
+# are character devices, never symlinks, so this only touches what we added.
+for chip in /dev/gpiochip*; do
+	[ -L "$chip" ] && rm -f "$chip"
+done
 
-SIMDIR="/sys/kernel/config/gpio-sim"
-find $SIMDIR -type d -name hog -exec rmdir '{}' '+'
-find $SIMDIR -type d -name "line*" -exec rmdir '{}' '+'
-find $SIMDIR -type d -name "bank*" -exec rmdir '{}' '+'
-rmdir $SIMDIR/*
-
-modprobe -f configfs
-modprobe -f gpio-sim
+rmmod gpio_mock

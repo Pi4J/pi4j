@@ -8,24 +8,39 @@
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/slab.h>
 
 #define MODULE_NAME "i2c-mock"
 
 /*
 * I2C Mock driver provides basic functionality to integration test of Pi4j project and regression.
 * It simulates working I2C interface with any possible functionailities (for SMBus, ioctl xfers and file write/read) and echoes data was sent.
+* Storage model:
+* - a value written without a register is kept in a single 'registerless' buffer
+* - a value written to a register is kept in a per-register buffer (register -> buffer map)
+* - on a read the matching buffer is returned back, so 'write then read' echoes the same data
 * Limitations:
 * - there are no devices within the driver. It can work with any device address. For simplicity, it is refferred to device '1C' within pi4j tests
-* - data buffers are organized in two pieces: registerless buffer and map<register, buffer>
-* - all buffers are 1024 chars long (should be enough for tests)
+* - up to REGISTER_COUNT distinct registers are tracked, each buffer is BUFFER_SIZE bytes long (should be enough for tests)
 */
 
-static unsigned char * internal_buf;
-struct internal_registers {
-	unsigned short device_register;
-	unsigned char *data_buf;
+#define REGISTER_COUNT 10
+#define BUFFER_SIZE 1024
+
+/* value written/read without addressing a register */
+static unsigned char *internal_buf;
+
+/* one entry of the register -> buffer map */
+struct internal_register {
+	bool used;			/* slot is taken (distinguishes a real register 0x00 from an empty slot) */
+	unsigned short device_register;	/* register number this buffer belongs to */
+	unsigned char *data_buf;	/* stored value */
+	unsigned int len;		/* number of valid bytes (used by SMBus block transfers) */
 };
-struct internal_registers registers[10];
+static struct internal_register registers[REGISTER_COUNT];
+
+/* last register addressed, used by file-access reads that come in a separate transfer */
+static unsigned short last_reg;
 
 // all possible functionalities
 static u32 i2c_mock_funcions(struct i2c_adapter *adapter)
@@ -34,122 +49,140 @@ static u32 i2c_mock_funcions(struct i2c_adapter *adapter)
 			 | I2C_FUNC_SMBUS_BLOCK_DATA | I2C_FUNC_SMBUS_I2C_BLOCK;
 }
 
-// helper method to display information in kernel logs in format 'OA:0B:0C:FF'
-static unsigned char * format_hex(const unsigned char *bin, unsigned int binsz, unsigned char **result)
+// helper method to display information in kernel logs in format '0A:0B:0C:FF'
+static unsigned char *format_hex(const unsigned char *bin, unsigned int binsz, unsigned char **result)
 {
-  unsigned char     hex_str[]= "0123456789ABCDEF";
-  unsigned int      i;
+	static const char hex_str[] = "0123456789ABCDEF";
+	unsigned int i;
 
-  if (!(*result = (unsigned char *)kmalloc(binsz * 3 + 1, GFP_KERNEL)))
-    return (NULL);
+	*result = NULL;
+	if (!binsz)
+		return NULL;
 
-  (*result)[binsz * 2] = 0;
+	/* two hex chars plus a separator per byte; the last separator slot holds the NUL terminator */
+	*result = kmalloc(binsz * 3, GFP_KERNEL);
+	if (!*result)
+		return NULL;
 
-  if (!binsz)
-    return (NULL);
-
-  for (i = 0; i < binsz; i++) {
+	for (i = 0; i < binsz; i++) {
 		(*result)[i * 3 + 0] = hex_str[(bin[i] >> 4) & 0x0F];
 		(*result)[i * 3 + 1] = hex_str[(bin[i]     ) & 0x0F];
-		(*result)[i * 3 + 2] = (i + 1 < binsz) && bin[i + 1] ? ':' : '\0';
-    }
-  return (*result);
+		(*result)[i * 3 + 2] = (i + 1 < binsz) ? ':' : '\0';
+	}
+	return *result;
 }
 
-// parsing i2c message and writing/reading into buffer
-static void i2c_parse_msg(struct i2c_adapter *adap, struct i2c_msg *msgs, unsigned char *data_buf)
-{
-	int j, start_index = 1;
-	unsigned char * message;
-	if (!data_buf) {
-		data_buf = internal_buf;
-		start_index = 0;
-	}
-	if (msgs->flags & I2C_M_RD) {
-		for (j = 0; j < msgs->len; j++)
-			msgs->buf[j] = data_buf[j];
-		dev_info(&adap->dev, "    Read data: %s", format_hex(msgs->buf, msgs->len, &message));
-	} else {
-		// default is to save incoming buffer
-		for (j = start_index; j < msgs->len; j++)
-			data_buf[j - start_index] = msgs->buf[j];
-		dev_info(&adap->dev, "    Write data: %s", format_hex(data_buf, sizeof(data_buf), &message));
-	}
-
-	kfree(message);
-}
-
-// helper method to find buffer from map by provided register
-static unsigned char * find_register(const ushort device_register, unsigned char **register_buf)
+// helper method to find (or lazily create) the buffer mapped to a register
+static struct internal_register *find_register(unsigned short device_register)
 {
 	int i;
-	for (i = 0; i < 10; i++) {
-		if (registers[i].device_register == device_register) {
-			if (!registers[i].data_buf) {
-				registers[i].data_buf = (char *)kmalloc(1024 * sizeof(char), GFP_KERNEL);
-			}
-			register_buf = &registers[i].data_buf;
-			return *register_buf;
-		}
+
+	/* return an existing entry */
+	for (i = 0; i < REGISTER_COUNT; i++) {
+		if (registers[i].used && registers[i].device_register == device_register)
+			return &registers[i];
 	}
 
-	for (i = 0; i < 10; i++) {
-		if (!registers[i].device_register) {
+	/* otherwise claim a free slot */
+	for (i = 0; i < REGISTER_COUNT; i++) {
+		if (!registers[i].used) {
+			registers[i].data_buf = kzalloc(BUFFER_SIZE, GFP_KERNEL);
+			if (!registers[i].data_buf)
+				return NULL;
+			registers[i].used = true;
 			registers[i].device_register = device_register;
-			registers[i].data_buf = (char *)kmalloc(1024 * sizeof(char), GFP_KERNEL);
-			register_buf = &registers[i].data_buf;
-			return *register_buf;
+			registers[i].len = 0;
+			return &registers[i];
 		}
 	}
 	return NULL;
 }
 
-// special flag for handling non-register access
-static ushort last_reg;
+/*
+ * Parse a single i2c message: a read copies the stored buffer back into the
+ * message, a write stores the message into the buffer. 'write_offset' tells how
+ * many leading register bytes of a write message to skip before the payload
+ * (1 when the register is the first byte of the same message, 0 otherwise).
+ * A NULL data_buf selects the registerless buffer.
+ */
+static void i2c_parse_msg(struct i2c_adapter *adap, struct i2c_msg *msg,
+			  unsigned char *data_buf, int write_offset)
+{
+	unsigned char *message = NULL;
+	int j;
+
+	if (!data_buf)
+		data_buf = internal_buf;
+
+	if (msg->flags & I2C_M_RD) {
+		for (j = 0; j < msg->len; j++)
+			msg->buf[j] = data_buf[j];
+		dev_info(&adap->dev, "    Read data: %s", format_hex(msg->buf, msg->len, &message));
+	} else {
+		for (j = write_offset; j < msg->len; j++)
+			data_buf[j - write_offset] = msg->buf[j];
+		dev_info(&adap->dev, "    Write data: %s",
+			 format_hex(data_buf, msg->len - write_offset, &message));
+	}
+
+	kfree(message);
+}
 
 // main method to work with i2c within ioctl interface and file write/read
 static int i2c_mock_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
 {
 	if (num == 1) {
-		// we have only one message
-		struct i2c_msg * msg = &msgs[0];
-		ushort reg;
-		unsigned char *register_buf;
-		if (msgs->flags & I2C_M_RD && last_reg) {
-			// first, check if we want to read without register, grab last one
-			register_buf = find_register(last_reg, &register_buf);
-			dev_info(&adap->dev, "Accessing I2C deivce '%02X' with last register '%02X'", msg->addr, last_reg);
-		} else if (*msg->buf && msg->len > 1) {
-			// second, check if we want to access register with data, save current register as last one
-			reg = msg->buf[0];
+		// a single message: either a (registerless) read/write or a register write carrying [reg, data...]
+		struct i2c_msg *msg = &msgs[0];
+		struct internal_register *entry;
+
+		if (msg->flags & I2C_M_RD) {
+			// read: use the last addressed register, fall back to the registerless buffer
+			if (last_reg) {
+				entry = find_register(last_reg);
+				if (!entry)
+					return -ENOMEM;
+				dev_info(&adap->dev, "Reading I2C device '%02X' from last register '%02X'",
+					 msg->addr, last_reg);
+				i2c_parse_msg(adap, msg, entry->data_buf, 0);
+			} else {
+				dev_info(&adap->dev, "Reading I2C device '%02X' without register", msg->addr);
+				i2c_parse_msg(adap, msg, NULL, 0);
+			}
+		} else if (msg->len > 1) {
+			// write with a register: first byte is the register, the rest is the payload
+			unsigned short reg = msg->buf[0];
+
 			last_reg = reg;
-			register_buf = find_register(reg, &register_buf);
-			dev_info(&adap->dev, "Accessing I2C deivce '%02X' with register '%02X'", msg->addr, reg);
+			entry = find_register(reg);
+			if (!entry)
+				return -ENOMEM;
+			dev_info(&adap->dev, "Writing I2C device '%02X' to register '%02X'", msg->addr, reg);
+			i2c_parse_msg(adap, msg, entry->data_buf, 1);
 		} else {
-			// last, check if we want to access data with no register, drop last register
+			// write without a register
 			last_reg = 0;
-			dev_info(&adap->dev, "Accessing I2C device '%02X' without register", msg->addr);
+			dev_info(&adap->dev, "Writing I2C device '%02X' without register", msg->addr);
+			i2c_parse_msg(adap, msg, NULL, 0);
 		}
-		i2c_parse_msg(adap, &msgs[0], register_buf);
 	} else if (num > 1) {
-		// we have a register with the first message and others are just data
-		struct i2c_msg * register_msg = &msgs[0];
-		
-		ushort reg = register_msg->buf[0];
-		unsigned char *register_buf = find_register(reg, &register_buf);
-		dev_info(&adap->dev, "Accessing I2C deivce '%02X' with register '%02X'", msgs->addr, reg);
-		if (register_buf == NULL) {
-			return -1;
-		}
+		// the first message addresses a register, the following ones carry the data (typically a read)
+		struct i2c_msg *register_msg = &msgs[0];
+		unsigned short reg = register_msg->buf[0];
+		struct internal_register *entry = find_register(reg);
 		int i;
-		for (i = 1; i < num; i++) {
-			i2c_parse_msg(adap, &msgs[i], register_buf);
-		}
+
+		if (!entry)
+			return -ENOMEM;
+		last_reg = reg;
+		dev_info(&adap->dev, "Accessing I2C device '%02X' with register '%02X'", msgs->addr, reg);
+		for (i = 1; i < num; i++)
+			i2c_parse_msg(adap, &msgs[i], entry->data_buf, 0);
 	} else {
 		dev_err(&adap->dev, "Unsupported type");
-		return -1;
+		return -EINVAL;
 	}
-    return num;
+	return num;
 }
 
 // main method to work with SMBus protocol
@@ -157,64 +190,101 @@ static int i2c_mock_smbus_xfer(struct i2c_adapter *adap, u16 addr,
 			  unsigned short flags, char read_write,
 			  u8 command, int size, union i2c_smbus_data *data)
 {
-	dev_info(&adap->dev, "Accessing SMBus device '%02X' with register '%02X'", addr, command);
-	unsigned char *register_buf = find_register(command, &register_buf);
-	if (!register_buf) {
-		dev_err(&adap->dev, "Cannot get buffer for register %d", command);
-		return -1;
+	struct internal_register *entry;
+	unsigned char *message = NULL;
+	int i, len;
+
+	// quick and byte transfers carry no register, echo them through the registerless buffer
+	if (size == I2C_SMBUS_QUICK) {
+		dev_info(&adap->dev, "Accessing SMBus device '%02X' (I2C_SMBUS_QUICK)", addr);
+		return 0;
 	}
-	unsigned char *message;
-	switch (size) {
-		case I2C_SMBUS_QUICK:
-		case I2C_SMBUS_BYTE:
-			if (read_write == I2C_SMBUS_READ) {
+	if (size == I2C_SMBUS_BYTE) {
+		if (read_write == I2C_SMBUS_READ) {
+			// Receive Byte: read a single byte without sending a register.
+			// A real device returns the byte at its current cursor, so echo
+			// back the last addressed register, or the registerless buffer
+			// when no register has been addressed yet.
+			if (last_reg) {
+				entry = find_register(last_reg);
+				if (!entry) {
+					dev_err(&adap->dev, "Cannot get buffer for register %02X", last_reg);
+					return -ENOMEM;
+				}
+				data->byte = entry->data_buf[0];
+				dev_info(&adap->dev, "    Read data (I2C_SMBUS_BYTE) from last register '%02X': %02X",
+					 last_reg, data->byte);
+			} else {
 				data->byte = internal_buf[0];
-				dev_info(&adap->dev, "    Read data (I2C_SMBUS_QUICK|I2C_SMBUS_BYTE): %s", format_hex(internal_buf, sizeof(internal_buf), &message));
-			} else {
-				internal_buf[0] = command;
-				dev_info(&adap->dev, "    Write data (I2C_SMBUS_QUICK|I2C_SMBUS_BYTE): %s", format_hex(internal_buf, sizeof(internal_buf), &message));
+				dev_info(&adap->dev, "    Read data (I2C_SMBUS_BYTE): %02X", data->byte);
 			}
-			break;
-		case I2C_SMBUS_BYTE_DATA:
-			if (read_write == I2C_SMBUS_READ) {
-				data->byte = register_buf[0];
-				dev_info(&adap->dev, "    Read data (I2C_SMBUS_BYTE_DATA): %s", format_hex(internal_buf, sizeof(register_buf), &message));
-			} else {
-				register_buf[0] = data->byte;
-				dev_info(&adap->dev, "   Write data (I2C_SMBUS_BYTE_DATA): %s", format_hex(register_buf, sizeof(register_buf), &message));
-			}
-			break;
-		case I2C_SMBUS_WORD_DATA:
-			if (read_write == I2C_SMBUS_READ) {
-				data->word = ((register_buf[0] & 0xFF) << 8) | (register_buf[1] & 0xFF);
-				dev_info(&adap->dev, "    Read data (I2C_SMBUS_WORD_DATA): %s", format_hex(register_buf, sizeof(register_buf), &message));
-			} else {
-				register_buf[0] = data->word & 0XFF;
-				register_buf[1] = (data->word >> 8) & 0xFF;
-				dev_info(&adap->dev, "   Write data (I2C_SMBUS_WORD_DATA): %s", format_hex(register_buf, sizeof(register_buf), &message));
-			}
-			break;
-		case I2C_SMBUS_BLOCK_DATA:
-			if (read_write == I2C_SMBUS_READ) {
-				int i;
-				data->block[0] = I2C_SMBUS_BLOCK_MAX + 1;
-				for (i = 1; i < I2C_SMBUS_BLOCK_MAX + 1; i++) {
-					data->block[i] = register_buf[i - 1];
-				}
-				dev_info(&adap->dev, "    Read data (I2C_SMBUS_BLOCK_DATA): %s", format_hex(register_buf, sizeof(register_buf), &message));
-			} else {
-				int i;
-				int size = data->block[0];
-				for (i = 1; i < size + 1; i++) {
-					register_buf[i - 1] = data->block[i];
-				}
-				dev_info(&adap->dev, "   Write data (I2C_SMBUS_BLOCK_DATA): %s", format_hex(register_buf, sizeof(register_buf), &message));
-			}
-			break;
-		default:
-			kfree(message);
-			return -EOPNOTSUPP;
+		} else {
+			// Send Byte: write a single byte without a register
+			internal_buf[0] = command;
+			last_reg = 0;
+			dev_info(&adap->dev, "    Write data (I2C_SMBUS_BYTE): %02X", command);
+		}
+		return 0;
 	}
+
+	// everything else is register based
+	dev_info(&adap->dev, "Accessing SMBus device '%02X' with register '%02X'", addr, command);
+	entry = find_register(command);
+	if (!entry) {
+		dev_err(&adap->dev, "Cannot get buffer for register %02X", command);
+		return -ENOMEM;
+	}
+	// move the device cursor so a following Receive Byte reads this register
+	last_reg = command;
+
+	switch (size) {
+	case I2C_SMBUS_BYTE_DATA:
+		if (read_write == I2C_SMBUS_READ) {
+			data->byte = entry->data_buf[0];
+			dev_info(&adap->dev, "    Read data (I2C_SMBUS_BYTE_DATA): %s",
+				 format_hex(entry->data_buf, 1, &message));
+		} else {
+			entry->data_buf[0] = data->byte;
+			entry->len = 1;
+			dev_info(&adap->dev, "    Write data (I2C_SMBUS_BYTE_DATA): %s",
+				 format_hex(entry->data_buf, 1, &message));
+		}
+		break;
+	case I2C_SMBUS_WORD_DATA:
+		if (read_write == I2C_SMBUS_READ) {
+			// SMBus words are little endian: low byte first
+			data->word = (entry->data_buf[1] << 8) | entry->data_buf[0];
+			dev_info(&adap->dev, "    Read data (I2C_SMBUS_WORD_DATA): %s",
+				 format_hex(entry->data_buf, 2, &message));
+		} else {
+			entry->data_buf[0] = data->word & 0xFF;
+			entry->data_buf[1] = (data->word >> 8) & 0xFF;
+			entry->len = 2;
+			dev_info(&adap->dev, "    Write data (I2C_SMBUS_WORD_DATA): %s",
+				 format_hex(entry->data_buf, 2, &message));
+		}
+		break;
+	case I2C_SMBUS_BLOCK_DATA:
+		if (read_write == I2C_SMBUS_READ) {
+			len = min_t(int, entry->len, I2C_SMBUS_BLOCK_MAX);
+			data->block[0] = len;
+			for (i = 0; i < len; i++)
+				data->block[i + 1] = entry->data_buf[i];
+			dev_info(&adap->dev, "    Read data (I2C_SMBUS_BLOCK_DATA): %s",
+				 format_hex(entry->data_buf, len, &message));
+		} else {
+			len = min_t(int, data->block[0], I2C_SMBUS_BLOCK_MAX);
+			for (i = 0; i < len; i++)
+				entry->data_buf[i] = data->block[i + 1];
+			entry->len = len;
+			dev_info(&adap->dev, "    Write data (I2C_SMBUS_BLOCK_DATA): %s",
+				 format_hex(entry->data_buf, len, &message));
+		}
+		break;
+	default:
+		return -EOPNOTSUPP;
+	}
+
 	kfree(message);
 	return 0;
 }
@@ -236,24 +306,32 @@ static struct i2c_adapter i2c_mock_adapter = {
 static int __init i2c_mock_init(void)
 {
 	int ret;
+
+	internal_buf = kzalloc(BUFFER_SIZE, GFP_KERNEL);
+	if (!internal_buf)
+		return -ENOMEM;
+
 	ret = i2c_add_numbered_adapter(&i2c_mock_adapter);
 	if (ret) {
-        pr_err("i2c-mock: Failed to add new adapter");
-        return ret;
-    }
+		pr_err("i2c-mock: Failed to add new adapter");
+		kfree(internal_buf);
+		return ret;
+	}
 
 	dev_info(&i2c_mock_adapter.dev, "Setup: mock adapter at '/dev/i2c-%d' with deivce at address '1C'", i2c_mock_adapter.nr);
-	internal_buf = (char *)kmalloc(1024 * sizeof(char), GFP_KERNEL);
 
 	return 0;
 }
 
 static void __exit i2c_mock_exit(void)
 {
+	int i;
+
 	dev_info(&i2c_mock_adapter.dev, "Removing i2c mock adapter");
 	i2c_del_adapter(&i2c_mock_adapter);
 	kfree(internal_buf);
-	kfree(registers);
+	for (i = 0; i < REGISTER_COUNT; i++)
+		kfree(registers[i].data_buf);
 }
 
 module_init(i2c_mock_init);

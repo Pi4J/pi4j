@@ -76,8 +76,8 @@ public class GPIOTest {
         var lineInfoNonExistent = new IoctlNativeMock.IoctlTestData(LineInfo.class, (_) -> {
             throw new IllegalStateException();
         });
-        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE);
-             var _ = IoctlNativeMock.echo(lineInfoNonExistent)) {
+        try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE);
+             var _ = IoctlNativeMock.setup(lineInfoNonExistent)) {
 
             var builder = DigitalInputConfigBuilder.newInstance(pi4j1).bus(-1)
                 .bcm(99).build();
@@ -90,8 +90,8 @@ public class GPIOTest {
         var lineInfoNonExistent = new IoctlNativeMock.IoctlTestData(LineInfo.class, (_) -> {
             throw new IllegalStateException();
         });
-        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE);
-             var _ = IoctlNativeMock.echo(lineInfoNonExistent)) {
+        try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE);
+             var _ = IoctlNativeMock.setup(lineInfoNonExistent)) {
 
             var builder = DigitalInputConfigBuilder.newInstance(pi4jNonExistent).bus(-1)
                 .bcm(0).build();
@@ -108,8 +108,8 @@ public class GPIOTest {
                 PinFlag.INPUT.getValue(),
                 new LineAttribute[0]);
         });
-        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE);
-             var _ = IoctlNativeMock.echo(lineInfoTestData)) {
+        try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE);
+             var _ = IoctlNativeMock.setup(lineInfoTestData)) {
 
             var builder = DigitalInputConfigBuilder.newInstance(pi4j0).bus(-1)
                 .bcm(0).build();
@@ -127,8 +127,8 @@ public class GPIOTest {
                 PinFlag.INPUT.getValue(),
                 new LineAttribute[0]);
         });
-        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE);
-             var _ = IoctlNativeMock.echo(lineInfoTestData)) {
+        try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE);
+             var _ = IoctlNativeMock.setup(lineInfoTestData)) {
 
             var builder = DigitalInputConfigBuilder.newInstance(pi4j0).bus(-1)
                 .bcm(1).build();
@@ -168,9 +168,9 @@ public class GPIOTest {
             System.arraycopy(lineBuffer, 0, buffer, 0, lineBuffer.length);
             return buffer;
         });
-        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE, pollingFile);
-             var _ = IoctlNativeMock.echo(lineInfoTestData);
-             var _ = PollNativeMock.echo(pollingCallback)) {
+        try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE, pollingFile);
+             var _ = IoctlNativeMock.setup(lineInfoTestData);
+             var _ = PollNativeMock.setup(pollingCallback)) {
             var builder = DigitalInputConfigBuilder.newInstance(pi4j0)
                 .bus(-1)
                 .bcm(7)
@@ -225,9 +225,9 @@ public class GPIOTest {
             System.arraycopy(lineBuffer, 0, buffer, 0, lineBuffer.length);
             return buffer;
         });
-        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE, pollingFile);
-             var _ = IoctlNativeMock.echo(lineInfoTestData);
-             var _ = PollNativeMock.echo(pollingCallback)) {
+        try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE, pollingFile);
+             var _ = IoctlNativeMock.setup(lineInfoTestData);
+             var _ = PollNativeMock.setup(pollingCallback)) {
             var builder = DigitalInputConfigBuilder.newInstance(pi4j0)
                 .bus(-1)
                 .bcm(17)
@@ -284,9 +284,9 @@ public class GPIOTest {
             System.arraycopy(lineBuffer, 0, buffer, 0, lineBuffer.length);
             return buffer;
         });
-        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE, pollingFile);
-             var _ = IoctlNativeMock.echo(lineInfoTestData);
-             var _ = PollNativeMock.echo(pollingCallback)) {
+        try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE, pollingFile);
+             var _ = IoctlNativeMock.setup(lineInfoTestData);
+             var _ = PollNativeMock.setup(pollingCallback)) {
             var builder = DigitalInputConfigBuilder.newInstance(pi4j0)
                 .bus(-1)
                 .bcm(8)
@@ -314,8 +314,8 @@ public class GPIOTest {
                 PinFlag.USED.getValue(),
                 new LineAttribute[0]);
         });
-        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE);
-             var _ = IoctlNativeMock.echo(lineInfoOccupied)) {
+        try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE);
+             var _ = IoctlNativeMock.setup(lineInfoOccupied)) {
 
             var builder = DigitalInputConfigBuilder.newInstance(pi4j0).bus(-1)
                 .bcm(2).build();
@@ -332,8 +332,8 @@ public class GPIOTest {
                 PinFlag.INPUT.getValue(),
                 new LineAttribute[0]);
         });
-        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE);
-             var _ = IoctlNativeMock.echo(lineInfoTestData)) {
+        try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE);
+             var _ = IoctlNativeMock.setup(lineInfoTestData)) {
 
             var config = DigitalInputConfigBuilder.newInstance(pi4j0)
                 .bus(-1)
@@ -357,8 +357,8 @@ public class GPIOTest {
                 PinFlag.OUTPUT.getValue(),
                 new LineAttribute[0]);
         });
-        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE);
-             var _ = IoctlNativeMock.echo(lineInfoTestData)) {
+        try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE);
+             var _ = IoctlNativeMock.setup(lineInfoTestData)) {
 
             var builder = DigitalOutputConfigBuilder.newInstance(pi4j0)
                 .bus(-1)
@@ -378,8 +378,8 @@ public class GPIOTest {
                 PinFlag.OUTPUT.getValue(),
                 new LineAttribute[0]);
         });
-        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE);
-             var _ = IoctlNativeMock.echo(lineInfoTestData)) {
+        try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE);
+             var _ = IoctlNativeMock.setup(lineInfoTestData)) {
 
             var builder = DigitalOutputConfigBuilder.newInstance(pi4j0)
                 .bus(-1)
@@ -402,9 +402,9 @@ public class GPIOTest {
                 PinFlag.INPUT.getValue(),
                 new LineAttribute[0]);
         });
-        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE);
-             var _ = IoctlNativeMock.echo(lineInfoTestData);
-             var _ = BoardInfoMock.echo(BoardModel.MODEL_4_B)) {
+        try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE);
+             var _ = IoctlNativeMock.setup(lineInfoTestData);
+             var _ = BoardInfoMock.setup(BoardModel.MODEL_4_B)) {
 
             BoardInfoHelper.reinitialize();
             var mockingBoard = Pi4JApi.board(RaspberryPi.Model4B.class);
@@ -487,9 +487,9 @@ public class GPIOTest {
             System.arraycopy(lineBuffer, 0, buffer, 0, lineBuffer.length);
             return buffer;
         });
-        try (var _ = FileDescriptorNativeMock.echo(GPIOCHIP_FILE, pollingFile);
-             var _ = IoctlNativeMock.echo(lineInfoTestData);
-             var _ = PollNativeMock.echo(pollingCallback)) {
+        try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE, pollingFile);
+             var _ = IoctlNativeMock.setup(lineInfoTestData);
+             var _ = PollNativeMock.setup(pollingCallback)) {
             List<Object> pins = new ArrayList<>();
             for (int i = 0; i < numPins; i++) {
                 var builder = DigitalInputConfigBuilder.newInstance(pi4j0)
