@@ -42,5 +42,5 @@ if [ -n "$NUMBERS" ]; then
 	done
 fi
 
-# Sleep half a second to let udev rules to be applied
-sleep 0.5
+# Sleep a second to let udev rules to be applied
+sleep 1
