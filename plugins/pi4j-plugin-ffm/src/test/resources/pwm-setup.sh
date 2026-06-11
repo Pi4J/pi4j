@@ -7,7 +7,4 @@ bash <(curl -sSL https://raw.githubusercontent.com/Pi4J/pi4j-os/main/script/setu
 insmod pwm-mock.ko
 
 # Sleep a second to let udev rules to be applied
-sleep 1
-
-echo "123"
-ls -la /sys/class/pwm/pwmchip*
+sleep 5
