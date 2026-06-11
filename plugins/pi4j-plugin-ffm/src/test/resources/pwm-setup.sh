@@ -3,7 +3,7 @@
 /bin/bash  ../native/pwm/build.sh
 insmod pwm-mock.ko
 
-udevadm trigger --verbose
+udevadm trigger --settle
 
 # Sleep a second to let udev rules to be applied
 sleep 5

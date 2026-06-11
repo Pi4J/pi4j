@@ -39,7 +39,7 @@ if [ -n "$NUMBERS" ]; then
 	done
 fi
 
-udevadm trigger --verbose
+udevadm trigger --settle
 
 # Sleep a second to let udev rules to be applied
 sleep 1
