@@ -1,8 +1,8 @@
 name: Build pull-request to develop branch
 
 on:
-#  pull_request:
-#    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
   workflow_dispatch:
 
 jobs:
@@ -47,7 +47,7 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-        run: mvn clean package
+        run: sudo -u $USER bash -c 'source ~/.sdkman/bin/sdkman-init.sh && ./mvnw clean package'
 
       - name: Make staging directory
         run: mkdir staging

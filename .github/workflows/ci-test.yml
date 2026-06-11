@@ -1,8 +1,9 @@
 name: ci-test.yml
 on:
-  push:
-    branches:
-      - "test-framework"
+#  push:
+#    branches:
+#      - "test-framework"
+  workflow_dispatch:
 
 jobs:
   Build:

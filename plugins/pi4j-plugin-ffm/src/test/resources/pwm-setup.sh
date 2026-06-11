@@ -6,4 +6,4 @@ insmod pwm-mock.ko
 udevadm trigger --settle
 
 # Sleep a second to let udev rules to be applied
-sleep 5
+sleep 0.5
