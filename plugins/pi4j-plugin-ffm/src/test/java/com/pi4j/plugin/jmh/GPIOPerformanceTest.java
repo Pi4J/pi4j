@@ -23,26 +23,33 @@ public class GPIOPerformanceTest {
 
     @Setup
     public void setup() throws InterruptedException, IOException {
-        var scriptPath = Paths.get("src/test/resources/gpio-setup.sh");
-        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.toFile().getAbsolutePath()).start();
-        var result = setupScript.waitFor();
+        var scriptPath = Paths.get("src/test/resources").toFile().getAbsoluteFile();
+        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath + "/gpio-setup.sh");
+        setupScript.directory(scriptPath);
+        var process = setupScript.start();
+        var result = process.waitFor();
         if (result != 0) {
             var username = System.getProperty("user.name");
-            fail("Failed to setup GPIO Test. Probably you need to add the GPIO Simulator bash script to sudoers file " +
-                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
+            var errorOutput = new String(process.getErrorStream().readAllBytes());
+            fail("Failed to setup GPIO Test:\n" + errorOutput + "\n" +
+                "Probably you need to add the GPIO Simulator bash script to sudoers file " +
+                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.getParentFile().getAbsolutePath() + "/'");
         }
-
     }
 
     @TearDown
     public void tearDown() throws InterruptedException, IOException {
-        var scriptPath = Paths.get("src/test/resources/gpio-clean.sh");
-        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath.toFile().getAbsolutePath()).start();
-        var result = setupScript.waitFor();
+        var scriptPath = Paths.get("src/test/resources").toFile().getAbsoluteFile();
+        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath + "/gpio-clean.sh");
+        setupScript.directory(scriptPath);
+        var process = setupScript.start();
+        var result = process.waitFor();
         if (result != 0) {
             var username = System.getProperty("user.name");
-            fail("Failed to cleanup GPIO Test. Probably you need to add the GPIO Simulator bash script to sudoers file " +
-                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.toFile().getParentFile().getAbsolutePath() + "/'");
+            var errorOutput = new String(process.getErrorStream().readAllBytes());
+            fail("Failed to setup GPIO Test:\n" + errorOutput + "\n" +
+                "Probably you need to add the GPIO Simulator bash script to sudoers file " +
+                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.getParentFile().getAbsolutePath() + "/'");
         }
     }
 
