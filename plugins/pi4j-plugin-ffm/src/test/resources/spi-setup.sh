@@ -4,7 +4,5 @@
 modprobe spidev
 insmod spi-mock.ko
 
-udevadm trigger
-
 # Sleep a second to let udev rules to be applied
-sleep 1
+sleep 0.5
