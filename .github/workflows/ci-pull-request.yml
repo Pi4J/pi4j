@@ -1,8 +1,8 @@
 name: Build pull-request to develop branch
 
 on:
-  pull_request:
-    branches: [ develop ]
+#  pull_request:
+#    branches: [ develop ]
   workflow_dispatch:
 
 jobs:
