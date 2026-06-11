@@ -35,7 +35,6 @@ public class PwmTest {
         setupScript.directory(scriptPath);
         var process = setupScript.start();
         var result = process.waitFor();
-        System.err.println(new String(process.getInputStream().readAllBytes()));
         if (result != 0) {
             var username = System.getProperty("user.name");
             var errorOutput = new String(process.getErrorStream().readAllBytes());

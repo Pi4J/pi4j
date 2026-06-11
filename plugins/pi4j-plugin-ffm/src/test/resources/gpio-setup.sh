@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Get the script to setup permissions
-bash <(curl -sSL https://raw.githubusercontent.com/Pi4J/pi4j-os/main/script/setup-permissions.sh) <<< y
-
 # Mock GPIO chip layout is customizable through environment variables so tests
 # can shape the chips without editing the driver. Each is a comma separated list
 # where the number of entries equals the number of chips to create:
@@ -41,6 +38,8 @@ if [ -n "$NUMBERS" ]; then
 		fi
 	done
 fi
+
+udevadm trigger
 
 # Sleep a second to let udev rules to be applied
 sleep 1
