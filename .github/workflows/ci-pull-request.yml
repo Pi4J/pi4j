@@ -47,7 +47,7 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-        run: sudo -u $USER bash -c 'source ~/.sdkman/bin/sdkman-init.sh && ./mvnw clean package'
+        run: sudo -u $USER bash -c './mvnw clean package'
 
       - name: Make staging directory
         run: mkdir staging
