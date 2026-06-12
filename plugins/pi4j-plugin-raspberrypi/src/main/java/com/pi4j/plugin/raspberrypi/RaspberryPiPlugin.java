@@ -29,7 +29,6 @@ package com.pi4j.plugin.raspberrypi;
 
 import com.pi4j.extension.Plugin;
 import com.pi4j.extension.PluginService;
-import com.pi4j.plugin.raspberrypi.platform.RaspberryPiPlatform;
 import com.pi4j.plugin.raspberrypi.provider.gpio.digital.RpiDigitalInputProvider;
 import com.pi4j.plugin.raspberrypi.provider.gpio.digital.RpiDigitalOutputProvider;
 import com.pi4j.plugin.raspberrypi.provider.i2c.RpiI2CProvider;
@@ -59,9 +58,8 @@ public class RaspberryPiPlugin implements Plugin {
     @Override
     public void initialize(PluginService service) {
 
-        // register the Mock Platform and all Mock I/O Providers with the plugin service
-        service.register(new RaspberryPiPlatform())
-            .register(providers);
+        // register all Mock I/O Providers with the plugin service
+        service.register(providers);
 
     }
 }
