@@ -25,7 +25,6 @@ package com.pi4j.test;
  * #L%
  */
 
-import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.IOType;
 import com.pi4j.provider.Provider;
 import com.pi4j.test.smoketest.ProviderContext;
