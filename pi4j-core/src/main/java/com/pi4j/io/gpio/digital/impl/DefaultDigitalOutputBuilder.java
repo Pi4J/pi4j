@@ -27,7 +27,6 @@ package com.pi4j.io.gpio.digital.impl;
 
 import com.pi4j.context.Context;
 import com.pi4j.io.gpio.digital.*;
-import com.pi4j.platform.Platform;
 import com.pi4j.provider.Provider;
 import com.pi4j.util.StringUtil;
 
@@ -43,8 +42,6 @@ public class DefaultDigitalOutputBuilder implements DigitalOutputBuilder {
     private final Context context;
     private final DigitalOutputConfigBuilder builder;
 
-    private String platformId = null;
-    private Class<? extends Platform> platformClass = null;
     private String providerId = null;
     private Class<? extends Provider> providerClass = null;
 
@@ -127,24 +124,6 @@ public class DefaultDigitalOutputBuilder implements DigitalOutputBuilder {
      * {@inheritDoc}
      */
     @Override
-    public DigitalOutputBuilder platform(String platformId) {
-        this.platformId = platformId;
-        return this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public DigitalOutputBuilder platform(Class<? extends Platform> platformClass) {
-        this.platformClass = platformClass;
-        return this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public DigitalOutputBuilder provider(String providerId) {
         this.providerId = providerId;
         return this;
@@ -173,12 +152,6 @@ public class DefaultDigitalOutputBuilder implements DigitalOutputBuilder {
         }
         if (this.providerClass != null) {
             return (DigitalOutput) context.provider(this.providerClass).create(config);
-        }
-        if (StringUtil.isNotNullOrEmpty(this.platformId)) {
-            return context.platforms().get(this.platformId).dout().create(config);
-        }
-        if (this.platformClass != null) {
-            return context.platforms().get(this.platformClass).dout().create(config);
         }
 
         // use default digital output provider

@@ -25,7 +25,6 @@ package com.pi4j.extension.impl;
  * #L%
  */
 
-import com.pi4j.platform.Platform;
 import com.pi4j.provider.Provider;
 
 import java.util.Collections;
@@ -40,5 +39,4 @@ import java.util.Set;
  */
 public class PluginStore {
     public Set<Provider> providers = Collections.synchronizedSet(new HashSet<>());
-    public Set<Platform> platforms = Collections.synchronizedSet(new HashSet<>());
 }

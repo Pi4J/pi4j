@@ -34,9 +34,6 @@ import com.pi4j.extension.Plugin;
 import com.pi4j.extension.impl.DefaultPluginService;
 import com.pi4j.extension.impl.PluginStore;
 import com.pi4j.io.IOType;
-import com.pi4j.platform.Platform;
-import com.pi4j.platform.impl.DefaultRuntimePlatforms;
-import com.pi4j.platform.impl.RuntimePlatforms;
 import com.pi4j.provider.Provider;
 import com.pi4j.provider.impl.DefaultRuntimeProviders;
 import com.pi4j.provider.impl.RuntimeProviders;
@@ -66,7 +63,6 @@ public class DefaultRuntime implements Runtime {
     private final Context context;
     private final RuntimeRegistry registry;
     private final RuntimeProviders providers;
-    private final RuntimePlatforms platforms;
     private final RuntimeProperties properties;
     private final List<Plugin> plugins;
     private boolean isShutdown = false;
@@ -95,7 +91,6 @@ public class DefaultRuntime implements Runtime {
         this.properties = DefaultRuntimeProperties.newInstance(context);
         this.registry = DefaultRuntimeRegistry.newInstance(this);
         this.providers = DefaultRuntimeProviders.newInstance(this);
-        this.platforms = DefaultRuntimePlatforms.newInstance(this);
 
         this.shutdownEventManager = new EventManager(this,
             (EventDelegate<ShutdownListener, ShutdownEvent>) (listener, event) -> listener.onShutdown(event));
@@ -151,14 +146,6 @@ public class DefaultRuntime implements Runtime {
      * {@inheritDoc}
      */
     @Override
-    public RuntimePlatforms platforms() {
-        return this.platforms;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public RuntimeProperties properties() {
         return this.properties;
     }
@@ -191,9 +178,6 @@ public class DefaultRuntime implements Runtime {
 
             // remove all I/O instances
             this.registry.shutdown();
-
-            // shutdown platforms
-            this.platforms.shutdown();
 
             // shutdown all providers
             this.providers.shutdown();
@@ -253,8 +237,7 @@ public class DefaultRuntime implements Runtime {
             // clear plugins container
             plugins.clear();
 
-            // container sets for providers and platforms to load
-            Set<Platform> platforms = new HashSet<>();
+            // container sets for providers to load
             Map<IOType, Provider> providers = new HashMap<>();
 
             // only attempt to load platforms and providers from the classpath if an auto detect option is enabled
@@ -289,13 +272,6 @@ public class DefaultRuntime implements Runtime {
                             store.providers.forEach(provider -> addProvider(provider, providers));
                         }
 
-                   
-                        // if auto-detect platforms is enabled,
-                        // then add any detected platforms to the collection to load
-                        if (config.autoDetectPlatforms()) {
-                            platforms.addAll(store.platforms);
-                        }
-
                     } catch (Exception ex) {
                         // unable to initialize this provider instance
                         logger.error("unable to 'initialize()' plugin: [{}]; {}", plugin.getClass().getName(),
@@ -304,8 +280,6 @@ public class DefaultRuntime implements Runtime {
                 }
             }
 
-            // now add the explicit platforms and providers
-            platforms.addAll(context().config().getPlatforms());
             context().config().getProviders().forEach(provider -> {
                 Provider replaced = providers.put(provider.getType(), provider);
                 if (replaced != null) {
@@ -319,9 +293,6 @@ public class DefaultRuntime implements Runtime {
 
             // initialize all providers
             this.providers.initialize(providers.values());
-
-            // initialize all platforms
-            this.platforms.initialize(platforms);
 
             // now auto-load any defined I/O injection instances available in the context config
             try {

@@ -30,7 +30,6 @@ import com.pi4j.context.Context;
 import com.pi4j.context.ContextBuilder;
 import com.pi4j.context.ContextConfig;
 import com.pi4j.exception.Pi4JException;
-import com.pi4j.platform.Platform;
 import com.pi4j.provider.Provider;
 import com.pi4j.util.StringUtil;
 import org.slf4j.Logger;
@@ -61,7 +60,6 @@ public class DefaultContextBuilder implements ContextBuilder {
     protected String defaultPlatformId = null;
 
     // extensibility modules
-    protected Collection<Platform> platforms = Collections.synchronizedList(new ArrayList<>());
     protected Collection<Provider> providers = Collections.synchronizedList(new ArrayList<>());
 
     // properties
@@ -84,14 +82,6 @@ public class DefaultContextBuilder implements ContextBuilder {
      */
     public static ContextBuilder newInstance(){
         return new DefaultContextBuilder();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ContextBuilder add(Platform... platform) {
-        if(platform != null && platform.length > 0)
-            this.platforms.addAll(List.of(platform));
-        return this;
     }
 
     /** {@inheritDoc} */
@@ -264,11 +254,6 @@ public class DefaultContextBuilder implements ContextBuilder {
 
         // create a new context configuration object
         return new ContextConfig() {
-            @Override
-            public Collection<Platform> platforms() {
-                return Collections.unmodifiableCollection(builder.platforms);
-            }
-
             @Override
             public Collection<Provider> providers() {
                 return Collections.unmodifiableCollection(builder.providers);

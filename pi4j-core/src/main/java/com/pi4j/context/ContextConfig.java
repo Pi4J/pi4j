@@ -25,7 +25,6 @@ package com.pi4j.context;
  * #L%
  */
 
-import com.pi4j.platform.Platform;
 import com.pi4j.provider.Provider;
 
 import java.util.Collection;
@@ -38,24 +37,6 @@ import java.util.Map;
  * @version $Id: $Id
  */
 public interface ContextConfig {
-
-    // **************************************************
-    // PLATFORMS
-    // **************************************************
-    /**
-     * <p>platforms.</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
-    Collection<Platform> platforms();
-    /**
-     * <p>getPlatforms.</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
-    default Collection<Platform> getPlatforms(){
-        return platforms();
-    }
     /**
      * <p>autoDetectMockPlugins.</p>
      *

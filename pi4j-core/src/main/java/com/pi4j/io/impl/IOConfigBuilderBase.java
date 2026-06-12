@@ -30,7 +30,6 @@ import com.pi4j.config.ConfigBuilder;
 import com.pi4j.config.impl.ConfigBuilderBase;
 import com.pi4j.io.IOConfig;
 import com.pi4j.io.IOConfigBuilder;
-import com.pi4j.platform.Platform;
 import com.pi4j.provider.Provider;
 
 /**
@@ -62,20 +61,6 @@ public abstract class IOConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CO
     @Override
     public BUILDER_TYPE provider(Class<? extends Provider> providerClass){
         this.properties.put(IOConfig.PROVIDER_KEY, providerClass.getName());
-        return (BUILDER_TYPE) this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BUILDER_TYPE platform(String platform){
-        this.properties.put(IOConfig.PLATFORM_KEY, platform);
-        return (BUILDER_TYPE) this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BUILDER_TYPE platform(Class<? extends Platform> platformClass){
-        this.properties.put(IOConfig.PLATFORM_KEY, platformClass.getName());
         return (BUILDER_TYPE) this;
     }
 }

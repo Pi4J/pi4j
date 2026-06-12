@@ -27,7 +27,6 @@ package com.pi4j.extension.impl;
 
 import com.pi4j.context.Context;
 import com.pi4j.extension.PluginService;
-import com.pi4j.platform.Platform;
 import com.pi4j.provider.Provider;
 
 /**
@@ -71,17 +70,6 @@ public class DefaultPluginService implements PluginService {
         if(provider != null) {
             for (Provider p : provider){
                 store.providers.add(p);
-            }
-        }
-        return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public PluginService register(Platform... platform) {
-        if(platform != null) {
-            for (Platform p : platform){
-                store.platforms.add(p);
             }
         }
         return this;
