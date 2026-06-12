@@ -29,7 +29,6 @@ package com.pi4j.plugin.mock;
 
 import com.pi4j.extension.Plugin;
 import com.pi4j.extension.PluginService;
-import com.pi4j.plugin.mock.platform.MockPlatform;
 import com.pi4j.plugin.mock.provider.gpio.analog.MockAnalogInputProvider;
 import com.pi4j.plugin.mock.provider.gpio.analog.MockAnalogOutputProvider;
 import com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalInputProvider;
@@ -69,6 +68,6 @@ public class MockPlugin implements Plugin {
     public void initialize(PluginService service) {
 
         // register the Mock Platform and all Mock I/O Providers with the plugin service
-        service.register(new MockPlatform()).register(providers);
+        service.register().register(providers);
     }
 }

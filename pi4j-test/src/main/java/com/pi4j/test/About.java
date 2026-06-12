@@ -27,7 +27,6 @@ package com.pi4j.test;
 
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.IOType;
-import com.pi4j.platform.Platform;
 import com.pi4j.provider.Provider;
 import com.pi4j.test.smoketest.ProviderContext;
 import org.slf4j.Logger;
@@ -92,42 +91,6 @@ public class About {
         logger.info("=====================================================");
         for (var provider : providerContext.getContext().providers().all(ioType).values()) {
             logger.info("  {} [{}]; {}", provider.name(), provider.id(), provider.type());
-        }
-    }
-
-    /**
-     * Logs and enumerates all available platforms within the provider context.
-     * This method retrieves and iterates over all platforms available in the current
-     * runtime environment via the provider context, logging their names, IDs, and descriptions.
-     * It provides a structured display of platform information to facilitate debugging
-     * and runtime environment analysis.
-     */
-    public void enumeratePlatforms() {
-        logger.info("=====================================================");
-        logger.info("PLATFORMS");
-        logger.info("=====================================================");
-        for (Platform platform : providerContext.getContext().platforms().all().values()) {
-            logger.info("  {} [{}]; {}", platform.name(), platform.id(), platform.getDescription());
-        }
-    }
-
-    /**
-     * Logs and describes the default platform currently configured in the runtime environment.
-     * This method outputs detailed information about the default platform to the logger and
-     * optionally prints its description to the system output stream. If no default platform
-     * is defined, a warning message is logged.
-     *
-     * @throws Pi4JException if an error occurs while attempting to describe the default platform.
-     */
-    public void describeDefaultPlatform() throws Pi4JException {
-        logger.info("=====================================================");
-        logger.info("DEFAULT (RUNTIME) PLATFORM ");
-        logger.info("=====================================================");
-        if (providerContext.getContext().platform() == null) {
-            logger.warn("  NOT DEFINED");
-        } else {
-            logger.info("  {}} [{}}]", providerContext.getContext().platform().name(), providerContext.getContext().platform().id());
-            providerContext.getContext().platform().describe().print(System.out);
         }
     }
 }
