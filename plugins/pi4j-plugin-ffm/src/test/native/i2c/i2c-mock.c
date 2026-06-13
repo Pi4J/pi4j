@@ -27,6 +27,14 @@
 #define REGISTER_COUNT 10
 #define BUFFER_SIZE 1024
 
+/* Optional verbose debug logging, toggled by the 'debug' module parameter (set from i2c-setup.sh) */
+static int debug;
+module_param(debug, int, 0644);
+MODULE_PARM_DESC(debug, "Enable verbose debug logging (default 0)");
+
+#define mock_dbg(dev, fmt, ...) \
+	do { if (debug) dev_info(dev, fmt, ##__VA_ARGS__); } while (0)
+
 /* value written/read without addressing a register */
 static unsigned char *internal_buf;
 
@@ -117,11 +125,11 @@ static void i2c_parse_msg(struct i2c_adapter *adap, struct i2c_msg *msg,
 	if (msg->flags & I2C_M_RD) {
 		for (j = 0; j < msg->len; j++)
 			msg->buf[j] = data_buf[j];
-		dev_info(&adap->dev, "    Read data: %s", format_hex(msg->buf, msg->len, &message));
+		mock_dbg(&adap->dev, "    Read data: %s", format_hex(msg->buf, msg->len, &message));
 	} else {
 		for (j = write_offset; j < msg->len; j++)
 			data_buf[j - write_offset] = msg->buf[j];
-		dev_info(&adap->dev, "    Write data: %s",
+		mock_dbg(&adap->dev, "    Write data: %s",
 			 format_hex(data_buf, msg->len - write_offset, &message));
 	}
 
@@ -142,11 +150,11 @@ static int i2c_mock_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num
 				entry = find_register(last_reg);
 				if (!entry)
 					return -ENOMEM;
-				dev_info(&adap->dev, "Reading I2C device '%02X' from last register '%02X'",
+				mock_dbg(&adap->dev, "Reading I2C device '%02X' from last register '%02X'",
 					 msg->addr, last_reg);
 				i2c_parse_msg(adap, msg, entry->data_buf, 0);
 			} else {
-				dev_info(&adap->dev, "Reading I2C device '%02X' without register", msg->addr);
+				mock_dbg(&adap->dev, "Reading I2C device '%02X' without register", msg->addr);
 				i2c_parse_msg(adap, msg, NULL, 0);
 			}
 		} else if (msg->len > 1) {
@@ -157,12 +165,12 @@ static int i2c_mock_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num
 			entry = find_register(reg);
 			if (!entry)
 				return -ENOMEM;
-			dev_info(&adap->dev, "Writing I2C device '%02X' to register '%02X'", msg->addr, reg);
+			mock_dbg(&adap->dev, "Writing I2C device '%02X' to register '%02X'", msg->addr, reg);
 			i2c_parse_msg(adap, msg, entry->data_buf, 1);
 		} else {
 			// write without a register
 			last_reg = 0;
-			dev_info(&adap->dev, "Writing I2C device '%02X' without register", msg->addr);
+			mock_dbg(&adap->dev, "Writing I2C device '%02X' without register", msg->addr);
 			i2c_parse_msg(adap, msg, NULL, 0);
 		}
 	} else if (num > 1) {
@@ -175,7 +183,7 @@ static int i2c_mock_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num
 		if (!entry)
 			return -ENOMEM;
 		last_reg = reg;
-		dev_info(&adap->dev, "Accessing I2C device '%02X' with register '%02X'", msgs->addr, reg);
+		mock_dbg(&adap->dev, "Accessing I2C device '%02X' with register '%02X'", msgs->addr, reg);
 		for (i = 1; i < num; i++)
 			i2c_parse_msg(adap, &msgs[i], entry->data_buf, 0);
 	} else {
@@ -196,7 +204,7 @@ static int i2c_mock_smbus_xfer(struct i2c_adapter *adap, u16 addr,
 
 	// quick and byte transfers carry no register, echo them through the registerless buffer
 	if (size == I2C_SMBUS_QUICK) {
-		dev_info(&adap->dev, "Accessing SMBus device '%02X' (I2C_SMBUS_QUICK)", addr);
+		mock_dbg(&adap->dev, "Accessing SMBus device '%02X' (I2C_SMBUS_QUICK)", addr);
 		return 0;
 	}
 	if (size == I2C_SMBUS_BYTE) {
@@ -212,23 +220,23 @@ static int i2c_mock_smbus_xfer(struct i2c_adapter *adap, u16 addr,
 					return -ENOMEM;
 				}
 				data->byte = entry->data_buf[0];
-				dev_info(&adap->dev, "    Read data (I2C_SMBUS_BYTE) from last register '%02X': %02X",
+				mock_dbg(&adap->dev, "    Read data (I2C_SMBUS_BYTE) from last register '%02X': %02X",
 					 last_reg, data->byte);
 			} else {
 				data->byte = internal_buf[0];
-				dev_info(&adap->dev, "    Read data (I2C_SMBUS_BYTE): %02X", data->byte);
+				mock_dbg(&adap->dev, "    Read data (I2C_SMBUS_BYTE): %02X", data->byte);
 			}
 		} else {
 			// Send Byte: write a single byte without a register
 			internal_buf[0] = command;
 			last_reg = 0;
-			dev_info(&adap->dev, "    Write data (I2C_SMBUS_BYTE): %02X", command);
+			mock_dbg(&adap->dev, "    Write data (I2C_SMBUS_BYTE): %02X", command);
 		}
 		return 0;
 	}
 
 	// everything else is register based
-	dev_info(&adap->dev, "Accessing SMBus device '%02X' with register '%02X'", addr, command);
+	mock_dbg(&adap->dev, "Accessing SMBus device '%02X' with register '%02X'", addr, command);
 	entry = find_register(command);
 	if (!entry) {
 		dev_err(&adap->dev, "Cannot get buffer for register %02X", command);
@@ -241,12 +249,12 @@ static int i2c_mock_smbus_xfer(struct i2c_adapter *adap, u16 addr,
 	case I2C_SMBUS_BYTE_DATA:
 		if (read_write == I2C_SMBUS_READ) {
 			data->byte = entry->data_buf[0];
-			dev_info(&adap->dev, "    Read data (I2C_SMBUS_BYTE_DATA): %s",
+			mock_dbg(&adap->dev, "    Read data (I2C_SMBUS_BYTE_DATA): %s",
 				 format_hex(entry->data_buf, 1, &message));
 		} else {
 			entry->data_buf[0] = data->byte;
 			entry->len = 1;
-			dev_info(&adap->dev, "    Write data (I2C_SMBUS_BYTE_DATA): %s",
+			mock_dbg(&adap->dev, "    Write data (I2C_SMBUS_BYTE_DATA): %s",
 				 format_hex(entry->data_buf, 1, &message));
 		}
 		break;
@@ -254,13 +262,13 @@ static int i2c_mock_smbus_xfer(struct i2c_adapter *adap, u16 addr,
 		if (read_write == I2C_SMBUS_READ) {
 			// SMBus words are little endian: low byte first
 			data->word = (entry->data_buf[1] << 8) | entry->data_buf[0];
-			dev_info(&adap->dev, "    Read data (I2C_SMBUS_WORD_DATA): %s",
+			mock_dbg(&adap->dev, "    Read data (I2C_SMBUS_WORD_DATA): %s",
 				 format_hex(entry->data_buf, 2, &message));
 		} else {
 			entry->data_buf[0] = data->word & 0xFF;
 			entry->data_buf[1] = (data->word >> 8) & 0xFF;
 			entry->len = 2;
-			dev_info(&adap->dev, "    Write data (I2C_SMBUS_WORD_DATA): %s",
+			mock_dbg(&adap->dev, "    Write data (I2C_SMBUS_WORD_DATA): %s",
 				 format_hex(entry->data_buf, 2, &message));
 		}
 		break;
@@ -270,14 +278,14 @@ static int i2c_mock_smbus_xfer(struct i2c_adapter *adap, u16 addr,
 			data->block[0] = len;
 			for (i = 0; i < len; i++)
 				data->block[i + 1] = entry->data_buf[i];
-			dev_info(&adap->dev, "    Read data (I2C_SMBUS_BLOCK_DATA): %s",
+			mock_dbg(&adap->dev, "    Read data (I2C_SMBUS_BLOCK_DATA): %s",
 				 format_hex(entry->data_buf, len, &message));
 		} else {
 			len = min_t(int, data->block[0], I2C_SMBUS_BLOCK_MAX);
 			for (i = 0; i < len; i++)
 				entry->data_buf[i] = data->block[i + 1];
 			entry->len = len;
-			dev_info(&adap->dev, "    Write data (I2C_SMBUS_BLOCK_DATA): %s",
+			mock_dbg(&adap->dev, "    Write data (I2C_SMBUS_BLOCK_DATA): %s",
 				 format_hex(entry->data_buf, len, &message));
 		}
 		break;
@@ -318,7 +326,7 @@ static int __init i2c_mock_init(void)
 		return ret;
 	}
 
-	dev_info(&i2c_mock_adapter.dev, "Setup: mock adapter at '/dev/i2c-%d' with deivce at address '1C'", i2c_mock_adapter.nr);
+	mock_dbg(&i2c_mock_adapter.dev, "Setup: mock adapter at '/dev/i2c-%d' with deivce at address '1C'", i2c_mock_adapter.nr);
 
 	return 0;
 }
@@ -327,7 +335,7 @@ static void __exit i2c_mock_exit(void)
 {
 	int i;
 
-	dev_info(&i2c_mock_adapter.dev, "Removing i2c mock adapter");
+	mock_dbg(&i2c_mock_adapter.dev, "Removing i2c mock adapter");
 	i2c_del_adapter(&i2c_mock_adapter);
 	kfree(internal_buf);
 	for (i = 0; i < REGISTER_COUNT; i++)

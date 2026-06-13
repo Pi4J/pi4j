@@ -43,6 +43,11 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
     // NOTE: this value is used for poll operation inside watcher thread and should be always half of the timeout
     private static final int EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS = 200;
 
+    // Maximum number of graceful await cycles before giving up on a stuck watcher thread.
+    // A watcher returns from its native poll() at least once per poll cycle, so a few cycles is
+    // always enough in practice; the bound only guards against an unexpected indefinite hang.
+    private static final int EVENT_WATCHER_SHUTDOWN_MAX_ATTEMPTS = 5;
+
     private final IoctlNative ioctl = new IoctlNative();
     private final FileDescriptorNative file = new FileDescriptorNative();
     private final PollNative poll = new PollNative();
@@ -141,9 +146,20 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             }
         });
         watchers.add(watcher);
+        // we should add listener first to get rid of race
+        super.addListener(listener);
         eventTaskProcessor.submit(watcher);
         logger.trace("{}-{} - New listener added", deviceName, bcm);
-        return super.addListener(listener);
+        return this;
+    }
+
+    @Override
+    public DigitalInput removeListener(DigitalStateChangeListener... listeners) {
+        for (EventWatcher watcher : watchers) {
+            watcher.stopWatching();
+        }
+        watchers.clear();
+        return super.removeListener(listeners);
     }
 
     @Override
@@ -158,8 +174,22 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             if (!watchers.isEmpty()) {
                 logger.trace("{}-{} - Gracefully shutting down event processor", deviceName, bcm);
                 eventTaskProcessor.shutdown();
-                if (!eventTaskProcessor.awaitTermination(EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
-                    logger.trace("{}-{} - Timeout when shutting down event processor, halting it", deviceName, bcm);
+                // The watcher threads block in a native poll() that does not honour interruption,
+                // so shutdownNow() cannot force them to stop - they exit cooperatively within one
+                // poll cycle once stopWatching is set. We must wait until they have actually
+                // terminated before the finally block closes the line fd: closing it while a thread
+                // is still polling leaks the fd and leaves the GPIO line flagged USED, which makes
+                // the next request to this BCM fail with "in use".
+                var terminated = false;
+                for (int attempt = 0; attempt < EVENT_WATCHER_SHUTDOWN_MAX_ATTEMPTS && !terminated; attempt++) {
+                    terminated = eventTaskProcessor.awaitTermination(EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                    if (!terminated) {
+                        logger.trace("{}-{} - Event processor still running, waiting for watcher threads to finish current poll cycle", deviceName, bcm);
+                    }
+                }
+                if (!terminated) {
+                    logger.error("{}-{} - Event watcher threads did not terminate within {}ms; forcing shutdown - GPIO line may remain busy",
+                        deviceName, bcm, (long) EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS * EVENT_WATCHER_SHUTDOWN_MAX_ATTEMPTS);
                     eventTaskProcessor.shutdownNow();
                 }
             }

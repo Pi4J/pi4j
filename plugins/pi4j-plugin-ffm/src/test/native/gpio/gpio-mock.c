@@ -42,6 +42,14 @@
 * - chip 1 ('inaccessible') -> '/dev/gpiochip1', 1 line
 */
 
+/* Optional verbose debug logging, toggled by the 'debug' module parameter (set from gpio-setup.sh) */
+static int debug;
+module_param(debug, int, 0644);
+MODULE_PARM_DESC(debug, "Enable verbose debug logging (default 0)");
+
+#define mock_dbg(dev, fmt, ...) \
+	do { if (debug) dev_info(dev, fmt, ##__VA_ARGS__); } while (0)
+
 /* Number of lines per chip; the count of values also defines how many chips we create */
 static int ngpios[GPIO_MOCK_MAX_CHIPS];
 static int num_chips;
@@ -94,7 +102,7 @@ static int gpio_mock_direction_input(struct gpio_chip *gc, unsigned int offset)
 	struct gpio_mock_chip *chip = gpiochip_get_data(gc);
 
 	chip->lines[offset].direction = GPIO_LINE_DIRECTION_IN;
-	dev_info(gc->parent, "%s: set line %u as input", gc->label, offset);
+	mock_dbg(gc->parent, "%s: set line %u as input", gc->label, offset);
 	return 0;
 }
 
@@ -105,7 +113,7 @@ static int gpio_mock_direction_output(struct gpio_chip *gc, unsigned int offset,
 
 	chip->lines[offset].direction = GPIO_LINE_DIRECTION_OUT;
 	chip->lines[offset].value = !!value;
-	dev_info(gc->parent, "%s: set line %u as output with value %d", gc->label, offset, !!value);
+	mock_dbg(gc->parent, "%s: set line %u as output with value %d", gc->label, offset, !!value);
 	return 0;
 }
 
@@ -115,7 +123,7 @@ static int gpio_mock_get(struct gpio_chip *gc, unsigned int offset)
 	struct gpio_mock_chip *chip = gpiochip_get_data(gc);
 	int value = chip->lines[offset].value;
 
-	dev_info(gc->parent, "%s: get line %u value %d", gc->label, offset, value);
+	mock_dbg(gc->parent, "%s: get line %u value %d", gc->label, offset, value);
 	return value;
 }
 
@@ -125,7 +133,7 @@ static int gpio_mock_set(struct gpio_chip *gc, unsigned int offset, int value)
 	struct gpio_mock_chip *chip = gpiochip_get_data(gc);
 
 	chip->lines[offset].value = !!value;
-	dev_info(gc->parent, "%s: set line %u value %d", gc->label, offset, !!value);
+	mock_dbg(gc->parent, "%s: set line %u value %d", gc->label, offset, !!value);
 	return 0;
 }
 
@@ -202,7 +210,7 @@ static int gpio_mock_dbg_set(void *data, u64 val)
 		gpio_mock_fire_edge(chip, offset, value);
 
 	chip->lines[offset].value = value;
-	dev_info(chip->gc.parent, "%s: debugfs set line %u value %d", chip->gc.label, offset, value);
+	mock_dbg(chip->gc.parent, "%s: debugfs set line %u value %d", chip->gc.label, offset, value);
 	return 0;
 }
 DEFINE_DEBUGFS_ATTRIBUTE(gpio_mock_dbg_fops, gpio_mock_dbg_get, gpio_mock_dbg_set, "%llu\n");
@@ -281,11 +289,11 @@ static int gpio_mock_add_chip(struct device *parent, struct gpio_mock_chip *chip
 				 hog_line, label, PTR_ERR(chip->hogged));
 			chip->hogged = NULL;
 		} else {
-			dev_info(parent, "%s: line %d hogged as 'occupied'", label, hog_line);
+			mock_dbg(parent, "%s: line %d hogged as 'occupied'", label, hog_line);
 		}
 	}
 
-	dev_info(parent, "Created mock gpio chip '%s' with %d lines", label, ngpio);
+	mock_dbg(parent, "Created mock gpio chip '%s' with %d lines", label, ngpio);
 	return 0;
 }
 
@@ -354,7 +362,7 @@ static void gpio_mock_remove(struct platform_device *pdev)
 {
 	int i;
 
-	dev_info(&pdev->dev, "Removing GPIO Mock kernel driver");
+	mock_dbg(&pdev->dev, "Removing GPIO Mock kernel driver");
 	for (i = 0; i < mock_chips_count; i++) {
 		if (mock_chips[i].hogged)
 			gpiochip_free_own_desc(mock_chips[i].hogged);

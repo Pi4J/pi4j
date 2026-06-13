@@ -1,0 +1,17 @@
+Benchmark                                                   Mode  Cnt    Score     Error  Units
+GPIOInputPerformanceTest.testFFMInputRoundTrip              avgt    5    0.409 ±   0.016  us/op
+GPIOInputPerformanceTest.testFFMInputWithListenerRoundTrip  avgt    5    5.454 ±   1.217  us/op
+GPIOOutputPerformanceTest.testFFMOutputRoundTrip            avgt    5    0.834 ±   0.033  us/op
+I2CDirectPerformanceTest.testI2CDirectRoundTrip             avgt    5    2.068 ±   0.062  us/op
+I2CFilePerformanceTest.testI2CFileRoundTrip                 avgt    5    1.245 ±   0.049  us/op
+I2CSMBusPerformanceTest.testSMBusRoundTrip                  avgt    5    1.175 ±   0.014  us/op
+PWMPerformanceTest.testPWMRoundTrip                         avgt    5  111.088 ±   7.528  us/op
+SPIPerformanceTest.testFFMWriteReadRoundTrip                avgt    5    1.681 ±   0.022  us/op
+
+
+Benchmark                                                   Mode  Cnt  Score   Error  Units
+GPIOInputPerformanceTest.testFFMInputRoundTrip              avgt    5  0.313 ± 0.002  us/op
+GPIOInputPerformanceTest.testFFMInputWithListenerRoundTrip  avgt    5  0.383 ± 0.008  us/op
+GPIOOutputPerformanceTest.testFFMOutputRoundTrip            avgt    5  0.706 ± 0.033  us/op
+I2CPerformanceTest.testI2CDirectRoundTrip                   avgt    5  2.240 ± 0.153  us/op
+SPIPerformanceTest.testFFMWriteReadRoundTrip                avgt    4  4.448 ± 0.321  us/op
