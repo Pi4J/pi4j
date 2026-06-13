@@ -151,7 +151,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         file.close(polarityFd);
 
         waitForWritePermission(this.pwmPath + ENABLE_PATH, 0);
-        var enableFd = file.open(this.pwmPath + ENABLE_PATH, FileFlag.O_RDWR);
+        var enableFd = file.open(this.pwmPath + ENABLE_PATH, FileFlag.O_WRONLY);
         file.write(enableFd, String.valueOf(1).getBytes());
         file.close(enableFd);
 
@@ -249,7 +249,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
             var deferredDelay = new Delay();
             deferredDelay.setMillis(10);
             deferredDelay.materialize();
-            waitForReadPermission(path, timeout + 10);
+            waitForWritePermission(path, timeout + 10);
         }
     }
 }

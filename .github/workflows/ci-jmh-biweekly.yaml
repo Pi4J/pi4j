@@ -1,0 +1,121 @@
+name: JMH Weekly run and report
+
+on:
+  schedule:
+    # Runs at 00:00 UTC every Monday
+    - cron: '0 1 1,15 * *'
+  # Allow manual runs from the Actions tab.
+  workflow_dispatch:
+
+# Needed so the job can commit the generated results back to the repo.
+permissions:
+  contents: write
+
+jobs:
+  # Decide whether there is anything new to benchmark. The last run's commit is
+  # recorded in jmh-results/manifest.json, so if develop's HEAD still matches it
+  # there are no new commits and the (expensive) benchmark job is skipped.
+  # A manual run from the Actions tab always proceeds.
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+
+      - name: Check for new commits since last run
+        id: check
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "Manual run requested; benchmarks will run regardless of new commits."
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          LAST=$(jq -r '.runs[-1].commit // empty' jmh-results/manifest.json 2>/dev/null || true)
+          HEAD_SHA=$(git rev-parse HEAD)
+          if [ -z "$LAST" ]; then
+            echo "No previous run recorded in manifest.json; benchmarks will run."
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          elif [ "${HEAD_SHA#"$LAST"}" != "$HEAD_SHA" ]; then
+            # HEAD_SHA starts with the stored short SHA -> same commit -> nothing new.
+            echo "No new commits on develop since last run ($LAST); skipping benchmarks."
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "New commits since last run ($LAST -> $HEAD_SHA); benchmarks will run."
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  weekly-task:
+    needs: check
+    if: needs.check.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get remove --purge man-db
+          sudo apt-get install --yes build-essential linux-headers-$(uname -r) sudo libi2c-dev linux-modules-extra-$(uname -r)
+
+      - name: Install JDK25
+        uses: sfesenko/setup-sdkman@v1
+        with:
+          deps: java:25-zulu
+
+      - name: Create and add current user to suitable groups
+        run: |
+          sudo addgroup spi
+          sudo adduser $USER spi
+          sudo adduser $USER i2c
+          sudo adduser $USER dialout
+
+      - name: Add proper udev rules and trigger udevadm
+        run: |
+          sudo cp udev.rules /etc/udev/rules.d/99-pi4j-io.rules
+          sudo udevadm control --reload-rules && sudo udevadm trigger
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Run JMH benchmarks
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+        run: |
+          # Write the JMH JSON straight into the dashboard folder, named by date.
+          RUN_DATE=$(date -u +%F)
+          echo "RUN_DATE=$RUN_DATE" >> "$GITHUB_ENV"
+          OUT="$GITHUB_WORKSPACE/jmh-results/jmh-$RUN_DATE.json"
+          sudo -u $USER bash -c "source ~/.sdkman/bin/sdkman-init.sh && \
+            ./mvnw jmh:benchmark -Djmh.rf=json -Djmh.rff='$OUT'"
+
+      - name: Register run in manifest.json
+        run: |
+          bash jmh-results/update-manifest.sh \
+            --file "jmh-${RUN_DATE}.json" \
+            --date "${RUN_DATE}T00:00:00Z" \
+            --commit "$(git rev-parse --short HEAD)" \
+            --label "Weekly run ${RUN_DATE}"
+
+      - name: Commit results to jmh-results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "jmh@pi4j.com"
+          git add jmh-results/jmh-*.json jmh-results/manifest.json
+          if git diff --cached --quiet; then
+            echo "No new benchmark results to commit."
+          else
+            git commit -m "JMH weekly results ${RUN_DATE}"
+            git push
+          fi

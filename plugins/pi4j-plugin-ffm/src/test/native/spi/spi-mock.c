@@ -19,6 +19,14 @@
 #define MODULE_NAME "spi-mock"
 #define BUFFER_SIZE 1024
 
+/* Optional verbose debug logging, toggled by the 'debug' module parameter (set from spi-setup.sh) */
+static int debug;
+module_param(debug, int, 0644);
+MODULE_PARM_DESC(debug, "Enable verbose debug logging (default 0)");
+
+#define mock_dbg(dev, fmt, ...) \
+    do { if (debug) dev_info(dev, fmt, ##__VA_ARGS__); } while (0)
+
 /*
 * SPI Mock driver provides basic functionality to integration test of Pi4j project and regression.
 * It simulates real SPI Bus by echoing all incoming transfers.
@@ -48,12 +56,12 @@ static int spi_mock_transfer_one(struct spi_controller *ctlr, struct spi_device 
         memcpy(transfer->rx_buf, transfer->tx_buf, transfer->len);
         memcpy(internal_buf, transfer->tx_buf, store_len);
         internal_len = store_len;
-        dev_info(&spi->dev, "Transfer tx and rx (echo): %*ph", store_len, internal_buf);
+        mock_dbg(&spi->dev, "Transfer tx and rx (echo): %*ph", store_len, internal_buf);
     } else if (transfer->tx_buf) {
         // write only: store the incoming buffer
         memcpy(internal_buf, transfer->tx_buf, store_len);
         internal_len = store_len;
-        dev_info(&spi->dev, "Writing, tx_buf: %*ph", store_len, internal_buf);
+        mock_dbg(&spi->dev, "Writing, tx_buf: %*ph", store_len, internal_buf);
     } else if (transfer->rx_buf) {
         // read only: return what we stored, zero pad anything beyond it
         unsigned int copy_len = min_t(unsigned int, transfer->len, internal_len);
@@ -61,7 +69,7 @@ static int spi_mock_transfer_one(struct spi_controller *ctlr, struct spi_device 
         memcpy(transfer->rx_buf, internal_buf, copy_len);
         if (transfer->len > copy_len)
             memset((unsigned char *)transfer->rx_buf + copy_len, 0, transfer->len - copy_len);
-        dev_info(&spi->dev, "Reading, rx_buf: %*ph", copy_len, (unsigned char *)transfer->rx_buf);
+        mock_dbg(&spi->dev, "Reading, rx_buf: %*ph", copy_len, (unsigned char *)transfer->rx_buf);
     }
 
     // the transfer completed synchronously, so report it as finished (return 0).
@@ -111,7 +119,7 @@ static int spi_mock_probe(struct platform_device *pdev)
         return -ENOMEM;
     }
 
-    dev_info(&pdev->dev, "Created new SPI Mock bus");
+    mock_dbg(&pdev->dev, "Created new SPI Mock bus");
 
     return 0;
 }

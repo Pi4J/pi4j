@@ -1,13 +1,11 @@
 package com.pi4j.plugin.jmh;
 
 import com.pi4j.Pi4J;
-import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
-import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
-import com.pi4j.io.gpio.digital.DigitalStateChangeEvent;
-import com.pi4j.io.gpio.digital.PullResistance;
+import com.pi4j.context.Context;
+import com.pi4j.io.gpio.digital.*;
 import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
-import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -15,13 +13,16 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-@Fork(value = 1, warmups = 1)
+@Fork(value = 1)
 @State(Scope.Benchmark)
 @BenchmarkMode({Mode.AverageTime})
-@OutputTimeUnit(TimeUnit.MILLISECONDS)
-public class GPIOPerformanceTest {
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
+public class GPIOInputPerformanceTest {
 
-    @Setup
+    private Context pi4j;
+    private DigitalInput pin;
+
+    @Setup(Level.Trial)
     public void setup() throws InterruptedException, IOException {
         var scriptPath = Paths.get("src/test/resources").toFile().getAbsoluteFile();
         var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath + "/gpio-setup.sh");
@@ -35,10 +36,19 @@ public class GPIOPerformanceTest {
                 "Probably you need to add the GPIO Simulator bash script to sudoers file " +
                 "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.getParentFile().getAbsolutePath() + "/'");
         }
+
+        this.pi4j = Pi4J.newContextBuilder().add(new FFMDigitalInputProviderImpl()).setGpioChipName("gpiochip2").build();
+        var config = DigitalInputConfigBuilder.newInstance(pi4j)
+            .bcm(3)
+            .debounce(99L, TimeUnit.MICROSECONDS)
+            .pull(PullResistance.PULL_DOWN)
+            .build();
+        this.pin = pi4j.digitalInput().create(config);
     }
 
-    @TearDown
+    @TearDown(Level.Trial)
     public void tearDown() throws InterruptedException, IOException {
+        pi4j.shutdown();
         var scriptPath = Paths.get("src/test/resources").toFile().getAbsoluteFile();
         var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath + "/gpio-clean.sh");
         setupScript.directory(scriptPath);
@@ -53,44 +63,23 @@ public class GPIOPerformanceTest {
         }
     }
 
-    @Benchmark
-    @Warmup(iterations = 3)
-    public void testFFMInputRoundTrip() {
-        var pi4j = Pi4J.newContextBuilder().add(new FFMDigitalInputProviderImpl()).setGpioChipName("gpiochip0").build();
-        var config = DigitalInputConfigBuilder.newInstance(pi4j)
-            .bcm(0)
-            .debounce(99L, TimeUnit.MICROSECONDS)
-            .pull(PullResistance.PULL_DOWN)
-            .build();
-        var pin = pi4j.digitalInput().create(config);
-        pin.state();
-        pi4j.shutdown();
-    }
+//    @Benchmark
+//    @Warmup(iterations = 3)
+//    public void testFFMInputRoundTrip(Blackhole blackhole) {
+//        blackhole.consume(pin.state());
+//    }
 
     @Benchmark
     @Warmup(iterations = 3)
-    public void testFFMInputWithListenerRoundTrip() {
-        var pi4j = Pi4J.newContextBuilder().add(new FFMDigitalInputProviderImpl()).setGpioChipName("gpiochip0").build();
-        var config = DigitalInputConfigBuilder.newInstance(pi4j)
-            .bcm(0)
-            .debounce(99L, TimeUnit.MICROSECONDS)
-            .pull(PullResistance.PULL_DOWN)
-            .build();
-        var pin = pi4j.digitalInput().create(config);
-        pin.addListener(DigitalStateChangeEvent::state);
-        pin.state();
-        pi4j.shutdown();
-    }
-
-    @Benchmark
-    @Warmup(iterations = 3)
-    public void testFFMOutputRoundTrip() {
-        var pi4j = Pi4J.newContextBuilder().add(new FFMDigitalOutputProviderImpl()).setGpioChipName("gpiochip0").build();
-        var config = DigitalOutputConfigBuilder.newInstance(pi4j)
-            .bcm(0)
-            .build();
-        var pin = pi4j.digitalOutput().create(config);
-        pin.state();
-        pi4j.shutdown();
+    public void testFFMInputWithListenerRoundTrip(Blackhole blackhole) {
+        var listener = new DigitalStateChangeListener() {
+            @Override
+            public void onDigitalStateChange(DigitalStateChangeEvent event) {
+                //blackhole.consume(event);
+            }
+        };
+        pin.addListener(listener);
+        blackhole.consume(pin.state());
+        pin.removeListener(listener);
     }
 }

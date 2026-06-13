@@ -11,10 +11,12 @@
 NGPIOS="${GPIO_MOCK_NGPIOS:-8,1}"
 LABELS="${GPIO_MOCK_LABELS:-accessible,inaccessible}"
 HOGS="${GPIO_MOCK_HOGS:-2,-1}"
-NUMBERS="${GPIO_MOCK_NUMBERS:-}"
+NUMBERS="${GPIO_MOCK_NUMBERS:-2,3,99}"
+# Set to 1 to enable verbose debug logging from the mock driver (visible in dmesg)
+DEBUG="${GPIO_MOCK_DEBUG:-0}"
 
 /bin/bash  ../native/gpio/build.sh
-insmod gpio-mock.ko ngpios="$NGPIOS" labels="$LABELS" hog_lines="$HOGS"
+insmod gpio-mock.ko ngpios="$NGPIOS" labels="$LABELS" hog_lines="$HOGS" debug="$DEBUG"
 
 # The kernel assigns /dev/gpiochip<N> numbers automatically (always the lowest
 # free integer) - a GPIO driver cannot request a specific one the way i2c can.

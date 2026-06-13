@@ -25,6 +25,14 @@ static int channels = 3;
 module_param(channels, int, 0444);
 MODULE_PARM_DESC(channels, "Number of channels on the mock PWM chip (default 3)");
 
+/* Optional verbose debug logging, toggled by the 'debug' module parameter (set from pwm-setup.sh) */
+static int debug;
+module_param(debug, int, 0644);
+MODULE_PARM_DESC(debug, "Enable verbose debug logging (default 0)");
+
+#define mock_dbg(dev, fmt, ...) \
+    do { if (debug) dev_info(dev, fmt, ##__VA_ARGS__); } while (0)
+
 static struct platform_device *pwm_mock_device;
 
 // per-channel stored state, indexed by hwpwm; allocated for 'channels' entries
@@ -44,7 +52,7 @@ static int pwm_mock_get_state(struct pwm_chip *chip, struct pwm_device *pwm_dev,
                            		     struct pwm_state *state)
 {
     *state = channel_states[pwm_dev->hwpwm];
-    dev_info(&chip->dev, "Get state of pwm%d: period=%llu, duty_cycle=%llu, polarity=%s, enabled=%d",
+    mock_dbg(&chip->dev, "Get state of pwm%d: period=%llu, duty_cycle=%llu, polarity=%s, enabled=%d",
         pwm_dev->hwpwm,
         state->period,
         state->duty_cycle,
@@ -60,25 +68,25 @@ static int pwm_mock_apply(struct pwm_chip *chip, struct pwm_device *pwm_dev,
     struct pwm_state *current_state = &channel_states[pwm_dev->hwpwm];
 
     if (current_state->period != state->period) {
-        dev_info(&chip->dev, "Set period of pwm%d: %llu",
+        mock_dbg(&chip->dev, "Set period of pwm%d: %llu",
             pwm_dev->hwpwm,
             state->period);
     }
 
     if (current_state->duty_cycle != state->duty_cycle) {
-        dev_info(&chip->dev, "Set duty_cycle of pwm%d: %llu",
+        mock_dbg(&chip->dev, "Set duty_cycle of pwm%d: %llu",
             pwm_dev->hwpwm,
             state->duty_cycle);
     }
 
     if (current_state->polarity != state->polarity) {
-        dev_info(&chip->dev, "Set polarity of pwm%d: %s",
+        mock_dbg(&chip->dev, "Set polarity of pwm%d: %s",
             pwm_dev->hwpwm,
             getPolarityName(state->polarity));
     }
 
     if (current_state->enabled != state->enabled) {
-        dev_info(&chip->dev, "Set enabled pwm%d: %s",
+        mock_dbg(&chip->dev, "Set enabled pwm%d: %s",
             pwm_dev->hwpwm,
             state->enabled ? "true" : "false");
     }
@@ -92,14 +100,14 @@ static int pwm_mock_apply(struct pwm_chip *chip, struct pwm_device *pwm_dev,
 // Export PWM channel
 static int pwm_mock_request(struct pwm_chip *chip, struct pwm_device *pwm_dev)
 {
-    dev_info(&chip->dev, "Export channel %d", pwm_dev->hwpwm);
+    mock_dbg(&chip->dev, "Export channel %d", pwm_dev->hwpwm);
     return 0;
 }
 
 // Unexport PWM channel
 static void pwm_mock_free(struct pwm_chip *chip, struct pwm_device *pwm_dev)
 {
-    dev_info(&chip->dev, "Unexport channel %d", pwm_dev->hwpwm);
+    mock_dbg(&chip->dev, "Unexport channel %d", pwm_dev->hwpwm);
 }
 
 static const struct pwm_ops pwm_mock_ops = {
@@ -140,7 +148,7 @@ static int pwm_mockup_pwm_probe(struct platform_device *pdev)
         return ret;
     }
 
-    dev_info(&chip->dev, "Created new mock pwmchip with %d channels", channels);
+    mock_dbg(&chip->dev, "Created new mock pwmchip with %d channels", channels);
     return 0;
 }
 
