@@ -128,6 +128,6 @@ jobs:
           source_file: 'pi4j-*.zip'
           destination_repo: 'pi4j/download'
           destination_branch: 'main'
-          user_email: 'team@pi4j.com'
-          user_name: 'Pi4J Build'
+          user_email: '41898282+github-actions[bot]@users.noreply.github.com'
+          user_name: 'github-actions[bot]'
 
