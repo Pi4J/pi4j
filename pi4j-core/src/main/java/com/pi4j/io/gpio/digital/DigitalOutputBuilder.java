@@ -27,7 +27,6 @@ package com.pi4j.io.gpio.digital;
 
 import com.pi4j.context.Context;
 import com.pi4j.io.gpio.digital.impl.DefaultDigitalOutputBuilder;
-import com.pi4j.platform.Platform;
 import com.pi4j.provider.Provider;
 
 /**
@@ -81,20 +80,6 @@ public interface DigitalOutputBuilder {
      */
     DigitalOutputBuilder initial(DigitalState state);
 
-    /**
-     * <p>platform.</p>
-     *
-     * @param platformId a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputBuilder} object.
-     */
-    DigitalOutputBuilder platform(String platformId);
-    /**
-     * <p>platform.</p>
-     *
-     * @param platformClass a {@link java.lang.Class} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputBuilder} object.
-     */
-    DigitalOutputBuilder platform(Class<? extends Platform> platformClass);
     /**
      * <p>provider.</p>
      *

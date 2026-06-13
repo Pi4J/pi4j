@@ -26,7 +26,6 @@ package com.pi4j.extension;
  */
 
 import com.pi4j.context.Context;
-import com.pi4j.platform.Platform;
 import com.pi4j.provider.Provider;
 
 /**
@@ -49,11 +48,4 @@ public interface PluginService {
      * @return a {@link com.pi4j.extension.PluginService} object.
      */
     PluginService register(Provider ... provider);
-    /**
-     * <p>register.</p>
-     *
-     * @param platform a {@link com.pi4j.platform.Platform} object.
-     * @return a {@link com.pi4j.extension.PluginService} object.
-     */
-    PluginService register(Platform... platform);
 }

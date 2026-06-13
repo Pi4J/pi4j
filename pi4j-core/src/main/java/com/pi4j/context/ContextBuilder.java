@@ -27,7 +27,6 @@ package com.pi4j.context;
 
 import com.pi4j.config.Builder;
 import com.pi4j.context.impl.DefaultContextBuilder;
-import com.pi4j.platform.Platform;
 import com.pi4j.provider.Provider;
 
 import java.io.File;
@@ -53,14 +52,6 @@ public interface ContextBuilder extends Builder<Context> {
     static ContextBuilder newInstance(){
         return DefaultContextBuilder.newInstance();
     }
-
-    /**
-     * <p>add.</p>
-     *
-     * @param platform a {@link com.pi4j.platform.Platform} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    ContextBuilder add(Platform ... platform);
 
     /**
      * <p>add.</p>
@@ -215,66 +206,6 @@ public interface ContextBuilder extends Builder<Context> {
         // do not auto detect all extensibility modules in the classpath
         return  noAutoDetectPlatforms().
                 noAutoDetectProviders();
-    }
-
-    /**
-     * <p>addPlatform.</p>
-     *
-     * @param platform a {@link com.pi4j.platform.Platform} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder addPlatform(Platform ... platform){
-        return add(platform);
-    }
-
-    /**
-     * <p>addPlatform.</p>
-     *
-     * @param provider a {@link com.pi4j.provider.Provider} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder addPlatform(Provider ... provider){
-        return add(provider);
-    }
-
-    /**
-     * <p>addDefaultPlatform.</p>
-     *
-     * @param platform a {@link com.pi4j.platform.Platform} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder addDefaultPlatform(Platform platform){
-        return this.add(platform).defaultPlatform(platform.id());
-    }
-
-    /**
-     * <p>defaultPlatform.</p>
-     *
-     * @param platform a {@link com.pi4j.platform.Platform} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder defaultPlatform(Platform platform){
-        return defaultPlatform(platform.id());
-    }
-
-    /**
-     * <p>setDefaultPlatform.</p>
-     *
-     * @param platformId a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder setDefaultPlatform(String platformId){
-        return defaultPlatform(platformId);
-    }
-
-    /**
-     * <p>setDefaultPlatform.</p>
-     *
-     * @param platform a {@link com.pi4j.platform.Platform} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder setDefaultPlatform(Platform platform){
-        return defaultPlatform(platform);
     }
 
     /**

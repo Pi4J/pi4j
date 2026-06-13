@@ -31,7 +31,6 @@ module com.pi4j.plugin.mock {
     uses com.pi4j.extension.Plugin;
 
     exports com.pi4j.plugin.mock;
-    exports com.pi4j.plugin.mock.platform;
     exports com.pi4j.plugin.mock.provider.gpio.digital;
     exports com.pi4j.plugin.mock.provider.gpio.analog;
     exports com.pi4j.plugin.mock.provider.pwm;

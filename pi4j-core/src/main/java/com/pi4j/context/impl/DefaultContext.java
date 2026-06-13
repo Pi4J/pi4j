@@ -35,8 +35,6 @@ import com.pi4j.event.ShutdownListener;
 import com.pi4j.exception.LifecycleException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.IO;
-import com.pi4j.platform.Platforms;
-import com.pi4j.platform.impl.DefaultPlatforms;
 import com.pi4j.provider.Providers;
 import com.pi4j.provider.impl.DefaultProviders;
 import com.pi4j.registry.Registry;
@@ -62,7 +60,6 @@ public class DefaultContext implements Context {
     private ContextConfig config = null;
     private ContextProperties properties = null;
     private Providers providers = null;
-    private Platforms platforms = null;
     private Registry registry = null;
     private BoardInfo boardInfo = null;
 
@@ -76,8 +73,11 @@ public class DefaultContext implements Context {
         return new DefaultContext(config);
     }
 
-    // private constructor
-    private DefaultContext(ContextConfig config) {
+    /**
+     * This constructor is protected to support special-case contexts bypassing providers and should not typically
+     * be used / useful for user code.
+     */
+    protected DefaultContext(ContextConfig config) {
         logger.trace("new Pi4J runtime context initialized [config={}]", config);
 
         // validate config object exists
@@ -99,9 +99,6 @@ public class DefaultContext implements Context {
 
         // create API accessible providers instance  (READ-ONLY ACCESS OBJECT)
         this.providers = DefaultProviders.newInstance(this.runtime.providers());
-
-        // create API accessible platforms instance  (READ-ONLY ACCESS OBJECT)
-        this.platforms = DefaultPlatforms.newInstance(this.runtime.platforms());
 
         // detect the board model
         this.boardInfo = BoardInfoHelper.current();
@@ -132,10 +129,6 @@ public class DefaultContext implements Context {
     /** {@inheritDoc} */
     @Override
     public Registry registry() { return this.registry; }
-
-    /** {@inheritDoc} */
-    @Override
-    public Platforms platforms() { return this.platforms; }
 
     /** {@inheritDoc} */
     @Override

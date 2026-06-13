@@ -26,7 +26,6 @@ package com.pi4j.io;
  */
 
 import com.pi4j.config.BcmConfigBuilder;
-import com.pi4j.platform.Platform;
 import com.pi4j.provider.Provider;
 
 /**
@@ -43,8 +42,4 @@ public interface IOBcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>
     BUILDER_TYPE provider(String provider);
 
     BUILDER_TYPE provider(Class<? extends Provider> providerClass);
-
-    BUILDER_TYPE platform(String platform);
-
-    BUILDER_TYPE platform(Class<? extends Platform> platformClass);
 }

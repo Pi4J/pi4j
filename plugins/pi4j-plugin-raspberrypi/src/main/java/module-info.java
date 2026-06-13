@@ -30,7 +30,6 @@ module com.pi4j.plugin.raspberrypi {
     requires com.pi4j;
 
     exports com.pi4j.plugin.raspberrypi;
-    exports com.pi4j.plugin.raspberrypi.platform;
     exports com.pi4j.plugin.raspberrypi.provider.gpio.digital;
     exports com.pi4j.plugin.raspberrypi.provider.pwm;
     exports com.pi4j.plugin.raspberrypi.provider.spi;

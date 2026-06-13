@@ -42,7 +42,6 @@ module com.pi4j.test {
     requires jdk.incubator.vector;
     // TEST END
 
-    uses com.pi4j.plugin.mock.platform.MockPlatform;
     uses com.pi4j.plugin.mock.provider.gpio.analog.MockAnalogInput;
     uses com.pi4j.plugin.mock.provider.gpio.analog.MockAnalogInputProvider;
     uses com.pi4j.plugin.mock.provider.gpio.analog.MockAnalogOutput;
@@ -58,7 +57,6 @@ module com.pi4j.test {
     uses com.pi4j.plugin.mock.provider.spi.MockSpi;
     uses com.pi4j.plugin.mock.provider.spi.MockSpiProvider;
 
-    exports com.pi4j.test.platform;
     exports com.pi4j.test.provider;
     exports com.pi4j.test.smoketest;
 }

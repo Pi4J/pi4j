@@ -86,8 +86,6 @@ public class Main {
         // create About class instance
         About about = new About(providerContext);
         about.enumerateProviders();
-        about.enumeratePlatforms();
-        about.describeDefaultPlatform();
 
         for (var ioType : IOType.values()) {
             about.enumerateProviders(ioType);

@@ -45,9 +45,6 @@ import com.pi4j.io.exception.IOException;
 import com.pi4j.io.exception.IOInvalidIDException;
 import com.pi4j.io.exception.IONotFoundException;
 import com.pi4j.io.exception.IOShutdownException;
-import com.pi4j.platform.Platform;
-import com.pi4j.platform.Platforms;
-import com.pi4j.platform.exception.PlatformNotFoundException;
 import com.pi4j.provider.Provider;
 import com.pi4j.provider.Providers;
 import com.pi4j.provider.exception.ProviderInterfaceException;
@@ -97,13 +94,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     Registry registry();
 
     /**
-     * <p>platforms.</p>
-     *
-     * @return a {@link com.pi4j.platform.Platforms} object.
-     */
-    Platforms platforms();
-
-    /**
      * Submits the given task for async execution
      *
      * @param task the task to execute asynchronously
@@ -130,123 +120,8 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     boolean isShutdown();
 
     // ------------------------------------------------------------------------
-    // PLATFORM ACCESSOR METHODS
-    // ------------------------------------------------------------------------
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param <P> a P object.
-     * @return a P object.
-     */
-    default <P extends Platform> P platform() {
-        return platforms().getDefault();
-    }
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param <P> a P object.
-     * @return a P object.
-     */
-    default <P extends Platform> P getPlatform() {
-        return this.platform();
-    }
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param <P> a P object.
-     * @return a P object.
-     */
-    default <P extends Platform> P getDefaultPlatform() {
-        return this.platform();
-    }
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param <P> a P object.
-     * @return a P object.
-     */
-    default <P extends Platform> P defaultPlatform() {
-        return this.platform();
-    }
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param id  Id of the platform.
-     * @param <P> the platform type
-     * @return a P object.
-     * @throws PlatformNotFoundException if platform specified by {@code id} is not found.
-     */
-    default <P extends Platform> P platform(String id) throws PlatformNotFoundException {
-        return (P) this.platforms().get(id);
-    }
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param id  Id of the platform.
-     * @param <P> the platform type
-     * @return a P object.
-     * @throws PlatformNotFoundException if platform specified by {@code id} is not found.
-     */
-    default <P extends Platform> P getPlatform(String id) throws PlatformNotFoundException {
-        return this.platform(id);
-    }
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param id Id of the platform.
-     * @return a P object.
-     * @throws PlatformNotFoundException if platform specified by {@code id} is not found.
-     */
-    default boolean hasPlatform(String id) throws PlatformNotFoundException {
-        return this.platforms().exists(id);
-    }
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param platformClass a P object.
-     * @param <P>           the platform type
-     * @return a P object.
-     * @throws PlatformNotFoundException if platform specified by {@code platformClass} is not found.
-     */
-    default <P extends Platform> P platform(Class<P> platformClass) throws PlatformNotFoundException {
-        return (P) this.platforms().get(platformClass);
-    }
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param platformClass a P object.
-     * @param <P>           the platform type
-     * @return a P object.
-     * @throws PlatformNotFoundException if platform specified by {@code platformClass} is not found.
-     */
-    default <P extends Platform> P getPlatform(Class<P> platformClass) throws PlatformNotFoundException {
-        return platform(platformClass);
-    }
-
-    /**
-     * <p>Has platforms.</p>
-     *
-     * @param platformClass a P object.
-     * @return boolean
-     * @throws PlatformNotFoundException if platform specified by {@code platformClass} is not found.
-     */
-    default boolean hasPlatform(Class<? extends Platform> platformClass) throws PlatformNotFoundException {
-        return platforms().exists(platformClass);
-    }
-
-    // ------------------------------------------------------------------------
     // PROVIDER ACCESSOR METHODS
     // ------------------------------------------------------------------------
-
 
     /**
      * <p>provider.</p>
@@ -324,9 +199,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      */
     default <T extends Provider> T provider(Class<T> providerClass)
         throws ProviderNotFoundException, ProviderInterfaceException {
-        // return the default provider for this type from the default platform
-        if (platform() != null && platform().hasProvider(providerClass))
-            return platform().provider(providerClass);
 
         // return the default provider for this type (outside of default platform)
         if (providers().exists(providerClass))
@@ -346,10 +218,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      * @throws ProviderNotFoundException
      */
     default <T extends Provider> T provider(IOType ioType) throws ProviderNotFoundException {
-        // return the default provider for this type from the default platform
-        if (platform() != null && platform().hasProvider(ioType))
-            return platform().provider(ioType);
-
         // return the default provider for this type (outside of default platform)
         if (providers().exists(ioType))
             return providers().get(ioType);
@@ -379,15 +247,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      */
     @Override
     default <I extends IO> I create(IOConfig config, IOType ioType) {
-
-        // create by explicitly configured IO <PLATFORM> from IO config
-        String platformId = config.platform();
-        if (StringUtil.isNotNullOrEmpty(platformId)) {
-            // resolve the platform and use it to create the IO instance
-            Platform platform = this.platforms().get(platformId);
-            return platform.create(config, ioType);
-        }
-
         // create by explicitly configured IO <PROVIDER> from IO config
         String providerId = config.provider();
         if (StringUtil.isNotNullOrEmpty(providerId)) {
@@ -417,14 +276,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
 
         // resolve inheritable properties from the context based on the provided 'id' for this IO instance
         Map<String, String> inheritedProperties = PropertiesUtil.subProperties(this.properties().all(), id);
-
-        // create by explicitly configured IO <PLATFORM> from IO inheritable properties
-        if (inheritedProperties.containsKey("platform")) {
-            // resolve the platform and use it to create the IO instance
-            String platformId = inheritedProperties.get("platform");
-            Platform platform = this.platforms().get(platformId);
-            return platform.create(id);
-        }
 
         // create by explicitly configured IO <PROVIDER> from IO config
         if (inheritedProperties.containsKey("provider")) {
@@ -463,14 +314,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
 
         // resolve inheritable properties from the context based on the provided 'id' for this IO instance
         Map<String, String> inheritedProperties = PropertiesUtil.subProperties(this.properties().all(), id);
-
-        // create by explicitly configured IO <PLATFORM> from IO inheritable properties
-        if (inheritedProperties.containsKey("platform")) {
-            // resolve the platform and use it to create the IO instance
-            String platformId = inheritedProperties.get("platform");
-            Platform platform = this.platforms().get(platformId);
-            return platform.create(id, ioType);
-        }
 
         // create by explicitly configured IO <PROVIDER> from IO config
         if (inheritedProperties.containsKey("provider")) {
@@ -562,7 +405,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         Descriptor descriptor = Descriptor.create().category("CONTEXT").name("Runtime Context").type(this.getClass());
 
         descriptor.add(registry().describe());
-        descriptor.add(platforms().describe());
         descriptor.add(providers().describe());
         descriptor.add(properties().describe());
         return descriptor;

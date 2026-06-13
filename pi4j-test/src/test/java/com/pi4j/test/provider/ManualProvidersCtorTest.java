@@ -73,9 +73,6 @@ public class ManualProvidersCtorTest {
         // ensure that only 3 providers were detected/loaded into the Pi4J context
         assertEquals(2, pi4j.providers().all().size());
 
-        // print out the detected Pi4J platforms
-        pi4j.platforms().describe().print(System.out);
-
         // print out the detected Pi4J providers
         pi4j.providers().describe().print(System.out);
     }
