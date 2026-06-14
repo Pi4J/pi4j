@@ -33,7 +33,6 @@ import com.pi4j.extension.Extension;
 import com.pi4j.io.IO;
 import com.pi4j.io.IOType;
 import com.pi4j.io.exception.IOException;
-import com.pi4j.util.PropertiesUtil;
 
 import java.util.Map;
 

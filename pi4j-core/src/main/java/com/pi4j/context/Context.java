@@ -31,8 +31,6 @@ import com.pi4j.boardinfo.model.JavaInfo;
 import com.pi4j.boardinfo.model.OperatingSystem;
 import com.pi4j.common.Describable;
 import com.pi4j.common.Descriptor;
-import com.pi4j.config.Config;
-import com.pi4j.config.ConfigBuilder;
 import com.pi4j.event.InitializedEventProducer;
 import com.pi4j.event.ShutdownEventProducer;
 import com.pi4j.exception.ShutdownException;
@@ -50,7 +48,6 @@ import com.pi4j.provider.Providers;
 import com.pi4j.provider.exception.ProviderInterfaceException;
 import com.pi4j.provider.exception.ProviderNotFoundException;
 import com.pi4j.registry.Registry;
-import com.pi4j.util.PropertiesUtil;
 import com.pi4j.util.StringUtil;
 
 import java.util.Map;
