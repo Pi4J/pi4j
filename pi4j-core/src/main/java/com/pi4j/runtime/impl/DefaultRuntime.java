@@ -40,7 +40,6 @@ import com.pi4j.provider.impl.RuntimeProviders;
 import com.pi4j.registry.impl.DefaultRuntimeRegistry;
 import com.pi4j.registry.impl.RuntimeRegistry;
 import com.pi4j.runtime.Runtime;
-import com.pi4j.runtime.RuntimeProperties;
 import com.pi4j.util.ExecutorPool;
 import com.pi4j.util.PropertiesUtil;
 import org.slf4j.Logger;
@@ -63,7 +62,6 @@ public class DefaultRuntime implements Runtime {
     private final Context context;
     private final RuntimeRegistry registry;
     private final RuntimeProviders providers;
-    private final RuntimeProperties properties;
     private final List<Plugin> plugins;
     private boolean isShutdown = false;
     private final EventManager<Runtime, ShutdownListener, ShutdownEvent> shutdownEventManager;
@@ -88,7 +86,6 @@ public class DefaultRuntime implements Runtime {
         // set local references
         this.context = context;
         plugins = new ArrayList<>();
-        this.properties = DefaultRuntimeProperties.newInstance(context);
         this.registry = DefaultRuntimeRegistry.newInstance(this);
         this.providers = DefaultRuntimeProviders.newInstance(this);
 
@@ -140,14 +137,6 @@ public class DefaultRuntime implements Runtime {
     @Override
     public RuntimeProviders providers() {
         return this.providers;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RuntimeProperties properties() {
-        return this.properties;
     }
 
     @Override
@@ -293,33 +282,6 @@ public class DefaultRuntime implements Runtime {
 
             // initialize all providers
             this.providers.initialize(providers.values());
-
-            // now auto-load any defined I/O injection instances available in the context config
-            try {
-                // ensure that the auto-injection option is enabled for this context
-                if (this.context().config().autoInject()) {
-
-                    // get potential injection candidates
-                    Map<String, String> candidates = PropertiesUtil.keysEndsWith(this.context().properties().all(),
-                        "inject");
-
-                    // iterate over injection candidate and determine if it is configured/enabled for injection and perform injection
-                    for (String candidateKey : candidates.keySet()) {
-                        try {
-                            boolean candidateInject = Boolean.parseBoolean(
-                                candidates.getOrDefault(candidateKey, "false"));
-                            if (candidateInject) {
-                                this.context().create(candidateKey);
-                            }
-                        } catch (Exception e) {
-                            logger.error("FAILED TO AUTO-INJECT [{}]; {}'", candidateKey, e.getMessage(), e);
-                            throw new InitializeException(e);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            }
 
         } catch (Exception e) {
             logger.error("failed to 'initialize(); '", e);
