@@ -50,7 +50,6 @@ import com.pi4j.provider.exception.ProviderNotFoundException;
 import com.pi4j.registry.Registry;
 import com.pi4j.util.StringUtil;
 
-import java.util.Map;
 import java.util.concurrent.Future;
 
 /**

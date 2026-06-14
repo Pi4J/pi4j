@@ -41,7 +41,6 @@ import com.pi4j.registry.impl.DefaultRuntimeRegistry;
 import com.pi4j.registry.impl.RuntimeRegistry;
 import com.pi4j.runtime.Runtime;
 import com.pi4j.util.ExecutorPool;
-import com.pi4j.util.PropertiesUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
