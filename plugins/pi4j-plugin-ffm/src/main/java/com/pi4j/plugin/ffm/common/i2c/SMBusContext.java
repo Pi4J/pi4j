@@ -32,7 +32,7 @@ class SMBusContext extends Pi4JNativeContext {
     // Native libi2c 'i2c_smbus_read_byte' method
     static final MethodHandle READ_BYTE = Linker.nativeLinker().downcallHandle(
         LIBI2C.find("i2c_smbus_read_byte").orElseThrow(),
-        FunctionDescriptor.of(ValueLayout.JAVA_BYTE, ValueLayout.JAVA_INT),
+        FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.JAVA_INT),
         Linker.Option.captureCallState("errno"));
 
     // Native libi2c 'i2c_smbus_write_byte_data' method

@@ -18,7 +18,7 @@ public class SMBusNativeMock {
             when(mock.writeByteData(anyInt(), anyByte(), anyByte())).thenReturn(1);
             when(mock.writeWordData(anyInt(), anyByte(), anyInt())).thenReturn(1);
 
-            when(mock.readByte(anyInt())).thenReturn((byte) 0xff);
+            when(mock.readByte(anyInt())).thenReturn(0xff);
             when(mock.readBlockData(anyInt(), anyByte(), any(byte[].class))).thenReturn("Test".getBytes());
             when(mock.readByteData(anyInt(), anyByte())).thenReturn((byte) 0xff);
             when(mock.readWordData(anyInt(), anyByte())).thenReturn(0xff);

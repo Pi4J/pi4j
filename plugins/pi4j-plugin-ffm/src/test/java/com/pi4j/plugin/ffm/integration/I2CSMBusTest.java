@@ -6,9 +6,7 @@ import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfigBuilder;
 import com.pi4j.io.i2c.I2CImplementation;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 
 import java.io.IOException;
@@ -45,11 +43,10 @@ public class I2CSMBusTest {
             .build();
         i2c = pi4j.i2c()
             .create(I2CConfigBuilder
-                .newInstance(pi4j)
+                .newInstance()
                 .bus(99)
                 .device(0x1C)
                 .i2cImplementation(I2CImplementation.SMBUS));
-
     }
 
     @AfterAll
@@ -75,19 +72,19 @@ public class I2CSMBusTest {
     }
 
     @Test
-    public void testI2CWriteByte() throws InterruptedException {
+    public void testI2CWriteByte() {
         var write = i2c.write(0xEE);
         assertEquals(0, write);
     }
 
     @Test
-    public void testI2CReadByte() throws InterruptedException {
-        var read = i2c.read();
-        assertEquals(0, read);
+    public void testI2CReadByte() {
+        i2c.write(0xEE);
+        assertEquals(0xEE, i2c.read());
     }
 
     @Test
-    public void testI2CWriteReadBlockData() throws InterruptedException {
+    public void testI2CWriteReadBlockData() {
         var writeBuffer = new byte[]{0x01, 0x02, 0x03};
         var write = i2c.writeRegister(0xFF, writeBuffer);
         assertEquals(0, write);
@@ -98,7 +95,7 @@ public class I2CSMBusTest {
     }
 
     @Test
-    public void testI2CWriteReadWordData() throws InterruptedException {
+    public void testI2CWriteReadWordData() {
         var write = i2c.writeRegisterWord(0xFF, 1);
         assertEquals(0, write);
         var read = i2c.readRegisterWord(0xFF);
@@ -106,15 +103,14 @@ public class I2CSMBusTest {
     }
 
     @Test
-    public void testI2CWriteReadRegister() throws InterruptedException {
+    public void testI2CWriteReadRegister() {
         var write = i2c.writeRegister(0x324, 0xFF);
         assertEquals(0, write);
         var read = i2c.readRegister(0x324);
         assertEquals(0xFF, read);
     }
 
-
-    //@Test
+    @Test
     public void testConcurrency() throws InterruptedException {
         // So the idea is to make a lot of writes from many threads and then read the last value from register.
         // For controlling threads execution order we are using LinkedList, so no matter what thread is executed last,
