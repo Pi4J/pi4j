@@ -3,7 +3,7 @@ Pi4J :: Java I/O Library for Raspberry Pi
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.pi4j/pi4j-core?label=Maven%20Central)](https://central.sonatype.com/artifact/com.pi4j/pi4j-core)
 [![Snapshot](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fcentral.sonatype.com%2Frepository%2Fmaven-snapshots%2Fcom%2Fpi4j%2Fpi4j-core%2Fmaven-metadata.xml&label=Snapshot)](https://central.sonatype.com/repository/maven-snapshots/com/pi4j/pi4j-core/maven-metadata.xml)
-[![License](https://img.shields.io/github/license/pi4j/pi4j)](http://www.apache.org/licenses/LICENSE-2.0)
+[![License](https://img.shields.io/github/license/pi4j/pi4j?label=License)](http://www.apache.org/licenses/LICENSE-2.0)
 
 [![Site](https://img.shields.io/badge/Website-pi4j.com-green)](https://pi4j.com)
 [![Chat on Slack](https://img.shields.io/badge/Chat-on%20Slack-blue)](https://join.slack.com/t/pi4j/shared_invite/zt-1ttqt8wgj-E6t69qaLrNuCMPLiYnBCsg)
