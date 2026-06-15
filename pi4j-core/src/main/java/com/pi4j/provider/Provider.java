@@ -33,9 +33,6 @@ import com.pi4j.extension.Extension;
 import com.pi4j.io.IO;
 import com.pi4j.io.IOType;
 import com.pi4j.io.exception.IOException;
-import com.pi4j.util.PropertiesUtil;
-
-import java.util.Map;
 
 /**
  * <p>Provider interface.</p>
@@ -101,13 +98,9 @@ public interface Provider<PROVIDER_TYPE extends Provider, IO_TYPE extends IO, CO
         // validate context
         if(context() == null) throw new IOException("Unable to create IO instance; this provider has not been 'initialized()' with a Pi4J context.");
 
-        // resolve inheritable properties from the context based on the provided 'id' for this IO instance
-        Map<String,String> inheritedProperties = PropertiesUtil.subProperties(context().properties().all(), id);
-
         // create IO instance
         ConfigBuilder builder = type().newConfigBuilder(context());
         builder.id(id);
-        builder.load(inheritedProperties);
         return (IO_TYPE)create((CONFIG_TYPE) builder.build());
     }
 }

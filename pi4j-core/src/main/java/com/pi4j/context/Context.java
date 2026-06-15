@@ -31,8 +31,6 @@ import com.pi4j.boardinfo.model.JavaInfo;
 import com.pi4j.boardinfo.model.OperatingSystem;
 import com.pi4j.common.Describable;
 import com.pi4j.common.Descriptor;
-import com.pi4j.config.Config;
-import com.pi4j.config.ConfigBuilder;
 import com.pi4j.event.InitializedEventProducer;
 import com.pi4j.event.ShutdownEventProducer;
 import com.pi4j.exception.ShutdownException;
@@ -50,10 +48,8 @@ import com.pi4j.provider.Providers;
 import com.pi4j.provider.exception.ProviderInterfaceException;
 import com.pi4j.provider.exception.ProviderNotFoundException;
 import com.pi4j.registry.Registry;
-import com.pi4j.util.PropertiesUtil;
 import com.pi4j.util.StringUtil;
 
-import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
@@ -71,13 +67,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      * @return a {@link com.pi4j.context.ContextConfig} object.
      */
     ContextConfig config();
-
-    /**
-     * <p>properties.</p>
-     *
-     * @return a {@link com.pi4j.context.ContextProperties} object.
-     */
-    ContextProperties properties();
 
     /**
      * <p>providers.</p>
@@ -268,84 +257,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    default <T extends IO> T create(String id) {
-        Provider provider = null;
-
-        // resolve inheritable properties from the context based on the provided 'id' for this IO instance
-        Map<String, String> inheritedProperties = PropertiesUtil.subProperties(this.properties().all(), id);
-
-        // create by explicitly configured IO <PROVIDER> from IO config
-        if (inheritedProperties.containsKey("provider")) {
-            String providerId = inheritedProperties.get("provider");
-            // resolve the provider and use it to create the IO instance
-            provider = this.providers().get(providerId);
-        }
-
-        // create by IO TYPE
-        // (use platform provider if one if available for this IO type)
-        if (provider == null && inheritedProperties.containsKey("type")) {
-            IOType ioType = IOType.parse(inheritedProperties.get("type"));
-            provider = provider(ioType);
-        }
-
-        // validate resolved provider
-        if (provider == null) {
-            // unable to resolve the IO type and thus unable to create I/O instance
-            throw new IOException("This IO instance [" + id +
-                "] could not be created because it does not define one of the following: 'PLATFORM', 'PROVIDER', or 'I/O TYPE'.");
-        }
-
-        // create IO instance using the provided ID and resolved inherited properties
-        ConfigBuilder builder = provider.type().newConfigBuilder(this);
-        builder.id(id);
-        builder.load(inheritedProperties);
-        return (T) provider.create((Config) builder.build());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    default <T extends IO> T create(String id, IOType ioType) {
-        Provider provider = null;
-
-        // resolve inheritable properties from the context based on the provided 'id' for this IO instance
-        Map<String, String> inheritedProperties = PropertiesUtil.subProperties(this.properties().all(), id);
-
-        // create by explicitly configured IO <PROVIDER> from IO config
-        if (inheritedProperties.containsKey("provider")) {
-            String providerId = inheritedProperties.get("provider");
-            // resolve the provider and use it to create the IO instance
-            provider = this.providers().get(providerId, ioType);
-
-            // validate IO type from resolved provider
-            if (!ioType.isType(provider.type())) {
-                throw new IOException("This IO instance [" + id +
-                    "] could not be created because the resolved provider [" + providerId +
-                    "] does not match the required I/O TYPE [" + ioType.name() + "]");
-            }
-        }
-
-        // create by IO TYPE
-        // (use platform provider if one if available for this IO type)
-        provider = provider(ioType);
-
-        // validate resolved provider
-        if (provider == null) {
-            throw new ProviderNotFoundException(ioType);
-        }
-
-        // create IO instance
-        ConfigBuilder builder = provider.type().newConfigBuilder(this);
-        builder.id(id);
-        builder.load(inheritedProperties);
-        return (T) provider.create((Config) builder.build());
-    }
-
-    /**
      * shutdown and unregister a created IO.
      *
      * @param <T> the IO Type
@@ -406,7 +317,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
 
         descriptor.add(registry().describe());
         descriptor.add(providers().describe());
-        descriptor.add(properties().describe());
         return descriptor;
     }
 }

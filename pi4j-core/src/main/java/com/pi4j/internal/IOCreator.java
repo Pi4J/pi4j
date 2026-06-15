@@ -41,17 +41,16 @@ import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.io.spi.SpiConfigBuilder;
 
+/**
+ * Note: This method previously had string-based create methods.  These have been removed in favor of the
+ * {@link IOConfigBuilder} and {@link IOType} based create methods.
+ *
+ * We considered keeping these methods around for backwards compatibility, but this would move a compile time
+ * issue to a runtime crash or lookup failure, which we considered worse.
+ */
 public interface IOCreator {
 
     <I extends IO> I create(IOConfig config, IOType type);
-
-    <I extends IO> I create(String id);
-
-    <I extends IO> I create(String id, IOType ioType);
-
-    default <I extends IO> I create(String id, Class<I> ioClass) {
-        return create(id, IOType.getByIOClass(ioClass));
-    }
 
     default <I extends IO> I create(IOConfig config, Class<I> ioClass) {
         return (ioClass.cast(create(config, IOType.getByIOClass(ioClass))));

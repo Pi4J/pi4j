@@ -57,13 +57,6 @@ public interface Runtime extends InitializedEventProducer<Runtime>, ShutdownEven
     RuntimeProviders providers();
 
     /**
-     * <p>properties.</p>
-     *
-     * @return a {@link com.pi4j.runtime.RuntimeProperties} object.
-     */
-    RuntimeProperties properties();
-
-    /**
      * <p>context.</p>
      *
      * @return a {@link com.pi4j.context.Context} object.

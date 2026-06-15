@@ -29,7 +29,6 @@ import com.pi4j.boardinfo.model.BoardInfo;
 import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.context.Context;
 import com.pi4j.context.ContextConfig;
-import com.pi4j.context.ContextProperties;
 import com.pi4j.event.InitializedListener;
 import com.pi4j.event.ShutdownListener;
 import com.pi4j.exception.LifecycleException;
@@ -58,7 +57,6 @@ public class DefaultContext implements Context {
 
     private Runtime runtime = null;
     private ContextConfig config = null;
-    private ContextProperties properties = null;
     private Providers providers = null;
     private Registry registry = null;
     private BoardInfo boardInfo = null;
@@ -91,9 +89,6 @@ public class DefaultContext implements Context {
         // create internal runtime state instance  (READ-ONLY ACCESS OBJECT)
         this.runtime = DefaultRuntime.newInstance(this);
 
-        // create API accessible properties instance  (READ-ONLY ACCESS OBJECT)
-        this.properties = DefaultContextProperties.newInstance(this.runtime.properties());
-
         // create API accessible registry instance  (READ-ONLY ACCESS OBJECT)
         this.registry = DefaultRegistry.newInstance(this.runtime.registry());
 
@@ -115,12 +110,6 @@ public class DefaultContext implements Context {
     /** {@inheritDoc} */
     @Override
     public ContextConfig config() { return this.config; }
-
-    /** {@inheritDoc} */
-    @Override
-    public ContextProperties properties() {
-        return this.properties;
-    }
 
     /** {@inheritDoc} */
     @Override
