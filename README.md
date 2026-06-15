@@ -69,7 +69,7 @@ Read all about it on pi4j.com: [What's New in V2](https://www.pi4j.com/about/inf
 
 ### Build Instructions
 
-The Pi4J codebase can be built using [Apache Maven 3.8+](https://maven.apache.org/) and [Java JDK 25 (since V4)](https://openjdk.java.net/). The following command can be used to build the Pi4J JARs:
+The Pi4J codebase can be built using [Apache Maven](https://maven.apache.org/) and [Java JDK 25 (since V4)](https://openjdk.java.net/). The following command can be used to build the Pi4J JARs:
 
 ```
 mvn package
@@ -78,8 +78,7 @@ mvn package
 With `package` all modules in the Pi4J project will be built, and it shows you if the project can be successfully built. 
 If you want to use the libraries locally on your Raspberry Pi, for example, for testing, replace `package` with `install`.
 
-> **NOTE:** A comprehensive set of build instructions can be found in
-> the [Pi4J Documentation](https://pi4j.com/architecture/about-the-code/build-instructions/).
+> **NOTE:** A comprehensive set of build instructions can be found in the [Pi4J Documentation](https://pi4j.com/architecture/about-the-code/build-instructions/).
 
 ### Adding a feature or solving a problem
 
