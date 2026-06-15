@@ -107,6 +107,9 @@ jobs:
     name: Deploy to Download Repo
     needs: [ Build ]
     runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-to-download-repo
+      cancel-in-progress: false
     environment:
       name: Staging
       url: 'https://github.com/Pi4J/download'
@@ -121,13 +124,24 @@ jobs:
         run: tree
 
       - name: Publish build archives to download repository
-        uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-        with:
-          source_file: 'pi4j-*.zip'
-          destination_repo: 'pi4j/download'
-          destination_branch: 'main'
-          user_email: '41898282+github-actions[bot]@users.noreply.github.com'
-          user_name: 'github-actions[bot]'
+        run: |
+          git clone --single-branch --branch main \
+            https://${API_TOKEN_GITHUB}@github.com/pi4j/download.git /tmp/download-repo
+          cp pi4j-*.zip /tmp/download-repo/
+          cd /tmp/download-repo
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config user.name 'github-actions[bot]'
+          git add .
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Update from https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+          for i in 1 2 3; do
+            git push origin main && break
+            echo "Push attempt $i failed, rebasing and retrying..."
+            git pull --rebase origin main
+          done
 
