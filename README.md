@@ -14,14 +14,11 @@ API documentation: [![APIdia](https://apidia.net/mvn/com.pi4j/pi4j/badge.svg)](h
 
 ---
 
-## Project Information for V2+ of Pi4J
+## Project Information
 
 Project website: [pi4j.com](https://pi4j.com/).
 
-This project is intended to provide a **friendly object-oriented I/O API and implementation libraries for Java
-Programmers** to access the **full I/O capabilities of the Raspberry Pi platform**. This project abstracts the low-level
-native integration and interrupt monitoring to enable Java programmers to **focus on implementing their application
-business logic**.
+This project is intended to provide a **friendly object-oriented I/O API and implementation libraries for Java Programmers** to access the **full I/O capabilities of the Raspberry Pi platform**. This project abstracts the low-level native integration and interrupt monitoring to enable Java programmers to **focus on implementing their application business logic**.
 
 ![Pi4J diagram](https://pi4j.com/assets/about/home/pi4j-overview.jpg)
 
@@ -33,22 +30,14 @@ Builds are available from:
 * [Release builds from Maven Central](http://search.maven.org/#search%7Cga%7C1%7Ccom.pi4j)
 * [Snapshot builds from Sonatype OSS](https://oss.sonatype.org/index.html#nexus-search;quick~pi4j)
 * [Pi4J Downloads](https://pi4j.com/download)
-* [APT/PPA Package Repository downloads](https://github.com/Pi4J/download)
 
 ## Using Pi4J
 
-You need these Java runtimes to use Pi4J:
+You need these Java 25+ runtimes to use Pi4J (V4+):
 
-* Java 11 for V2
-* Java 21 for V3
-* Java 25 for V4
+When you want to use Pi4J in your project, you should definitely check out [the Pi4J website](https://pi4j.com) where you can find a lot of information and many examples!
 
-When you want to use Pi4J in your project, you should definitely check out [the Pi4J website](https://pi4j.com) where
-you can find a lot of information and many examples!
-
-For example, for a minimal example to blink a
-LED ([fully explained here](https://pi4j.com/getting-started/minimal-example-application/)), you need to import the
-dependencies and use this code:
+For example, for a minimal example to blink a LED ([fully explained here](https://pi4j.com/getting-started/minimal-example-application/)), you need to import the dependencies and use this code:
 
 ```java
 var pi4j = Pi4J.newAutoContext();
@@ -68,23 +57,19 @@ while (true) {
 
 ## Contributing to Pi4J
 
-For full description of the code structure, how to compile... see
-the ["About the code" on our website](https://pi4j.com/architecture/about-the-code/).
+For full description of the code structure, how to compile... see the ["About the code" on our website](https://pi4j.com/architecture/about-the-code/).
 
 ![Pi4J code structure](assets/draw.io/pi4j-code-structure.jpg)
 
 ### Project Overview
 
-Starting with Pi4J V2, the Pi4J project is prioritizing focus on providing Java programs access, control and
-communication with the core I/O capabilities of the Raspberry Pi platform.
+Starting with Pi4J V2, the Pi4J project is prioritizing focus on providing Java programs access, control and communication with the core I/O capabilities of the Raspberry Pi platform. A separate repository [pi4j-drivers](https://github.com/Pi4J/pi4j-drivers) provides drivers for various electronic components, using the Pi4J library.
 
-Read all about it on [pi4j.com: "What's New in V2"](https://www.pi4j.com/about/info-v2/).
+Read all about it on pi4j.com: [What's New in V2](https://www.pi4j.com/about/info-v2/), [in V3](https://www.pi4j.com/about/info-v3/), and [in V4](https://www.pi4j.com/about/info-v4/).
 
 ### Build Instructions
 
-The Pi4J codebase can be built using [Apache Maven 3.8+](https://maven.apache.org/).
-and [Java JDK 25 (since V4)](https://openjdk.java.net/).
-The following command can be used to build the Pi4J JARs:
+The Pi4J codebase can be built using [Apache Maven 3.8+](https://maven.apache.org/) and [Java JDK 25 (since V4)](https://openjdk.java.net/). The following command can be used to build the Pi4J JARs:
 
 ```
 mvn package
@@ -110,26 +95,11 @@ the cause of the problem or even better provide a code fix!
 You want to become a member of the Pi4J-team? Great idea! Send a short message to frank@pi4j.com
 with your experience, ideas, and what you would like to contribute to the project.
 
-## Previous Releases
-
-* **Releases**
-  * V1: [github.com/Pi4J/pi4j-v1/releases](https://github.com/Pi4J/pi4j-v1/releases) (archived)
-  * V2+: [github.com/Pi4J/pi4j/releases](https://github.com/Pi4J/pi4j/releases)
-* **Source Code**:
-  * V1: [github.com/Pi4J/pi4j-v1/branches](https://github.com/Pi4J/pi4j-v1/branches) (archived)
-  * V2+: [github.com/Pi4J/pi4j/branches](https://github.com/Pi4J/pi4j/branches)
-
 ## License
 
-Pi4J Version 2.0 and later is licensed under the Apache License,
-Version 2.0 (the "License"); you may not use this file except in
-compliance with the License. You may obtain a copy of the License at:
-http://www.apache.org/licenses/LICENSE-2.0
+Pi4J Version 2.0 and later is licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at: http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and
+limitations under the License. 
 
-Copyright (C) 2012 - 2025 Pi4J
+Copyright (C) 2012 - 2026 Pi4J
