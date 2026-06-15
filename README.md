@@ -1,8 +1,8 @@
 Pi4J :: Java I/O Library for Raspberry Pi
 ==========================================================================
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.pi4j/pi4j-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.pi4j/pi4j-core)
-[![Sonatype Nexus (Snapshots)](https://img.shields.io/nexus/s/com.pi4j/pi4j-core?server=https%3A%2F%2Foss.sonatype.org)](https://oss.sonatype.org/#nexus-search;gav~com.pi4j~~~~)
+[![Maven Central](https://img.shields.io/maven-central/v/com.pi4j/pi4j-core?label=Maven%20Central)](https://central.sonatype.com/artifact/com.pi4j/pi4j-core)
+[![Snapshot](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fcentral.sonatype.com%2Frepository%2Fmaven-snapshots%2Fcom%2Fpi4j%2Fpi4j-core%2Fmaven-metadata.xml&label=Snapshot)](https://central.sonatype.com/repository/maven-snapshots/com/pi4j/pi4j-core/maven-metadata.xml)
 [![License](https://img.shields.io/github/license/pi4j/pi4j)](http://www.apache.org/licenses/LICENSE-2.0)
 
 [![Site](https://img.shields.io/badge/Website-pi4j.com-green)](https://pi4j.com)
@@ -20,7 +20,7 @@ Project website: [pi4j.com](https://pi4j.com/).
 
 This project is intended to provide a **friendly object-oriented I/O API and implementation libraries for Java Programmers** to access the **full I/O capabilities of the Raspberry Pi platform**. This project abstracts the low-level native integration and interrupt monitoring to enable Java programmers to **focus on implementing their application business logic**.
 
-![Pi4J diagram](https://pi4j.com/assets/about/home/pi4j-overview.jpg)
+![Pi4J diagram](assets/draw.io/pi4j-v4-overview.png)
 
 * Pi4J Discussions: [github.com/Pi4J/pi4j/discussions](https://github.com/Pi4J/pi4j/discussions)
 * Pi4J Issues: [github.com/Pi4J/pi4j/issues](https://github.com/Pi4J/pi4j/issues)
