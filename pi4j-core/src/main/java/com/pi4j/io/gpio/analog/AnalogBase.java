@@ -28,10 +28,6 @@ package com.pi4j.io.gpio.analog;
 import com.pi4j.context.Context;
 import com.pi4j.event.EventDelegate;
 import com.pi4j.event.EventManager;
-import com.pi4j.io.binding.AnalogBinding;
-import com.pi4j.io.binding.Bindable;
-import com.pi4j.io.binding.BindingDelegate;
-import com.pi4j.io.binding.BindingManager;
 import com.pi4j.io.gpio.GpioBase;
 
 /**
@@ -48,14 +44,10 @@ public abstract class AnalogBase<ANALOG_TYPE
         CONFIG_TYPE extends AnalogConfig<CONFIG_TYPE>,
         PROVIDER_TYPE extends AnalogProvider>
         extends GpioBase<ANALOG_TYPE, CONFIG_TYPE, PROVIDER_TYPE>
-        implements Analog<ANALOG_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
-        Bindable<ANALOG_TYPE, AnalogBinding> {
+        implements Analog<ANALOG_TYPE, CONFIG_TYPE, PROVIDER_TYPE> {
 
     // internal listeners collection
     protected final EventManager<ANALOG_TYPE, AnalogValueChangeListener, AnalogValueChangeEvent> valueChangeEventManager;
-
-    // internal bindings collection
-    protected BindingManager<ANALOG_TYPE, AnalogBinding, AnalogValueChangeEvent> bindings;
 
     /**
      * <p>Constructor for AnalogBase.</p>
@@ -72,11 +64,6 @@ public abstract class AnalogBase<ANALOG_TYPE
             (EventDelegate<AnalogValueChangeListener, AnalogValueChangeEvent>)
                     (listener, event) -> listener.onAnalogValueChange(event));
 
-
-        // create a binding manager for digital state change events
-        bindings = new BindingManager(this,
-            (BindingDelegate<AnalogBinding, AnalogValueChangeEvent>)
-                (binding, event) -> binding.process(event));
     }
 
     /** {@inheritDoc} */
@@ -93,18 +80,6 @@ public abstract class AnalogBase<ANALOG_TYPE
         return (ANALOG_TYPE) this;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ANALOG_TYPE bind(AnalogBinding... binding) {
-        return bindings.bind(binding);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ANALOG_TYPE unbind(AnalogBinding ... binding) {
-        return bindings.unbind(binding);
-    }
-
     /**
      * Dispatch AnalogInputEvent on analog input changes
      *
@@ -112,7 +87,6 @@ public abstract class AnalogBase<ANALOG_TYPE
      */
     protected void dispatch(AnalogValueChangeEvent event){
         valueChangeEventManager.dispatch(event);
-        bindings.process(event);
     }
 
     /** {@inheritDoc} */
@@ -120,9 +94,6 @@ public abstract class AnalogBase<ANALOG_TYPE
     public ANALOG_TYPE shutdownInternal(Context context){
         // remove all listeners
         valueChangeEventManager.clear();
-
-        // remove all bindings
-        bindings.clear();
 
         // return this instance
         return (ANALOG_TYPE) this;

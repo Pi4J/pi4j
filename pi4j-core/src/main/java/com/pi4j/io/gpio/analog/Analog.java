@@ -26,8 +26,6 @@ package com.pi4j.io.gpio.analog;
  */
 
 
-import com.pi4j.io.binding.AnalogBinding;
-import com.pi4j.io.binding.Bindable;
 import com.pi4j.io.gpio.Gpio;
 
 /**
@@ -43,8 +41,7 @@ public interface Analog<ANALOG_TYPE
             extends Analog<ANALOG_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
                 CONFIG_TYPE extends AnalogConfig<CONFIG_TYPE>,
                 PROVIDER_TYPE extends AnalogProvider>
-        extends Gpio<ANALOG_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
-                Bindable<ANALOG_TYPE, AnalogBinding>
+        extends Gpio<ANALOG_TYPE, CONFIG_TYPE, PROVIDER_TYPE>
 {
     /**
      * <p>value.</p>
