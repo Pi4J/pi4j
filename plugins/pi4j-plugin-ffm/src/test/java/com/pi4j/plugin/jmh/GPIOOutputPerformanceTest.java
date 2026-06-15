@@ -5,6 +5,7 @@ import com.pi4j.context.Context;
 import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
+import com.pi4j.plugin.BaseSetup;
 import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
@@ -19,28 +20,16 @@ import static org.junit.jupiter.api.Assertions.fail;
 @State(Scope.Benchmark)
 @BenchmarkMode({Mode.AverageTime})
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
-public class GPIOOutputPerformanceTest {
+public class GPIOOutputPerformanceTest extends BaseSetup {
 
     private Context pi4j;
     private DigitalOutput pin;
 
     @Setup
     public void setup() throws InterruptedException, IOException {
-        var scriptPath = Paths.get("src/test/resources").toFile().getAbsoluteFile();
-        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath + "/gpio-setup.sh");
-        setupScript.directory(scriptPath);
-        var process = setupScript.start();
-        var result = process.waitFor();
-        if (result != 0) {
-            var username = System.getProperty("user.name");
-            var errorOutput = new String(process.getErrorStream().readAllBytes());
-            fail("Failed to setup GPIO Test:\n" + errorOutput + "\n" +
-                "Probably you need to add the GPIO Simulator bash script to sudoers file " +
-                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.getParentFile().getAbsolutePath() + "/'");
-        }
-
+        setup("gpio");
         this.pi4j = Pi4J.newContextBuilder().add(new FFMDigitalOutputProviderImpl()).setGpioChipName("gpiochip2").build();
-        var config = DigitalOutputConfigBuilder.newInstance(pi4j)
+        var config = DigitalOutputConfigBuilder.newInstance()
             .bcm(5)
             .build();
         this.pin = pi4j.digitalOutput().create(config);
@@ -49,18 +38,7 @@ public class GPIOOutputPerformanceTest {
     @TearDown
     public void tearDown() throws InterruptedException, IOException {
         pi4j.shutdown();
-        var scriptPath = Paths.get("src/test/resources").toFile().getAbsoluteFile();
-        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath + "/gpio-clean.sh");
-        setupScript.directory(scriptPath);
-        var process = setupScript.start();
-        var result = process.waitFor();
-        if (result != 0) {
-            var username = System.getProperty("user.name");
-            var errorOutput = new String(process.getErrorStream().readAllBytes());
-            fail("Failed to setup GPIO Test:\n" + errorOutput + "\n" +
-                "Probably you need to add the GPIO Simulator bash script to sudoers file " +
-                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.getParentFile().getAbsolutePath() + "/'");
-        }
+        tearDown("gpio");
     }
 
     @Benchmark

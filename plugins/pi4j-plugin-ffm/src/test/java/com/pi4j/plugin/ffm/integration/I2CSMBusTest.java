@@ -5,6 +5,7 @@ import com.pi4j.context.Context;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfigBuilder;
 import com.pi4j.io.i2c.I2CImplementation;
+import com.pi4j.plugin.BaseSetup;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.EnabledOnOs;
@@ -19,31 +20,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
-public class I2CSMBusTest {
+public class I2CSMBusTest extends BaseSetup {
     private static Context pi4j;
     private static I2C i2c;
 
     @BeforeAll
     public static void setup() throws InterruptedException, IOException {
-        var scriptPath = Paths.get("src/test/resources").toFile().getAbsoluteFile();
-        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath + "/i2c-setup.sh");
-        setupScript.directory(scriptPath);
-        var process = setupScript.start();
-        var result = process.waitFor();
-        if (result != 0) {
-            var username = System.getProperty("user.name");
-            var errorOutput = new String(process.getErrorStream().readAllBytes());
-            fail("Failed to setup I2CSMbus Test: \n" + errorOutput + "\n" +
-                "Probably you need to add the I2C bash script to sudoers file " +
-                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.getParentFile().getAbsolutePath() + "/'");
-        }
+        setup("i2c");
 
         pi4j = Pi4J.newContextBuilder()
             .add(new FFMI2CProviderImpl())
             .build();
         i2c = pi4j.i2c()
-            .create(I2CConfigBuilder
-                .newInstance()
+            .create(I2CConfigBuilder.newInstance()
                 .bus(99)
                 .device(0x1C)
                 .i2cImplementation(I2CImplementation.SMBUS));
@@ -52,18 +41,7 @@ public class I2CSMBusTest {
     @AfterAll
     public static void shutdown() throws InterruptedException, IOException {
         pi4j.shutdown();
-        var scriptPath = Paths.get("src/test/resources").toFile().getAbsoluteFile();
-        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath + "/i2c-clean.sh");
-        setupScript.directory(scriptPath);
-        var process = setupScript.start();
-        var result = process.waitFor();
-        if (result != 0) {
-            var username = System.getProperty("user.name");
-            var errorOutput = new String(process.getErrorStream().readAllBytes());
-            fail("Failed to cleanup I2CSMBus Test: \n" + errorOutput + "\n" +
-                "Probably you need to add the I2C bash script to sudoers file " +
-                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.getParentFile().getAbsolutePath() + "/'");
-        }
+        tearDown("i2c");
     }
 
     @Test

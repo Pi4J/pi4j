@@ -6,6 +6,7 @@ import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfigBuilder;
 import com.pi4j.io.pwm.PwmPreset;
 import com.pi4j.io.pwm.PwmType;
+import com.pi4j.plugin.BaseSetup;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.mocks.PermissionHelperMock;
 import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
@@ -23,25 +24,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
-public class PwmTest {
+public class PwmTest extends BaseSetup {
 
     private static Context pi4j;
     private static Pwm pwm;
 
     @BeforeAll
     public static void setup() throws InterruptedException, IOException {
-        var scriptPath = Paths.get("src/test/resources").toFile().getAbsoluteFile();
-        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath + "/pwm-setup.sh");
-        setupScript.directory(scriptPath);
-        var process = setupScript.start();
-        var result = process.waitFor();
-        if (result != 0) {
-            var username = System.getProperty("user.name");
-            var errorOutput = new String(process.getErrorStream().readAllBytes());
-            fail("Failed to setup PWM Test: \n" + errorOutput + "\n" +
-                "Probably you need to add the PWM bash script to sudoers file " +
-                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.getParentFile().getAbsolutePath() + "/'");
-        }
+        setup("pwm");
 
         pi4j = Pi4J.newContextBuilder()
             .add(new FFMPwmProviderImpl())
@@ -56,18 +46,7 @@ public class PwmTest {
     @AfterAll
     public static void shutdown() throws InterruptedException, IOException {
         pi4j.shutdown();
-        var scriptPath = Paths.get("src/test/resources/").toFile().getAbsoluteFile();
-        var setupScript = new ProcessBuilder("/bin/bash", "-c", "sudo " + scriptPath + "/pwm-clean.sh");
-        setupScript.directory(scriptPath);
-        var process = setupScript.start();
-        var result = process.waitFor();
-        if (result != 0) {
-            var username = System.getProperty("user.name");
-            var errorOutput = new String(process.getErrorStream().readAllBytes());
-            fail("Failed to cleanup PWM Test: \n" + errorOutput + "\n" +
-                "Probably you need to add the PWM bash script to sudoers file " +
-                "with visudo: '" + username + " ALL=(ALL) NOPASSWD: " + scriptPath.getParentFile().getAbsolutePath() + "/'");
-        }
+        tearDown("pwm");
     }
 
     @Test
