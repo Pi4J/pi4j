@@ -37,9 +37,9 @@ import com.pi4j.io.IO;
 import com.pi4j.provider.Providers;
 import com.pi4j.provider.impl.DefaultProviders;
 import com.pi4j.registry.Registry;
-import com.pi4j.registry.impl.DefaultRegistry;
 import com.pi4j.runtime.Runtime;
 import com.pi4j.runtime.impl.DefaultRuntime;
+import com.pi4j.runtime.impl.MutableRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,6 @@ public class DefaultContext implements Context {
     private Runtime runtime = null;
     private ContextConfig config = null;
     private Providers providers = null;
-    private Registry registry = null;
     private BoardInfo boardInfo = null;
 
     /**
@@ -89,9 +88,6 @@ public class DefaultContext implements Context {
         // create internal runtime state instance  (READ-ONLY ACCESS OBJECT)
         this.runtime = DefaultRuntime.newInstance(this);
 
-        // create API accessible registry instance  (READ-ONLY ACCESS OBJECT)
-        this.registry = DefaultRegistry.newInstance(this.runtime.registry());
-
         // create API accessible providers instance  (READ-ONLY ACCESS OBJECT)
         this.providers = DefaultProviders.newInstance(this.runtime.providers());
 
@@ -117,7 +113,7 @@ public class DefaultContext implements Context {
 
     /** {@inheritDoc} */
     @Override
-    public Registry registry() { return this.registry; }
+    public Registry registry() { return this.runtime.registry(); }
 
     /** {@inheritDoc} */
     @Override
@@ -139,11 +135,11 @@ public class DefaultContext implements Context {
 
 	@Override
 	public <T extends IO> void shutdown(T instance) {
-		runtime.registry().remove(instance);
+		runtime.remove(instance);
 	}
 	@Override
 	public <T extends IO> T shutdown(String id) {
-		return runtime.registry().remove(id);
+		return runtime.remove(runtime.registry().get(id));
 	}
 
     @Override

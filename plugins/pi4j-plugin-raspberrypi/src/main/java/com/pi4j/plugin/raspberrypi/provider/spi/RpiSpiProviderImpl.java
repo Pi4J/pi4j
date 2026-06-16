@@ -53,7 +53,7 @@ public class RpiSpiProviderImpl extends SpiProviderBase implements RpiSpiProvide
     @Override
     public Spi create(SpiConfig config) {
         RpiSpi spi = new RpiSpi(this, config);
-        this.context.registry().add(spi);
+        this.context.runtime().add(spi);
         return spi;
     }
 }

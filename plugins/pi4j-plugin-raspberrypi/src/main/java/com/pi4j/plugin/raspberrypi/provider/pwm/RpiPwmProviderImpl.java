@@ -53,7 +53,7 @@ public class RpiPwmProviderImpl extends PwmProviderBase implements RpiPwmProvide
     @Override
     public Pwm create(PwmConfig config) {
         RpiPwm pwm = new RpiPwm(this, config);
-        this.context.registry().add(pwm);
+        this.context.runtime().add(pwm);
         return pwm;
     }
 }

@@ -21,7 +21,7 @@ public class FFMDigitalInputProviderImpl extends DigitalInputProviderBase implem
     public DigitalInput create(DigitalInputConfig config) {
         var chipName = context.config().properties().getOrDefault("gpio.chip.name", "unknown");
         var digitalInput = new FFMDigitalInput(chipName, this, config);
-        this.context.registry().add(digitalInput);
+        this.context.runtime().add(digitalInput);
         return digitalInput;
     }
 

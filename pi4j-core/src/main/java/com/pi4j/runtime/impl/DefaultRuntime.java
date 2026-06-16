@@ -33,12 +33,12 @@ import com.pi4j.exception.ShutdownException;
 import com.pi4j.extension.Plugin;
 import com.pi4j.extension.impl.DefaultPluginService;
 import com.pi4j.extension.impl.PluginStore;
+import com.pi4j.io.IO;
 import com.pi4j.io.IOType;
 import com.pi4j.provider.Provider;
 import com.pi4j.provider.impl.DefaultRuntimeProviders;
 import com.pi4j.provider.impl.RuntimeProviders;
-import com.pi4j.registry.impl.DefaultRuntimeRegistry;
-import com.pi4j.registry.impl.RuntimeRegistry;
+import com.pi4j.registry.Registry;
 import com.pi4j.runtime.Runtime;
 import com.pi4j.util.ExecutorPool;
 import org.slf4j.Logger;
@@ -59,7 +59,6 @@ public class DefaultRuntime implements Runtime {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final Context context;
-    private final RuntimeRegistry registry;
     private final RuntimeProviders providers;
     private final List<Plugin> plugins;
     private boolean isShutdown = false;
@@ -67,6 +66,7 @@ public class DefaultRuntime implements Runtime {
     private final EventManager<Runtime, InitializedListener, InitializedEvent> initializedEventManager;
     private final ExecutorPool executorPool;
     private final ExecutorService runtimeExecutor;
+    private final MutableRegistry registry;
 
     /**
      * <p>newInstance.</p>
@@ -85,7 +85,7 @@ public class DefaultRuntime implements Runtime {
         // set local references
         this.context = context;
         plugins = new ArrayList<>();
-        this.registry = DefaultRuntimeRegistry.newInstance(this);
+        this.registry = new MutableRegistry(context);
         this.providers = DefaultRuntimeProviders.newInstance(this);
 
         this.shutdownEventManager = new EventManager(this,
@@ -126,8 +126,8 @@ public class DefaultRuntime implements Runtime {
      * {@inheritDoc}
      */
     @Override
-    public RuntimeRegistry registry() {
-        return this.registry;
+    public Registry registry() {
+        return registry;
     }
 
     /**
@@ -276,9 +276,6 @@ public class DefaultRuntime implements Runtime {
                 }
             });
 
-            // initialize I/O registry
-            this.registry.initialize();
-
             // initialize all providers
             this.providers.initialize(providers.values());
 
@@ -293,6 +290,16 @@ public class DefaultRuntime implements Runtime {
         notifyInitListeners();
 
         return this;
+    }
+
+    @Override
+    public <T extends IO> T remove(T instance) {
+        return registry.remove(instance);
+    }
+
+    @Override
+    public void add(IO instance) {
+        registry.add(instance);
     }
 
     /**

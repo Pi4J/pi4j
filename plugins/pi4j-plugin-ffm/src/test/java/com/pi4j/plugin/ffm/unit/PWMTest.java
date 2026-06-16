@@ -70,7 +70,7 @@ public class PWMTest {
             pwm.off();
             assertTrue(pwm.isOff());
 
-            pi4j.registry().remove(pwm.id());
+            pi4j.runtime().remove(pwm.id());
         }
     }
 
@@ -102,7 +102,7 @@ public class PWMTest {
             pwm.on();
             assertTrue(pwm.isOn());
 
-            pi4j.registry().remove(pwm.id());
+            pi4j.runtime().remove(pwm.id());
         }
     }
 }

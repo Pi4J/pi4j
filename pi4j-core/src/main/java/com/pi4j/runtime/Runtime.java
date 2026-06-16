@@ -30,13 +30,17 @@ import com.pi4j.event.InitializedEventProducer;
 import com.pi4j.event.ShutdownEventProducer;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.ShutdownException;
+import com.pi4j.io.IO;
 import com.pi4j.provider.impl.RuntimeProviders;
-import com.pi4j.registry.impl.RuntimeRegistry;
+import com.pi4j.registry.Registry;
 
 import java.util.concurrent.Future;
 
 /**
  * <p>Runtime interface.</p>
+ *
+ * The runtime manages the IO registry and the providers on behalf of the context. It's the only entity with
+ * write access to the registry.
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
@@ -45,9 +49,9 @@ public interface Runtime extends InitializedEventProducer<Runtime>, ShutdownEven
     /**
      * <p>registry.</p>
      *
-     * @return a {@link com.pi4j.registry.impl.RuntimeRegistry} object.
+     * @return a {@link com.pi4j.registry.Registry} object.
      */
-    RuntimeRegistry registry();
+    Registry registry();
 
     /**
      * <p>providers.</p>
@@ -89,4 +93,13 @@ public interface Runtime extends InitializedEventProducer<Runtime>, ShutdownEven
      * @throws com.pi4j.exception.InitializeException if any.
      */
     Runtime initialize() throws InitializeException;
+
+    /**
+     * Removes an IO instance from the IO registry and shuts it down. This is called indirectly when calling close()
+     * on the IO instance.
+     */
+    <T extends IO> T remove(T instance);
+
+    /** Add an IO instance to the IO registry. */
+    void add(IO instance);
 }
