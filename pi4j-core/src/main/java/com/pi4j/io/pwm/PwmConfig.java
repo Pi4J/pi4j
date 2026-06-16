@@ -206,7 +206,7 @@ public interface PwmConfig extends ChipConfig<PwmConfig>, ChannelConfig<PwmConfi
      * @return optional duty-cycle value expressed as a percentage (rage: 0-100)
      * that is applied when shutting down the Pi4J context.
      */
-    Integer shutdownValue();
+    Double shutdownValue();
 
     /**
      * Get configured PWM duty-cycle value that is automatically applied
@@ -219,7 +219,7 @@ public interface PwmConfig extends ChipConfig<PwmConfig>, ChannelConfig<PwmConfi
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      * that is applied when shutting down the Pi4J context.
      */
-    default Integer getShutdownValue() {
+    default Double getShutdownValue() {
         return shutdownValue();
     }
 
@@ -233,7 +233,7 @@ public interface PwmConfig extends ChipConfig<PwmConfig>, ChannelConfig<PwmConfi
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      * @return this PwmConfig instance
      */
-    PwmConfig shutdownValue(Integer dutyCycle);
+    PwmConfig shutdownValue(Double dutyCycle);
 
     /**
      * Optionally configure a PWM duty-cycle value that should automatically
@@ -244,7 +244,7 @@ public interface PwmConfig extends ChipConfig<PwmConfig>, ChannelConfig<PwmConfi
      *
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      */
-    default void setShutdownValue(Integer dutyCycle) {
+    default void setShutdownValue(Double dutyCycle) {
         this.shutdownValue(dutyCycle);
     }
 
@@ -260,7 +260,7 @@ public interface PwmConfig extends ChipConfig<PwmConfig>, ChannelConfig<PwmConfi
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      * that is applied when creating and initializing the PWM instance.
      */
-    Integer initialValue();
+    Double initialValue();
 
     /**
      * Get configured PWM duty-cycle value that is automatically applied to
@@ -274,7 +274,7 @@ public interface PwmConfig extends ChipConfig<PwmConfig>, ChannelConfig<PwmConfi
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      * that is applied when creating and initializing the PWM instance.
      */
-    default Integer getInitialValue() {
+    default Double getInitialValue() {
         return initialValue();
     }
 
