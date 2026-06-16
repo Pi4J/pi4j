@@ -35,6 +35,7 @@ import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.registry.Registry;
+import com.pi4j.test.Slf4jStreamBridge;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,7 +76,8 @@ class RegistryTest {
         logger.info("-------------------------------------------------");
         logger.info("Pi4J I/O REGISTRY <acquired via factory accessor>");
         logger.info("-------------------------------------------------");
-        registry.describe().print(System.out);
+        var ps = Slf4jStreamBridge.createPrintStream(logger);
+        registry.describe().print(ps);
     }
 
     @Test
