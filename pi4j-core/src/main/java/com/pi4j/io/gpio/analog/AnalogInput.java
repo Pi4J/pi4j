@@ -42,7 +42,7 @@ public interface AnalogInput extends Analog<AnalogInput, AnalogInputConfig, Anal
      * @return a {@link com.pi4j.io.gpio.analog.AnalogInputConfigBuilder} object.
      */
     static AnalogInputConfigBuilder newConfigBuilder(Context context){
-        return AnalogInputConfigBuilder.newInstance(context);
+        return AnalogInputConfigBuilder.newInstance();
     }
 }
 

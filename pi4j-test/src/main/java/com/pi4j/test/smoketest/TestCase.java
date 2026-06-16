@@ -23,7 +23,7 @@ public class TestCase {
     }
 
     protected static DigitalOutput createDigitalOutput(Context pi4j, int bcm, DigitalState initial, DigitalState shutDown) {
-        var outputConfig3 = DigitalOutput.newConfigBuilder(pi4j)
+        var outputConfig3 = DigitalOutput.newConfigBuilder()
             .bcm(bcm)
             .initial(initial)
             .shutdown(shutDown);

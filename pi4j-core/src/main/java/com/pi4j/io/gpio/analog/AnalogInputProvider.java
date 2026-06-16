@@ -45,7 +45,7 @@ public interface AnalogInputProvider extends AnalogProvider<AnalogInputProvider,
      * @return a T object.
      */
     default <T extends AnalogInput> T create(Integer bcm) {
-        var builder = AnalogInputConfigBuilder.newInstance(context());
+        var builder = AnalogInputConfigBuilder.newInstance();
         builder.bcm(bcm);
         return (T) create(builder.build());
     }
@@ -59,7 +59,7 @@ public interface AnalogInputProvider extends AnalogProvider<AnalogInputProvider,
      * @return a T object.
      */
     default <T extends AnalogInput> T create(Integer bcm, String id) {
-        var builder = AnalogInputConfigBuilder.newInstance(context());
+        var builder = AnalogInputConfigBuilder.newInstance();
         builder.id(id).bcm(bcm).id(id);
         return (T) create(builder.build());
     }
@@ -74,7 +74,7 @@ public interface AnalogInputProvider extends AnalogProvider<AnalogInputProvider,
      * @return a T object.
      */
     default <T extends AnalogInput> T create(Integer bcm, String id, String name) {
-        var builder = AnalogInputConfigBuilder.newInstance(context());
+        var builder = AnalogInputConfigBuilder.newInstance();
         builder.id(id).bcm(bcm).id(id).name(name);
         return (T) create(builder.build());
     }
@@ -90,7 +90,7 @@ public interface AnalogInputProvider extends AnalogProvider<AnalogInputProvider,
      * @return a T object.
      */
     default <T extends AnalogInput> T create(Integer bcm, String id, String name, String description) {
-        var builder = AnalogInputConfigBuilder.newInstance(context());
+        var builder = AnalogInputConfigBuilder.newInstance();
         builder.id(id).bcm(bcm).id(id).name(name).description(description);
         return (T) create(builder.build());
     }

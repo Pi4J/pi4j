@@ -63,7 +63,7 @@ public class DefaultDigitalOutputBuilder implements DigitalOutputBuilder {
     protected DefaultDigitalOutputBuilder(Context context) {
         super();
         this.context = context;
-        this.builder = DigitalOutputConfigBuilder.newInstance(context);
+        this.builder = DigitalOutputConfigBuilder.newInstance();
     }
 
     /**

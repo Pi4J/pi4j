@@ -52,7 +52,7 @@ public interface DigitalOutputProvider extends DigitalProvider<DigitalOutputProv
      * @return a T object.
      */
     default <T extends DigitalOutput> T create(Integer bcm) {
-        var config = DigitalOutput.newConfigBuilder(context())
+        var config = DigitalOutput.newConfigBuilder()
             .bcm(bcm)
             .build();
         return (T) create(config);
@@ -67,7 +67,7 @@ public interface DigitalOutputProvider extends DigitalProvider<DigitalOutputProv
      * @return a T object.
      */
     default <T extends DigitalOutput> T create(Integer bcm, String id) {
-        var config = DigitalOutput.newConfigBuilder(context())
+        var config = DigitalOutput.newConfigBuilder()
             .id(id)
             .bcm(bcm)
             .build();
@@ -84,7 +84,7 @@ public interface DigitalOutputProvider extends DigitalProvider<DigitalOutputProv
      * @return a T object.
      */
     default <T extends DigitalOutput> T create(Integer bcm, String id, String name) {
-        var config = DigitalOutput.newConfigBuilder(context())
+        var config = DigitalOutput.newConfigBuilder()
             .bcm(bcm)
             .id(id)
             .name(name)
@@ -103,7 +103,7 @@ public interface DigitalOutputProvider extends DigitalProvider<DigitalOutputProv
      * @return a T object.
      */
     default <T extends DigitalOutput> T create(Integer bcm, String id, String name, String description) {
-        var config = DigitalOutput.newConfigBuilder(context())
+        var config = DigitalOutput.newConfigBuilder()
             .bcm(bcm)
             .id(id)
             .name(name)

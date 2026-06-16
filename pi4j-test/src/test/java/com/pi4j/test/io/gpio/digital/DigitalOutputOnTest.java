@@ -65,7 +65,7 @@ public class DigitalOutputOnTest {
     public void testIsOnDefault() {
 
         // create GPIO digital output config
-        var config = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder()
             .id("test-output")
             .name("Test Digital Output")
             .bcm(1)
@@ -89,7 +89,7 @@ public class DigitalOutputOnTest {
     public void testIsOnHigh() {
 
         // create GPIO digital output config
-        var config = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder()
             .id("test-output")
             .name("Test Digital Output")
             .bcm(1)
@@ -114,7 +114,7 @@ public class DigitalOutputOnTest {
     public void testIsOnLow() {
 
         // create GPIO digital output config
-        var config = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder()
             .id("test-output")
             .name("Test Digital Output")
             .onState(DigitalState.LOW)
@@ -139,7 +139,7 @@ public class DigitalOutputOnTest {
     public void testOnDefault() {
 
         // create GPIO digital output config
-        var config = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder()
             .id("test-output")
             .name("Test Digital Output")
             .bcm(1)
@@ -163,7 +163,7 @@ public class DigitalOutputOnTest {
     public void testOnHigh() {
 
         // create GPIO digital output config
-        var config = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder()
             .id("test-output")
             .name("Test Digital Output")
             .bcm(1)
@@ -188,7 +188,7 @@ public class DigitalOutputOnTest {
     public void testOnLow() {
 
         // create GPIO digital output config
-        var config = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder()
             .id("test-output")
             .name("Test Digital Output")
             .bcm(1)

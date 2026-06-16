@@ -47,7 +47,7 @@ public interface RaspberryPi extends Pi4JApi.API {
         }
 
         public I2C i2c1(int device, I2CImplementation implementation) {
-            var config = I2CConfig.newBuilder(context)
+            var config = I2CConfig.newBuilder()
                 .bus(1)
                 .device(device)
                 .i2cImplementation(implementation)
@@ -60,7 +60,7 @@ public interface RaspberryPi extends Pi4JApi.API {
         }
 
         public Spi spi0(int baudRate, SpiMode mode) {
-            var config = SpiConfig.newBuilder(context)
+            var config = SpiConfig.newBuilder()
                 .bus(0)
                 .baud(baudRate)
                 .mode(mode)
@@ -81,7 +81,7 @@ public interface RaspberryPi extends Pi4JApi.API {
         }
 
         public Spi spi1() {
-            var config = SpiConfig.newBuilder(context)
+            var config = SpiConfig.newBuilder()
                 .bus(1)
                 .baud(40_000)
                 .mode(SpiMode.MODE_1)
@@ -120,7 +120,7 @@ public interface RaspberryPi extends Pi4JApi.API {
         }
 
         public DigitalInput input(int pin) {
-            var config = DigitalInputConfig.newBuilder(context)
+            var config = DigitalInputConfig.newBuilder()
                 .bcm(pin)
                 .build();
             return context.create(config);
@@ -131,7 +131,7 @@ public interface RaspberryPi extends Pi4JApi.API {
         }
 
         public DigitalOutput output(int pin) {
-            var config = DigitalOutputConfig.newBuilder(context)
+            var config = DigitalOutputConfig.newBuilder()
                 .bcm(pin)
                 .build();
             return context.create(config);

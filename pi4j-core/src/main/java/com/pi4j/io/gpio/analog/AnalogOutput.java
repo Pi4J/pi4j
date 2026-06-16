@@ -45,7 +45,7 @@ public interface AnalogOutput extends Analog<AnalogOutput, AnalogOutputConfig, A
      * @return a {@link com.pi4j.io.gpio.analog.AnalogOutputConfigBuilder} object.
      */
     static AnalogOutputConfigBuilder newConfigBuilder(Context context){
-        return AnalogOutputConfigBuilder.newInstance(context);
+        return AnalogOutputConfigBuilder.newInstance();
     }
 
     /**
