@@ -53,7 +53,7 @@ public class RpiDigitalOutputProviderImpl extends DigitalOutputProviderBase impl
     @Override
     public DigitalOutput create(DigitalOutputConfig config) {
         RpiDigitalOutput output = new RpiDigitalOutput(this, config);
-        this.context.runtime().add(output);
+        this.context.register(output);
         return output;
     }
 }

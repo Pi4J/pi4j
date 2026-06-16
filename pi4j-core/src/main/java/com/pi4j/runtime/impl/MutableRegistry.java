@@ -59,7 +59,7 @@ public class MutableRegistry implements Registry {
         this.usedAddressesByIoType = new HashMap<>();
     }
 
-    synchronized void add(IO instance) throws IOInvalidIDException, IOAlreadyExistsException {
+    synchronized void register(IO instance) throws IOInvalidIDException, IOAlreadyExistsException {
 
         // Validate target I/O instance id
         String id = validateId(instance.id());
@@ -114,7 +114,7 @@ public class MutableRegistry implements Registry {
         return (T) instances.get(_id);
     }
 
-    synchronized <T extends IO> T remove(String id)
+    synchronized <T extends IO> T shutdown(String id)
         throws IONotFoundException, IOInvalidIDException, IOShutdownException {
         String _id = validateId(id);
 
@@ -123,13 +123,13 @@ public class MutableRegistry implements Registry {
             throw new IONotFoundException(_id);
 
         IO shutdownInstance = instances.get(_id);
-        remove(shutdownInstance);
+        shutdown(shutdownInstance);
 
         // return the shutdown I/O provider instances
         return (T) shutdownInstance;
     }
 
-    <T extends IO> T remove(T instance)
+    <T extends IO> T shutdown(T instance)
         throws IONotFoundException, IOInvalidIDException, IOShutdownException {
         if (instance == null)
             throw new IllegalArgumentException("An IO instance cannot be NULL.");
@@ -206,7 +206,7 @@ public class MutableRegistry implements Registry {
     synchronized void shutdown() {
         all().values().forEach(instance -> {
             try {
-                remove(instance.id());
+                shutdown(instance.id());
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
             }

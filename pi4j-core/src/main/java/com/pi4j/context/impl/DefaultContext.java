@@ -134,11 +134,11 @@ public class DefaultContext implements Context {
 
 	@Override
 	public <T extends IO> void shutdown(T instance) {
-		runtime.remove(instance);
+		runtime.shutdown(instance);
 	}
 	@Override
 	public <T extends IO> T shutdown(String id) {
-		return runtime.remove(runtime.registry().get(id));
+		return runtime.shutdown(runtime.registry().get(id));
 	}
 
     @Override
@@ -185,5 +185,10 @@ public class DefaultContext implements Context {
     public Context removeListener(InitializedListener... listener) {
         this.runtime.removeListener(listener);
         return this;
+    }
+
+    @Override
+    public void register(IO instance) {
+        runtime.register(instance);
     }
 }

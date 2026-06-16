@@ -84,7 +84,6 @@ public class SpiWriteReadTestCase   extends TestCase{
         } finally {
             if (spi != null) {
                 spi.close();
-                providerContext.getContext().runtime().remove(spi.id());
             }
         }
     }

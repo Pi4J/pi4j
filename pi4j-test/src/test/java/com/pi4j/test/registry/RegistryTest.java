@@ -132,8 +132,8 @@ class RegistryTest {
         // The test PWM has no context here; assuming mock/fake incompleteness.
         // First guess was that this is because TestPwmProvider returns null from the create method, but this would
         // mean that pwm.id() above would fail already.
-        registry.remove(i2c.id());
-        registry.remove(pwm.id());
+        i2c.close();
+        pwm.close();
 
         assertAll(
             // and now we shouldn't find them by address

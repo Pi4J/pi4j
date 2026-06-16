@@ -59,7 +59,7 @@ public class MockPwmProviderImpl extends PwmProviderBase implements MockPwmProvi
     @Override
     public Pwm create(PwmConfig config) {
         MockPwm pwm = new MockPwm(this, config);
-        this.context.runtime().add(pwm);
+        this.context.register(pwm);
         return pwm;
     }
 }

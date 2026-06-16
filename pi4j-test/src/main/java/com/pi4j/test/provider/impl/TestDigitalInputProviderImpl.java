@@ -75,7 +75,7 @@ public class TestDigitalInputProviderImpl extends DigitalInputProviderBase imple
         if (this.context.registry().exists(input.id()))
             throw new IOAlreadyExistsException(config.id());
         input.initialize(this.context);
-        this.context.runtime().add(input);
+        this.context.register(input);
         return input;
     }
 }

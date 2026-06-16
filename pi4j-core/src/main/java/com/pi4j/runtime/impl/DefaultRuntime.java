@@ -293,13 +293,13 @@ public class DefaultRuntime implements Runtime {
     }
 
     @Override
-    public <T extends IO> T remove(T instance) {
-        return registry.remove(instance);
+    public <T extends IO> T shutdown(T instance) {
+        return registry.shutdown(instance);
     }
 
     @Override
-    public void add(IO instance) {
-        registry.add(instance);
+    public void register(IO instance) {
+        registry.register(instance);
     }
 
     /**

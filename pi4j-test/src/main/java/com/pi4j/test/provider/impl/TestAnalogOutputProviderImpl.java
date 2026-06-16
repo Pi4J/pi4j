@@ -75,7 +75,7 @@ public class TestAnalogOutputProviderImpl extends AnalogOutputProviderBase imple
         if (this.context.registry().exists(output.id()))
             throw new IOAlreadyExistsException(config.id());
         output.initialize(this.context);
-        this.context.runtime().add(output);
+        this.context.register(output);
         return output;
     }
 }

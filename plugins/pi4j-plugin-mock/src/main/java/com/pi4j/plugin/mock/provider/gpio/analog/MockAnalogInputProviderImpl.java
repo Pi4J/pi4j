@@ -59,7 +59,7 @@ public class MockAnalogInputProviderImpl extends AnalogInputProviderBase impleme
     @Override
     public AnalogInput create(AnalogInputConfig config) {
         MockAnalogInput input = new MockAnalogInput(this, config);
-        this.context.runtime().add(input);
+        this.context.register(input);
         return input;
     }
 }

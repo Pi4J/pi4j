@@ -98,8 +98,8 @@ public interface Runtime extends InitializedEventProducer<Runtime>, ShutdownEven
      * Removes an IO instance from the IO registry and shuts it down. This is called indirectly when calling close()
      * on the IO instance.
      */
-    <T extends IO> T remove(T instance);
+    <T extends IO> T shutdown(T instance);
 
     /** Add an IO instance to the IO registry. */
-    void add(IO instance);
+    void register(IO instance);
 }
