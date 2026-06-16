@@ -67,7 +67,7 @@ public class PWMTestCase extends TestCase {
             }
         } catch (Exception e) {
             logger.error("Test failure", e);
-            return new TestResult(testName, false, "Test failure: " + e.getMessage());
+            return new TestResult(testName, false, "Test failure: " + e);
         } finally {
             if (pwm != null) {
                 pwm.close();
