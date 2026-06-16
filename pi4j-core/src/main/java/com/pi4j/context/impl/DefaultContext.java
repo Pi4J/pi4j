@@ -39,7 +39,6 @@ import com.pi4j.provider.impl.DefaultProviders;
 import com.pi4j.registry.Registry;
 import com.pi4j.runtime.Runtime;
 import com.pi4j.runtime.impl.DefaultRuntime;
-import com.pi4j.runtime.impl.MutableRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

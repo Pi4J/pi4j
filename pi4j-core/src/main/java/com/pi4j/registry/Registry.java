@@ -29,10 +29,8 @@ import com.pi4j.common.Describable;
 import com.pi4j.common.Descriptor;
 import com.pi4j.io.IO;
 import com.pi4j.io.IOType;
-import com.pi4j.io.exception.IOAlreadyExistsException;
 import com.pi4j.io.exception.IOInvalidIDException;
 import com.pi4j.io.exception.IONotFoundException;
-import com.pi4j.io.exception.IOShutdownException;
 import com.pi4j.provider.Provider;
 
 import java.util.Collections;
