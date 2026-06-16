@@ -96,7 +96,7 @@ class RegistryTest {
     @Test
     void testCreateMultipleSameAddress() throws Pi4JException {
         var inputConfig = DigitalInput.newConfigBuilder(pi4j).id("DIN-3").name("DIN-3").bcm(3);
-        var outputConfig = DigitalOutput.newConfigBuilder(pi4j).id("DOUT-3").name("DOUT-3").bcm(3);
+        var outputConfig = DigitalOutput.newConfigBuilder().id("DOUT-3").name("DOUT-3").bcm(3);
         var pwmConfig = Pwm.newConfigBuilder(pi4j).id("PWM-3").name("PWM-3").channel(3);
 
         // create I/O instances

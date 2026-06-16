@@ -46,7 +46,7 @@ public interface PwmConfigBuilder extends
      * @return a {@link com.pi4j.io.pwm.PwmConfigBuilder} object.
      */
     static PwmConfigBuilder newInstance(Context context) {
-        return DefaultPwmConfigBuilder.newInstance(context);
+        return DefaultPwmConfigBuilder.newInstance();
     }
 
     /**

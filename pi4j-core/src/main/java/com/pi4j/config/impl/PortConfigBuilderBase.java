@@ -47,7 +47,7 @@ public abstract class PortConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, 
      * PRIVATE CONSTRUCTOR
      */
     protected PortConfigBuilderBase(Context context) {
-        super(context);
+        super();
     }
 
     /**

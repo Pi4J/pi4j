@@ -21,7 +21,7 @@ class MockPluginTest {
 
     @Test
     void canRecreateOutput() {
-        var config = DigitalOutputConfigBuilder.newInstance(pi4j)
+        var config = DigitalOutputConfigBuilder.newInstance()
             .bcm(1)
             .build();
 
@@ -54,7 +54,7 @@ class MockPluginTest {
 
     @Test
     void canRecreateDevice() {
-        var config = SpiConfigBuilder.newInstance(pi4j)
+        var config = SpiConfigBuilder.newInstance()
             .bus(0)
             .channel(0)
             .build();
