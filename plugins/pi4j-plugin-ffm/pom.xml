@@ -147,6 +147,9 @@
                 <groupId>pw.krejci</groupId>
                 <artifactId>jmh-maven-plugin</artifactId>
                 <version>0.2.2</version>
+                <configuration>
+                    <jvmArgs>--enable-native-access=ALL-UNNAMED</jvmArgs>
+                </configuration>
             </plugin>
         </plugins>
     </build>

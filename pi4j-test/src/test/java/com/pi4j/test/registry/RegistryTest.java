@@ -35,6 +35,7 @@ import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.registry.Registry;
+import com.pi4j.test.Slf4jStreamBridge;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -75,7 +76,8 @@ class RegistryTest {
         logger.info("-------------------------------------------------");
         logger.info("Pi4J I/O REGISTRY <acquired via factory accessor>");
         logger.info("-------------------------------------------------");
-        registry.describe().print(System.out);
+        var ps = Slf4jStreamBridge.createPrintStream(logger);
+        registry.describe().print(ps);
     }
 
     @Test
@@ -96,7 +98,7 @@ class RegistryTest {
     @Test
     void testCreateMultipleSameAddress() throws Pi4JException {
         var inputConfig = DigitalInput.newConfigBuilder(pi4j).id("DIN-3").name("DIN-3").bcm(3);
-        var outputConfig = DigitalOutput.newConfigBuilder(pi4j).id("DOUT-3").name("DOUT-3").bcm(3);
+        var outputConfig = DigitalOutput.newConfigBuilder().id("DOUT-3").name("DOUT-3").bcm(3);
         var pwmConfig = Pwm.newConfigBuilder(pi4j).id("PWM-3").name("PWM-3").channel(3);
 
         // create I/O instances

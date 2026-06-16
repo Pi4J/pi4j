@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.test.Slf4jStreamBridge;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -67,6 +68,7 @@ public class ContextTest {
         logger.info("-------------------------------------------------");
         logger.info("Pi4J CONTEXT <acquired via factory accessor>");
         logger.info("-------------------------------------------------");
-        pi4j.describe().print(System.out);
+        var ps = Slf4jStreamBridge.createPrintStream(logger);
+        pi4j.describe().print(ps);
     }
 }

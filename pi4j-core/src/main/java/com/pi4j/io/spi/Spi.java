@@ -77,7 +77,7 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
      */
     static SpiConfigBuilder newConfigBuilder(Context context) {
-        return SpiConfigBuilder.newInstance(context);
+        return SpiConfigBuilder.newInstance();
     }
 
     /**
@@ -140,8 +140,7 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * @param readOffset    the starting offset position in the provided 'read' buffer to place
      *                      data bytes read from the SPI device.
      * @param numberOfBytes the number of bytes to transfer/exchange (read &amp; read))
-     * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
-     * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
+     * @return number of bytes read
      */
     int transfer(byte[] write, int writeOffset, byte[] read, int readOffset, int numberOfBytes);
 
@@ -157,8 +156,7 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * @param write         the array of bytes to write to the SPI device
      * @param read          the array of bytes to store read data in from the SPI device
      * @param numberOfBytes the number of bytes to transfer/exchange (read &amp; read))
-     * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
-     * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
+     * @return number of bytes read
      */
     default int transfer(byte[] write, byte[] read, int numberOfBytes) {
         return transfer(write, 0, read, 0, numberOfBytes);
@@ -174,8 +172,7 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      *
      * @param write the array of bytes to write to the SPI device
      * @param read  the array of bytes to store read data in from the SPI device
-     * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
-     * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
+     * @return number of bytes read
      */
     default int transfer(byte[] write, byte[] read) {
         return transfer(write, 0, read, 0, write.length);
@@ -196,8 +193,7 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      *               used as the starting offset position to place data bytes
      *               read back from the SPI device.
      * @param length the number of bytes to transfer/exchange (read &amp; read))
-     * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
-     * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
+     * @return number of bytes read
      */
     default int transfer(byte[] buffer, int offset, int length) {
         return transfer(buffer, offset, buffer, offset, length);

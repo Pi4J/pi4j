@@ -17,17 +17,18 @@ jobs:
           sudo apt-get remove --purge man-db
           sudo apt-get install --yes build-essential linux-headers-$(uname -r) sudo libi2c-dev linux-modules-extra-$(uname -r)
 
-      - name: Set up Zulu JDK 25
-        uses: actions/setup-java@v4
+      - name: Install JDK25
+        uses: sfesenko/setup-sdkman@v1
         with:
-          java-version: '25'
-          distribution: 'zulu'
-          server-id: sonatype-oss-snapshots
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
+          deps: java:25-zulu
+
+      - name: Create Maven settings
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+        run: |
+          mkdir -p ~/.m2
+          printf '<settings><servers><server><id>sonatype-oss-snapshots</id><username>%s</username><password>%s</password></server></servers></settings>' "$MAVEN_USERNAME" "$MAVEN_PASSWORD" > ~/.m2/settings.xml    
 
       - name: Create and add current user to suitable groups
         run: |
@@ -78,7 +79,7 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-        run: mvn deploy
+        run: sudo -u $USER bash -c 'source ~/.sdkman/bin/sdkman-init.sh && ./mvnw deploy'
 
       - name: Make staging directory
         run: mkdir staging

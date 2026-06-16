@@ -32,6 +32,7 @@ import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.io.i2c.I2CProvider;
 import com.pi4j.io.pwm.PwmProvider;
+import com.pi4j.test.Slf4jStreamBridge;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +64,8 @@ public class ManualProvidersTest {
 
         // print out the detected Pi4J io libraries found on the class path
         logger.info("2 CUSTOM PROVIDERS (added via API)");
-        pi4j.providers().describe().print(System.out);
+        var ps = Slf4jStreamBridge.createPrintStream(logger);
+        pi4j.providers().describe().print(ps);
 
         // shutdown Pi4J runtime
         pi4j.shutdown();

@@ -93,16 +93,12 @@ public class FFMSpi extends SpiBase implements Spi {
         var writeData = Arrays.copyOfRange(write, writeOffset, numberOfBytes + writeOffset);
 
         logger.trace("{} - Transferring data (length '{}')", path, numberOfBytes);
-        if (write != null) {
-            logger.trace("{} - Write buffer: {}", path, HexFormatter.format(write));
-        }
+        logger.trace("{} - Write buffer: {}", path, HexFormatter.format(write));
         var spiTransfer = new SpiTransferBuffer(writeData, read, numberOfBytes);
         spiTransfer = IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(1), spiTransfer);
         var readBytes = spiTransfer.getRxBuffer();
-        if (read != null) {
-            System.arraycopy(readBytes, 0, read, readOffset, numberOfBytes);
-            logger.trace("{} - Read buffer: {}", path, HexFormatter.format(read));
-        }
+        System.arraycopy(readBytes, 0, read, readOffset, numberOfBytes);
+        logger.trace("{} - Read buffer: {}", path, HexFormatter.format(read));
         return readBytes.length;
     }
 

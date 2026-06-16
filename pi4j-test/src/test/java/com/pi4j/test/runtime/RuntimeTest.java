@@ -30,6 +30,7 @@ import com.pi4j.context.Context;
 import com.pi4j.event.ShutdownEvent;
 import com.pi4j.event.ShutdownListener;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.test.Slf4jStreamBridge;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -57,7 +58,8 @@ public class RuntimeTest {
         logger.info("-------------------------------------------------");
         logger.info("Pi4J CONTEXT <acquired via factory accessor>");
         logger.info("-------------------------------------------------");
-        pi4j.describe().print(System.out);
+        var ps = Slf4jStreamBridge.createPrintStream(logger);
+        pi4j.describe().print(ps);
 
         // add shutdown listener
         pi4j.addListener(new ShutdownListener() {

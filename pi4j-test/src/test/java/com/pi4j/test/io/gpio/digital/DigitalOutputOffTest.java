@@ -65,7 +65,7 @@ public class DigitalOutputOffTest {
     public void testIsOffDefault() {
 
         // create GPIO digital output config
-        var config = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder()
             .id("test-output")
             .name("Test Digital Output")
             .bcm(1)
@@ -89,7 +89,7 @@ public class DigitalOutputOffTest {
     public void testIsOffLow() {
 
         // create GPIO digital output config
-        var config = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder()
             .id("test-output")
             .name("Test Digital Output")
             .bcm(1)
@@ -114,7 +114,7 @@ public class DigitalOutputOffTest {
     public void testIsOffHigh() {
 
         // create GPIO digital output config
-        var config = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder()
             .id("test-output")
             .name("Test Digital Output")
             .onState(DigitalState.LOW)
@@ -139,7 +139,7 @@ public class DigitalOutputOffTest {
     public void testOffDefault() {
 
         // create GPIO digital output config
-        var config = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder()
             .id("test-output")
             .name("Test Digital Output")
             .bcm(1)
@@ -163,7 +163,7 @@ public class DigitalOutputOffTest {
     public void testOffHigh() {
 
         // create GPIO digital output config
-        var config = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder()
             .id("test-output")
             .name("Test Digital Output")
             .bcm(1)
@@ -188,7 +188,7 @@ public class DigitalOutputOffTest {
     public void testOffLow() {
 
         // create GPIO digital output config
-        var config = DigitalOutput.newConfigBuilder(pi4j)
+        var config = DigitalOutput.newConfigBuilder()
             .id("test-output")
             .name("Test Digital Output")
             .bcm(1)

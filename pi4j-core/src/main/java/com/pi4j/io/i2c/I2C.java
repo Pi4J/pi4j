@@ -61,7 +61,7 @@ public interface I2C
      * @return a {@link com.pi4j.io.i2c.I2CConfigBuilder} object.
      */
     static I2CConfigBuilder newConfigBuilder(Context context) {
-        return I2CConfigBuilder.newInstance(context);
+        return I2CConfigBuilder.newInstance();
     }
 
     /**

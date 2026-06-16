@@ -50,12 +50,12 @@ public class SMBusNative implements AutoCloseable {
      * Reads byte with SMBus protocol.
      *
      * @param fd file descriptor of opened SMBus device
-     * @return one byte from bus
+     * @return one byte from bus in signed integer form
      */
-    public byte readByte(int fd) {
+    public int readByte(int fd) {
         try (var arena = Arena.ofConfined()) {
             var capturedState = arena.allocate(CAPTURED_STATE_LAYOUT);
-            var callResult = (byte) READ_BYTE.invoke(capturedState, fd);
+            var callResult = (int) READ_BYTE.invoke(capturedState, fd);
             processError(callResult, capturedState, "readByte", fd);
             return callResult;
         } catch (Throwable e) {
