@@ -158,7 +158,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * Turn the PWM signal [ON] using a specified duty-cycle (%)
      * at the pre-configured frequency (Hz).
      *
-     * @param dutyCycle The duty-cycle value is an Integer value that represents the
+     * @param dutyCycle The duty-cycle value is an double value that represents the
      *                  percentage of the ON vs OFF time of the PWM signal for each
      *                  period.  A value of 50 represents a duty-cycle where half of
      *                  the time period the signal is LOW and the other half is HIGH.
@@ -181,7 +181,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * Turn the PWM signal [ON] using a specified duty-cycle (%)
      * at the pre-configured frequency (Hz).
      *
-     * @param dutyCycle The duty-cycle value is an Integer value that represents the
+     * @param dutyCycle The duty-cycle value is an double value that represents the
      *                  percentage of the ON vs OFF time of the PWM signal for each
      *                  period.  A value of 50 represents a duty-cycle where half of
      *                  the time period the signal is LOW and the other half is HIGH.
@@ -199,9 +199,9 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
      * @return returns this PWM instance
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default Pwm on(Integer dutyCycle, int frequency) throws IOException {
+    default Pwm on(double dutyCycle, double frequency) throws IOException {
         if (dutyCycle > 0 && frequency > 0) {
-            setDutyCycle((Integer) dutyCycle);
+            setDutyCycle(dutyCycle);
             setFrequency(frequency);
             return on();
         } else {
@@ -210,7 +210,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     }
 
     /**
-     * Get the duty-cycle value as an Integer value that represents the
+     * Get the duty-cycle value as a double value that represents the
      * percentage of the ON vs OFF time of the PWM signal for each
      * period.  The duty-cycle range is valid from 0 to 100.
      * (Values above 50% mean the signal will remain HIGH more time
@@ -225,7 +225,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     double getDutyCycle() throws IOException;
 
     /**
-     * Get the duty-cycle value as an Integer value that represents the
+     * Get the duty-cycle value as an double value that represents the
      * percentage of the ON vs OFF time of the PWM signal for each
      * period.  The duty-cycle range is valid from 0 to 100.
      * (Values above 50% mean the signal will remain
@@ -242,7 +242,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     }
 
     /**
-     * Set the duty-cycle value as an Integer value that represents the
+     * Set the duty-cycle value as an double value that represents the
      * percentage of the ON vs OFF time of the PWM signal for each
      * period.  The duty-cycle range is valid from 0 to 100.
      * This method will not update a live PWM signal, but rather stage
@@ -260,7 +260,7 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     void setDutyCycle(double dutyCycle) throws IOException;
 
     /**
-     * Set the duty-cycle value as an Integer value that represents the
+     * Set the duty-cycle value as an double value that represents the
      * percentage of the ON vs OFF time of the PWM signal for each
      * period.  The duty-cycle range is valid from 0 to 100 .
      * This method will not update a live PWM signal, but rather stage
