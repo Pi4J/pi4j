@@ -5,7 +5,7 @@ package com.pi4j.runtime;
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  Runtime.java
+ * FILENAME      :  DefaultRuntime.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  https://pi4j.com/
@@ -26,80 +26,310 @@ package com.pi4j.runtime;
  */
 
 import com.pi4j.context.Context;
-import com.pi4j.event.InitializedEventProducer;
-import com.pi4j.event.ShutdownEventProducer;
+import com.pi4j.context.ContextConfig;
+import com.pi4j.event.*;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.ShutdownException;
+import com.pi4j.extension.Plugin;
+import com.pi4j.extension.impl.DefaultPluginService;
+import com.pi4j.extension.impl.PluginStore;
 import com.pi4j.io.IO;
+import com.pi4j.io.IOType;
+import com.pi4j.provider.Provider;
+import com.pi4j.provider.impl.DefaultRuntimeProviders;
 import com.pi4j.provider.impl.RuntimeProviders;
 import com.pi4j.registry.Registry;
+import com.pi4j.util.ExecutorPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 /**
- * <p>Runtime interface.</p>
- *
- * The runtime manages the IO registry and the providers on behalf of the context. It's the only entity with
- * write access to the registry.
+ * <p>DefaultRuntime class.</p>
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public interface Runtime extends InitializedEventProducer<Runtime>, ShutdownEventProducer<Runtime> {
+public class Runtime {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Context context;
+    private final RuntimeProviders providers;
+    private final List<Plugin> plugins;
+    private boolean isShutdown = false;
+    private final EventManager<Runtime, ShutdownListener, ShutdownEvent> shutdownEventManager;
+    private final EventManager<Runtime, InitializedListener, InitializedEvent> initializedEventManager;
+    private final ExecutorPool executorPool;
+    private final ExecutorService runtimeExecutor;
+    private final MutableRegistry registry;
+
     /**
-     * <p>registry.</p>
+     * <p>newInstance.</p>
      *
-     * @return a {@link com.pi4j.registry.Registry} object.
-     */
-    Registry registry();
-
-    /**
-     * <p>providers.</p>
-     *
-     * @return a {@link com.pi4j.provider.impl.RuntimeProviders} object.
-     */
-    RuntimeProviders providers();
-
-    /**
-     * <p>context.</p>
-     *
-     * @return a {@link com.pi4j.context.Context} object.
-     */
-    Context context();
-
-    Future<?> submitTask(Runnable task);
-
-    /**
-     * <p>shutdown.</p>
+     * @param context a {@link com.pi4j.context.Context} object.
      *
      * @return a {@link com.pi4j.runtime.Runtime} object.
-     *
-     * @throws com.pi4j.exception.ShutdownException if any.
      */
-    Runtime shutdown() throws ShutdownException;
+    public static Runtime newInstance(Context context) {
+        return new Runtime(context);
+    }
 
-    Future<Context> asyncShutdown();
+    // private constructor
+    private Runtime(Context context) {
+
+        // set local references
+        this.context = context;
+        plugins = new ArrayList<>();
+        this.registry = new MutableRegistry(context);
+        this.providers = DefaultRuntimeProviders.newInstance(this);
+
+        this.shutdownEventManager = new EventManager(this,
+            (EventDelegate<ShutdownListener, ShutdownEvent>) (listener, event) -> listener.onShutdown(event));
+        this.initializedEventManager = new EventManager(this,
+            (EventDelegate<InitializedListener, InitializedEvent>) (listener, event) -> listener.onInitialized(event));
+
+        // initialize executor pool and runtime executor
+        this.executorPool = new ExecutorPool();
+        this.runtimeExecutor = this.executorPool.getExecutor("Pi4J.RUNTIME");
+
+        logger.debug("Pi4J runtime context successfully created & initialized.'");
+
+        // listen for shutdown to properly clean up
+        // TODO :: ADD PI4J INTERNAL SHUTDOWN CALLBACKS/EVENTS
+        if (this.context.config().enableShutdownHook()) {
+            java.lang.Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    // shutdown Pi4J
+                    if (!isShutdown)
+                        shutdown();
+                } catch (Exception e) {
+                    logger.error("Failed to shutdown Pi4J runtime", e);
+                }
+            }, "pi4j-shutdown"));
+        }
+    }
+
+    public Context context() {
+        return this.context;
+    }
+
+    public Registry registry() {
+        return registry;
+    }
+
+    public RuntimeProviders providers() {
+        return this.providers;
+    }
+
+    public Future<?> submitTask(Runnable task) {
+        return this.runtimeExecutor.submit(task);
+    }
+
+    public Runtime shutdown() throws ShutdownException {
+        if (isShutdown) {
+            logger.warn("Pi4J context/runtime is already shutdown.'");
+            return this;
+        }
+
+        isShutdown = true;
+        logger.info("Shutting down Pi4J context/runtime...");
+
+        // notify before shutdown event listeners (requires custom delegate to invoke appropriate listener method)
+        shutdownEventManager.dispatch(new ShutdownEvent(this.context), ShutdownListener::beforeShutdown);
+
+        try {
+
+            // remove shutdown monitoring thread
+            //java.lang.Runtime.getRuntime().removeShutdownHook(this.shutdownThread);
+
+            // remove all I/O instances
+            this.registry.shutdown();
+
+            // shutdown all providers
+            this.providers.shutdown();
+
+            // shutdown all plugins
+            for (Plugin plugin : this.plugins) {
+                try {
+                    plugin.shutdown(this.context);
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
+            }
+
+            // shutdown executor pool
+            this.executorPool.destroy();
+
+        } catch (Exception e) {
+            logger.error("failed to 'shutdown(); '", e);
+            throw new ShutdownException(e);
+        }
+
+        logger.info("Pi4J context/runtime successfully shutdown. Dispatching shutdown event.");
+
+        // notify shutdown event listeners
+        shutdownEventManager.dispatch(new ShutdownEvent(this.context));
+
+        // remove all shutdown event listeners
+        this.shutdownEventManager.clear();
+
+        return this;
+    }
+
+    public Future<Context> asyncShutdown() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                shutdown();
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
+            return context;
+        });
+    }
+
+    public boolean isShutdown() {
+        return isShutdown;
+    }
+
+    public Runtime initialize() throws InitializeException {
+        logger.info("Initializing Pi4J context/runtime...");
+        try {
+            // clear plugins container
+            plugins.clear();
+
+            // container sets for providers to load
+            Map<IOType, Provider> providers = new HashMap<>();
+
+            // only attempt to load platforms and providers from the classpath if an auto detect option is enabled
+            ContextConfig config = context.config();
+            if (config.autoDetectPlatforms() || config.autoDetectProviders()) {
+
+                // detect available Pi4J Plugins by scanning the classpath looking for plugin instances
+                ServiceLoader<Plugin> plugins = ServiceLoader.load(Plugin.class);
+                for (Plugin plugin : plugins) {
+                    if (plugin == null)
+                        continue;
+
+                    if (!config.autoDetectMockPlugins() && plugin.isMock()) {
+                        logger.trace("Ignoring mock plugin: [{}] in classpath", plugin.getClass().getName());
+                        continue;
+                    }
+
+                    logger.trace("detected plugin: [{}] in classpath; calling 'initialize()'",
+                        plugin.getClass().getName());
+                    try {
+                        // add plugin to internal cache
+                        this.plugins.add(plugin);
+
+                        PluginStore store = new PluginStore();
+                        plugin.initialize(DefaultPluginService.newInstance(this.context(), store));
+
+                        // if auto-detect providers is enabled,
+                        //    OR
+                        // Detecting Mocks is enabled and this is a mock plugin
+                        // then add any detected providers to the collection to load
+                        if (config.autoDetectProviders() ||  (config.autoDetectMockPlugins() && plugin.isMock())) {
+                            store.providers.forEach(provider -> addProvider(provider, providers));
+                        }
+
+                    } catch (Exception ex) {
+                        // unable to initialize this provider instance
+                        logger.error("unable to 'initialize()' plugin: [{}]; {}", plugin.getClass().getName(),
+                            ex.getMessage(), ex);
+                    }
+                }
+            }
+
+            context().config().getProviders().forEach(provider -> {
+                Provider replaced = providers.put(provider.getType(), provider);
+                if (replaced != null) {
+                    logger.info("Replacing auto detected provider {} {} with provider {} from context config",
+                        replaced.getType(), replaced.getName(), provider.getName());
+                }
+            });
+
+            // initialize all providers
+            this.providers.initialize(providers.values());
+
+        } catch (Exception e) {
+            logger.error("failed to 'initialize(); '", e);
+            throw new InitializeException(e);
+        }
+
+        logger.info("Pi4J context/runtime successfully initialized.");
+
+        // notify initialized event listeners
+        notifyInitListeners();
+
+        return this;
+    }
+
+    public <T extends IO> T shutdown(T instance) {
+        return registry.shutdown(instance);
+    }
+
+    public void register(IO instance) {
+        registry.register(instance);
+    }
 
     /**
-     * @return Flag indicating if the runtime has been shutdown
-     */
-    boolean isShutdown();
-
-    /**
-     * <p>initialize.</p>
+     * <p>Adds providers to the given collection, to later be used in the runtime after initialization.</p>
+     * <p>This method validates the priority of a {@link Provider}, and guarantees, that we don't have multiple
+     * providers for the same {@link IOType}</p>
      *
-     * @return a {@link com.pi4j.runtime.Runtime} object.
-     *
-     * @throws com.pi4j.exception.InitializeException if any.
+     * @param provider
+     * @param providers
      */
-    Runtime initialize() throws InitializeException;
+    private void addProvider(Provider provider, Map<IOType, Provider> providers) {
+        if (!providers.containsKey(provider.getType())) {
+            providers.put(provider.getType(), provider);
+        } else {
+            Provider existingProvider = providers.get(provider.getType());
+            if (provider.getPriority() <= existingProvider.getPriority()) {
+                if (existingProvider.getName().equals(provider.getName()))
+                    throw new InitializeException(
+                        provider.getType() + " with name " + provider.getName() + " (" + provider.getId() + ") is already registered.");
+                logger.info("Ignoring provider {} {} ({}) with priority {} as lower priority than {} which has priority {}",
+                    provider.getType(), provider.getName(), provider.getId(), provider.getPriority(),
+                    existingProvider.getName(), existingProvider.getPriority());
+            } else {
+                logger.info("Replacing provider {} {} ({}) with priority {} with provider {} ({}) with higher priority {}",
+                    existingProvider.getType(), existingProvider.getName(), existingProvider.getId(), existingProvider.getPriority(),
+                    provider.getName(), provider.getId(), provider.getPriority());
+                providers.put(provider.getType(), provider);
+            }
+        }
+    }
 
-    /**
-     * Removes an IO instance from the IO registry and shuts it down. This is called indirectly when calling close()
-     * on the IO instance.
-     */
-    <T extends IO> T shutdown(T instance);
+    private void notifyInitListeners() {
+        initializedEventManager.dispatch(new InitializedEvent(this.context));
+    }
 
-    /** Add an IO instance to the IO registry. */
-    void register(IO instance);
+    public Runtime addListener(ShutdownListener... listener) {
+        return shutdownEventManager.add(listener);
+    }
+
+    public Runtime removeListener(ShutdownListener... listener) {
+        return shutdownEventManager.remove(listener);
+    }
+
+    public Runtime removeAllShutdownListeners() {
+        return shutdownEventManager.clear();
+    }
+
+    public Runtime removeAllInitializedListeners() {
+        return initializedEventManager.clear();
+    }
+
+    public Runtime addListener(InitializedListener... listener) {
+        return initializedEventManager.add(listener);
+    }
+
+    public Runtime removeListener(InitializedListener... listener) {
+        return initializedEventManager.remove(listener);
+    }
 }

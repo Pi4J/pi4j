@@ -38,7 +38,6 @@ import com.pi4j.provider.Providers;
 import com.pi4j.provider.impl.DefaultProviders;
 import com.pi4j.registry.Registry;
 import com.pi4j.runtime.Runtime;
-import com.pi4j.runtime.impl.DefaultRuntime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +84,7 @@ public class DefaultContext implements Context {
         this.config = config;
 
         // create internal runtime state instance  (READ-ONLY ACCESS OBJECT)
-        this.runtime = DefaultRuntime.newInstance(this);
+        this.runtime = Runtime.newInstance(this);
 
         // create API accessible providers instance  (READ-ONLY ACCESS OBJECT)
         this.providers = DefaultProviders.newInstance(this.runtime.providers());

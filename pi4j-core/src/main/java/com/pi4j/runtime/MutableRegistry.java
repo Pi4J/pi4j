@@ -1,4 +1,4 @@
-package com.pi4j.runtime.impl;
+package com.pi4j.runtime;
 
 /*-
  * #%L
