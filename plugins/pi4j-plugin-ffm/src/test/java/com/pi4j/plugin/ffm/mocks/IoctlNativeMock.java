@@ -19,7 +19,7 @@ public class IoctlNativeMock {
     public record IoctlTestData(Class<? extends Pi4JLayout> objClass, Function<InvocationOnMock, ?> callback) {
     }
 
-    public static MockedConstruction<IoctlNative> echo(IoctlTestData... data) {
+    public static MockedConstruction<IoctlNative> setup(IoctlTestData... data) {
         return mockConstruction(IoctlNative.class, (mock, _) -> {
             for (IoctlTestData testData : data) {
                 when(mock.call(anyInt(), anyLong(), isA(testData.objClass))).thenAnswer(testData.callback::apply);

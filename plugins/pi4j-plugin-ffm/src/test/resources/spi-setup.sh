@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
+# Set to 1 to enable verbose debug logging from the mock driver (visible in dmesg)
+DEBUG="${SPI_MOCK_DEBUG:-0}"
 
-/bin/bash  "$(pwd)"/src/test/native/build.sh
+/bin/bash  ../native/spi/build.sh
 modprobe spidev
-insmod "$(pwd)"/src/test/resources/spi-mock.ko
-#insmod spi-mock.ko
-echo 'spidev' | sudo tee /sys/bus/spi/devices/spi0.0/driver_override
-echo 'spi0.0' | sudo tee /sys/bus/spi/drivers/spidev/bind
-chmod 0660 /dev/spidev0.0
-chown root:dialout /dev/spidev0.0
+insmod spi-mock.ko debug="$DEBUG"
+
+# Sleep a second to let udev rules to be applied
+sleep 0.5

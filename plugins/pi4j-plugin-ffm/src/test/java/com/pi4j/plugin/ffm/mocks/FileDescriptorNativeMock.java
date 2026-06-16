@@ -2,11 +2,9 @@ package com.pi4j.plugin.ffm.mocks;
 
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import org.mockito.AdditionalMatchers;
-import org.mockito.Answers;
 import org.mockito.MockedConstruction;
 import org.mockito.invocation.InvocationOnMock;
 
-import java.io.File;
 import java.util.function.Function;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -19,7 +17,7 @@ public class FileDescriptorNativeMock {
         }
     }
 
-    public static MockedConstruction<FileDescriptorNative> echo(FileDescriptorTestData... descriptors) {
+    public static MockedConstruction<FileDescriptorNative> setup(FileDescriptorTestData... descriptors) {
         return mockConstruction(FileDescriptorNative.class, (mock, _) -> {
             for (FileDescriptorTestData descriptor : descriptors) {
                 when(mock.open(matches(descriptor.device), anyInt())).thenReturn(descriptor.fd);

@@ -40,10 +40,10 @@ public class SPITest {
 
     @Test
     public void testCreation() {
-        try (var _ = FileDescriptorNativeMock.echo();
-             var _ = IoctlNativeMock.echo()) {
+        try (var _ = FileDescriptorNativeMock.setup();
+             var _ = IoctlNativeMock.setup()) {
 
-            pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
+            pi4j.spi().create(SpiConfigBuilder.newInstance()
                 .bus(SpiBus.BUS_0)
                 .channel(0)
                 .mode(0)
@@ -58,10 +58,10 @@ public class SPITest {
             SpiTransferBuffer buffer = answer.getArgument(2);
             return new SpiTransferBuffer(buffer.getTxBuffer(), buffer.getTxBuffer(), buffer.getTxBuffer().length);
         });
-        try (var _ = FileDescriptorNativeMock.echo();
-             var _ = IoctlNativeMock.echo(spiTestData)) {
+        try (var _ = FileDescriptorNativeMock.setup();
+             var _ = IoctlNativeMock.setup(spiTestData)) {
 
-            var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
+            var spi = pi4j.spi().create(SpiConfigBuilder.newInstance()
                 .bus(SpiBus.BUS_0)
                 .channel(1)
                 .mode(0)
@@ -86,10 +86,10 @@ public class SPITest {
                 return new SpiTransferBuffer(buffer.getTxBuffer(), ("Test").getBytes(), 4);
             }
         });
-        try (var _ = FileDescriptorNativeMock.echo();
-             var _ = IoctlNativeMock.echo(spiTestData)) {
+        try (var _ = FileDescriptorNativeMock.setup();
+             var _ = IoctlNativeMock.setup(spiTestData)) {
 
-            var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
+            var spi = pi4j.spi().create(SpiConfigBuilder.newInstance()
                 .bus(SpiBus.BUS_0)
                 .channel(2)
                 .mode(0)
@@ -112,10 +112,10 @@ public class SPITest {
             SpiTransferBuffer buffer = answer.getArgument(2);
             return new SpiTransferBuffer(buffer.getTxBuffer(), buffer.getTxBuffer(), buffer.getTxBuffer().length);
         });
-        try (var _ = FileDescriptorNativeMock.echo();
-             var _ = IoctlNativeMock.echo(spiTestData)) {
+        try (var _ = FileDescriptorNativeMock.setup();
+             var _ = IoctlNativeMock.setup(spiTestData)) {
 
-            var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
+            var spi = pi4j.spi().create(SpiConfigBuilder.newInstance()
                 .bus(SpiBus.BUS_0)
                 .channel(3)
                 .mode(0)
@@ -136,9 +136,9 @@ public class SPITest {
             var outputBuffer = buffer.transferBuffer()[1];
             return new SpiMultipleTransferBuffer(inputBuffer, new SpiTransferBuffer(outputBuffer.getTxBuffer(), inputBuffer.getTxBuffer(), outputBuffer.getTxBuffer().length, 1000));
         });
-        try (var _ = FileDescriptorNativeMock.echo();
-             var _ = IoctlNativeMock.echo(spiTestData)) {
-            var spi = pi4j.spi().create(SpiConfigBuilder.newInstance(pi4j)
+        try (var _ = FileDescriptorNativeMock.setup();
+             var _ = IoctlNativeMock.setup(spiTestData)) {
+            var spi = pi4j.spi().create(SpiConfigBuilder.newInstance()
                 .bus(SpiBus.BUS_0)
                 .channel(4)
                 .mode(0)

@@ -89,7 +89,7 @@ public class I2CSMBus extends I2CBase<FFMI2CBus> {
      */
     @Override
     public byte readByte() {
-        return i2CBus.execute(this, SMBUS::readByte);
+        return i2CBus.execute(this, SMBUS::readByte).byteValue();
     }
 
     /**
@@ -98,7 +98,7 @@ public class I2CSMBus extends I2CBase<FFMI2CBus> {
     @Override
     public int read() {
         // this is needed, because we are receiving raw bytes, which we have to convert to proper int
-        return Byte.toUnsignedInt(i2CBus.execute(this, SMBUS::readByte));
+        return i2CBus.execute(this, SMBUS::readByte);
     }
 
     /**
