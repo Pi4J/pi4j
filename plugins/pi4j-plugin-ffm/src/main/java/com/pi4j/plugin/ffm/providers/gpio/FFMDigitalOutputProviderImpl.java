@@ -22,7 +22,7 @@ public class FFMDigitalOutputProviderImpl extends DigitalOutputProviderBase impl
     public DigitalOutput create(DigitalOutputConfig config) {
         var chipName = context.config().properties().getOrDefault("gpio.chip.name", "unknown");
         var digitalOutput = new FFMDigitalOutput(chipName, this, config);
-        this.context.registry().add(digitalOutput);
+        this.context.register(digitalOutput);
         return digitalOutput;
     }
 

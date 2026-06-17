@@ -59,7 +59,7 @@ public class MockDigitalInputProviderImpl extends DigitalInputProviderBase imple
     @Override
     public DigitalInput create(DigitalInputConfig config) {
         MockDigitalInput input = new MockDigitalInput(this, config);
-        this.context.registry().add(input);
+        this.context.register(input);
         return input;
     }
 }

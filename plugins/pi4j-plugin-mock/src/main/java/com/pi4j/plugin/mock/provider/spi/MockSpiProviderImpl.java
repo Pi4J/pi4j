@@ -59,7 +59,7 @@ public class MockSpiProviderImpl extends SpiProviderBase implements MockSpiProvi
     @Override
     public Spi create(SpiConfig config) {
         MockSpi spi = new MockSpi(this, config);
-        this.context.registry().add(spi);
+        this.context.register(spi);
         return spi;
     }
 }

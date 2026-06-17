@@ -84,7 +84,6 @@ public class SpiWithOffsetTestCase  extends TestCase {
         } finally {
             if (spi != null) {
                 spi.close();
-                providerContext.getContext().registry().remove(spi.id());
             }
         }
     }

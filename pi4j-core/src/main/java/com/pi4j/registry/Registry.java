@@ -29,10 +29,8 @@ import com.pi4j.common.Describable;
 import com.pi4j.common.Descriptor;
 import com.pi4j.io.IO;
 import com.pi4j.io.IOType;
-import com.pi4j.io.exception.IOAlreadyExistsException;
 import com.pi4j.io.exception.IOInvalidIDException;
 import com.pi4j.io.exception.IONotFoundException;
-import com.pi4j.io.exception.IOShutdownException;
 import com.pi4j.provider.Provider;
 
 import java.util.Collections;
@@ -41,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * <p>Registry interface.</p>
+ * An immutable view of the registry that holds all registered I/O instances.
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
@@ -168,28 +166,6 @@ public interface Registry extends Describable {
             });
         return Collections.unmodifiableMap(result);
     }
-
-    /**
-     * <p>add.</p>
-     *
-     * @param instance a {@link com.pi4j.io.IO} object.
-     * @return this
-     * @throws com.pi4j.io.exception.IOAlreadyExistsException if any.
-     * @throws com.pi4j.io.exception.IOInvalidIDException     if any.
-     */
-    Registry add(IO instance) throws IOAlreadyExistsException, IOInvalidIDException;
-
-    /**
-     * <p>remove.</p>
-     *
-     * @param id  a {@link java.lang.String} object.
-     * @param <T> a T object.
-     * @return a T object.
-     * @throws com.pi4j.io.exception.IONotFoundException  if any.
-     * @throws com.pi4j.io.exception.IOInvalidIDException if any.
-     * @throws com.pi4j.io.exception.IOShutdownException  if any.
-     */
-    <T extends IO> T remove(String id) throws IONotFoundException, IOInvalidIDException, IOShutdownException;
 
     /**
      * <p>describe.</p>

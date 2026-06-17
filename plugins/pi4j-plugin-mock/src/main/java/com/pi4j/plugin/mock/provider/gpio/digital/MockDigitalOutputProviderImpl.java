@@ -59,7 +59,7 @@ public class MockDigitalOutputProviderImpl extends DigitalOutputProviderBase imp
     @Override
     public DigitalOutput create(DigitalOutputConfig config) {
         MockDigitalOutput output = new MockDigitalOutput(this, config);
-        this.context.registry().add(output);
+        this.context.register(output);
         return output;
     }
 }

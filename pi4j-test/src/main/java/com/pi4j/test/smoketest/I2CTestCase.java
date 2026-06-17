@@ -61,7 +61,6 @@ public class I2CTestCase extends TestCase {
         } finally {
             if (i2c != null) {
                 i2c.close();
-                providerContext.getContext().registry().remove(i2c.id());
             }
         }
     }

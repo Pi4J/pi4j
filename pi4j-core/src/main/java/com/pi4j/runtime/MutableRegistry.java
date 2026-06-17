@@ -1,4 +1,4 @@
-package com.pi4j.registry.impl;
+package com.pi4j.runtime;
 
 /*-
  * #%L
@@ -25,12 +25,13 @@ package com.pi4j.registry.impl;
  * #L%
  */
 
+import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.LifecycleException;
 import com.pi4j.io.IO;
 import com.pi4j.io.IOType;
 import com.pi4j.io.exception.*;
-import com.pi4j.runtime.Runtime;
+import com.pi4j.registry.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,40 +41,25 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * <p>DefaultRuntimeRegistry class.</p>
+ * A mutable implementation of the Registry interface, managed by the Runtime.
  *
  * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
  * @version $Id: $Id
  */
-public class DefaultRuntimeRegistry implements RuntimeRegistry {
+public class MutableRegistry implements Registry {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultRuntimeRegistry.class);
-    private Runtime runtime;
+    private static final Logger logger = LoggerFactory.getLogger(MutableRegistry.class);
     private final Map<String, IO> instances;
     private final Map<IOType, Set<Integer>> usedAddressesByIoType;
+    private final Context context;
 
-    // static singleton instance
-
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param runtime a {@link com.pi4j.runtime.Runtime} object.
-     * @return a {@link com.pi4j.registry.impl.RuntimeRegistry} object.
-     */
-    public static RuntimeRegistry newInstance(Runtime runtime) {
-        return new DefaultRuntimeRegistry(runtime);
-    }
-
-    // private constructor
-    private DefaultRuntimeRegistry(Runtime runtime) {
-        // set local runtime reference
+    MutableRegistry(Context context) {
+        this.context = context;
         this.instances = new HashMap<>();
         this.usedAddressesByIoType = new HashMap<>();
-        this.runtime = runtime;
     }
 
-    @Override
-    public synchronized RuntimeRegistry add(IO instance) throws IOInvalidIDException, IOAlreadyExistsException {
+    synchronized void register(IO instance) throws IOInvalidIDException, IOAlreadyExistsException {
 
         // Validate target I/O instance id
         String id = validateId(instance.id());
@@ -92,14 +78,12 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
 
         // Add the instance to the collection
         try {
-            instance.initialize(this.runtime.context());
+            instance.initialize(context);
             instances.put(id, instance);
         } catch (InitializeException e) {
             removeFromMap(instance);
             throw new IllegalStateException("Failed to initialize IO " + instance.getId(), e);
         }
-
-        return this;
     }
 
     /**
@@ -130,11 +114,7 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
         return (T) instances.get(_id);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public synchronized <T extends IO> T remove(String id)
+    synchronized <T extends IO> T shutdown(String id)
         throws IONotFoundException, IOInvalidIDException, IOShutdownException {
         String _id = validateId(id);
 
@@ -143,14 +123,13 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
             throw new IONotFoundException(_id);
 
         IO shutdownInstance = instances.get(_id);
-        remove(shutdownInstance);
+        shutdown(shutdownInstance);
 
         // return the shutdown I/O provider instances
         return (T) shutdownInstance;
     }
 
-    @Override
-    public <T extends IO> void remove(T instance)
+    <T extends IO> T shutdown(T instance)
         throws IONotFoundException, IOInvalidIDException, IOShutdownException {
         if (instance == null)
             throw new IllegalArgumentException("An IO instance cannot be NULL.");
@@ -159,7 +138,7 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
         try {
             long start = System.currentTimeMillis();
 
-            instance.shutdownInternal(runtime.context());
+            instance.shutdownInternal(context);
             long took = System.currentTimeMillis() - start;
             if (took > 10) {
                 logger.info("Shutting down of IO {} took {}ms", instance.getId(), took);
@@ -173,6 +152,7 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
         removeFromMap(instance);
 
         this.instances.remove(instance.id());
+        return instance;
     }
 
     private <T extends IO> void removeFromMap(T instance) {
@@ -223,27 +203,13 @@ public class DefaultRuntimeRegistry implements RuntimeRegistry {
         return validatedId;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public synchronized RuntimeRegistry shutdown() {
+    synchronized void shutdown() {
         all().values().forEach(instance -> {
             try {
-                remove(instance.id());
+                shutdown(instance.id());
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
             }
         });
-        return this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RuntimeRegistry initialize() throws InitializeException {
-        // NOTHING TO INITIALIZE
-        return this;
     }
 }

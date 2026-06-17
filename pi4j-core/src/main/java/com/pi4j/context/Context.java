@@ -319,4 +319,7 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         descriptor.add(providers().describe());
         return descriptor;
     }
+
+    /** Registers an IO instance, bypassing create method. Used in testing */
+    void register(IO instance);
 }

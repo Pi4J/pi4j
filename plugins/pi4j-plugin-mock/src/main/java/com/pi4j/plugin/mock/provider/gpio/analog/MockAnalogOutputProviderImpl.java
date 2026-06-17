@@ -59,7 +59,7 @@ public class MockAnalogOutputProviderImpl extends AnalogOutputProviderBase imple
     @Override
     public AnalogOutput create(AnalogOutputConfig config) {
         MockAnalogOutput output = new MockAnalogOutput(this, config);
-        this.context.registry().add(output);
+        this.context.register(output);
         return output;
     }
 }

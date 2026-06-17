@@ -53,7 +53,7 @@ public class RpiDigitalInputProviderImpl extends DigitalInputProviderBase implem
     @Override
     public DigitalInput create(DigitalInputConfig config) {
         RpiDigitalInput input = new RpiDigitalInput(this, config);
-        this.context.registry().add(input);
+        this.context.register(input);
         return input;
     }
 }

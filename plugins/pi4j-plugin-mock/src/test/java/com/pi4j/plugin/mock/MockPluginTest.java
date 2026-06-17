@@ -28,7 +28,7 @@ class MockPluginTest {
         var device = pi4j.create(config);
         assertNotNull(device);
 
-        pi4j.registry().remove(device.id());
+        pi4j.shutdown(device.id());
         assertFalse(pi4j.registry().exists(device.id()));
 
         device = pi4j.create(config);
@@ -45,7 +45,7 @@ class MockPluginTest {
         var device = pi4j.pwm().create(config);
         assertNotNull(device);
 
-        pi4j.registry().remove(device.id());
+        pi4j.shutdown(device.id());
         assertFalse(pi4j.registry().exists(device.id()));
 
         device = pi4j.create(config);
@@ -62,7 +62,7 @@ class MockPluginTest {
         var device = pi4j.create(config);
         assertNotNull(device);
 
-        pi4j.registry().remove(device.id());
+        pi4j.shutdown(device.id());
         assertFalse(pi4j.registry().exists(device.id()));
 
         device = pi4j.create(config);

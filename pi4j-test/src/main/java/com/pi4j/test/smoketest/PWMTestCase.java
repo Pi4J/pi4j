@@ -71,7 +71,6 @@ public class PWMTestCase extends TestCase {
         } finally {
             if (pwm != null) {
                 pwm.close();
-                providerContext.getContext().registry().remove(pwm.id());
             }
             if (gpioInMonitor != null) {
                 gpioInMonitor.close();
