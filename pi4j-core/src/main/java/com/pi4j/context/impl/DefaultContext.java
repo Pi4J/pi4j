@@ -70,7 +70,8 @@ public class DefaultContext implements Context {
     private final EventManager<Runtime, InitializedListener, InitializedEvent> initializedEventManager = new EventManager(this,
         (EventDelegate<InitializedListener, InitializedEvent>) (listener, event) -> listener.onInitialized(event));
 
-    private final ExecutorPool executorPool = new ExecutorPool();;
+    private final ExecutorPool executorPool = new ExecutorPool();
+    private final ExecutorService runtimeExecutor = this.executorPool.getExecutor("Pi4J.RUNTIME");
     private final MutableRegistry mutableRegistry = new MutableRegistry(this);
 
     private boolean isShutdown = false;
@@ -240,7 +241,7 @@ public class DefaultContext implements Context {
     /** {@inheritDoc} */
     @Override
     public Future<?> submitTask(Runnable task) {
-        return submitTask(task);
+        return this.runtimeExecutor.submit(task);
     }
 
     /** {@inheritDoc} */
@@ -259,7 +260,6 @@ public class DefaultContext implements Context {
         shutdownEventManager.dispatch(new ShutdownEvent(this), ShutdownListener::beforeShutdown);
 
         try {
-
             // remove shutdown monitoring thread
             //java.lang.Runtime.getRuntime().removeShutdownHook(this.shutdownThread);
 
