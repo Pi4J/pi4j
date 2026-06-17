@@ -57,8 +57,8 @@ public class DefaultPwmConfig
     protected Double frequency = null;
     protected PwmType pwmType = PwmType.SOFTWARE;
     protected PwmPolarity polarity = PwmPolarity.NORMAL;
-    protected Integer shutdownValue = null;
-    protected Integer initialValue = null;
+    protected Double shutdownValue = null;
+    protected Double initialValue = null;
     protected List<PwmPreset> presets = new ArrayList<>();
 
     /**
@@ -124,12 +124,12 @@ public class DefaultPwmConfig
 
         // load initial value property
         if (properties.containsKey(INITIAL_VALUE_KEY)) {
-            this.initialValue = Integer.parseInt(properties.get(INITIAL_VALUE_KEY));
+            this.initialValue = Double.parseDouble(properties.get(INITIAL_VALUE_KEY));
         }
 
         // load shutdown value property
         if (properties.containsKey(SHUTDOWN_VALUE_KEY)) {
-            this.shutdownValue = Integer.parseInt(properties.get(SHUTDOWN_VALUE_KEY));
+            this.shutdownValue = Double.parseDouble(properties.get(SHUTDOWN_VALUE_KEY));
         }
 
         // bounds checking
@@ -218,7 +218,7 @@ public class DefaultPwmConfig
      * {@inheritDoc}
      */
     @Override
-    public Integer shutdownValue() {
+    public Double shutdownValue() {
         return this.shutdownValue;
     }
 
@@ -226,12 +226,12 @@ public class DefaultPwmConfig
      * {@inheritDoc}
      */
     @Override
-    public PwmConfig shutdownValue(Integer dutyCycle) {
+    public PwmConfig shutdownValue(Double dutyCycle) {
 
         // bounds check the duty-cycle value
-        Integer dc = dutyCycle;
-        if (dc < 0) dc = 0;
-        if (dc > 100) dc = 100;
+        Double dc = dutyCycle;
+        if (dc < 0) dc = 0.0;
+        if (dc > 100) dc = 100.0;
 
         this.shutdownValue = dc;
         return this;
@@ -241,7 +241,7 @@ public class DefaultPwmConfig
      * {@inheritDoc}
      */
     @Override
-    public Integer initialValue() {
+    public Double initialValue() {
         return this.initialValue;
     }
 
