@@ -132,7 +132,18 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         }
 
         this.period = Math.round(NANOS_IN_SECOND / frequency);
+        var dCycle = Math.round((double) (period * dutyCycle) / 100);
         logger.debug("{} - period is '{}', dutyCycle is '{}' and polarity '{}'.", pwmPath, period, dutyCycle, polarity);
+
+        // The kernel PWM core rejects (EINVAL) any state where duty_cycle > period. The currently
+        // applied state may carry a duty_cycle larger than the new period (e.g. when lowering the
+        // frequency-derived period), so writing 'period' first would momentarily violate that
+        // invariant and fail. Reset duty_cycle to 0 first, then apply the new period, then the new
+        // duty_cycle - guaranteeing duty_cycle <= period at every step regardless of direction.
+        waitForWritePermission(this.pwmPath + DUTY_CYCLE_PATH, 0);
+        var dutyResetFd = file.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_WRONLY);
+        file.write(dutyResetFd, String.valueOf(0).getBytes());
+        file.close(dutyResetFd);
 
         waitForWritePermission(this.pwmPath + PERIOD_PATH, 0);
         var periodFd = file.open(this.pwmPath + PERIOD_PATH, FileFlag.O_WRONLY);
@@ -141,7 +152,6 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
 
         waitForWritePermission(this.pwmPath + DUTY_CYCLE_PATH, 0);
         var dutyCycleFd = file.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_WRONLY);
-        var dCycle = Math.round((double) (period * dutyCycle) / 100);
         file.write(dutyCycleFd, String.valueOf(dCycle).getBytes());
         file.close(dutyCycleFd);
 
