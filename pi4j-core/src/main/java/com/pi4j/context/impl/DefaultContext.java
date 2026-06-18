@@ -65,16 +65,16 @@ public class DefaultContext implements Context {
 
     private final MutableProviders mutableProviders = new MutableProviders(this);
     private final List<Plugin> plugins = new ArrayList<>();
-    private final EventManager<Runtime, ShutdownListener, ShutdownEvent> shutdownEventManager =new EventManager(this,
+    private final EventManager<Context, ShutdownListener, ShutdownEvent> shutdownEventManager =new EventManager(this,
         (EventDelegate<ShutdownListener, ShutdownEvent>) (listener, event) -> listener.onShutdown(event));
-    private final EventManager<Runtime, InitializedListener, InitializedEvent> initializedEventManager = new EventManager(this,
+    private final EventManager<Context, InitializedListener, InitializedEvent> initializedEventManager = new EventManager(this,
         (EventDelegate<InitializedListener, InitializedEvent>) (listener, event) -> listener.onInitialized(event));
 
     private final ExecutorPool executorPool = new ExecutorPool();
     private final ExecutorService runtimeExecutor = this.executorPool.getExecutor("Pi4J.RUNTIME");
     private final MutableRegistry mutableRegistry = new MutableRegistry(this);
 
-    private boolean isShutdown = false;
+    private volatile boolean isShutdown = false;
 
     /**
      * <p>newInstance.</p>
@@ -104,7 +104,7 @@ public class DefaultContext implements Context {
         // listen for shutdown to properly clean up
         // TODO :: ADD PI4J INTERNAL SHUTDOWN CALLBACKS/EVENTS
         if (this.config().enableShutdownHook()) {
-            java.lang.Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 try {
                     // shutdown Pi4J
                     if (!isShutdown)
@@ -134,8 +134,8 @@ public class DefaultContext implements Context {
             if (config.autoDetectPlatforms() || config.autoDetectProviders()) {
 
                 // detect available Pi4J Plugins by scanning the classpath looking for plugin instances
-                ServiceLoader<Plugin> plugins = ServiceLoader.load(Plugin.class);
-                for (Plugin plugin : plugins) {
+                ServiceLoader<Plugin> serviceLoaderPlugins = ServiceLoader.load(Plugin.class);
+                for (Plugin plugin : serviceLoaderPlugins) {
                     if (plugin == null)
                         continue;
 
@@ -190,7 +190,7 @@ public class DefaultContext implements Context {
         // notify initialized event listeners
         initializedEventManager.dispatch(new InitializedEvent(this));
 
-        logger.debug("Pi4J runtime context successfully created & initialized.'");
+        logger.debug("Pi4J runtime context successfully created & initialized.");
     }
 
     /**
@@ -249,7 +249,7 @@ public class DefaultContext implements Context {
     public Context shutdown() throws ShutdownException {
         // shutdown the runtime
         if (isShutdown) {
-            logger.warn("Pi4J context/runtime is already shutdown.'");
+            logger.warn("Pi4J context/runtime is already shutdown.");
             return this;
         }
 
