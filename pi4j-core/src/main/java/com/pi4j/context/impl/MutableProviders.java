@@ -1,4 +1,4 @@
-package com.pi4j.provider.impl;
+package com.pi4j.context.impl;
 
 /*
  * #%L
@@ -25,6 +25,7 @@ package com.pi4j.provider.impl;
  * #L%
  */
 
+import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
@@ -42,7 +43,6 @@ import com.pi4j.provider.Providers;
 import com.pi4j.provider.exception.ProviderAlreadyExistsException;
 import com.pi4j.provider.exception.ProviderInitializeException;
 import com.pi4j.provider.exception.ProviderNotFoundException;
-import com.pi4j.runtime.Runtime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,11 +61,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version $Id: $Id
  * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
  */
-public class DefaultRuntimeProviders implements RuntimeProviders {
+public class MutableProviders implements Providers {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultRuntimeProviders.class);
+    private static final Logger logger = LoggerFactory.getLogger(MutableProviders.class);
 
-    private Runtime runtime = null;
+    private final Context context;
 
     // all detected/available providers
     private Map<String, Provider> providers = new ConcurrentHashMap<>();
@@ -136,20 +136,9 @@ public class DefaultRuntimeProviders implements RuntimeProviders {
 
     // static singleton instance
 
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param runtime a {@link com.pi4j.runtime.Runtime} object.
-     * @return a {@link com.pi4j.provider.impl.RuntimeProviders} object.
-     */
-    public static RuntimeProviders newInstance(Runtime runtime) {
-        return new DefaultRuntimeProviders(runtime);
-    }
-
     // private constructor
-    private DefaultRuntimeProviders(Runtime runtime) {
-        // set local runtime reference
-        this.runtime = runtime;
+    MutableProviders(Context context) {
+        this.context = context;
     }
 
     /**
@@ -302,7 +291,7 @@ public class DefaultRuntimeProviders implements RuntimeProviders {
         try {
             logger.trace("initializing provider [id={}; name={}; class={}]",
                 provider.id(), provider.name(), provider.getClass().getName());
-            provider.initialize(runtime.context());
+            provider.initialize(context);
         } catch (Exception e) {
             logger.error("unable to 'initialize()' provider: [id={}; name={}]; {}",
                 provider.id(), provider.name(), e.getMessage());
@@ -320,7 +309,7 @@ public class DefaultRuntimeProviders implements RuntimeProviders {
         try {
             logger.trace("calling 'shutdown()' provider [id={}; name={}; class={}]",
                 provider.id(), provider.name(), provider.getClass().getName());
-            provider.shutdownInternal(runtime.context());
+            provider.shutdownInternal(context);
         } catch (ShutdownException e) {
             logger.error("unable to 'shutdown()' provider: [id={}; name={}]; {}",
                 provider.id(), provider.name(), e.getMessage());
@@ -346,11 +335,7 @@ public class DefaultRuntimeProviders implements RuntimeProviders {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RuntimeProviders shutdown() throws ShutdownException {
+    public void shutdown() throws ShutdownException {
         logger.trace("invoked providers 'shutdown();'");
         ShutdownException shutdownException = null;
 
@@ -369,14 +354,10 @@ public class DefaultRuntimeProviders implements RuntimeProviders {
 
         // throw exception if
         if (shutdownException != null) throw shutdownException;
-        return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RuntimeProviders initialize(Collection<Provider> providers) throws InitializeException {
+
+    public void initialize(Collection<Provider> providers) throws InitializeException {
 
         // iterate over all defined platforms and initialize each
         if (providers != null && !providers.isEmpty()) {
@@ -399,6 +380,5 @@ public class DefaultRuntimeProviders implements RuntimeProviders {
         }
 
         logger.debug("providers loaded [{}]", this.providers.size());
-        return this;
     }
 }
