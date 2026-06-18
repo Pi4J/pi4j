@@ -11,7 +11,7 @@
 NGPIOS="${GPIO_MOCK_NGPIOS:-8,1}"
 LABELS="${GPIO_MOCK_LABELS:-accessible,inaccessible}"
 HOGS="${GPIO_MOCK_HOGS:-2,-1}"
-NUMBERS="${GPIO_MOCK_NUMBERS:-97,98,99}"
+NUMBERS="${GPIO_MOCK_NUMBERS:-97,98}"
 # Set to 1 to enable verbose debug logging from the mock driver (visible in dmesg)
 DEBUG="${GPIO_MOCK_DEBUG:-0}"
 
