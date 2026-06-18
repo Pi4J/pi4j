@@ -24,6 +24,15 @@ static int debug;
 module_param(debug, int, 0644);
 MODULE_PARM_DESC(debug, "Enable verbose debug logging (default 0)");
 
+/*
+ * Static SPI bus number, set from spi-setup.sh via 'busnum'. The spidev node is named
+ * spi<busnum>.<chip_select>, so pinning this keeps the device at a known path (spi0.0 by
+ * default) instead of relying on the kernel picking a free bus number dynamically.
+ */
+static int busnum;
+module_param(busnum, int, 0444);
+MODULE_PARM_DESC(busnum, "Static SPI bus number for the mock controller (default 0)");
+
 #define mock_dbg(dev, fmt, ...) \
     do { if (debug) dev_info(dev, fmt, ##__VA_ARGS__); } while (0)
 
@@ -81,7 +90,7 @@ static int spi_mock_transfer_one(struct spi_controller *ctlr, struct spi_device 
 static struct spi_board_info chip = {
     // dirty hack to make spidev autloaded and binded to this driver
     .modalias = "bk4",
-    .bus_num = 0,
+    // .bus_num is set from the 'busnum' module param in spi_mock_probe()
     .chip_select = 0,
 };
 
@@ -96,7 +105,8 @@ static int spi_mock_probe(struct platform_device *pdev)
         return -ENOMEM;
     }
 
-    master->bus_num = 0;
+    master->bus_num = busnum;
+    chip.bus_num = busnum;
     master->num_chipselect = 1;
     // support all four SPI modes and both bit orders that pi4j may request
     master->mode_bits = SPI_CPHA | SPI_CPOL | SPI_LSB_FIRST;

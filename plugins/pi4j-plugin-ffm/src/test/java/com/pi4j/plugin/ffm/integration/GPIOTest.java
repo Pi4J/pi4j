@@ -16,10 +16,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.condition.OS.LINUX;
 
 @EnabledOnOs(LINUX)
@@ -33,11 +33,11 @@ public class GPIOTest extends BaseSetup {
         setup("gpio");
         pi4j0 = Pi4J.newContextBuilder()
             .add(new FFMDigitalInputProviderImpl(), new FFMDigitalOutputProviderImpl())
-            .setGpioChipName("gpiochip2")
+            .setGpioChipName("gpiochip97")
             .build();
         pi4j1 = Pi4J.newContextBuilder()
             .add(new FFMDigitalInputProviderImpl())
-            .setGpioChipName("gpiochip3")
+            .setGpioChipName("gpiochip98")
             .build();
         pi4jNonExistent = Pi4J.newContextBuilder()
             .add(new FFMDigitalInputProviderImpl())

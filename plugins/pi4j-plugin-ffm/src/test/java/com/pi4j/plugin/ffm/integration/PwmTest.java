@@ -18,6 +18,7 @@ import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.mockito.MockedStatic;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,9 +39,28 @@ public class PwmTest extends BaseSetup {
             .build();
         pwm = pi4j.pwm().create(PwmConfigBuilder.newInstance(pi4j)
             .pwmType(PwmType.HARDWARE)
-            .chip(0)
+            .chip(findMockPwmChip())
             .channel(0)
             .build());
+    }
+
+    /**
+     * Finds the pwmchip number assigned to the pwm-mock driver. The kernel PWM core allocates the
+     * pwmchip id dynamically (lowest free id), so on boards that already expose real PWM chips
+     * (e.g. a Raspberry Pi 5) the mock does not land on pwmchip0. Each /sys/class/pwm/pwmchipN has
+     * a 'device' symlink back to its parent platform device, so we match the one owned by pwm-mock.
+     */
+    private static int findMockPwmChip() throws IOException {
+        var pwmClass = Paths.get("/sys/class/pwm");
+        try (var chips = Files.newDirectoryStream(pwmClass, "pwmchip*")) {
+            for (var chip : chips) {
+                var device = chip.resolve("device");
+                if (Files.exists(device) && device.toRealPath().toString().contains("pwm-mock")) {
+                    return Integer.parseInt(chip.getFileName().toString().substring("pwmchip".length()));
+                }
+            }
+        }
+        throw new IllegalStateException("Could not find a pwm-mock pwmchip under " + pwmClass);
     }
 
     @AfterAll
