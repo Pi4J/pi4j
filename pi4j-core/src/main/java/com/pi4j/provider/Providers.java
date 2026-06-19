@@ -28,8 +28,6 @@ package com.pi4j.provider;
 import com.pi4j.common.Describable;
 import com.pi4j.common.Descriptor;
 import com.pi4j.io.IOType;
-import com.pi4j.io.gpio.analog.AnalogInputProvider;
-import com.pi4j.io.gpio.analog.AnalogOutputProvider;
 import com.pi4j.io.gpio.digital.DigitalInputProvider;
 import com.pi4j.io.gpio.digital.DigitalOutputProvider;
 import com.pi4j.io.i2c.I2CProvider;
@@ -55,20 +53,6 @@ import java.util.Map;
  * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
  */
 public interface Providers extends Describable {
-
-    /**
-     * <p>analogInput.</p>
-     *
-     * @return a {@link com.pi4j.provider.ProviderGroup} object.
-     */
-    ProviderGroup<AnalogInputProvider> analogInput();
-
-    /**
-     * <p>analogOutput.</p>
-     *
-     * @return a {@link com.pi4j.provider.ProviderGroup} object.
-     */
-    ProviderGroup<AnalogOutputProvider> analogOutput();
 
     /**
      * <p>digitalInput.</p>
@@ -292,24 +276,6 @@ public interface Providers extends Describable {
 
 
     // DEFAULT METHODS
-
-    /**
-     * <p>getAnalogInput.</p>
-     *
-     * @return a {@link com.pi4j.provider.ProviderGroup} object.
-     */
-    default ProviderGroup<AnalogInputProvider> getAnalogInputProviders() {
-        return analogInput();
-    }
-
-    /**
-     * <p>getAnalogOutput.</p>
-     *
-     * @return a {@link com.pi4j.provider.ProviderGroup} object.
-     */
-    default ProviderGroup<AnalogOutputProvider> getAnalogOutputProviders() {
-        return analogOutput();
-    }
 
     /**
      * <p>getDigitalInput.</p>

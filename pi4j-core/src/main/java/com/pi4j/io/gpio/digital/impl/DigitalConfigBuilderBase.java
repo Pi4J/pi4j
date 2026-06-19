@@ -31,7 +31,7 @@ import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.impl.IOBcmConfigBuilderBase;
 
 /**
- * <p>Abstract AnalogConfigBuilderBase class.</p>
+ * <p>Abstract DigitalConfigBuilderBase class.</p>
  *
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
