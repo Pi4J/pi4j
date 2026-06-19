@@ -48,9 +48,6 @@ public abstract class DeviceConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder
     protected DeviceConfigBuilderBase() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public BUILDER_TYPE device(Integer device) {
         this.properties.put(DeviceConfig.DEVICE_KEY, device.toString());

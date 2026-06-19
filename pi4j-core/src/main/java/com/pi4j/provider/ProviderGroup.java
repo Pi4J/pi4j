@@ -84,7 +84,6 @@ public class ProviderGroup<T extends Provider> implements Describable {
         return providers.exists(providerId, type);
     }
 
-    /** {@inheritDoc} */
     @Override
     public Descriptor describe() {
         Descriptor descriptor = Descriptor.create()

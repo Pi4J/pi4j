@@ -50,7 +50,6 @@ public class MockDigitalInput extends DigitalInputBase implements DigitalInput {
         super(provider, config);
     }
 
-    /** {@inheritDoc} */
     @Override
     public DigitalState state() {
         return this.state;

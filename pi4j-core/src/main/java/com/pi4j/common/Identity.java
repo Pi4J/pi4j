@@ -93,7 +93,6 @@ public interface Identity extends Describable {
         return metadata();
     }
 
-    /** {@inheritDoc} */
     @Override
     default Descriptor describe() {
         return Descriptor.create()

@@ -61,14 +61,12 @@ public class DigitalStateChangeEvent<DIGITAL_TYPE extends Digital> implements Di
         return this.state;
     }
 
-    /** {@inheritDoc} */
     @Override
     public DIGITAL_TYPE source() {
         return this.source;
     }
 
 
-    /** {@inheritDoc} */
     @Override
     public String toString(){
         StringBuilder result = new StringBuilder();

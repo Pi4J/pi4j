@@ -55,13 +55,11 @@ public class DefaultI2CRegister implements I2CRegister, I2CRegisterDataReader, I
         this.address = address;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int getAddress() {
         return this.address;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int write(byte b) {
         return this.i2c.writeRegister(this.address, b);
@@ -79,78 +77,66 @@ public class DefaultI2CRegister implements I2CRegister, I2CRegisterDataReader, I
         this.i2c.writeRegisterWord(this.address, word);
     }
 
-    /** {@inheritDoc} */
     @Override
     public int write(byte[] data, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, data.length);
         return this.i2c.writeRegister(this.address, data, offset, length);
     }
 
-    /** {@inheritDoc} */
     @Override
     public int readWord() {
         return this.i2c.readRegisterWord(this.address);
     }
 
-    /** {@inheritDoc} */
     @Override
     public int writeReadWord(int word) {
         return this.i2c.writeReadRegisterWord(this.address, word);
     }
 
-    /** {@inheritDoc} */
     @Override
     public int read() {
         return this.i2c.readRegister(this.address);
     }
 
-    /** {@inheritDoc} */
     @Override
     public int read(byte[] buffer, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, buffer.length);
         return this.i2c.readRegister(this.address, buffer, offset, length);
     }
 
-    /** {@inheritDoc} */
     @Override
     public String readString(Charset charset, int length) {
         return this.i2c.readRegisterString(this.address, charset, length);
     }
 
-    /** {@inheritDoc} */
     @Override
     public int readRegister(int register) {
         return this.i2c.readRegister(register);
     }
 
 
-    /** {@inheritDoc} */
     @Override
     public int readRegister(byte[] register, byte[] buffer, int offset, int length) {
         return this.i2c.readRegister(register,buffer,offset,length);
     }
 
 
-    /** {@inheritDoc} */
     @Override
     public int readRegister(int register, byte[] buffer, int offset, int length) {
         return this.i2c.readRegister(register,buffer,offset,length);
     }
 
 
-    /** {@inheritDoc} */
     @Override
     public int writeRegister(int register, byte b) {
         return this.i2c.writeRegister(register, b);
     }
 
-    /** {@inheritDoc} */
     @Override
     public int writeRegister(int register, byte[] data, int offset, int length) {
         return this.i2c.writeRegister(register,data,offset,length);
     }
 
-    /** {@inheritDoc} */
     @Override
     public int writeRegister(byte[] register, byte[] data, int offset, int length) {
         return this.i2c.writeRegister(register,data,offset,length);

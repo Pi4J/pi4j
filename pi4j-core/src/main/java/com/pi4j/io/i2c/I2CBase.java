@@ -57,17 +57,11 @@ public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig, I
         this.i2CBus = i2CBus;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isOpen() {
         return this.isOpen;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void close() {
         if (isOpen) {
@@ -92,9 +86,6 @@ public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig, I
         return this.i2CBus.execute(this, action);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public I2C shutdownInternal(Context context) throws ShutdownException {
         // if this I2C device is still open, then we need to close it since we are shutting down

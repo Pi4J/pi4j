@@ -62,7 +62,6 @@ public class TestPwmProviderImpl extends PwmProviderBase implements TestPwmProvi
         super(id, name);
     }
 
-    /** {@inheritDoc} */
     @Override
     public Pwm create(PwmConfig config) {
         return null;

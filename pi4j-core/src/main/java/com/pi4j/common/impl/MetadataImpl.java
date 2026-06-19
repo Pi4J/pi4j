@@ -43,51 +43,43 @@ public class MetadataImpl implements Metadata {
 
     private Map<String, Metadatum> metadata = Collections.synchronizedMap(new LinkedHashMap<>());
 
-    /** {@inheritDoc} */
     @Override
     public int size() {
         return this.metadata.size();
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean isEmpty() {
         return this.metadata.isEmpty();
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean contains(String key) {
         return this.metadata.containsKey(key);
     }
 
-    /** {@inheritDoc} */
     @Override
     public Metadata put(Metadatum metadatum) {
         this.metadata.put(metadatum.key(), metadatum);
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Metadatum remove(String key) {
         return this.metadata.remove(key);
     }
 
-    /** {@inheritDoc} */
     @Override
     public Metadata clear() {
         this.metadata.clear();
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Metadatum get(String key) {
         return this.metadata.get(key);
     }
 
-    /** {@inheritDoc} */
     @Override
     public Collection<Metadatum> all() {
         return this.metadata.values();

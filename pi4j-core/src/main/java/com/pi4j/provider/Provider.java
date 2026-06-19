@@ -85,7 +85,6 @@ public interface Provider<PROVIDER_TYPE extends Provider, IO_TYPE extends IO, CO
      */
     default boolean isType(IOType type) { return this.type().isType(type); }
 
-    /** {@inheritDoc} */
     @Override
     default Descriptor describe() {
         Descriptor descriptor = Extension.super.describe();

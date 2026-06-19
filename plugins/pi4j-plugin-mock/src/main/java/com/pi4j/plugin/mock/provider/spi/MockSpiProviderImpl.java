@@ -53,9 +53,6 @@ public class MockSpiProviderImpl extends SpiProviderBase implements MockSpiProvi
         return 1000;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Spi create(SpiConfig config) {
         MockSpi spi = new MockSpi(this, config);

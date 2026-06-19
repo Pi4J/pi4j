@@ -73,21 +73,16 @@ public class DefaultPwmPreset  implements PwmPreset {
         this.frequency = frequency;
     }
 
-    /** {@inheritDoc} */
     @Override
     public String name() {
         return this.name;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer dutyCycle() {
         return this.dutyCycle;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Integer frequency() {
         return this.frequency;

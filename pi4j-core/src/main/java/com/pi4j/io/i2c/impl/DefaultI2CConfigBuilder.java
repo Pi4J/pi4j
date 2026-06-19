@@ -66,21 +66,18 @@ public class DefaultI2CConfigBuilder
         return new DefaultI2CConfigBuilder();
     }
 
-    /** {@inheritDoc} */
     @Override
     public I2CConfig build() {
         I2CConfig config = new DefaultI2CConfig(getResolvedProperties());
         return config;
     }
 
-    /** {@inheritDoc} */
     @Override
     public I2CConfigBuilder bus(Integer bus){
         this.properties.put(I2CConfig.BUS_KEY, bus.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public I2CConfigBuilder device(Integer device){
         this.properties.put(I2CConfig.DEVICE_KEY, device.toString());

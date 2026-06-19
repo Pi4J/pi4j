@@ -52,18 +52,12 @@ public abstract class IOBcmConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder,
     protected IOBcmConfigBuilderBase() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public BUILDER_TYPE provider(String provider) {
         this.properties.put(IOConfig.PROVIDER_KEY, provider);
         return (BUILDER_TYPE) this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public BUILDER_TYPE provider(Class<? extends Provider> providerClass) {
         this.properties.put(IOConfig.PROVIDER_KEY, providerClass.getName());

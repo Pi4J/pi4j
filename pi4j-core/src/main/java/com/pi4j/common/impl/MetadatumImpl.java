@@ -39,46 +39,39 @@ public class MetadatumImpl implements Metadatum {
     private Object value;
     private String description;
 
-    /** {@inheritDoc} */
     @Override
     public MetadatumImpl key(String key) {
         this.key = key;
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public MetadatumImpl value(Object value) {
         this.value = value;
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public MetadatumImpl description(String description) {
         this.description = description;
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public String key() {
         return this.key;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Object value() {
         return this.value;
     }
 
-    /** {@inheritDoc} */
     @Override
     public String description() {
         return this.description;
     }
 
-    /** {@inheritDoc} */
     @Override
     public String toString(){
         return key() + " = " + value().toString();

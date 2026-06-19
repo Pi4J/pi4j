@@ -83,45 +83,30 @@ public class DefaultPwmConfigBuilder
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder chip(Integer chip) {
         this.properties.put(PwmConfig.PWM_CHIP, chip.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder channel(Integer channel) {
         this.properties.put(PwmConfig.PWM_CHANNEL, channel.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder bcm(Integer bcm) {
         this.properties.put(PwmConfig.PWM_BCM, bcm.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder frequency(Double frequency) {
         this.properties.put(PwmConfig.FREQUENCY_KEY, frequency.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder dutyCycle(Double dutyCycle) {
         // bounds check the duty-cycle value
@@ -133,27 +118,18 @@ public class DefaultPwmConfigBuilder
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder pwmType(PwmType pwmType) {
         this.properties.put(PwmConfig.PWM_TYPE_KEY, pwmType.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder polarity(PwmPolarity polarity) {
         this.properties.put(PwmConfig.POLARITY_KEY, polarity.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder shutdown(Double dutyCycle) {
         // bounds check the duty-cycle value
@@ -165,9 +141,6 @@ public class DefaultPwmConfigBuilder
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder initial(Double dutyCycle) {
         // bounds check the duty-cycle value
@@ -179,9 +152,6 @@ public class DefaultPwmConfigBuilder
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder preset(PwmPreset... preset) {
         for (PwmPreset p : preset) {
@@ -190,9 +160,6 @@ public class DefaultPwmConfigBuilder
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfig build() {
         PwmConfig config = new DefaultPwmConfig(getResolvedProperties(), this.presets);

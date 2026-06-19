@@ -50,19 +50,16 @@ public abstract class SpiBase extends IOBase<Spi, SpiConfig, SpiProvider> implem
         super(provider, config);
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean isOpen() {
         return this.isOpen;
     }
 
-    /** {@inheritDoc} */
     @Override
     public void open() {
         logger.trace("invoked 'open()'");
     }
 
-    /** {@inheritDoc} */
     @Override
     public void close() {
         logger.trace("invoked 'closed()'");

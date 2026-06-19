@@ -58,13 +58,11 @@ public class DefaultPluginService implements PluginService {
         this.store = store;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Context context() {
         return this.context;
     }
 
-    /** {@inheritDoc} */
     @Override
     public PluginService register(Provider... provider) {
         if(provider != null) {

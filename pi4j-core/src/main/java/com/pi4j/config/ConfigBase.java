@@ -75,41 +75,26 @@ public class ConfigBase<CONFIG_TYPE extends Config> implements Config<CONFIG_TYP
             this.description = properties.get(DESCRIPTION_KEY);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Map<String, String> properties() {
         return Collections.unmodifiableMap(this.properties);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String id() {
         return this.id;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String name() {
         return this.name;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String description() {
         return this.description;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void validate() {
         if (StringUtil.isNullOrEmpty(this.id)) {
@@ -117,9 +102,6 @@ public class ConfigBase<CONFIG_TYPE extends Config> implements Config<CONFIG_TYP
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getUniqueIdentifier() {
         return 0;

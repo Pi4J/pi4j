@@ -64,7 +64,6 @@ public enum PwmPolarity {
         return name;
     }
 
-    /** {@inheritDoc} */
     @Override
     public String toString() {
         return name.toUpperCase();

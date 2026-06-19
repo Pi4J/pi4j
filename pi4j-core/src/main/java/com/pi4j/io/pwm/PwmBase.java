@@ -64,33 +64,21 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public double getDutyCycle() throws IOException {
         return this.dutyCycle;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public double getFrequency() throws IOException {
         return this.frequency;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public double getActualFrequency() throws IOException {
         return this.frequency;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setDutyCycle(double dutyCycle) throws IOException {
         double dc = dutyCycle;
@@ -103,25 +91,16 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
         this.dutyCycle = dc;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void setFrequency(double frequency) throws IOException {
         this.frequency = frequency;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isOn() {
         return this.onState;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Pwm initialize(Context context) throws InitializeException {
 
@@ -162,9 +141,6 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Pwm shutdownInternal(Context context) throws ShutdownException {
         // apply a shutdown value if configured
@@ -182,17 +158,11 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Map<String, PwmPreset> getPresets() {
         return Collections.unmodifiableMap(this.presets);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmPreset getPreset(String name) {
         String key = name.toLowerCase().trim();
@@ -202,9 +172,6 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmPreset deletePreset(String name) {
         String key = name.toLowerCase().trim();
@@ -214,9 +181,6 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
         return null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Pwm addPreset(PwmPreset preset) {
         String key = preset.name().toLowerCase().trim();
@@ -224,9 +188,6 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Pwm applyPreset(String name) throws IOException {
         String key = name.toLowerCase().trim();

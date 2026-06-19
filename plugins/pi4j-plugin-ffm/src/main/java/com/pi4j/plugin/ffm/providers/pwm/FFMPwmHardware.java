@@ -51,9 +51,6 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         FFMPermissionHelper.checkDevicePermissions(CHIP_PATH + chip, config);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Pwm initialize(Context context) throws InitializeException {
         var pwmChipFile = CHIP_PATH + chip;

@@ -66,9 +66,6 @@ public class TestDigitalInputProviderImpl extends DigitalInputProviderBase imple
         super(id, name);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalInput create(DigitalInputConfig config) {
         TestDigitalInput input = new TestDigitalInput(this, config);

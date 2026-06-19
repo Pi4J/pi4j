@@ -57,9 +57,6 @@ public class MockPlugin implements Plugin {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void initialize(PluginService service) {
 

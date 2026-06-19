@@ -79,14 +79,12 @@ public abstract class ProviderBase<PROVIDER_TYPE extends Provider, IO_TYPE exten
         super(id, name);
     }
 
-    /** {@inheritDoc} */
     @Override
     public PROVIDER_TYPE initialize(Context context) throws InitializeException {
         this.context = context;
         return (PROVIDER_TYPE)this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public PROVIDER_TYPE shutdownInternal(Context context) throws ShutdownException {
 
@@ -104,7 +102,6 @@ public abstract class ProviderBase<PROVIDER_TYPE extends Provider, IO_TYPE exten
         return (PROVIDER_TYPE)this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Context context(){
         return this.context;

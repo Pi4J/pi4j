@@ -62,7 +62,6 @@ public class TestSpiProviderImpl extends SpiProviderBase implements TestSpiProvi
         super(id, name);
     }
 
-    /** {@inheritDoc} */
     @Override
     public Spi create(SpiConfig config) {
         return null;

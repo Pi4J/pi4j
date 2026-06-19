@@ -58,14 +58,12 @@ public class DefaultPwmPresetBuilder implements PwmPresetBuilder{
         return new DefaultPwmPresetBuilder(name);
     }
 
-    /** {@inheritDoc} */
     @Override
     public PwmPresetBuilder frequency(Integer frequency) {
         this.frequency = frequency;
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public PwmPresetBuilder dutyCycle(Integer dutyCycle) {
         Integer dc = dutyCycle ;
@@ -77,7 +75,6 @@ public class DefaultPwmPresetBuilder implements PwmPresetBuilder{
         this.dutyCycle = dc;
         return this;
     }
-    /** {@inheritDoc} */
     @Override
     public PwmPreset build() {
         return new DefaultPwmPreset(this.name, this.dutyCycle, this.frequency);

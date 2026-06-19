@@ -62,7 +62,6 @@ public class TestI2CProviderImpl extends I2CProviderBase implements TestI2CProvi
         super(id, name);
     }
 
-    /** {@inheritDoc} */
     @Override
     public I2C create(I2CConfig config) {
         return null;

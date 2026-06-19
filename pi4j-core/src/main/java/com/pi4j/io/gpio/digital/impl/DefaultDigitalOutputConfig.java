@@ -102,50 +102,32 @@ public class DefaultDigitalOutputConfig
         return this.bcm;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer bus() {
         return this.bus;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer bcm() {
         return this.bcm;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getUniqueIdentifier() {
         return bcm();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalState shutdownState() {
         return this.shutdownState;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DefaultDigitalOutputConfig shutdownState(DigitalState state) {
         this.shutdownState = state;
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalState initialState() {
         return this.initialState;

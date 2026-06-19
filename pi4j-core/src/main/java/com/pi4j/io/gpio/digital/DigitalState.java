@@ -176,7 +176,6 @@ public enum DigitalState {
     }
 
 
-    /** {@inheritDoc} */
     @Override
     public String toString() {
         return name;

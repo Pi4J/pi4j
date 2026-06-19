@@ -53,9 +53,6 @@ public class MockDigitalInputProviderImpl extends DigitalInputProviderBase imple
         return 1000;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalInput create(DigitalInputConfig config) {
         MockDigitalInput input = new MockDigitalInput(this, config);

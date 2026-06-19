@@ -94,25 +94,16 @@ public class DefaultI2CConfig
         this.description = StringUtil.setIfNullOrEmpty(this.description, "I2C-" + this.bus() + "." + this.device(), true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer bus() {
         return this.bus;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer device() {
         return this.device;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getUniqueIdentifier() {
         return (bus() << 8) + device();

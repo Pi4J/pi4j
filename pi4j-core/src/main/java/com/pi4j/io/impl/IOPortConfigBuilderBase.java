@@ -54,18 +54,12 @@ public abstract class IOPortConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder
         super(context);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public BUILDER_TYPE provider(String provider) {
         this.properties.put(IOConfig.PROVIDER_KEY, provider);
         return (BUILDER_TYPE) this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public BUILDER_TYPE provider(Class<? extends Provider> providerClass) {
         this.properties.put(IOConfig.PROVIDER_KEY, providerClass.getName());

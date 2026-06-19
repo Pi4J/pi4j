@@ -74,41 +74,26 @@ public class MutableProviders implements Providers {
     private ProviderGroup<SpiProvider> _spi = new ProviderGroup<>(this, IOType.SPI);
     private ProviderGroup<I2CProvider> _i2c = new ProviderGroup<>(this, IOType.I2C);
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ProviderGroup<DigitalInputProvider> digitalInput() {
         return _digitalInput;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ProviderGroup<DigitalOutputProvider> digitalOutput() {
         return _digitalOutput;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ProviderGroup<PwmProvider> pwm() {
         return _pwm;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ProviderGroup<SpiProvider> spi() {
         return _spi;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ProviderGroup<I2CProvider> i2c() {
         return _i2c;
@@ -171,9 +156,6 @@ public class MutableProviders implements Providers {
         return Collections.unmodifiableMap(result);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean exists(String providerId) {
 
@@ -198,9 +180,6 @@ public class MutableProviders implements Providers {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Provider get(String providerId) throws ProviderNotFoundException {
 

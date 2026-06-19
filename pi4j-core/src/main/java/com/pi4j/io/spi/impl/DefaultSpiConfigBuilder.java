@@ -66,18 +66,12 @@ public class DefaultSpiConfigBuilder
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfigBuilder readLsbFirst(Integer shift) {
         this.properties.put(SpiConfig.READ_LSB_KEY, shift.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfigBuilder writeLsbFirst(Integer shift) {
         this.properties.put(SpiConfig.WRITE_LSB_KEY, shift.toString());
@@ -96,63 +90,42 @@ public class DefaultSpiConfigBuilder
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfigBuilder bus(SpiBus bus) {
         this.properties.put(SpiConfig.BUS_KEY, Integer.toString(bus.getBus()));
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfigBuilder baud(Integer rate) {
         this.properties.put(SpiConfig.BAUD_KEY, rate.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfigBuilder mode(SpiMode mode) {
         this.properties.put(SpiConfig.MODE_KEY, Integer.toString(mode.getMode()));
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfigBuilder flags(Long flags) {
         this.properties.put(SpiConfig.FLAGS_KEY, flags.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfigBuilder channel(Integer channel) {
         this.properties.put(SpiConfig.CHANNEL_KEY, channel.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfigBuilder chipSelect(SpiChipSelect chipSelect) {
         this.properties.put(SpiConfig.CHANNEL_KEY, Integer.toString(chipSelect.getChipSelect()));
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfig build() {
         SpiConfig config = new DefaultSpiConfig(this.properties);

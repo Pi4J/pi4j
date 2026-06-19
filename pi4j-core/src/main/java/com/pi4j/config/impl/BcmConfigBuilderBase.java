@@ -48,9 +48,6 @@ public abstract class BcmConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, C
     protected BcmConfigBuilderBase() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public BUILDER_TYPE bcm(Integer bcm) {
         this.properties.put(BcmConfig.BCM_KEY, bcm.toString());

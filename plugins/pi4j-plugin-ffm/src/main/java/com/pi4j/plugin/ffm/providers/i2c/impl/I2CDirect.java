@@ -21,9 +21,6 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
         super(provider, config, i2CBus);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public I2C initialize(Context context) throws InitializeException {
         return super.initialize(context);
@@ -116,93 +113,60 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
         });
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void close() {
         super.close();
         i2CBus.close();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int read() {
         return internalRead(new byte[1], 0, 1)[0];
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int read(byte[] buffer, int offset, int length) {
         internalRead(buffer, offset, length);
         return length;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int write(byte b) {
         return internalWrite(new byte[]{b});
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int write(byte[] data, int offset, int length) {
         return internalWrite(data, offset, length);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int readRegister(int register) {
         return Byte.toUnsignedInt(internalRead(new byte[]{(byte) register}, new byte[1], 0, 1)[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int readRegister(byte[] register, byte[] buffer, int offset, int length) {
         internalRead(register, buffer, offset, length);
         return length;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int readRegister(int register, byte[] buffer, int offset, int length) {
         internalRead(new byte[]{(byte) register}, buffer, offset, length);
         return length;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int writeRegister(int register, byte b) {
         return internalWrite(new byte[]{(byte) register}, new byte[]{b});
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int writeRegister(int register, byte[] data, int offset, int length) {
         return internalWrite(new byte[]{(byte) register}, data, offset, length);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int writeRegister(byte[] register, byte[] data, int offset, int length) {
         return internalWrite(register, data, offset, length);

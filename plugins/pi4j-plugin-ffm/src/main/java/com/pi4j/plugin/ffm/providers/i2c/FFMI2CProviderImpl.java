@@ -22,9 +22,6 @@ public class FFMI2CProviderImpl extends I2CProviderBase implements I2CProvider {
         return 200;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public I2C create(I2CConfig config) {
         var bus = new FFMI2CBus(config);

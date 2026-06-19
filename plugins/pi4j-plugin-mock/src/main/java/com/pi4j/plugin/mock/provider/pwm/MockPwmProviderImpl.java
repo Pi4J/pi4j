@@ -53,9 +53,6 @@ public class MockPwmProviderImpl extends PwmProviderBase implements MockPwmProvi
         return 1000;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Pwm create(PwmConfig config) {
         MockPwm pwm = new MockPwm(this, config);

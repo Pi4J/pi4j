@@ -68,45 +68,30 @@ public class DefaultDigitalOutputConfigBuilder
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutputConfigBuilder address(Integer address) {
         this.properties.put(GpioConfig.BCM_KEY, String.valueOf(address));
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutputConfigBuilder bus(int bus) {
         this.properties.put(GpioConfig.BUS_KEY, String.valueOf(bus));
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutputConfigBuilder shutdown(DigitalState state) {
         this.properties.put(DigitalOutputConfig.SHUTDOWN_STATE_KEY, state.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutputConfigBuilder initial(DigitalState state) {
         this.properties.put(DigitalOutputConfig.INITIAL_STATE_KEY, state.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutputConfig build() {
         DigitalOutputConfig config = new DefaultDigitalOutputConfig(getResolvedProperties());

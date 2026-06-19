@@ -71,17 +71,11 @@ public class IODeviceConfigBase<CONFIG_TYPE extends Config<CONFIG_TYPE>>
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String platform() {
         return this.platform;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String provider() {
         return this.provider;

@@ -48,9 +48,6 @@ public abstract class DigitalConfigBuilderBase<BUILDER_TYPE extends DigitalConfi
     protected DigitalConfigBuilderBase() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public BUILDER_TYPE onState(DigitalState state) {
         this.properties.put(DigitalConfig.ON_STATE_KEY, state.toString());

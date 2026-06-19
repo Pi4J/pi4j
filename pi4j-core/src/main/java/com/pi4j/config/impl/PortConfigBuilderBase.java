@@ -50,9 +50,6 @@ public abstract class PortConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, 
         super();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public BUILDER_TYPE port(String port) {
         this.properties.put(PortConfig.PORT_KEY, port);

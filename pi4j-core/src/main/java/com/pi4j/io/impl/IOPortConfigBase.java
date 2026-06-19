@@ -72,17 +72,11 @@ public class IOPortConfigBase<CONFIG_TYPE extends Config>
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String platform() {
         return this.platform;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String provider() {
         return this.provider;

@@ -66,81 +66,54 @@ public class DefaultDigitalOutputBuilder implements DigitalOutputBuilder {
         this.builder = DigitalOutputConfigBuilder.newInstance();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutputBuilder id(String id) {
         this.builder.id(id);
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutputBuilder name(String name) {
         this.builder.name(name);
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutputBuilder description(String description) {
         this.builder.description(description);
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutputBuilder address(Integer bcm) {
         this.builder.bcm(bcm);
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutputBuilder shutdown(DigitalState state) {
         this.builder.shutdown(state);
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutputBuilder initial(DigitalState state) {
         this.builder.initial(state);
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutputBuilder provider(String providerId) {
         this.providerId = providerId;
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutputBuilder provider(Class<? extends Provider> providerClass) {
         this.providerClass = providerClass;
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutput build() {
 

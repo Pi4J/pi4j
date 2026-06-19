@@ -29,27 +29,18 @@ public class I2CFile extends I2CBase<FFMI2CBus> {
         super(provider, config, i2CBus);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public I2C initialize(Context context) throws InitializeException {
         i2CBus.selectDevice(config.device());
         return super.initialize(context);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int read() {
         var buffer = new byte[1];
         return i2CBus.execute(this, (i2cFileDescriptor) -> FILE.read(i2cFileDescriptor, buffer, buffer.length))[0];
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int read(byte[] buffer, int offset, int length) {
         var data = i2CBus.execute(this, (i2cFileDescriptor) -> FILE.read(i2cFileDescriptor, buffer, buffer.length));
@@ -57,25 +48,16 @@ public class I2CFile extends I2CBase<FFMI2CBus> {
         return data.length;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int write(byte b) {
         return i2CBus.execute(this, (i2cFileDescriptor) -> FILE.write(i2cFileDescriptor, new byte[]{b}));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int write(byte[] data, int offset, int length) {
         return i2CBus.execute(this, (i2cFileDescriptor) -> FILE.write(i2cFileDescriptor, data));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int readRegister(int register) {
         var buffer = new byte[1];
@@ -84,9 +66,6 @@ public class I2CFile extends I2CBase<FFMI2CBus> {
         return read.length;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int readRegister(byte[] register, byte[] buffer, int offset, int length) {
         var read = i2CBus.execute(this, (i2cFileDescriptor) -> FILE.read(i2cFileDescriptor, buffer, buffer.length));
@@ -94,9 +73,6 @@ public class I2CFile extends I2CBase<FFMI2CBus> {
         return read.length;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int readRegister(int register, byte[] buffer, int offset, int length) {
         var read = i2CBus.execute(this, (i2cFileDescriptor) -> FILE.read(i2cFileDescriptor, buffer, buffer.length));
@@ -104,17 +80,11 @@ public class I2CFile extends I2CBase<FFMI2CBus> {
         return read.length;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int writeRegister(int register, byte b) {
         return i2CBus.execute(this, (i2cFileDescriptor) -> FILE.write(i2cFileDescriptor, new byte[]{(byte) register, b})) - 1;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int writeRegister(int register, byte[] data, int offset, int length) {
         var buffer = new byte[data.length + 1];
@@ -123,9 +93,6 @@ public class I2CFile extends I2CBase<FFMI2CBus> {
         return i2CBus.execute(this, (i2cFileDescriptor) -> FILE.write(i2cFileDescriptor, buffer)) - 1;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int writeRegister(byte[] register, byte[] data, int offset, int length) {
         var buffer = new byte[register.length + data.length];

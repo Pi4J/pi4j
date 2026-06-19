@@ -222,29 +222,23 @@ public class DefaultContext implements Context {
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public ContextConfig config() { return this.config; }
 
-    /** {@inheritDoc} */
     @Override
     public Providers providers() { return mutableProviders; }
 
-    /** {@inheritDoc} */
     @Override
     public Registry registry() { return this.mutableRegistry; }
 
-    /** {@inheritDoc} */
     @Override
     public BoardInfo boardInfo() { return this.boardInfo; }
 
-    /** {@inheritDoc} */
     @Override
     public Future<?> submitTask(Runnable task) {
         return this.runtimeExecutor.submit(task);
     }
 
-    /** {@inheritDoc} */
     @Override
     public Context shutdown() throws ShutdownException {
         // shutdown the runtime

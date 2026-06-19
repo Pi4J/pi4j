@@ -17,9 +17,6 @@ public class FFMPwmProviderImpl extends PwmProviderBase implements PwmProvider {
         return 200;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Pwm create(PwmConfig config) {
         // validate PWM type

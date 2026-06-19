@@ -69,9 +69,6 @@ public class DefaultDigitalInputConfigBuilder
         return new DefaultDigitalInputConfigBuilder();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalInputConfig build() {
         DigitalInputConfig config = new DefaultDigitalInputConfig(getResolvedProperties());
@@ -90,27 +87,18 @@ public class DefaultDigitalInputConfigBuilder
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalInputConfigBuilder bus(int bus) {
         this.properties.put(GpioConfig.BUS_KEY, String.valueOf(bus));
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalInputConfigBuilder pull(PullResistance value) {
         this.properties.put(DigitalInputConfig.PULL_RESISTANCE_KEY, value.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalInputConfigBuilder debounce(Long microseconds) {
         if (microseconds != null) {
@@ -119,9 +107,6 @@ public class DefaultDigitalInputConfigBuilder
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalInputConfigBuilder debounce(Long interval, TimeUnit units) {
         return debounce(units.toMicros(interval));

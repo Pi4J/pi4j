@@ -37,7 +37,6 @@ public class TestDigitalInput extends DigitalInputBase implements DigitalInput {
 
     private DigitalState state = DigitalState.UNKNOWN;
 
-    /** {@inheritDoc} */
     @Override
     public DigitalState state() {
         return this.state;

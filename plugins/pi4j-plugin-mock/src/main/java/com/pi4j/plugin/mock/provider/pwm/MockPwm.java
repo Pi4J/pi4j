@@ -52,14 +52,12 @@ public class MockPwm extends PwmBase implements Pwm {
         super(provider, config);
     }
 
-    /** {@inheritDoc} */
     @Override
     public Pwm on() throws IOException {
         this.onState = true;
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Pwm off() throws IOException {
         this.onState = false;

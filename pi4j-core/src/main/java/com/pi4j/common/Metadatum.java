@@ -117,7 +117,6 @@ public interface Metadatum extends Describable {
         return create(key, value).description(description);
     }
 
-    /** {@inheritDoc} */
     @Override
     default Descriptor describe() {
         return Descriptor.create().name(key()).description(description()).value(value());

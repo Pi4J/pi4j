@@ -87,25 +87,21 @@ public abstract class IdentityBase<T> implements Extension<T> {
         this.description = description;
     }
 
-    /** {@inheritDoc} */
     @Override
     public String id() {
         return this.id;
     }
 
-    /** {@inheritDoc} */
     @Override
     public String name() {
         return this.name;
     }
 
-    /** {@inheritDoc} */
     @Override
     public String description() {
         return this.description;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Metadata metadata() {
         return this.metadata;

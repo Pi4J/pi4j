@@ -68,13 +68,11 @@ public abstract class IOConfigBase<CONFIG_TYPE extends Config> extends ConfigBas
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public String platform() {
         return this.platform;
     }
 
-    /** {@inheritDoc} */
     @Override
     public String provider() {
         return this.provider;

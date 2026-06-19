@@ -101,41 +101,26 @@ public class DefaultDigitalInputConfig
         return this.bcm;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer bus() {
         return this.bus;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer bcm() {
         return this.bcm;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getUniqueIdentifier() {
         return bcm();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PullResistance pull() {
         return this.pullResistance;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Long debounce() {
         return this.debounce;

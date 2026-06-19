@@ -172,9 +172,6 @@ public class DefaultPwmConfig
         return this.bcm;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getUniqueIdentifier() {
         return (chip == null ? 0 : (chip << 16))
@@ -182,49 +179,31 @@ public class DefaultPwmConfig
             + (bcm == null ? 0 : bcm);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Double dutyCycle() {
         return this.dutyCycle;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Double frequency() {
         return this.frequency;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmType pwmType() {
         return this.pwmType;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmPolarity polarity() {
         return this.polarity;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Double shutdownValue() {
         return this.shutdownValue;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfig shutdownValue(Double dutyCycle) {
 
@@ -237,17 +216,11 @@ public class DefaultPwmConfig
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Double initialValue() {
         return this.initialValue;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Collection<PwmPreset> presets() {
         return this.presets;

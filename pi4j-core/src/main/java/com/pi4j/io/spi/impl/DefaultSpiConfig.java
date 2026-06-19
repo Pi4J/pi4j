@@ -121,107 +121,68 @@ public class DefaultSpiConfig
         this.description = StringUtil.setIfNullOrEmpty(this.description, "SPI-" + this.bus().getBus() + "." + this.channel(), true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer channel() {
         return this.channel;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getUniqueIdentifier() {
         return (bus.getBus() << 8) + channel();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer baud() {
         return this.baud;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer readLsbFirst() {
         return this.readLsbFirst;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer writeLsbFirst() {
         return this.writeLsbFirst;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean busUserProvided() {
         return this.busUserProvided;
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean writeLsbFirstUserProvided() {
         return this.writeLsbFirstUserProvided;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean readLsbFirstUserProvided() {
         return this.readLsbFirstUserProvided;
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean modeUserProvided() {
         return this.modeUserProvided;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiBus bus() {
         return this.bus;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiMode mode() {
         return this.mode;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Long flags() {
         return this.flags;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiChipSelect chipSelect() {
         return SpiChipSelect.getByNumber(this.channel());

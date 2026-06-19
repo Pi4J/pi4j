@@ -60,111 +60,94 @@ public class DescriptorImpl implements Descriptor {
         this.parent = null;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Descriptor id(String id) {
         this.id = id;
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Descriptor name(String name) {
         this.name = name;
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Descriptor description(String description) {
         this.description = description;
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Descriptor category(String category) {
         this.category = category;
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Descriptor quantity(Integer quantity) {
         this.quantity = quantity;
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Descriptor value(Object value) {
         this.value = value;
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Descriptor type(Class type) {
         this.type = type;
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Descriptor parent(Descriptor parent) {
         this.parent = parent;
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public String id() {
         return this.id;
     }
 
-    /** {@inheritDoc} */
     @Override
     public String name() {
         return this.name;
     }
 
-    /** {@inheritDoc} */
     @Override
     public String description() {
         return this.description;
     }
 
-    /** {@inheritDoc} */
     @Override
     public String category() {
         return this.category;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Integer quantity() {
         return this.quantity;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Object value() {
         return this.value;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Class type() {
         return this.type;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Descriptor parent() {
         return this.parent;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Descriptor add(Descriptor descriptor) {
         if(descriptor != null) {
@@ -200,7 +183,6 @@ public class DescriptorImpl implements Descriptor {
         return !children.isEmpty();
     }
 
-    /** {@inheritDoc} */
     public void print(PrintStream stream){
         print(stream, "", new ArrayList<>());
     }

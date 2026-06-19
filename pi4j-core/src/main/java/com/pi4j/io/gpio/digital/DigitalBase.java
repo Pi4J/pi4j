@@ -80,14 +80,12 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
         return (DIGITAL_TYPE) this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public DIGITAL_TYPE addListener(DigitalStateChangeListener... listener) {
         stateChangeEventManager.add(listener);
         return (DIGITAL_TYPE)this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public DIGITAL_TYPE removeListener(DigitalStateChangeListener... listener) {
         stateChangeEventManager.remove(listener);
@@ -108,7 +106,6 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
         stateChangeEventManager.dispatch(event);
     }
 
-    /** {@inheritDoc} */
     @Override
     public DIGITAL_TYPE shutdownInternal(Context context) throws ShutdownException {
         // remove all listeners
@@ -118,7 +115,6 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
         return (DIGITAL_TYPE) this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean isOn() {
         // the default ON state is HIGH
