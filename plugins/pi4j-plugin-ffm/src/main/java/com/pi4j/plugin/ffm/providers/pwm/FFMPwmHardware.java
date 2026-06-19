@@ -132,7 +132,25 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         }
 
         this.period = Math.round(NANOS_IN_SECOND / frequency);
+        var dCycle = Math.round((double) (period * dutyCycle) / 100);
         logger.debug("{} - period is '{}', dutyCycle is '{}' and polarity '{}'.", pwmPath, period, dutyCycle, polarity);
+
+        // NOTE: period and duty_cycle are two separate sysfs writes, each applied independently against
+        // the cached state. Lowering the frequency between on() calls (e.g. 100Hz -> 500Hz: period
+        // 10ms -> 2ms while duty is still 5ms) makes the intermediate state breach duty_cycle <= period.
+        // Older kernels (e.g. 6.8) strictly return -EINVAL for that transient; newer kernels (e.g. 6.17 after
+        // the 6.11+ PWM-core rework) tolerate/clamp it. The explicit reset-then-period-then-duty ordering
+        // below is correct on both, instead of relying on the newer kernel's leniency.
+        waitForReadPermission(this.pwmPath + PERIOD_PATH, 0);
+        var currentPeriodFd = file.open(this.pwmPath + PERIOD_PATH, FileFlag.O_RDONLY);
+        var currentPeriod = getIntegerContent(file.read(currentPeriodFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
+        file.close(currentPeriodFd);
+        if (currentPeriod > 0) {
+            waitForWritePermission(this.pwmPath + DUTY_CYCLE_PATH, 0);
+            var dutyResetFd = file.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_WRONLY);
+            file.write(dutyResetFd, String.valueOf(0).getBytes());
+            file.close(dutyResetFd);
+        }
 
         waitForWritePermission(this.pwmPath + PERIOD_PATH, 0);
         var periodFd = file.open(this.pwmPath + PERIOD_PATH, FileFlag.O_WRONLY);
@@ -141,7 +159,6 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
 
         waitForWritePermission(this.pwmPath + DUTY_CYCLE_PATH, 0);
         var dutyCycleFd = file.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_WRONLY);
-        var dCycle = Math.round((double) (period * dutyCycle) / 100);
         file.write(dutyCycleFd, String.valueOf(dCycle).getBytes());
         file.close(dutyCycleFd);
 

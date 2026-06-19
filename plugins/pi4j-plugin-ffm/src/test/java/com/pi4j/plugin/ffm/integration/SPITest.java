@@ -30,7 +30,7 @@ public class SPITest extends BaseSetup {
             .add(new FFMSpiProviderImpl())
             .build();
         var config = SpiConfigBuilder.newInstance()
-            .bus(SpiBus.BUS_0)
+            .bus(6)
             .channel(0)
             .mode(0)
             .baud(50_000)
