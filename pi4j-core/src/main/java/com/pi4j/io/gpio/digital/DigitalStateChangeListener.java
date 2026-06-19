@@ -28,9 +28,6 @@ package com.pi4j.io.gpio.digital;
 
 /**
  * <p>DigitalChangeListener interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface DigitalStateChangeListener extends DigitalListener<DigitalStateChangeEvent> {
     void onDigitalStateChange(DigitalStateChangeEvent event);

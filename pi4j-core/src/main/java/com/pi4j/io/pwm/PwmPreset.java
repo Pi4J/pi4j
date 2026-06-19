@@ -29,9 +29,6 @@ import com.pi4j.io.pwm.impl.DefaultPwmPresetBuilder;
 
 /**
  * <p>PwmPreset interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface PwmPreset {
 

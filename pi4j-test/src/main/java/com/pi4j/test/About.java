@@ -31,12 +31,6 @@ import com.pi4j.test.smoketest.ProviderContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * <p>About class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class About {
 
     private static final Logger logger = LoggerFactory.getLogger(About.class);

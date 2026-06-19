@@ -35,7 +35,6 @@ public class ProviderContext {
     private Context pi4j = null;
 
     /**
-     *
      * @param testProvider Identifies which set of providers to create
      */
     public ProviderContext(TestProvider testProvider) {

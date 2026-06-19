@@ -29,12 +29,6 @@ import com.pi4j.context.Context;
 import com.pi4j.io.impl.IOBcmConfigBuilderBase;
 import com.pi4j.io.spi.*;
 
-/**
- * <p>DefaultSpiConfigBuilder class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultSpiConfigBuilder
     extends IOBcmConfigBuilderBase<SpiConfigBuilder, SpiConfig>
     implements SpiConfigBuilder {
@@ -46,38 +40,24 @@ public class DefaultSpiConfigBuilder
     }
 
     /**
-     * <p>newInstance.</p>
-     *
      * @param context
-     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
      */
     @Deprecated
     public static SpiConfigBuilder newInstance(Context context) {
         return newInstance();
     }
 
-    /**
-     * <p>newInstance.</p>
-     *
-     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
-     */
     public static SpiConfigBuilder newInstance() {
         return new DefaultSpiConfigBuilder();
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfigBuilder readLsbFirst(Integer shift) {
         this.properties.put(SpiConfig.READ_LSB_KEY, shift.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfigBuilder writeLsbFirst(Integer shift) {
         this.properties.put(SpiConfig.WRITE_LSB_KEY, shift.toString());
@@ -96,63 +76,42 @@ public class DefaultSpiConfigBuilder
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfigBuilder bus(SpiBus bus) {
         this.properties.put(SpiConfig.BUS_KEY, Integer.toString(bus.getBus()));
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfigBuilder baud(Integer rate) {
         this.properties.put(SpiConfig.BAUD_KEY, rate.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfigBuilder mode(SpiMode mode) {
         this.properties.put(SpiConfig.MODE_KEY, Integer.toString(mode.getMode()));
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfigBuilder flags(Long flags) {
         this.properties.put(SpiConfig.FLAGS_KEY, flags.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfigBuilder channel(Integer channel) {
         this.properties.put(SpiConfig.CHANNEL_KEY, channel.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfigBuilder chipSelect(SpiChipSelect chipSelect) {
         this.properties.put(SpiConfig.CHANNEL_KEY, Integer.toString(chipSelect.getChipSelect()));
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SpiConfig build() {
         SpiConfig config = new DefaultSpiConfig(this.properties);

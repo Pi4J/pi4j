@@ -36,8 +36,6 @@ import com.pi4j.context.Context;
  *
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public abstract class PortConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
     extends ConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
@@ -50,9 +48,6 @@ public abstract class PortConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, 
         super();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public BUILDER_TYPE port(String port) {
         this.properties.put(PortConfig.PORT_KEY, port);

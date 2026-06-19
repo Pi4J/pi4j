@@ -31,17 +31,8 @@ import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.pwm.PwmProviderBase;
 
-/**
- * <p>MockPwmProviderImpl class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class MockPwmProviderImpl extends PwmProviderBase implements MockPwmProvider {
 
-    /**
-     * <p>Constructor for MockPwmProviderImpl.</p>
-     */
     public MockPwmProviderImpl() {
         this.id = ID;
         this.name = NAME;
@@ -53,9 +44,6 @@ public class MockPwmProviderImpl extends PwmProviderBase implements MockPwmProvi
         return 1000;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Pwm create(PwmConfig config) {
         MockPwm pwm = new MockPwm(this, config);

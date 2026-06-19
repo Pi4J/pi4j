@@ -35,16 +35,11 @@ import com.pi4j.provider.Provider;
  * </p>
  *
  * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
- * @author Robert Savage (<a
- *         href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class ProviderInterfaceException extends ProviderException {
 
     /**
      * Default Constructor
-     *
-     * @param providerClass a {@link java.lang.Class} object.
      */
     public ProviderInterfaceException(Class<? extends Provider> providerClass){
         super("Pi4J provider class [" + providerClass + "] is not an Interface but rather a concrete class. Please specify an Interface when requesting a provider by type.");

@@ -32,18 +32,11 @@ package com.pi4j.io.exception;
  * </p>
  *
  * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
- * @author Robert Savage (<a
- *         href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class IOBoundsException extends IOException {
 
     /**
      * Default Constructor
-     *
-     * @param value a {@link java.lang.Integer} object.
-     * @param min a {@link java.lang.Integer} object.
-     * @param max a {@link java.lang.Integer} object.
      */
     public IOBoundsException(Integer value, Integer min, Integer max){
         super("The requested value ["

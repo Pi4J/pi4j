@@ -33,9 +33,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * <p>Main class.</p>
  * Simple test of the six providers. Dependent upon the wiring described in the README file.
- *
  */
 public class Main {
 

@@ -35,9 +35,6 @@ import com.pi4j.provider.Provider;
  * </p>
  *
  * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
- * @author Robert Savage (<a
- *         href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class ProviderException extends ExtensionException {
 
@@ -50,31 +47,14 @@ public class ProviderException extends ExtensionException {
         super(message);
     }
 
-    /**
-     * <p>Constructor for ProviderException.</p>
-     *
-     * @param cause a {@link java.lang.Throwable} object.
-     */
     public ProviderException(Throwable cause){
         super(cause);
     }
 
-    /**
-     * <p>Constructor for ProviderException.</p>
-     *
-     * @param message a {@link java.lang.String} object.
-     * @param cause a {@link java.lang.Throwable} object.
-     */
     public ProviderException(String message, Throwable cause){
         super(message,cause);
     }
 
-    /**
-     * <p>Constructor for ProviderException.</p>
-     *
-     * @param provider a {@link com.pi4j.provider.Provider} object.
-     * @param cause a {@link java.lang.Throwable} object.
-     */
     public ProviderException(Provider provider, Throwable cause){
         super("Provider exception: " + provider.id() + "(" + provider.getClass().getName() + ")",cause);
     }

@@ -29,8 +29,6 @@ package com.pi4j.config;
  * <p>ChannelConfig interface.</p>
  *
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface ChannelConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
     /**
@@ -38,18 +36,8 @@ public interface ChannelConfig<CONFIG_TYPE extends Config> extends Config<CONFIG
      */
     String CHANNEL_KEY = "channel";
 
-    /**
-     * <p>pin.</p>
-     *
-     * @return a {@link Integer} object.
-     */
     Integer channel();
 
-    /**
-     * <p>getChannel.</p>
-     *
-     * @return a {@link Integer} object.
-     */
     default Integer getChannel() {
         return this.channel();
     }

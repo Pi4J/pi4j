@@ -27,9 +27,6 @@ package com.pi4j.io;
 
 /**
  * <p>Output interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface Output {
     // MARKER INTERFACE

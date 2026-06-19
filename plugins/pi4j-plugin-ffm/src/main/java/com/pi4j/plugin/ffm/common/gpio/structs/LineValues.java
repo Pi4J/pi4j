@@ -13,6 +13,7 @@ import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
  * Source: include/uapi/linux/gpio.h:96:8
  *
  * struct gpio_v2_line_values - Values of GPIO lines
+ *
  * @bits: a bitmap containing the value of the lines, set to 1 for active
  * and 0 for inactive.
  * @mask: a bitmap identifying the lines to get or set, with each bit

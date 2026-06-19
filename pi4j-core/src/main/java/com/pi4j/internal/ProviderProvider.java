@@ -39,10 +39,6 @@ import com.pi4j.provider.exception.ProviderNotFoundException;
 public interface ProviderProvider {
 
     /**
-     * <p>din.</p>
-     *
-     * @param <T> a T object.
-     * @return a T object.
      * @throws ProviderException if any.
      */
     default <T extends DigitalInputProvider> T din() throws ProviderException {
@@ -50,10 +46,6 @@ public interface ProviderProvider {
     }
 
     /**
-     * <p>dout.</p>
-     *
-     * @param <T> a T object.
-     * @return a T object.
      * @throws ProviderException if any.
      */
     default <T extends DigitalOutputProvider> T dout() throws ProviderException {
@@ -61,10 +53,6 @@ public interface ProviderProvider {
     }
 
     /**
-     * <p>digitalInput.</p>
-     *
-     * @param <T> a T object.
-     * @return a T object.
      * @throws ProviderException if any.
      */
     default <T extends DigitalInputProvider> T digitalInput() throws ProviderException {
@@ -72,10 +60,6 @@ public interface ProviderProvider {
     }
 
     /**
-     * <p>digitalOutput.</p>
-     *
-     * @param <T> a T object.
-     * @return a T object.
      * @throws ProviderException if any.
      */
     default <T extends DigitalOutputProvider> T digitalOutput() throws ProviderException {
@@ -83,10 +67,6 @@ public interface ProviderProvider {
     }
 
     /**
-     * <p>pwm.</p>
-     *
-     * @param <T> a T object.
-     * @return a T object.
      * @throws ProviderException if any.
      */
     default <T extends PwmProvider> T pwm() throws ProviderException {
@@ -94,10 +74,6 @@ public interface ProviderProvider {
     }
 
     /**
-     * <p>spi.</p>
-     *
-     * @param <T> a T object.
-     * @return a T object.
      * @throws ProviderException if any.
      */
     default <T extends SpiProvider> T spi() throws ProviderException {
@@ -105,10 +81,6 @@ public interface ProviderProvider {
     }
 
     /**
-     * <p>i2c.</p>
-     *
-     * @param <T> a T object.
-     * @return a T object.
      * @throws ProviderException if any.
      */
     default <T extends I2CProvider> T i2c() throws ProviderException {
@@ -116,10 +88,6 @@ public interface ProviderProvider {
     }
 
     /**
-     * <p>digitalInput.</p>
-     *
-     * @param <T> a T object.
-     * @return a T object.
      * @throws ProviderException if any.
      */
     default <T extends DigitalInputProvider> T getDigitalInputProvider() throws ProviderException {
@@ -127,10 +95,6 @@ public interface ProviderProvider {
     }
 
     /**
-     * <p>digitalOutput.</p>
-     *
-     * @param <T> a T object.
-     * @return a T object.
      * @throws ProviderException if any.
      */
     default <T extends DigitalOutputProvider> T getDigitalOutputProvider() throws ProviderException {
@@ -138,10 +102,6 @@ public interface ProviderProvider {
     }
 
     /**
-     * <p>pwm.</p>
-     *
-     * @param <T> a T object.
-     * @return a T object.
      * @throws ProviderException if any.
      */
     default <T extends PwmProvider> T getPwmProvider() throws ProviderException {
@@ -149,10 +109,6 @@ public interface ProviderProvider {
     }
 
     /**
-     * <p>spi.</p>
-     *
-     * @param <T> a T object.
-     * @return a T object.
      * @throws ProviderException if any.
      */
     default <T extends SpiProvider> T getSpiProvider() throws ProviderException {
@@ -160,10 +116,6 @@ public interface ProviderProvider {
     }
 
     /**
-     * <p>i2c.</p>
-     *
-     * @param <T> a T object.
-     * @return a T object.
      * @throws ProviderException if any.
      */
     default <T extends I2CProvider> T getI2CProvider() throws ProviderException {
@@ -171,79 +123,34 @@ public interface ProviderProvider {
     }
 
     /**
-     * <p>provider.</p>
-     *
-     * @param providerId a {@link java.lang.String} object.
-     * @param <T>        a T object.
-     * @return a T object.
      * @throws com.pi4j.provider.exception.ProviderNotFoundException if any.
      */
     <T extends Provider> T provider(String providerId) throws ProviderNotFoundException;
 
     /**
-     * <p>provider.</p>
-     *
-     * @param providerId    a {@link java.lang.String} object.
-     * @param providerClass a T object.
      * @param <T>           the provider type
-     * @return a T object.
      * @throws ProviderNotFoundException if any.
      */
     <T extends Provider> T provider(String providerId, Class<T> providerClass) throws ProviderNotFoundException;
 
     /**
-     * <p>provider.</p>
-     *
-     * @param providerClass a {@link java.lang.Class} object.
-     * @param <T>           a T object.
-     * @return a T object.
      * @throws ProviderNotFoundException  if any.
      * @throws ProviderInterfaceException if any.
      */
     <T extends Provider> T provider(Class<T> providerClass) throws ProviderNotFoundException, ProviderInterfaceException;
 
     /**
-     * <p>provider.</p>
-     *
-     * @param ioType a {@link com.pi4j.io.IOType} object.
-     * @param <T>    a T object.
-     * @return a T object.
      * @throws ProviderNotFoundException if the provider specified by {@code ioType} can not be found.
      */
     <T extends Provider> T provider(IOType ioType) throws ProviderNotFoundException;
 
-    /**
-     * <p>hasProvider.</p>
-     *
-     * @param providerId a {@link java.lang.String} object.
-     * @return a boolean.
-     */
     boolean hasProvider(String providerId);
 
-    /**
-     * <p>hasProvider.</p>
-     *
-     * @param providerClass a {@link java.lang.Class} object.
-     * @param <T>           a T object.
-     * @return a boolean.
-     */
     <T extends Provider> boolean hasProvider(Class<T> providerClass);
 
-    /**
-     * <p>hasProvider.</p>
-     *
-     * @param ioType a {@link com.pi4j.io.IOType} object.
-     * @param <T>    a T object.
-     * @return a boolean.
-     */
     <T extends Provider> boolean hasProvider(IOType ioType);
 
     /**
-     * <p>provider.</p>
-     *
-     * @param providerId a {@link java.lang.String} object.
-     * @param <T>        a T object.
-     * @return a T object.
      * @throws ProviderNotFoundException if the provider specified by {@code providerId} can not be found.
      */
     default <T extends Provider> T getProvider(String providerId) throws ProviderNotFoundException {
@@ -251,12 +158,7 @@ public interface ProviderProvider {
     }
 
     /**
-     * <p>provider.</p>
-     *
-     * @param providerId    a {@link java.lang.String} object.
      * @param providerClass
-     * @param <T>           a T object.
-     * @return a T object.
      * @throws ProviderNotFoundException if the provider specified by {@code providerId} can not be found.
      */
     default <T extends Provider> T getProvider(String providerId, Class<T> providerClass) throws ProviderNotFoundException {
@@ -264,11 +166,6 @@ public interface ProviderProvider {
     }
 
     /**
-     * <p>provider.</p>
-     *
-     * @param providerClass a {@link java.lang.Class} object.
-     * @param <T>           a T object.
-     * @return a T object.
      * @throws ProviderNotFoundException  if the provider specified by {@code providerClass} can not be found.
      * @throws ProviderInterfaceException if {@code providerClass} is not a valid provider.
      */
@@ -278,11 +175,6 @@ public interface ProviderProvider {
     }
 
     /**
-     * <p>provider.</p>
-     *
-     * @param ioType a {@link com.pi4j.io.IOType} object.
-     * @param <T>    a T object.
-     * @return a T object.
      * @throws ProviderNotFoundException if the provider specified by {@code ioType} can not be found.
      */
     default <T extends Provider> T getProvider(IOType ioType) throws ProviderNotFoundException {

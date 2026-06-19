@@ -29,23 +29,9 @@ import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.ShutdownException;
 
-/**
- * <p>Lifecycle interface.</p>
- *
- * @param <T>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public interface Lifecycle<T> {
 
     /**
-     * <p>initialize.</p>
-     *
-     * @param context a {@link com.pi4j.context.Context} object.
-     *
-     * @return a T object.
-     *
      * @throws com.pi4j.exception.InitializeException if an error occurs during initialization.
      */
     T initialize(Context context) throws InitializeException;
@@ -54,10 +40,6 @@ public interface Lifecycle<T> {
      * This method is called by the registry internally when the registry shutting down and should not be called by
      * users directly. To shut down an IO instance, call close() instead. This will make sure that the
      * instance is not just shut down and closed but also properly unregistered.</p>
-     *
-     * @param context a {@link com.pi4j.context.Context} object.
-     *
-     * @return a T object.
      *
      * @throws com.pi4j.exception.ShutdownException if an error occurs during shutdown.
      */

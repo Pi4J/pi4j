@@ -32,20 +32,12 @@ import com.pi4j.plugin.mock.Mock;
 
 /**
  * <p>MockI2CProvider interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface MockI2CProvider extends I2CProvider {
     /** Constant <code>NAME="Mock.I2C_PROVIDER_NAME"</code> */
     String NAME = Mock.I2C_PROVIDER_NAME;
     /** Constant <code>ID="Mock.I2C_PROVIDER_ID"</code> */
     String ID = Mock.I2C_PROVIDER_ID;
-    /**
-     * <p>newInstance.</p>
-     *
-     * @return a {@link com.pi4j.plugin.mock.provider.i2c.MockI2CProvider} object.
-     */
     static MockI2CProvider newInstance() {
         return new MockI2CProviderImpl();
     }

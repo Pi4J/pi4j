@@ -33,11 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>ConfigBase class.</p>
- *
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class ConfigBase<CONFIG_TYPE extends Config> implements Config<CONFIG_TYPE> {
 
@@ -55,8 +51,6 @@ public class ConfigBase<CONFIG_TYPE extends Config> implements Config<CONFIG_TYP
 
     /**
      * PRIVATE CONSTRUCTOR
-     *
-     * @param properties a {@link java.util.Map} object.
      */
     protected ConfigBase(Map<String, String> properties) {
         // add all properties to this config object
@@ -75,41 +69,26 @@ public class ConfigBase<CONFIG_TYPE extends Config> implements Config<CONFIG_TYP
             this.description = properties.get(DESCRIPTION_KEY);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Map<String, String> properties() {
         return Collections.unmodifiableMap(this.properties);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String id() {
         return this.id;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String name() {
         return this.name;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String description() {
         return this.description;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void validate() {
         if (StringUtil.isNullOrEmpty(this.id)) {
@@ -117,9 +96,6 @@ public class ConfigBase<CONFIG_TYPE extends Config> implements Config<CONFIG_TYP
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getUniqueIdentifier() {
         return 0;

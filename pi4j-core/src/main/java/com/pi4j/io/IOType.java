@@ -41,12 +41,6 @@ import com.pi4j.provider.Provider;
 
 import java.lang.reflect.Method;
 
-/**
- * <p>IOType class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public enum IOType {
 
     DIGITAL_INPUT(DigitalInputProvider.class, DigitalInput.class, DigitalInputConfig.class, DigitalInputConfigBuilder.class),
@@ -72,26 +66,17 @@ public enum IOType {
 
     /**
      * <p>Getter for the field <code>providerClass</code>.</p>
-     *
-     * @return a {@link java.lang.Class} object.
      */
     public Class<? extends Provider> getProviderClass() {
         return providerClass;
     }
 
-    /**
-     * <p>getIOClass.</p>
-     *
-     * @return a {@link java.lang.Class} object.
-     */
     public Class<? extends IO> getIOClass() {
         return ioClass;
     }
 
     /**
      * <p>Getter for the field <code>configClass</code>.</p>
-     *
-     * @return a {@link java.lang.Class} object.
      */
     public Class<? extends IOConfig> getConfigClass() {
         return configClass;
@@ -99,8 +84,6 @@ public enum IOType {
 
     /**
      * <p>Getter for the field <code>configBuilderClass</code>.</p>
-     *
-     * @return a {@link java.lang.Class} object.
      */
     public Class<? extends IOConfigBuilder> getConfigBuilderClass() {
         return configBuilderClass;
@@ -115,22 +98,10 @@ public enum IOType {
         }
     }
 
-    /**
-     * <p>isType.</p>
-     *
-     * @param type a {@link com.pi4j.io.IOType} object.
-     * @return a boolean.
-     */
     public boolean isType(IOType type) {
         return type == this;
     }
 
-    /**
-     * <p>getIOClass.</p>
-     *
-     * @param type a {@link com.pi4j.io.IOType} object.
-     * @return a {@link java.lang.Class} object.
-     */
     public static Class<? extends IO> getIOClass(IOType type) {
         for (var typeInstance : IOType.values()) {
             if (typeInstance.equals(type)) {
@@ -142,9 +113,6 @@ public enum IOType {
 
     /**
      * <p>Getter for the field <code>providerClass</code>.</p>
-     *
-     * @param type a {@link com.pi4j.io.IOType} object.
-     * @return a {@link java.lang.Class} object.
      */
     public static Class<? extends Provider> getProviderClass(IOType type) {
         for (var typeInstance : IOType.values()) {
@@ -157,9 +125,6 @@ public enum IOType {
 
     /**
      * <p>Getter for the field <code>configClass</code>.</p>
-     *
-     * @param type a {@link com.pi4j.io.IOType} object.
-     * @return a {@link java.lang.Class} object.
      */
     public static Class<? extends IOConfig> getConfigClass(IOType type) {
         for (var typeInstance : IOType.values()) {
@@ -170,12 +135,6 @@ public enum IOType {
         return null;
     }
 
-    /**
-     * <p>getByProviderClass.</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.io.IOType} object.
-     */
     public static IOType getByProviderClass(String name) {
         for (var type : IOType.values()) {
             if (type.name().equalsIgnoreCase(name)) {
@@ -185,22 +144,10 @@ public enum IOType {
         return null;
     }
 
-    /**
-     * <p>getByIO.</p>
-     *
-     * @param provider a {@link com.pi4j.provider.Provider} object.
-     * @return a {@link com.pi4j.io.IOType} object.
-     */
     public static IOType getByIO(Provider provider) {
         return provider.type();
     }
 
-    /**
-     * <p>getByProviderClass.</p>
-     *
-     * @param providerClass a {@link java.lang.Class} object.
-     * @return a {@link com.pi4j.io.IOType} object.
-     */
     public static IOType getByProviderClass(Class<? extends Provider> providerClass) {
         for (var type : IOType.values()) {
             if (type.getProviderClass().isAssignableFrom(providerClass)) {
@@ -210,22 +157,10 @@ public enum IOType {
         return null;
     }
 
-    /**
-     * <p>getByIO.</p>
-     *
-     * @param io a {@link com.pi4j.io.IO} object.
-     * @return a {@link com.pi4j.io.IOType} object.
-     */
     public static IOType getByIO(IO io) {
         return io.type();
     }
 
-    /**
-     * <p>getByIOClass.</p>
-     *
-     * @param ioClass a {@link java.lang.Class} object.
-     * @return a {@link com.pi4j.io.IOType} object.
-     */
     public static IOType getByIOClass(Class<? extends IO> ioClass) {
         for (var type : IOType.values()) {
             if (type.getIOClass().isAssignableFrom(ioClass)) {
@@ -235,12 +170,6 @@ public enum IOType {
         return null;
     }
 
-    /**
-     * <p>getByConfigClass.</p>
-     *
-     * @param configClass a {@link java.lang.Class} object.
-     * @return a {@link com.pi4j.io.IOType} object.
-     */
     public static IOType getByConfigClass(Class<? extends IOConfig> configClass) {
         for (var type : IOType.values()) {
             if (type.getConfigClass().isAssignableFrom(configClass)) {
@@ -250,12 +179,6 @@ public enum IOType {
         return null;
     }
 
-    /**
-     * <p>parse.</p>
-     *
-     * @param ioType a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.io.IOType} object.
-     */
     public static IOType parse(String ioType) {
 
         try {

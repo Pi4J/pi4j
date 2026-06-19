@@ -36,17 +36,11 @@ import com.pi4j.provider.Provider;
  * </p>
  *
  * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
- * @author Robert Savage (<a
- *         href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class ProviderIOTypeException extends ProviderException {
 
     /**
      * Default Constructor
-     *
-     * @param provider a {@link com.pi4j.provider.Provider} object.
-     * @param ioType a {@link com.pi4j.io.IOType} object.
      */
     public ProviderIOTypeException(Provider provider, IOType ioType){
         super("Pi4J provider IO type mismatch for [" + provider.id() + "(" + provider.type().name() + ")]; provider instance is not of IO type [" + ioType.name() + "]");

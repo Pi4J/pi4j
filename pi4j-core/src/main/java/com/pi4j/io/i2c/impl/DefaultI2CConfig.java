@@ -34,12 +34,6 @@ import com.pi4j.util.StringUtil;
 
 import java.util.Map;
 
-/**
- * <p>DefaultI2CConfig class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultI2CConfig
     extends IOConfigBase<I2CConfig>
     implements I2CConfig {
@@ -61,8 +55,6 @@ public class DefaultI2CConfig
 
     /**
      * PRIVATE CONSTRUCTOR
-     *
-     * @param properties a {@link java.util.Map} object.
      */
     protected DefaultI2CConfig(Map<String, String> properties) {
         super(properties);
@@ -94,25 +86,16 @@ public class DefaultI2CConfig
         this.description = StringUtil.setIfNullOrEmpty(this.description, "I2C-" + this.bus() + "." + this.device(), true);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer bus() {
         return this.bus;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer device() {
         return this.device;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getUniqueIdentifier() {
         return (bus() << 8) + device();

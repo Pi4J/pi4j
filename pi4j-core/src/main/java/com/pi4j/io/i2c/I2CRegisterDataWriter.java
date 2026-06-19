@@ -36,13 +36,6 @@ import java.util.Collection;
 
 /**
  * I2C Register Data Writer Interface for Pi4J Data Communications
- *
- * @author Robert Savage
- * <p>
- * Based on previous contributions from:
- *        Daniel Sendula,
- *        <a href="http://raspelikan.blogspot.co.at">RasPelikan</a>
- * @version $Id: $Id
  */
 public interface I2CRegisterDataWriter {
 
@@ -56,7 +49,6 @@ public interface I2CRegisterDataWriter {
      *
      * @param register the register address to write to
      * @param b byte to be written
-     * @return a int.
      */
     int writeRegister(int register, byte b);
 
@@ -66,7 +58,6 @@ public interface I2CRegisterDataWriter {
      *
      * @param register the register address to write to
      * @param b byte to be written; the provided Integer wll be cast to a Byte.
-     * @return a int.
      */
     default int writeRegister(int register, int b) {
         return writeRegister(register, (byte)b);
@@ -81,7 +72,6 @@ public interface I2CRegisterDataWriter {
      *
      * @param register the register address to write to
      * @param word 16-bit word value to be written
-     * @return a int.
      */
     default int writeRegisterWord(int register, int word) {
         byte[] buffer = new byte[] { (byte)(word >> 8), (byte)word };
@@ -544,7 +534,6 @@ public interface I2CRegisterDataWriter {
      * @param data collection of character sequences of data to be written
      * @return The number of bytes written, possibly zero
      * @throws java.io.IOException thrown on write error
-     * @param charset a {@link java.nio.charset.Charset} object.
      */
     default int writeRegister(int register, Charset charset, Collection<char[]> data) throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();

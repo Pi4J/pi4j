@@ -32,9 +32,6 @@ package com.pi4j.exception;
  * </p>
  *
  * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
- * @author Robert Savage (<a
- *         href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class ShutdownException extends LifecycleException {
 
@@ -47,21 +44,10 @@ public class ShutdownException extends LifecycleException {
         super(message);
     }
 
-    /**
-     * <p>Constructor for ShutdownException.</p>
-     *
-     * @param cause a {@link java.lang.Throwable} object.
-     */
     public ShutdownException(Throwable cause){
         super(cause);
     }
 
-    /**
-     * <p>Constructor for ShutdownException.</p>
-     *
-     * @param message a {@link java.lang.String} object.
-     * @param cause a {@link java.lang.Throwable} object.
-     */
     public ShutdownException(String message, Throwable cause){
         super(message,cause);
     }

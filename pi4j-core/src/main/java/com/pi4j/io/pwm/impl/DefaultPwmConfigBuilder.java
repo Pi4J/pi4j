@@ -32,12 +32,6 @@ import com.pi4j.io.pwm.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * <p>DefaultPwmConfigBuilder class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultPwmConfigBuilder
     extends IOBcmConfigBuilderBase<PwmConfigBuilder, PwmConfig>
     implements PwmConfigBuilder {
@@ -51,10 +45,7 @@ public class DefaultPwmConfigBuilder
     }
 
     /**
-     * <p>newInstance.</p>
-     *
      * @param context
-     * @return a {@link com.pi4j.io.pwm.PwmConfigBuilder} object.
      */
     @Deprecated
     public static PwmConfigBuilder newInstance(Context context) {
@@ -62,11 +53,6 @@ public class DefaultPwmConfigBuilder
     }
 
 
-    /**
-     * <p>newInstance.</p>
-     *
-     * @return a {@link com.pi4j.io.pwm.PwmConfigBuilder} object.
-     */
     public static PwmConfigBuilder newInstance() {
         return new DefaultPwmConfigBuilder();
     }
@@ -83,45 +69,30 @@ public class DefaultPwmConfigBuilder
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder chip(Integer chip) {
         this.properties.put(PwmConfig.PWM_CHIP, chip.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder channel(Integer channel) {
         this.properties.put(PwmConfig.PWM_CHANNEL, channel.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder bcm(Integer bcm) {
         this.properties.put(PwmConfig.PWM_BCM, bcm.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder frequency(Double frequency) {
         this.properties.put(PwmConfig.FREQUENCY_KEY, frequency.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder dutyCycle(Double dutyCycle) {
         // bounds check the duty-cycle value
@@ -133,27 +104,18 @@ public class DefaultPwmConfigBuilder
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder pwmType(PwmType pwmType) {
         this.properties.put(PwmConfig.PWM_TYPE_KEY, pwmType.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder polarity(PwmPolarity polarity) {
         this.properties.put(PwmConfig.POLARITY_KEY, polarity.toString());
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder shutdown(Double dutyCycle) {
         // bounds check the duty-cycle value
@@ -165,9 +127,6 @@ public class DefaultPwmConfigBuilder
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder initial(Double dutyCycle) {
         // bounds check the duty-cycle value
@@ -179,9 +138,6 @@ public class DefaultPwmConfigBuilder
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfigBuilder preset(PwmPreset... preset) {
         for (PwmPreset p : preset) {
@@ -190,9 +146,6 @@ public class DefaultPwmConfigBuilder
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PwmConfig build() {
         PwmConfig config = new DefaultPwmConfig(getResolvedProperties(), this.presets);

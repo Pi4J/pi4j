@@ -30,8 +30,6 @@ import com.pi4j.io.gpio.GpioProvider;
 /**
  * <p>DigitalProvider interface.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <CONFIG_TYPE>
  * @param <DIGITAL_TYPE>
  * @param <PROVIDER_TYPE>

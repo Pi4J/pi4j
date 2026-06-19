@@ -28,36 +28,19 @@ import com.pi4j.provider.ProviderBase;
  */
 /**
  * <p>Abstract SpiProviderBase class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public abstract class SpiProviderBase
         extends ProviderBase<SpiProvider, Spi, SpiConfig>
         implements SpiProvider {
 
-    /**
-     * <p>Constructor for SpiProviderBase.</p>
-     */
     public SpiProviderBase(){
         super();
     }
 
-    /**
-     * <p>Constructor for SpiProviderBase.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     */
     public SpiProviderBase(String id){
         super(id);
     }
 
-    /**
-     * <p>Constructor for SpiProviderBase.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     */
     public SpiProviderBase(String id, String name){
         super(id, name);
     }

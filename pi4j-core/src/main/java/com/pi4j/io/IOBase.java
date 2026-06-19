@@ -37,8 +37,6 @@ import java.io.Closeable;
 /**
  * <p>Abstract IOBase class.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <CONFIG_TYPE>
  * @param <IO_TYPE>
  * @param <PROVIDER_TYPE>
@@ -52,18 +50,11 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
     // close() requires idempotency.
     private boolean closed = false;
 
-    /** {@inheritDoc} */
     @Override
     public PROVIDER_TYPE provider(){
         return this.provider;
     }
 
-    /**
-     * <p>Constructor for IOBase.</p>
-     *
-     * @param provider a PROVIDER_TYPE object.
-     * @param config a CONFIG_TYPE object.
-     */
     public IOBase(PROVIDER_TYPE provider, CONFIG_TYPE config){
         super();
         this.id = config.id();
@@ -73,14 +64,12 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
         this.config = config;
     }
 
-    /** {@inheritDoc} */
     @Override
     public IO_TYPE name(String name){
         this.name = name;
         return (IO_TYPE)this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public IO_TYPE description(String description){
         this.description = description;
@@ -107,7 +96,6 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
         }
     }
 
-    /** {@inheritDoc} */
     @Override
     public CONFIG_TYPE config(){
         return this.config;
@@ -117,14 +105,12 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
         return this.context;
     }
 
-    /** {@inheritDoc} */
     @Override
     public IO_TYPE initialize(Context context) throws InitializeException {
         this.context = context;
         return (IO_TYPE) this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public IO_TYPE shutdownInternal(Context context) throws ShutdownException {
         // Close is supposed to be idempotent. We interpret this here to include effective shutdowns by
@@ -136,7 +122,6 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
         return (IO_TYPE) this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public Descriptor describe() {
         return super.describe().category("IO");

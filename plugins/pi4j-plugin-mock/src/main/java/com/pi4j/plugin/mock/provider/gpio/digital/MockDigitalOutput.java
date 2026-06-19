@@ -36,28 +36,12 @@ import com.pi4j.io.gpio.digital.DigitalOutputProvider;
 import com.pi4j.io.gpio.digital.DigitalState;
 
 
-/**
- * <p>MockDigitalOutput class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class MockDigitalOutput extends DigitalOutputBase implements DigitalOutput {
-    /**
-     * <p>Constructor for MockDigitalOutput.</p>
-     *
-     * @param provider a {@link com.pi4j.io.gpio.digital.DigitalOutputProvider} object.
-     * @param config a {@link com.pi4j.io.gpio.digital.DigitalOutputConfig} object.
-     */
     public MockDigitalOutput(DigitalOutputProvider provider, DigitalOutputConfig config){
         super(provider, config);
     }
 
     /**
-     * <p>mockState.</p>
-     *
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @return a {@link com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalOutput} object.
      * @throws IOException if any.
      */
     public MockDigitalOutput mockState(DigitalState state) throws IOException {

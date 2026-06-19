@@ -25,12 +25,6 @@ package com.pi4j.io.spi;
  * #L%
  */
 
-/**
- * <p>SpiBus class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public enum SpiBus {
     BUS_0(0), BUS_1(1), BUS_2(2), BUS_3(3), BUS_4(4), BUS_5(5), BUS_6(6);
 
@@ -42,29 +36,15 @@ public enum SpiBus {
 
     /**
      * <p>Getter for the field <code>bus</code>.</p>
-     *
-     * @return a int.
      */
     public int getBus() {
         return bus;
     }
 
-    /**
-     * <p>getByNumber.</p>
-     *
-     * @param bus a short.
-     * @return a {@link SpiBus} object.
-     */
     public static SpiBus getByNumber(short bus) {
         return getByNumber((int) bus);
     }
 
-    /**
-     * <p>getByNumber.</p>
-     *
-     * @param bus a int.
-     * @return a {@link SpiBus} object.
-     */
     public static SpiBus getByNumber(int bus) {
         for (var item : SpiBus.values()) {
             if (item.getBus() == bus) {
@@ -74,12 +54,6 @@ public enum SpiBus {
         return null;
     }
 
-    /**
-     * <p>parse.</p>
-     *
-     * @param bus a {@link String} object.
-     * @return a {@link SpiBus} object.
-     */
     public static SpiBus parse(String bus) {
         if (bus.equalsIgnoreCase("0")) return SpiBus.BUS_0;
         if (bus.equalsIgnoreCase("1")) return SpiBus.BUS_1;

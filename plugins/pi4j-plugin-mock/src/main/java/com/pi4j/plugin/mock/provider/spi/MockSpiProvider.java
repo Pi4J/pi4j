@@ -32,20 +32,12 @@ import com.pi4j.plugin.mock.Mock;
 
 /**
  * <p>MockSpiProvider interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface MockSpiProvider extends SpiProvider{
     /** Constant <code>NAME="Mock.SPI_PROVIDER_NAME"</code> */
     String NAME = Mock.SPI_PROVIDER_NAME;
     /** Constant <code>ID="Mock.SPI_PROVIDER_ID"</code> */
     String ID = Mock.SPI_PROVIDER_ID;
-    /**
-     * <p>newInstance.</p>
-     *
-     * @return a {@link com.pi4j.plugin.mock.provider.spi.MockSpiProvider} object.
-     */
     static MockSpiProvider newInstance() {
         return new MockSpiProviderImpl();
     }

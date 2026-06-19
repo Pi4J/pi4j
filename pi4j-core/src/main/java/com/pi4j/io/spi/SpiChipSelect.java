@@ -28,12 +28,6 @@ package com.pi4j.io.spi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * <p>SpiChipSelect class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 @Deprecated
 public enum SpiChipSelect {
     CS_0(0), CS_1(1), CS_2(2), CS_3(3), CS_4(4), CS_5(5), CS_6(6), CS_7(7), CS_8(8), CS_9(9), CS_10(10);
@@ -47,29 +41,15 @@ public enum SpiChipSelect {
 
     /**
      * <p>Getter for the field <code>chipSelect</code>.</p>
-     *
-     * @return a int.
      */
     public int getChipSelect() {
         return address;
     }
 
-    /**
-     * <p>getByNumber.</p>
-     *
-     * @param address a short.
-     * @return a {@link SpiChipSelect} object.
-     */
     public static SpiChipSelect getByNumber(short address){
         return getByNumber((int) address);
     }
 
-    /**
-     * <p>getByNumber.</p>
-     *
-     * @param address a int.
-     * @return a {@link SpiChipSelect} object.
-     */
     public static SpiChipSelect getByNumber(int address){
         for (var item : SpiChipSelect.values()){
             if (item.getChipSelect() == address){
@@ -79,12 +59,6 @@ public enum SpiChipSelect {
         return null;
     }
 
-    /**
-     * <p>parse.</p>
-     *
-     * @param bus a {@link String} object.
-     * @return a {@link SpiChipSelect} object.
-     */
     public static SpiChipSelect parse(String bus) {
         for (SpiChipSelect item : SpiChipSelect.values()) {
             try {

@@ -42,9 +42,6 @@ import java.util.Set;
 
 /**
  * A mutable implementation of the Registry interface, managed by the Runtime.
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class MutableRegistry implements Registry {
 
@@ -86,9 +83,6 @@ public class MutableRegistry implements Registry {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public synchronized <T extends IO> T get(String id, Class<T> type)
         throws IOInvalidIDException, IONotFoundException {
@@ -100,9 +94,6 @@ public class MutableRegistry implements Registry {
         return (T) instances.get(_id);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public synchronized <T extends IO> T get(String id) throws IOInvalidIDException, IONotFoundException {
         String _id = validateId(id);
@@ -164,9 +155,6 @@ public class MutableRegistry implements Registry {
             this.usedAddressesByIoType.remove(instance.type());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public synchronized boolean exists(String id) {
         String _id = null;
@@ -186,9 +174,6 @@ public class MutableRegistry implements Registry {
         return usedAddresses != null && usedAddresses.contains(identifier);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public synchronized Map<String, ? extends IO> all() {
         return new HashMap<>(this.instances);

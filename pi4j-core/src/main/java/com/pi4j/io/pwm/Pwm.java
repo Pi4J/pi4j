@@ -35,9 +35,6 @@ import java.util.Map;
 
 /**
  * <p>Pwm interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
 
@@ -45,12 +42,6 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     static final long KILOHERTZ = Frequency.KILOHERTZ;
     static final long HERTZ = Frequency.HERTZ;
 
-    /**
-     * <p>newConfigBuilder.</p>
-     *
-     * @param context {@link Context}
-     * @return a {@link com.pi4j.io.pwm.PwmConfigBuilder} object.
-     */
     static PwmConfigBuilder newConfigBuilder(Context context) {
         return PwmConfigBuilder.newInstance(context);
     }
@@ -112,7 +103,6 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     /**
      * Turn the PWM signal [OFF] by applying a zero frequency and zero duty-cycle to the PWM pin.
      *
-     * @return a {@link com.pi4j.io.pwm.Pwm} object.
      * @throws IOException if fails to communicate with the PWM pin
      */
     @Override

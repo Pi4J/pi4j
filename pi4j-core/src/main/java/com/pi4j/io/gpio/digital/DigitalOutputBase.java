@@ -37,27 +37,15 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Abstract DigitalOutputBase class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, DigitalOutputConfig, DigitalOutputProvider> implements DigitalOutput {
 
     protected DigitalState state = DigitalState.UNKNOWN;
 
-    /**
-     * <p>Constructor for DigitalOutputBase.</p>
-     *
-     * @param provider a {@link com.pi4j.io.gpio.digital.DigitalOutputProvider} object.
-     * @param config   a {@link com.pi4j.io.gpio.digital.DigitalOutputConfig} object.
-     */
     public DigitalOutputBase(DigitalOutputProvider provider, DigitalOutputConfig config) {
         super(provider, config);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutput initialize(Context context) throws InitializeException {
         super.initialize(context);
@@ -73,9 +61,6 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutput state(DigitalState state) throws IOException {
 
@@ -88,9 +73,6 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutput pulse(int interval, TimeUnit unit, DigitalState state, Callable<Void> callback) throws IOException {
 
@@ -122,9 +104,6 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Future<?> pulseAsync(int interval, TimeUnit unit, DigitalState state, Callable<Void> callback) {
         validateArguments(interval, unit);
@@ -229,17 +208,11 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
         return context().submitTask(() -> blink(delay, duration, unit, state, callback));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalState state() {
         return this.state;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutput shutdownInternal(Context context) throws ShutdownException {
         // set pin state to the shutdown state if a shutdown state is configured
@@ -253,9 +226,6 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
         return super.shutdownInternal(context);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutput on() throws IOException {
 
@@ -271,9 +241,6 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
         return state(onState);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalOutput off() throws IOException {
         // the default OFF state is LOW

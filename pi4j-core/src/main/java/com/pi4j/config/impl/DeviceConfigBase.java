@@ -36,8 +36,6 @@ import java.util.Map;
  * <p>Abstract DeviceConfigBase class.</p>
  *
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public abstract class DeviceConfigBase<CONFIG_TYPE extends Config<CONFIG_TYPE>>
     extends ConfigBase<CONFIG_TYPE>
@@ -54,8 +52,6 @@ public abstract class DeviceConfigBase<CONFIG_TYPE extends Config<CONFIG_TYPE>>
 
     /**
      * PRIVATE CONSTRUCTOR
-     *
-     * @param properties a {@link java.util.Map} object.
      */
     protected DeviceConfigBase(Map<String, String> properties) {
         super(properties);
@@ -68,11 +64,6 @@ public abstract class DeviceConfigBase<CONFIG_TYPE extends Config<CONFIG_TYPE>>
         }
     }
 
-    /**
-     * <p>device.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
     public Integer device() {
         return this.device;
     }

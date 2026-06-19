@@ -35,8 +35,6 @@ import com.pi4j.provider.Provider;
 /**
  * <p>Abstract AddressConfigBuilderBase class.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
  */
@@ -50,14 +48,12 @@ public abstract class IOConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CO
     protected IOConfigBuilderBase(){
     }
 
-    /** {@inheritDoc} */
     @Override
     public BUILDER_TYPE provider(String provider){
         this.properties.put(IOConfig.PROVIDER_KEY, provider);
         return (BUILDER_TYPE) this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public BUILDER_TYPE provider(Class<? extends Provider> providerClass){
         this.properties.put(IOConfig.PROVIDER_KEY, providerClass.getName());

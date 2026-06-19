@@ -32,16 +32,11 @@ package com.pi4j.io.exception;
  * </p>
  *
  * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
- * @author Robert Savage (<a
- *         href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class IOAlreadyExistsException extends IOException {
 
     /**
      * Default Constructor
-     *
-     * @param id a {@link java.lang.String} object.
      */
     public IOAlreadyExistsException(String id){
         super("IO instance [" + id + "] already exists in the Pi4J runtime context; unable to create a new instance using this reserved id.");

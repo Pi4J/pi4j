@@ -34,9 +34,6 @@ import com.pi4j.exception.Pi4JException;
  * </p>
  *
  * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
- * @author Robert Savage (<a
- *         href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class IOException extends Pi4JException {
 
@@ -49,21 +46,10 @@ public class IOException extends Pi4JException {
         super(message);
     }
 
-    /**
-     * <p>Constructor for IOException.</p>
-     *
-     * @param cause a {@link java.lang.Throwable} object.
-     */
     public IOException(Throwable cause){
         super(cause);
     }
 
-    /**
-     * <p>Constructor for IOException.</p>
-     *
-     * @param message a {@link java.lang.String} object.
-     * @param cause a {@link java.lang.Throwable} object.
-     */
     public IOException(String message, Throwable cause){
         super(message,cause);
     }

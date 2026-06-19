@@ -29,8 +29,6 @@ package com.pi4j.config;
  * <p>DeviceConfig interface.</p>
  *
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface DeviceConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
 
@@ -39,18 +37,8 @@ public interface DeviceConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_
      */
     String DEVICE_KEY = "device";
 
-    /**
-     * <p>device.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
     Integer device();
 
-    /**
-     * <p>getDevice.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
     default Integer getDevice() {
         return this.device();
     }

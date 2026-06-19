@@ -34,12 +34,6 @@ import com.pi4j.util.StringUtil;
 
 import java.util.Map;
 
-/**
- * <p>DefaultDigitalInputConfig class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultDigitalInputConfig
     extends IOBcmConfigBase<DigitalInputConfig>
     implements DigitalInputConfig {
@@ -59,8 +53,6 @@ public class DefaultDigitalInputConfig
 
     /**
      * PRIVATE CONSTRUCTOR
-     *
-     * @param properties a {@link java.util.Map} object.
      */
     protected DefaultDigitalInputConfig(Map<String, String> properties) {
         super(properties);
@@ -101,41 +93,26 @@ public class DefaultDigitalInputConfig
         return this.bcm;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer bus() {
         return this.bus;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer bcm() {
         return this.bcm;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getUniqueIdentifier() {
         return bcm();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public PullResistance pull() {
         return this.pullResistance;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Long debounce() {
         return this.debounce;

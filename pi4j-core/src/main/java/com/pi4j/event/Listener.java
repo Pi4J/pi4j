@@ -27,10 +27,7 @@ package com.pi4j.event;
 
 /**
  * <p>Listener interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface Listener {
-    // MARKET INTERFACE
+    // MARKER INTERFACE
 }

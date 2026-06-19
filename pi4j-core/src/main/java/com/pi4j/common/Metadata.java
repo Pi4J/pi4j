@@ -30,13 +30,7 @@ import com.pi4j.common.impl.MetadataImpl;
 
 import java.util.Collection;
 
-/**
- * <p>Metadata interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
-public interface Metadata  {
+public interface Metadata {
 
 //    static Metadata create(){
 //        return new MetadataImpl();
@@ -54,143 +48,57 @@ public interface Metadata  {
 //        return create(key, value).description(description);
 //    }
 
-    /**
-     * <p>size.</p>
-     *
-     * @return a int.
-     */
     int size();
-    /**
-     * <p>isEmpty.</p>
-     *
-     * @return a boolean.
-     */
+
     boolean isEmpty();
-    /**
-     * <p>contains.</p>
-     *
-     * @param key a {@link java.lang.String} object.
-     * @return a boolean.
-     */
+
     boolean contains(String key);
-    /**
-     * <p>remove.</p>
-     *
-     * @param key a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.common.Metadatum} object.
-     */
+
     Metadatum remove(String key);
 
-    /**
-     * <p>put.</p>
-     *
-     * @param metadatum a {@link com.pi4j.common.Metadatum} object.
-     * @return a {@link com.pi4j.common.Metadata} object.
-     */
     Metadata put(Metadatum metadatum);
-    /**
-     * <p>clear.</p>
-     *
-     * @return a {@link com.pi4j.common.Metadata} object.
-     */
+
     Metadata clear();
-    /**
-     * <p>get.</p>
-     *
-     * @param key a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.common.Metadatum} object.
-     */
+
     Metadatum get(String key);
-    /**
-     * <p>all.</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
+
     Collection<Metadatum> all();
 
-    /**
-     * <p>put.</p>
-     *
-     * @param c a {@link java.util.Collection} object.
-     * @return a {@link com.pi4j.common.Metadata} object.
-     */
-    default Metadata put(Collection<? extends Metadatum> c){
-        c.forEach((m)->{
+    default Metadata put(Collection<? extends Metadatum> c) {
+        c.forEach((m) -> {
             put(m);
         });
         return this;
     }
 
-    /**
-     * <p>put.</p>
-     *
-     * @param metadata a {@link com.pi4j.common.Metadata} object.
-     * @return a {@link com.pi4j.common.Metadata} object.
-     */
-    default Metadata put(Metadata metadata){
-        metadata.all().forEach((m)->{
+    default Metadata put(Metadata metadata) {
+        metadata.all().forEach((m) -> {
             put(m);
         });
         return this;
     }
 
-    /**
-     * <p>contains.</p>
-     *
-     * @param metadatum a {@link com.pi4j.common.Metadatum} object.
-     * @return a boolean.
-     */
-    default boolean contains(Metadatum metadatum){
+    default boolean contains(Metadatum metadatum) {
         return contains(metadatum.key());
     }
 
-    /**
-     * <p>getValue.</p>
-     *
-     * @param key a {@link java.lang.String} object.
-     * @return a {@link java.lang.Object} object.
-     */
-    default Object getValue(String key){
+    default Object getValue(String key) {
         return get(key).value();
     }
 
-    /**
-     * <p>put.</p>
-     *
-     * @param key a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.common.Metadata} object.
-     */
-    default Metadata put(String key){
+    default Metadata put(String key) {
         return put(Metadatum.create(key));
     }
-    /**
-     * <p>put.</p>
-     *
-     * @param key a {@link java.lang.String} object.
-     * @param value a {@link java.lang.Object} object.
-     * @return a {@link com.pi4j.common.Metadata} object.
-     */
-    default Metadata put(String key, Object value){
+
+    default Metadata put(String key, Object value) {
         return put(Metadatum.create(key, value));
     }
-    /**
-     * <p>put.</p>
-     *
-     * @param key a {@link java.lang.String} object.
-     * @param value a {@link java.lang.Object} object.
-     * @param description a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.common.Metadata} object.
-     */
-    default Metadata put(String key, Object value, String description){
+
+    default Metadata put(String key, Object value, String description) {
         return put(Metadatum.create(key, value, description));
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @return a {@link com.pi4j.common.Metadata} object.
-     */
-    static Metadata create(){
+    static Metadata create() {
         return new MetadataImpl();
     }
 }

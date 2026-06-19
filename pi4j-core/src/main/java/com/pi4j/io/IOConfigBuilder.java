@@ -31,8 +31,6 @@ import com.pi4j.provider.Provider;
 /**
  * <p>IOConfigBuilder interface.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
  */

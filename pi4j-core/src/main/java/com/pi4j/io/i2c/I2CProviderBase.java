@@ -28,36 +28,19 @@ import com.pi4j.provider.ProviderBase;
  */
 /**
  * <p>Abstract I2CProviderBase class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public abstract class I2CProviderBase
         extends ProviderBase<I2CProvider, I2C, I2CConfig>
         implements I2CProvider {
 
-    /**
-     * <p>Constructor for I2CProviderBase.</p>
-     */
     public I2CProviderBase(){
         super();
     }
 
-    /**
-     * <p>Constructor for I2CProviderBase.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     */
     public I2CProviderBase(String id){
         super(id);
     }
 
-    /**
-     * <p>Constructor for I2CProviderBase.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     */
     public I2CProviderBase(String id, String name){
         super(id, name);
     }

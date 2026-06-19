@@ -31,84 +31,22 @@ import com.pi4j.provider.Provider;
 
 /**
  * <p>DigitalOutputBuilder interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface DigitalOutputBuilder {
 
-    /**
-     * <p>id.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputBuilder} object.
-     */
     DigitalOutputBuilder id(String id);
-    /**
-     * <p>name.</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputBuilder} object.
-     */
     DigitalOutputBuilder name(String name);
-    /**
-     * <p>description.</p>
-     *
-     * @param description a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputBuilder} object.
-     */
     DigitalOutputBuilder description(String description);
-    /**
-     * <p>address.</p>
-     *
-     * @param address a {@link java.lang.Integer} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputBuilder} object.
-     */
     DigitalOutputBuilder address(Integer address);
-    /**
-     * <p>shutdown.</p>
-     *
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputBuilder} object.
-     */
     DigitalOutputBuilder shutdown(DigitalState state);
-    /**
-     * <p>initial.</p>
-     *
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputBuilder} object.
-     */
     DigitalOutputBuilder initial(DigitalState state);
 
-    /**
-     * <p>provider.</p>
-     *
-     * @param providerId a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputBuilder} object.
-     */
     DigitalOutputBuilder provider(String providerId);
-    /**
-     * <p>provider.</p>
-     *
-     * @param providerClass a {@link java.lang.Class} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputBuilder} object.
-     */
     DigitalOutputBuilder provider(Class<? extends Provider> providerClass);
 
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param context a {@link com.pi4j.context.Context} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputBuilder} object.
-     */
     static DigitalOutputBuilder newInstance(Context context)  {
         return DefaultDigitalOutputBuilder.newInstance(context);
     }
 
-    /**
-     * <p>build.</p>
-     *
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     */
     DigitalOutput build();
 }

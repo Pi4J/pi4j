@@ -30,15 +30,9 @@ package com.pi4j.config;
  *
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface BcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
     /**
-     * <p>address.</p>
-     *
-     * @param address a {@link java.lang.Integer} object.
-     * @return a BUILDER_TYPE object.
      * @deprecated use {@link #bcm(Integer)} instead.
      * <p>
      */
@@ -47,9 +41,6 @@ public interface BcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuild
 
     /**
      * <p>pin defined by BCM number.</p>
-     *
-     * @param bcm a {@link java.lang.Integer} object.
-     * @return a BUILDER_TYPE object.
      */
     BUILDER_TYPE bcm(Integer bcm);
 }

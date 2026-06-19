@@ -30,38 +30,19 @@ package com.pi4j.plugin.mock.provider.gpio.digital;
 
 import com.pi4j.io.gpio.digital.*;
 
-/**
- * <p>MockDigitalInput class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class MockDigitalInput extends DigitalInputBase implements DigitalInput {
 
     private DigitalState state = DigitalState.LOW;
 
-    /**
-     * <p>Constructor for MockDigitalInput.</p>
-     *
-     * @param provider a {@link com.pi4j.io.gpio.digital.DigitalInputProvider} object.
-     * @param config a {@link com.pi4j.io.gpio.digital.DigitalInputConfig} object.
-     */
     public MockDigitalInput(DigitalInputProvider provider, DigitalInputConfig config){
         super(provider, config);
     }
 
-    /** {@inheritDoc} */
     @Override
     public DigitalState state() {
         return this.state;
     }
 
-    /**
-     * <p>mockState.</p>
-     *
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @return a {@link com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalInput} object.
-     */
     public MockDigitalInput mockState(DigitalState state){
         if(!this.state.equals(state)) {
             this.state = state;

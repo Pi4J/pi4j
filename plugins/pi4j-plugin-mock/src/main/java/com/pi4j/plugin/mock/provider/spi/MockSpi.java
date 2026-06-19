@@ -40,12 +40,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.Objects;
 
-/**
- * <p>MockSpi class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class MockSpi extends SpiBase implements Spi {
 
     private static final Logger logger = LoggerFactory.getLogger(MockSpi.class);
@@ -53,12 +47,6 @@ public class MockSpi extends SpiBase implements Spi {
 
     protected ArrayDeque<Byte> raw = new ArrayDeque<>();
 
-    /**
-     * <p>Constructor for MockSpi.</p>
-     *
-     * @param provider a {@link com.pi4j.io.spi.SpiProvider} object.
-     * @param config   a {@link com.pi4j.io.spi.SpiConfig} object.
-     */
     public MockSpi(SpiProvider provider, SpiConfig config) {
         super(provider, config);
         logPreamble = "[" + Mock.SPI_PROVIDER_NAME + "::" + this.id + "] ::";
@@ -82,18 +70,12 @@ public class MockSpi extends SpiBase implements Spi {
         return bytes;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void close() {
         logger.info("{} CLOSE(CHANNEL={}; BAUD={})", logPreamble, config.channel(), config.baud());
         super.close();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int transfer(byte[] write, int writeOffset, byte[] read, int readOffset, int numberOfBytes) {
         byte[] prepared = new byte[numberOfBytes];
@@ -113,9 +95,6 @@ public class MockSpi extends SpiBase implements Spi {
         return 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int write(byte b) {
         raw.add(b);
@@ -123,9 +102,6 @@ public class MockSpi extends SpiBase implements Spi {
         return 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int write(byte[] data, int offset, int length) {
         writeNoLogging(data, offset, length);
@@ -140,9 +116,6 @@ public class MockSpi extends SpiBase implements Spi {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int write(Charset charset, CharSequence data) {
         byte[] buffer = data.toString().getBytes(charset);
@@ -153,9 +126,6 @@ public class MockSpi extends SpiBase implements Spi {
         return data.length();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int read() {
         if (raw.isEmpty()) return -1;
@@ -164,9 +134,6 @@ public class MockSpi extends SpiBase implements Spi {
         return b;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int read(byte[] buffer, int offset, int length) {
         Integer counter = readNoLogging(buffer, offset, length);

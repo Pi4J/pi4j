@@ -29,8 +29,6 @@ package com.pi4j.config;
  * <p>ChipConfig interface.</p>
  *
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface ChipConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
     /**
@@ -38,18 +36,8 @@ public interface ChipConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TY
      */
     String CHIP_KEY = "chip";
 
-    /**
-     * <p>chip.</p>
-     *
-     * @return a {@link Integer} object.
-     */
     Integer chip();
 
-    /**
-     * <p>getChip.</p>
-     *
-     * @return a {@link Integer} object.
-     */
     default Integer getChip() {
         return this.chip();
     }

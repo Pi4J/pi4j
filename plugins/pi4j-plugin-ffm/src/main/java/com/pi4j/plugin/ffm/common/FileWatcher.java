@@ -35,6 +35,7 @@ public class FileWatcher implements AutoCloseable {
 
     /**
      * Checks, if file is created in the desired directory with timeout.
+     *
      * @return true if file is created and false if timeout occurred
      */
     public boolean waitForCreation() {

@@ -33,11 +33,7 @@ import com.pi4j.io.IOConfig;
 import java.util.Map;
 
 /**
- * <p>ConfigBase class.</p>
- *
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class IODeviceConfigBase<CONFIG_TYPE extends Config<CONFIG_TYPE>>
     extends DeviceConfigBase<CONFIG_TYPE>
@@ -55,8 +51,6 @@ public class IODeviceConfigBase<CONFIG_TYPE extends Config<CONFIG_TYPE>>
 
     /**
      * PRIVATE CONSTRUCTOR
-     *
-     * @param properties a {@link Map} object.
      */
     protected IODeviceConfigBase(Map<String, String> properties) {
         super(properties);
@@ -71,17 +65,11 @@ public class IODeviceConfigBase<CONFIG_TYPE extends Config<CONFIG_TYPE>>
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String platform() {
         return this.platform;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public String provider() {
         return this.provider;

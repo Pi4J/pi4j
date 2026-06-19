@@ -35,8 +35,6 @@ import com.pi4j.io.impl.IOBcmConfigBuilderBase;
  *
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public abstract class DigitalConfigBuilderBase<BUILDER_TYPE extends DigitalConfigBuilder, CONFIG_TYPE extends DigitalConfig>
     extends IOBcmConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
@@ -48,9 +46,6 @@ public abstract class DigitalConfigBuilderBase<BUILDER_TYPE extends DigitalConfi
     protected DigitalConfigBuilderBase() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public BUILDER_TYPE onState(DigitalState state) {
         this.properties.put(DigitalConfig.ON_STATE_KEY, state.toString());

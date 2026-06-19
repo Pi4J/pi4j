@@ -20,20 +20,10 @@ public class I2CSMBus extends I2CBase<FFMI2CBus> {
     private static final Logger logger = LoggerFactory.getLogger(I2CSMBus.class);
     private final SMBusNative SMBUS = new SMBusNative();
 
-    /**
-     * <p>Constructor for I2CBase.</p>
-     *
-     * @param provider a {@link I2CProvider} object.
-     * @param config   a {@link I2CConfig} object.
-     * @param i2CBus   a {@link FFMI2CBus} object.
-     */
     public I2CSMBus(I2CProvider provider, I2CConfig config, FFMI2CBus i2CBus) {
         super(provider, config, i2CBus);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public I2C initialize(Context context) throws InitializeException {
         i2CBus.selectDevice(config.device());
@@ -84,70 +74,46 @@ public class I2CSMBus extends I2CBase<FFMI2CBus> {
         });
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public byte readByte() {
         return i2CBus.execute(this, SMBUS::readByte).byteValue();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int read() {
         // this is needed, because we are receiving raw bytes, which we have to convert to proper int
         return i2CBus.execute(this, SMBUS::readByte);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int read(byte[] data, int offset, int length) {
         throw new UnsupportedOperationException("SMBus protocol does not support reading to data arrays without register. " +
             "Please, use I2CDirect or I2CFile provider instead.");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int write(byte b) {
         return i2CBus.execute(this, (i2cFileDescriptor) -> SMBUS.writeByte(i2cFileDescriptor, b));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int write(byte[] data, int offset, int length) {
         throw new UnsupportedOperationException("SMBus protocol does not support writing data arrays without register. " +
             "Please, use I2CDirect or I2CFile provider instead.");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int readRegister(int register) {
         // this is needed, because we are receiving raw bytes, which we have to convert to proper int
         return Byte.toUnsignedInt(readInternal(register, 1)[0]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int readRegister(byte[] register, byte[] data, int offset, int length) {
         throw new UnsupportedOperationException("SMBus protocol does not support reading multiregister devices. " +
             "Please, use I2CDirect or I2CFile provider instead.");
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int readRegister(int register, byte[] buffer, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, buffer.length);
@@ -156,17 +122,11 @@ public class I2CSMBus extends I2CBase<FFMI2CBus> {
         return result.length;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int writeRegister(int register, byte b) {
         return writeInternal(register, new byte[]{b});
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int writeRegister(int register, byte[] data, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, data.length);
@@ -174,9 +134,6 @@ public class I2CSMBus extends I2CBase<FFMI2CBus> {
         return writeInternal(register, writeData);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int writeRegister(byte[] register, byte[] data, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, data.length);
@@ -191,9 +148,6 @@ public class I2CSMBus extends I2CBase<FFMI2CBus> {
         return writeRegister(byteRegister, writeData);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void close() {
         super.close();

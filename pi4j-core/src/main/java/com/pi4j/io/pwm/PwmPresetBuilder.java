@@ -30,17 +30,8 @@ import com.pi4j.io.pwm.impl.DefaultPwmPresetBuilder;
 
 /**
  * <p>PwmPresetBuilder interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface PwmPresetBuilder extends Builder<PwmPreset> {
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.io.pwm.PwmPresetBuilder} object.
-     */
     static PwmPresetBuilder newInstance(String name)  {
         return DefaultPwmPresetBuilder.newInstance(name);
     }

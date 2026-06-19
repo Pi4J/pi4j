@@ -32,12 +32,6 @@ import com.pi4j.util.StringUtil;
 
 import java.util.Map;
 
-/**
- * <p>DefaultDigitalOutputConfig class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultDigitalOutputConfig
     extends IOBcmConfigBase<DigitalOutputConfig>
     implements DigitalOutputConfig {
@@ -57,8 +51,6 @@ public class DefaultDigitalOutputConfig
 
     /**
      * PRIVATE CONSTRUCTOR
-     *
-     * @param properties a {@link java.util.Map} object.
      */
     protected DefaultDigitalOutputConfig(Map<String, String> properties) {
         super(properties);
@@ -102,50 +94,32 @@ public class DefaultDigitalOutputConfig
         return this.bcm;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer bus() {
         return this.bus;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Integer bcm() {
         return this.bcm;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int getUniqueIdentifier() {
         return bcm();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalState shutdownState() {
         return this.shutdownState;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DefaultDigitalOutputConfig shutdownState(DigitalState state) {
         this.shutdownState = state;
         return this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DigitalState initialState() {
         return this.initialState;

@@ -28,36 +28,19 @@ import com.pi4j.provider.ProviderBase;
  */
 /**
  * <p>Abstract PwmProviderBase class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public abstract class PwmProviderBase
         extends ProviderBase<PwmProvider, Pwm, PwmConfig>
         implements PwmProvider {
 
-    /**
-     * <p>Constructor for PwmProviderBase.</p>
-     */
     public PwmProviderBase(){
         super();
     }
 
-    /**
-     * <p>Constructor for PwmProviderBase.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     */
     public PwmProviderBase(String id){
         super(id);
     }
 
-    /**
-     * <p>Constructor for PwmProviderBase.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     */
     public PwmProviderBase(String id, String name){
         super(id, name);
     }

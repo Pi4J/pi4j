@@ -30,8 +30,6 @@ import com.pi4j.event.Event;
 /**
  * <p>DigitalEvent interface.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <CONFIG_TYPE>
  * @param <DIGITAL_TYPE>
  * @param <PROVIDER_TYPE>
@@ -40,10 +38,5 @@ public interface DigitalEvent<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_
         CONFIG_TYPE extends DigitalConfig<CONFIG_TYPE>,
         PROVIDER_TYPE extends DigitalProvider>
         extends Event {
-    /**
-     * <p>source.</p>
-     *
-     * @return a DIGITAL_TYPE object.
-     */
     DIGITAL_TYPE source();
 }

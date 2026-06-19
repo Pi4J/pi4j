@@ -59,9 +59,6 @@ public class FFMSpi extends SpiBase implements Spi {
         FFMPermissionHelper.checkDevicePermissions(path, config);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Spi initialize(Context context) throws InitializeException {
         super.initialize(context);
@@ -126,18 +123,12 @@ public class FFMSpi extends SpiBase implements Spi {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Spi shutdownInternal(Context context) throws ShutdownException {
         FILE.close(spiFileDescriptor);
         return super.shutdownInternal(context);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int transfer(byte[] write, int writeOffset, byte[] read, int readOffset, int numberOfBytes) {
         checkClosed();
@@ -165,41 +156,26 @@ public class FFMSpi extends SpiBase implements Spi {
         return totalRead;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int write(byte data) {
         return write(new byte[]{data}, 0, 1);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int write(byte[] data, int offset, int length) {
         return transfer(data, offset, new byte[data.length], 0, length);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void writeThenRead(byte[] write, byte[] read) {
         writeThenRead(write, 0, write.length, 0, read, 0, read.length);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void writeThenRead(byte[] write, int readDelayNanos, byte[] read) {
         writeThenRead(write, 0, write.length, readDelayNanos, read, 0, read.length);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void writeThenRead(byte[] write, int writeOffset, int writeLength, int readDelayNanos, byte[] read, int readOffset, int readLength) {
         checkClosed();
@@ -257,25 +233,16 @@ public class FFMSpi extends SpiBase implements Spi {
         logger.trace("{} - Read buffer: {}", path, HexFormatter.format(read));
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int read() {
         return readByte();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int read(byte[] buffer, int offset, int length) {
         return transfer(new byte[length], 0, buffer, offset, length);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public byte readByte() {
         var buffer = new byte[1];

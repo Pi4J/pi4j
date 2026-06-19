@@ -28,12 +28,6 @@ package com.pi4j.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * <p>Console class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class Console {
 
     private static final Logger logger = LoggerFactory.getLogger(Console.class);
@@ -51,107 +45,46 @@ public class Console {
 
     protected boolean exiting = false;
 
-    /**
-     * <p>println.</p>
-     *
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console println(String format, Object ... args){
         return println(String.format(format, args));
     }
 
-    /**
-     * <p>print.</p>
-     *
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console print(String format, Object ... args){
         return print(String.format(format, args));
     }
 
-    /**
-     * <p>println.</p>
-     *
-     * @param line a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console println(String line){
         logger.info(line);
         return this;
     }
 
-    /**
-     * <p>println.</p>
-     *
-     * @param line a {@link java.lang.Object} object.
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console println(Object line){
         logger.info(line.toString());
         return this;
     }
 
-    /**
-     * <p>println.</p>
-     *
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console println(){
         return println("");
     }
 
-    /**
-     * <p>print.</p>
-     *
-     * @param data a {@link java.lang.Object} object.
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console print(Object data){
         logger.info(data.toString());
         return this;
     }
 
-    /**
-     * <p>print.</p>
-     *
-     * @param data a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console print(String data){
         logger.info(data);
         return this;
     }
 
-    /**
-     * <p>println.</p>
-     *
-     * @param character a char.
-     * @param repeat a int.
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console println(char character, int repeat){
         return println(StringUtil.repeat(character, repeat));
     }
 
-    /**
-     * <p>emptyLine.</p>
-     *
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console emptyLine(){
         return emptyLine(1);
     }
 
-    /**
-     * <p>emptyLine.</p>
-     *
-     * @param number a int.
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console emptyLine(int number){
         for(var index = 0; index < number; index++){
             println();
@@ -159,42 +92,18 @@ public class Console {
         return this;
     }
 
-    /**
-     * <p>separatorLine.</p>
-     *
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console separatorLine(){
         return println(LINE_SEPARATOR);
     }
 
-    /**
-     * <p>separatorLine.</p>
-     *
-     * @param character a char.
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console separatorLine(char character){
         return separatorLine(character, LINE_WIDTH);
     }
 
-    /**
-     * <p>separatorLine.</p>
-     *
-     * @param character a char.
-     * @param length a int.
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console separatorLine(char character, int length){
         return println(StringUtil.repeat(character, length));
     }
 
-    /**
-     * <p>title.</p>
-     *
-     * @param title a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console title(String ... title){
         clearScreen().separatorLine().separatorLine().emptyLine();
         for(var s : title) {
@@ -204,23 +113,10 @@ public class Console {
         return this;
     }
 
-    /**
-     * <p>box.</p>
-     *
-     * @param lines a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console box(String ... lines) {
         return box(2, lines);
     }
 
-    /**
-     * <p>box.</p>
-     *
-     * @param padding a int.
-     * @param lines a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console box(int padding, String ... lines) {
         int max_length = 0;
         for(var l : lines) {
@@ -238,11 +134,6 @@ public class Console {
         return this;
     }
 
-    /**
-     * <p>goodbye.</p>
-     *
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console goodbye() {
         emptyLine();
         separatorLine();
@@ -252,29 +143,14 @@ public class Console {
         return this;
     }
 
-    /**
-     * <p>clearScreen.</p>
-     *
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console clearScreen(){
         return print(CLEAR_SCREEN_ESCAPE_SEQUENCE);
     }
 
-    /**
-     * <p>eraseLine.</p>
-     *
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console eraseLine(){
         return print(ERASE_LINE_ESCAPE_SEQUENCE);
     }
 
-    /**
-     * <p>promptForExit.</p>
-     *
-     * @return a {@link com.pi4j.util.Console} object.
-     */
     public synchronized Console promptForExit(){
         box(4, "PRESS CTRL-C TO EXIT");
         emptyLine();
@@ -290,8 +166,6 @@ public class Console {
     }
 
     /**
-     * <p>waitForExit.</p>
-     *
      * @throws java.lang.InterruptedException if any.
      */
     public void waitForExit() throws InterruptedException {
@@ -300,19 +174,9 @@ public class Console {
         }
     }
 
-    /**
-     * <p>exiting.</p>
-     *
-     * @return a boolean.
-     */
     public synchronized boolean exiting(){
         return exiting;
     }
-    /**
-     * <p>isRunning.</p>
-     *
-     * @return a boolean.
-     */
     public synchronized boolean isRunning(){
         return !exiting;
     }

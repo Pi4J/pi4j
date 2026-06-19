@@ -30,39 +30,18 @@ import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.io.spi.SpiProviderBase;
 import com.pi4j.test.provider.TestSpiProvider;
 
-/**
- * <p>TestSpiProviderImpl class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class TestSpiProviderImpl extends SpiProviderBase implements TestSpiProvider {
 
-    /**
-     * <p>Constructor for TestSpiProviderImpl.</p>
-     */
     public TestSpiProviderImpl(){ super(); }
 
-    /**
-     * <p>Constructor for TestSpiProviderImpl.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     */
     public TestSpiProviderImpl(String id){
         super(id);
     }
 
-    /**
-     * <p>Constructor for TestSpiProviderImpl.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     */
     public TestSpiProviderImpl(String id, String name){
         super(id, name);
     }
 
-    /** {@inheritDoc} */
     @Override
     public Spi create(SpiConfig config) {
         return null;

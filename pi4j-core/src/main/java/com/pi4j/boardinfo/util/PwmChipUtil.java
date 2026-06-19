@@ -77,7 +77,7 @@ public class PwmChipUtil {
      *     <li>System with RP1 (RPi 5 and later): as detected or {@link #DEFAULT_RP1_PWM_CHIP}</li>
      * </ul>
      *
-     * @return {@link int} value for the pwmchip
+     * @return {@code int} value for the pwmchip
      */
     public static int getPWMChip() {
         if (!BoardInfoHelper.usesRP1()) {
@@ -89,7 +89,7 @@ public class PwmChipUtil {
     /**
      * getPWMChipForRP1 using the default PWM system path
      *
-     * @return {@link int} value for the pwmchip if configured,
+     * @return {@code int} value for the pwmchip if configured,
      * else defaults to original expected value defined by {@link #DEFAULT_RP1_PWM_CHIP}.
      */
     public static int getPWMChipForRP1() {
@@ -100,7 +100,7 @@ public class PwmChipUtil {
      * getPWMChipForRP1
      *
      * @param pwmFileSystemPath Device tree path to PWM chips, typically /sys/class/pwm
-     * @return {@link int} value for the pwmchip if configured,
+     * @return {@code int} value for the pwmchip if configured,
      * else defaults to original expected value of defined by {@link #DEFAULT_RP1_PWM_CHIP}.
      */
     public static int getPWMChipForRP1(String pwmFileSystemPath) {

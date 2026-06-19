@@ -36,30 +36,14 @@ import java.util.concurrent.Callable;
 
 /**
  * I2C I/O Interface for Pi4J I2C Bus/Device Communications
- *
- * @author Robert Savage
- * <p>
- * Based on previous contributions from: Daniel Sendula,
- * <a href="http://raspelikan.blogspot.co.at">RasPelikan</a>
- * @version $Id: $Id
  */
 public interface I2C
     extends IO<I2C, I2CConfig, I2CProvider>, IODataWriter, IODataReader, I2CRegisterDataReaderWriter, SerialCircuitIO, AutoCloseable {
 
-    /**
-     * <p>close.</p>
-     */
     // Override to remove checked exception declaration
     @Override
     void close();
 
-    /**
-     * <p>newConfigBuilder.</p>
-     *
-     * @param context {@link Context}
-     *
-     * @return a {@link com.pi4j.io.i2c.I2CConfigBuilder} object.
-     */
     static I2CConfigBuilder newConfigBuilder(Context context) {
         return I2CConfigBuilder.newInstance();
     }
@@ -154,10 +138,6 @@ public interface I2C
 
     /**
      * Get an encapsulated interface for reading and writing to a specific I2C device register
-     *
-     * @param address a int.
-     *
-     * @return a {@link com.pi4j.io.i2c.I2CRegister} object.
      */
     I2CRegister getRegister(int address);
 

@@ -29,12 +29,6 @@ import com.pi4j.context.Context;
 import com.pi4j.io.i2c.*;
 import com.pi4j.io.impl.IOConfigBuilderBase;
 
-/**
- * <p>DefaultI2CConfigBuilder class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultI2CConfigBuilder
         extends IOConfigBuilderBase<I2CConfigBuilder, I2CConfig>
         implements I2CConfigBuilder {
@@ -46,10 +40,7 @@ public class DefaultI2CConfigBuilder
     }
 
     /**
-     * <p>newInstance.</p>
-     *
      * @param context
-     * @return a {@link com.pi4j.io.i2c.I2CConfigBuilder} object.
      */
     @Deprecated
     public static I2CConfigBuilder newInstance(Context context) {
@@ -57,30 +48,22 @@ public class DefaultI2CConfigBuilder
     }
 
 
-    /**
-     * <p>newInstance.</p>
-     *
-     * @return a {@link com.pi4j.io.i2c.I2CConfigBuilder} object.
-     */
     public static I2CConfigBuilder newInstance() {
         return new DefaultI2CConfigBuilder();
     }
 
-    /** {@inheritDoc} */
     @Override
     public I2CConfig build() {
         I2CConfig config = new DefaultI2CConfig(getResolvedProperties());
         return config;
     }
 
-    /** {@inheritDoc} */
     @Override
     public I2CConfigBuilder bus(Integer bus){
         this.properties.put(I2CConfig.BUS_KEY, bus.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public I2CConfigBuilder device(Integer device){
         this.properties.put(I2CConfig.DEVICE_KEY, device.toString());

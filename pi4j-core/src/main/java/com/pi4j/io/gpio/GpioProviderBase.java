@@ -30,8 +30,6 @@ import com.pi4j.provider.ProviderBase;
 /**
  * <p>Abstract GpioProviderBase class.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <CONFIG_TYPE>
  * @param <IO_TYPE>
  * @param <PROVIDER_TYPE>
@@ -43,28 +41,14 @@ public abstract class GpioProviderBase<
         extends ProviderBase<PROVIDER_TYPE, IO_TYPE, CONFIG_TYPE>
         implements GpioProvider<PROVIDER_TYPE, IO_TYPE, CONFIG_TYPE> {
 
-    /**
-     * <p>Constructor for GpioProviderBase.</p>
-     */
     public GpioProviderBase(){
         super();
     }
 
-    /**
-     * <p>Constructor for GpioProviderBase.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     */
     public GpioProviderBase(String id){
         super(id);
     }
 
-    /**
-     * <p>Constructor for GpioProviderBase.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     */
     public GpioProviderBase(String id, String name){
         super(id, name);
     }

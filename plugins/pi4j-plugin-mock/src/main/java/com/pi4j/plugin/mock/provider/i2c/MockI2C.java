@@ -37,12 +37,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.Objects;
 
-/**
- * <p>MockI2C class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterDataReader, I2CRegisterDataWriter {
 
     private static final Logger logger = LoggerFactory.getLogger(MockI2C.class);
@@ -57,19 +51,12 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
     protected ArrayDeque<Byte>[] registers = new ArrayDeque[512]; // 512 supported registers (0-511)
     protected ArrayDeque<Byte> raw = new ArrayDeque<>();
 
-    /**
-     * <p>Constructor for MockI2C.</p>
-     *
-     * @param provider a {@link com.pi4j.io.i2c.I2CProvider} object.
-     * @param config a {@link com.pi4j.io.i2c.I2CConfig} object.
-     */
     public MockI2C(I2CProvider provider, I2CConfig config){
         super(provider, config, new MockI2CBus(config));
         logger.debug("[{}::{}] :: CREATE(BUS={}; DEVICE={})",
             Mock.I2C_PROVIDER_NAME, this.id, config.bus(), config.device());
     }
 
-    /** {@inheritDoc} */
     @Override
     public void close() {
         super.close();
@@ -81,7 +68,6 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
     // RAW DEVICE WRITE FUNCTIONS
     // -------------------------------------------------------------------
 
-    /** {@inheritDoc} */
     @Override
     public int write(byte b) {
         raw.add(b);
@@ -92,7 +78,6 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
         return 0;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int write(byte[] data, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, data.length);
@@ -106,7 +91,6 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
         return length;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int write(Charset charset, CharSequence data) {
         byte[] buffer = data.toString().getBytes(charset);
@@ -121,7 +105,6 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
     // RAW DEVICE READ FUNCTIONS
     // -------------------------------------------------------------------
 
-    /** {@inheritDoc} */
     @Override
     public int read() {
         if(raw.isEmpty()) return -1;
@@ -133,7 +116,6 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
         return b;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int read(byte[] buffer, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, buffer.length);
@@ -155,7 +137,6 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
         return counter;
     }
 
-    /** {@inheritDoc} */
     @Override
     public String readString(Charset charset, int length) {
         if(raw.isEmpty()) return null;
@@ -173,7 +154,6 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
     // DEVICE REGISTER WRITE FUNCTIONS
     // -------------------------------------------------------------------
 
-    /** {@inheritDoc} */
     @Override
     public int writeRegister(int register, byte b) {
 
@@ -190,7 +170,6 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
         return 0;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int writeRegister(int register, byte[] data, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, data.length);
@@ -229,7 +208,6 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
         return length;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int writeRegister(int register, Charset charset, CharSequence data) {
         if (registers[register] == null) {
@@ -249,7 +227,6 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
     // DEVICE REGISTER READ FUNCTIONS
     // -------------------------------------------------------------------
 
-    /** {@inheritDoc} */
     @Override
     public int readRegister(int register) {
         if(registers[register] == null) throw new IllegalStateException("No available data to read");
@@ -265,7 +242,6 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
     }
 
 
-    /** {@inheritDoc} */
     @Override
     public int readRegister(byte[] register, byte[] buffer, int offset, int length) {
         int internalOffset = (register[0] & 0xff) + (register[1] << 8);
@@ -295,7 +271,6 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
         return counter;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int readRegister(int register, byte[] buffer, int offset, int length) {
         if(registers[register] == null) return -1;
@@ -317,7 +292,6 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
         return counter;
     }
 
-    /** {@inheritDoc} */
     @Override
     public String readRegisterString(int register, Charset charset, int length) {
         if(registers[register] == null) return null;

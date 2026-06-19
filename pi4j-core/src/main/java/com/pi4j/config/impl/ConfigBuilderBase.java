@@ -40,8 +40,6 @@ import java.util.stream.Collectors;
 /**
  * <p>Abstract ConfigBuilderBase class.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
  */
@@ -61,41 +59,35 @@ public abstract class ConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONF
     protected ConfigBuilderBase() {
     }
 
-    /** {@inheritDoc} */
     @Override
     public BUILDER_TYPE id(String id){
         this.properties.put(Config.ID_KEY, id);
         return (BUILDER_TYPE) this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public String id(){
         return this.properties.get(Config.ID_KEY);
     }
 
-    /** {@inheritDoc} */
     @Override
     public BUILDER_TYPE name(String name){
         this.properties.put(Config.NAME_KEY, name);
         return (BUILDER_TYPE) this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public BUILDER_TYPE description(String description){
         this.properties.put(Config.DESCRIPTION_KEY, description);
         return (BUILDER_TYPE) this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public BUILDER_TYPE load(Map<String, String> properties) {
         this.properties.putAll(properties);
         return (BUILDER_TYPE) this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public BUILDER_TYPE load(Map<String, String> properties, String prefixFilter) {
         // if a filter was not provided, then load properties without a filter
@@ -113,13 +105,11 @@ public abstract class ConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONF
         return (BUILDER_TYPE) this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public BUILDER_TYPE load(Properties properties) {
         return load(properties, null);
     }
 
-    /** {@inheritDoc} */
     @Override
     public BUILDER_TYPE load(Properties properties, String prefixFilter) {
         // convert java.util.Properties to a Map<String,String> object
@@ -128,13 +118,11 @@ public abstract class ConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONF
         return load(entries, prefixFilter);
     }
 
-    /** {@inheritDoc} */
     @Override
     public BUILDER_TYPE load(InputStream stream) throws IOException {
         return load(stream, null);
     }
 
-    /** {@inheritDoc} */
     @Override
     public BUILDER_TYPE load(InputStream stream, String prefixFilter) throws IOException {
         Properties prop = new Properties();
@@ -142,13 +130,11 @@ public abstract class ConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONF
         return load(prop, prefixFilter);
     }
 
-    /** {@inheritDoc} */
     @Override
     public BUILDER_TYPE load(Reader reader) throws IOException {
         return load(reader, null);
     }
 
-    /** {@inheritDoc} */
     @Override
     public BUILDER_TYPE load(Reader reader, String prefixFilter) throws IOException {
         Properties prop = new Properties();
@@ -156,13 +142,11 @@ public abstract class ConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONF
         return load(prop, prefixFilter);
     }
 
-    /** {@inheritDoc} */
     @Override
     public BUILDER_TYPE load(File file) throws IOException {
         return load(file, null);
     }
 
-    /** {@inheritDoc} */
     @Override
     public BUILDER_TYPE load(File file, String prefixFilter) throws IOException {
         Properties prop = new Properties();

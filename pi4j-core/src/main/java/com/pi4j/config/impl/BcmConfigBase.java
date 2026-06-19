@@ -36,8 +36,6 @@ import java.util.Map;
  * <p>Abstract AddressConfigBase class.</p>
  *
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public abstract class BcmConfigBase<CONFIG_TYPE extends Config>
     extends ConfigBase<CONFIG_TYPE>
@@ -53,11 +51,6 @@ public abstract class BcmConfigBase<CONFIG_TYPE extends Config>
         super();
     }
 
-    /**
-     * <p>Constructor for BcmConfigBase.</p>
-     *
-     * @param bcm a {@link java.lang.Integer} object.
-     */
     protected BcmConfigBase(Integer bcm) {
         super();
         this.bcm = bcm;
@@ -65,8 +58,6 @@ public abstract class BcmConfigBase<CONFIG_TYPE extends Config>
 
     /**
      * PRIVATE CONSTRUCTOR
-     *
-     * @param properties a {@link java.util.Map} object.
      */
     protected BcmConfigBase(Map<String, String> properties) {
         super(properties);
@@ -79,20 +70,10 @@ public abstract class BcmConfigBase<CONFIG_TYPE extends Config>
         }
     }
 
-    /**
-     * <p>address.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
     public Integer address() {
         return this.bcm;
     }
 
-    /**
-     * <p>bcm.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
     public Integer bcm() {
         return this.bcm;
     }

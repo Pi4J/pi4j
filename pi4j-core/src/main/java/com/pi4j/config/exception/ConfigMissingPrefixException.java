@@ -32,9 +32,6 @@ package com.pi4j.config.exception;
  * </p>
  *
  * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
- * @author Robert Savage (<a
- *         href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class ConfigMissingPrefixException extends ConfigException {
 
@@ -48,11 +45,6 @@ public class ConfigMissingPrefixException extends ConfigException {
         super(MESSAGE);
     }
 
-    /**
-     * <p>Constructor for ConfigMissingPrefixException.</p>
-     *
-     * @param cause a {@link java.lang.Throwable} object.
-     */
     public ConfigMissingPrefixException(Throwable cause){
         super(MESSAGE, cause);
     }

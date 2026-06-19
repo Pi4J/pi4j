@@ -37,8 +37,6 @@ import com.pi4j.io.exception.IOException;
 /**
  * <p>Provider interface.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <CONFIG_TYPE>
  * @param <IO_TYPE>
  * @param <PROVIDER_TYPE>
@@ -47,25 +45,9 @@ public interface Provider<PROVIDER_TYPE extends Provider, IO_TYPE extends IO, CO
 
     Context context();
 
-    /**
-     * <p>create.</p>
-     *
-     * @param config a CONFIG_TYPE object.
-     * @return a IO_TYPE object.
-     */
     IO_TYPE create(CONFIG_TYPE config);
 
-    /**
-     * <p>type.</p>
-     *
-     * @return a {@link com.pi4j.io.IOType} object.
-     */
     default IOType type() { return IOType.getByProviderClass(this.getClass()); }
-    /**
-     * <p>getType.</p>
-     *
-     * @return a {@link com.pi4j.io.IOType} object.
-     */
     default IOType getType() { return type(); }
 
     /**
@@ -77,15 +59,8 @@ public interface Provider<PROVIDER_TYPE extends Provider, IO_TYPE extends IO, CO
         return 0;
     }
 
-    /**
-     * <p>isType.</p>
-     *
-     * @param type a {@link com.pi4j.io.IOType} object.
-     * @return a boolean.
-     */
     default boolean isType(IOType type) { return this.type().isType(type); }
 
-    /** {@inheritDoc} */
     @Override
     default Descriptor describe() {
         Descriptor descriptor = Extension.super.describe();

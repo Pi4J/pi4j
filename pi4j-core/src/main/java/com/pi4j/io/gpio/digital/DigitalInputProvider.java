@@ -27,30 +27,13 @@ package com.pi4j.io.gpio.digital;
 
 /**
  * <p>DigitalInputProvider interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface DigitalInputProvider extends DigitalProvider<DigitalInputProvider, DigitalInput, DigitalInputConfig> {
 
-    /**
-     * <p>create.</p>
-     *
-     * @param builder a {@link com.pi4j.io.gpio.digital.DigitalInputConfigBuilder} object.
-     * @param <T>     a T object.
-     * @return a T object.
-     */
     default <T extends DigitalInput> T create(DigitalInputConfigBuilder builder) {
         return (T) create(builder.build());
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param bcm a {@link java.lang.Integer} object.
-     * @param <T> a T object.
-     * @return a T object.
-     */
     default <T extends DigitalInput> T create(Integer bcm) {
         var config = DigitalInput.newConfigBuilder(context())
             .bcm(bcm)
@@ -58,14 +41,6 @@ public interface DigitalInputProvider extends DigitalProvider<DigitalInputProvid
         return (T) create(config);
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param bcm a {@link java.lang.Integer} object.
-     * @param id  pin@link java.lang.String} object.
-     * @param <T> a T object.
-     * @return a T object.
-     */
     default <T extends DigitalInput> T create(Integer bcm, String id) {
         var config = DigitalInput.newConfigBuilder(context())
             .bcm(bcm)
@@ -74,15 +49,6 @@ public interface DigitalInputProvider extends DigitalProvider<DigitalInputProvid
         return (T) create(config);
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param bcm  a {@link java.lang.Integer} object.
-     * @param id   a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     * @param <T>  a T object.
-     * @return a T object.
-     */
     default <T extends DigitalInput> T create(Integer bcm, String id, String name) {
         var config = DigitalInput.newConfigBuilder(context())
             .bcm(bcm)
@@ -92,16 +58,6 @@ public interface DigitalInputProvider extends DigitalProvider<DigitalInputProvid
         return (T) create(config);
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param bcm         a {@link java.lang.Integer} object.
-     * @param id          a {@link java.lang.String} object.
-     * @param name        a {@link java.lang.String} object.
-     * @param description a {@link java.lang.String} object.
-     * @param <T>         a T object.
-     * @return a T object.
-     */
     default <T extends DigitalInput> T create(Integer bcm, String id, String name, String description) {
         var config = DigitalInput.newConfigBuilder(context())
             .bcm(bcm)

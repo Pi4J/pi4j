@@ -32,123 +32,35 @@ import java.util.Map;
 
 /**
  * <p>ContextConfig interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface ContextConfig {
-    /**
-     * <p>autoDetectMockPlugins.</p>
-     *
-     * @return a boolean.
-     */
     boolean autoDetectMockPlugins();
-    /**
-     * <p>autoDetectPlatforms.</p>
-     *
-     * @return a boolean.
-     */
     boolean autoDetectPlatforms();
-    /**
-     * <p>getAutoDetectPlatforms.</p>
-     *
-     * @return a boolean.
-     */
     default boolean getAutoDetectPlatforms() { return autoDetectPlatforms(); };
-    /**
-     * <p>isAutoDetectPlatforms.</p>
-     *
-     * @return a boolean.
-     */
     default boolean isAutoDetectPlatforms() { return autoDetectPlatforms(); };
-    /**
-     * <p>autoInject.</p>
-     *
-     * @return a boolean.
-     */
     boolean autoInject();
-    /**
-     * <p>enableShutdownHook.</p>
-     *
-     * @return a boolean.
-     */
     boolean enableShutdownHook();
-    /**
-     * <p>getAutoInject.</p>
-     *
-     * @return a boolean.
-     */
     default boolean getAutoInject() { return autoInject(); };
-    /**
-     * <p>isAutoInject.</p>
-     *
-     * @return a boolean.
-     */
     default boolean isAutoInject() { return autoInject(); };
-    /**
-     * <p>defaultPlatform.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     String defaultPlatform();
-    /**
-     * <p>getDefaultPlatform.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     default String getDefaultPlatform(){
         return defaultPlatform();
     }
-    /**
-     * <p>hasDefaultPlatform.</p>
-     *
-     * @return a boolean.
-     */
     default boolean hasDefaultPlatform(){ return getDefaultPlatform() != null;};
 
     // **************************************************
     // PROVIDERS
     // **************************************************
-    /**
-     * <p>providers.</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
     Collection<Provider> providers();
-    /**
-     * <p>getProviders.</p>
-     *
-     * @return a {@link java.util.Collection} object.
-     */
     default Collection<Provider> getProviders(){
         return providers();
     }
-    /**
-     * <p>autoDetectProviders.</p>
-     *
-     * @return a boolean.
-     */
     boolean autoDetectProviders();
-    /**
-     * <p>getAutoDetectProviders.</p>
-     *
-     * @return a boolean.
-     */
     default boolean getAutoDetectProviders() { return autoDetectProviders(); };
-    /**
-     * <p>isAutoDetectProviders.</p>
-     *
-     * @return a boolean.
-     */
     default boolean isAutoDetectProviders() { return autoDetectProviders(); };
 
     // **************************************************
     // PROPERTIES
     // **************************************************
-    /**
-     * <p>properties.</p>
-     *
-     * @return a {@link java.util.Map} object.
-     */
     Map<String,String> properties();
 }

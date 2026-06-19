@@ -36,8 +36,6 @@ import java.util.Map;
  * <p>Abstract AddressConfigBase class.</p>
  *
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public abstract class PortConfigBase<CONFIG_TYPE extends Config>
     extends ConfigBase<CONFIG_TYPE>
@@ -53,11 +51,6 @@ public abstract class PortConfigBase<CONFIG_TYPE extends Config>
         super();
     }
 
-    /**
-     * <p>Constructor for PortConfigBase.</p>
-     *
-     * @param port a {@link String} object.
-     */
     protected PortConfigBase(String port) {
         super();
         this.port = port;
@@ -65,8 +58,6 @@ public abstract class PortConfigBase<CONFIG_TYPE extends Config>
 
     /**
      * PRIVATE CONSTRUCTOR
-     *
-     * @param properties a {@link Map} object.
      */
     protected PortConfigBase(Map<String, String> properties) {
         super(properties);
@@ -79,11 +70,6 @@ public abstract class PortConfigBase<CONFIG_TYPE extends Config>
         }
     }
 
-    /**
-     * <p>port.</p>
-     *
-     * @return a {@link String} object.
-     */
     public String port() {
         return this.port;
     }

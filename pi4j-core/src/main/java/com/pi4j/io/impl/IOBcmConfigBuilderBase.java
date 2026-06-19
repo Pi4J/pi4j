@@ -38,8 +38,6 @@ import com.pi4j.provider.Provider;
  *
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public abstract class IOBcmConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
     extends BcmConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
@@ -52,18 +50,12 @@ public abstract class IOBcmConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder,
     protected IOBcmConfigBuilderBase() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public BUILDER_TYPE provider(String provider) {
         this.properties.put(IOConfig.PROVIDER_KEY, provider);
         return (BUILDER_TYPE) this;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public BUILDER_TYPE provider(Class<? extends Provider> providerClass) {
         this.properties.put(IOConfig.PROVIDER_KEY, providerClass.getName());
