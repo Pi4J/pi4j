@@ -29,11 +29,13 @@ import com.pi4j.io.IO;
 import com.pi4j.provider.Provider;
 
 /**
- * <p>GpioProvider interface.</p>
+ * Common base contract for Pi4J {@link Provider}s that create and manage GPIO-based I/O such as digital
+ * inputs/outputs and PWM pins. It specializes {@link Provider} to GPIO instances configured by a
+ * {@link GpioConfig}, serving as the parent type for the concrete GPIO provider interfaces.
  *
- * @param <CONFIG_TYPE>
- * @param <IO_TYPE>
- * @param <PROVIDER_TYPE>
+ * @param <PROVIDER_TYPE> the concrete GPIO provider sub-type
+ * @param <IO_TYPE>       the {@link IO} type this provider creates
+ * @param <CONFIG_TYPE>   the {@link GpioConfig} type accepted when creating I/O instances
  */
 public interface GpioProvider<PROVIDER_TYPE extends GpioProvider,
         IO_TYPE extends IO,

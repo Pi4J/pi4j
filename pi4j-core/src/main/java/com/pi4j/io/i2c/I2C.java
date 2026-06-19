@@ -35,7 +35,10 @@ import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 /**
- * I2C I/O Interface for Pi4J I2C Bus/Device Communications
+ * Represents a single I2C device on an I2C bus and is the primary handle through which application code reads and
+ * writes data, both as raw byte streams and via device registers. Instances are created by an {@link I2CProvider}
+ * from an {@link I2CConfig}; register-level access is obtained through {@link #getRegister(int)} and atomic
+ * bus operations through {@link #execute(Callable)}.
  */
 public interface I2C
     extends IO<I2C, I2CConfig, I2CProvider>, IODataWriter, IODataReader, I2CRegisterDataReaderWriter, SerialCircuitIO, AutoCloseable {
@@ -44,48 +47,54 @@ public interface I2C
     @Override
     void close();
 
+    /**
+     * Creates a new configuration builder for an I2C device.
+     *
+     * @param context the Pi4J runtime context (unused by the current implementation)
+     * @return a new {@link I2CConfigBuilder} instance
+     */
     static I2CConfigBuilder newConfigBuilder(Context context) {
         return I2CConfigBuilder.newInstance();
     }
 
     /**
-     * I2C Device Address
+     * Returns the device (slave) address this instance communicates with.
      *
-     * @return The I2C device address for which this instance is constructed for.
+     * @return the I2C device address taken from this instance's configuration
      */
     default int device() {
         return config().device();
     }
 
     /**
-     * I2C Bus Address
+     * Returns the bus number this device is attached to.
      *
-     * @return The I2C bus address for which this instance is constructed for.
+     * @return the I2C bus number taken from this instance's configuration
      */
     default int bus() {
         return config().bus();
     }
 
     /**
-     * I2C Device Communication State is OPEN
+     * Indicates whether this device is currently open for communication.
      *
-     * @return The I2C device communication state
+     * @return {@code true} while the device is open, {@code false} once it has been closed
      */
     boolean isOpen();
 
     /**
-     * I2C Bus Address
+     * Returns the bus number this device is attached to.
      *
-     * @return The I2C bus address for which this instance is constructed for.
+     * @return the I2C bus number taken from this instance's configuration
      */
     default int getBus() {
         return bus();
     }
 
     /**
-     * I2C Device Address
+     * Returns the device (slave) address this instance communicates with.
      *
-     * @return The I2C device address for which this instance is constructed for.
+     * @return the I2C device address taken from this instance's configuration
      */
     default int getDevice() {
         return device();
@@ -137,27 +146,30 @@ public interface I2C
     }
 
     /**
-     * Get an encapsulated interface for reading and writing to a specific I2C device register
+     * Returns a handle for reading from and writing to a specific register of this I2C device.
+     *
+     * @param address the device register address
+     * @return an {@link I2CRegister} bound to the given register address
      */
     I2CRegister getRegister(int address);
 
     /**
-     * I2C Device Register Get an encapsulated interface for reading and writing to a specific I2C device register
+     * Returns a handle for reading from and writing to a specific register of this I2C device.
      *
-     * @param address the (16-bit) device register address
-     *
-     * @return an instance of I2CRegister for the provided register address
+     * @param address the device register address
+     * @return an {@link I2CRegister} bound to the given register address
      */
     default I2CRegister register(int address) {
         return getRegister(address);
     }
 
     /**
-     * Executes the given runnable on the I2C bus, locking the bus for the duration of the given task
+     * Executes the given action while holding an exclusive lock on this device's I2C bus, allowing several
+     * reads and/or writes to be performed as one uninterrupted unit relative to other devices on the bus.
      *
-     * @param action the action to perform, returning a value
-     * @param <T>
-     * @return
+     * @param action the work to perform while the bus is locked
+     * @param <T>    the result type produced by the action
+     * @return the value returned by the action
      */
     <T> T execute(Callable<T> action);
 }

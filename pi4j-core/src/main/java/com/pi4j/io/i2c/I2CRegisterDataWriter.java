@@ -35,7 +35,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
 /**
- * I2C Register Data Writer Interface for Pi4J Data Communications
+ * Defines the register-write operations for I2C devices, supplying a broad family of overloaded
+ * {@code writeRegister} methods that accept bytes, words, byte/char arrays, NIO buffers, input streams and
+ * character sequences. Implemented by {@link I2CRegister} and {@link I2C} to write to a device register.
  */
 public interface I2CRegisterDataWriter {
 

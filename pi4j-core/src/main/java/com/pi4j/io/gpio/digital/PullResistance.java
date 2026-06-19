@@ -28,11 +28,16 @@ import java.util.EnumSet;
  */
 
 /**
- * Digital Pin Pull Resistance Enumerations
+ * Enumerates the pull resistor configuration applied to a digital input pin, controlling its default level
+ * when left floating. Used as part of a digital input configuration to enable a pull-up, pull-down, or no
+ * internal resistor.
  */
 public enum PullResistance {
+    /** No internal pull resistor; the pin floats unless externally driven. */
     OFF(0, "off"),
+    /** Internal pull-down resistor, biasing the pin toward {@link DigitalState#LOW}. */
     PULL_DOWN(1, "down"),
+    /** Internal pull-up resistor, biasing the pin toward {@link DigitalState#HIGH}. */
     PULL_UP(2, "up");
 
     private final int value;
@@ -44,14 +49,18 @@ public enum PullResistance {
     }
 
     /**
-     * <p>Getter for the field <code>value</code>.</p>
+     * Returns the numeric code for this pull resistance ({@code 0}=off, {@code 1}=down, {@code 2}=up).
+     *
+     * @return the numeric value
      */
     public int getValue() {
         return value;
     }
 
     /**
-     * <p>Getter for the field <code>name</code>.</p>
+     * Returns the lowercase short name of this pull resistance ({@code "off"}, {@code "down"}, {@code "up"}).
+     *
+     * @return the short name
      */
     public String getName() {
         return name;
@@ -62,10 +71,22 @@ public enum PullResistance {
         return name.toUpperCase();
     }
 
+    /**
+     * Returns all defined pull resistance options.
+     *
+     * @return an {@link EnumSet} of every {@link PullResistance} value
+     */
     public static EnumSet<PullResistance> all() {
         return EnumSet.allOf(PullResistance.class);
     }
 
+    /**
+     * Parses a textual representation into a pull resistance, accepting numeric codes ({@code "0"},
+     * {@code "1"}, {@code "2"}) or strings indicating up/down (case-insensitive).
+     *
+     * @param pull the text to parse
+     * @return the parsed pull resistance, defaulting to {@link #OFF} if unrecognized
+     */
     public static PullResistance parse(String pull) {
         if(pull.equalsIgnoreCase("0")) return PullResistance.OFF;
         if(pull.equalsIgnoreCase("1")) return PullResistance.PULL_DOWN;

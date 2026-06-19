@@ -36,7 +36,14 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * Data Writer Interface for Pi4J Data Communications
+ * Read side of the Pi4J byte-oriented data I/O contract, implemented by stream-style devices such
+ * as I2C, SPI and serial.
+ * <p>
+ * It extends {@link Readable} and layers a rich set of convenience overloads on top of the single
+ * primitive {@link #read()} / {@link #read(byte[], int, int)} operations, allowing data to be read
+ * into byte arrays, {@link java.nio.ByteBuffer}s, char arrays, {@link java.nio.CharBuffer}s, decoded
+ * {@link String}s (with an explicit {@link Charset} or ASCII by default), or consumed through an
+ * {@link InputStream}. It is the read counterpart of {@link IODataWriter}.
  */
 public interface IODataReader extends Readable {
 

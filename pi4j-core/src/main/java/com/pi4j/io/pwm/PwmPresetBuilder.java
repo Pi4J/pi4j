@@ -29,9 +29,17 @@ import com.pi4j.config.Builder;
 import com.pi4j.io.pwm.impl.DefaultPwmPresetBuilder;
 
 /**
- * <p>PwmPresetBuilder interface.</p>
+ * Fluent builder for creating a named {@link PwmPreset} with a specific frequency
+ * and duty-cycle. The completed preset is produced via the inherited
+ * {@link Builder#build()} method.
  */
 public interface PwmPresetBuilder extends Builder<PwmPreset> {
+    /**
+     * Creates a new PWM preset builder for the given preset name.
+     *
+     * @param name the unique name to assign to the preset being built
+     * @return a new PWM preset builder instance
+     */
     static PwmPresetBuilder newInstance(String name)  {
         return DefaultPwmPresetBuilder.newInstance(name);
     }

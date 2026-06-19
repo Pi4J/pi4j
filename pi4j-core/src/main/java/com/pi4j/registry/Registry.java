@@ -39,30 +39,68 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * An immutable view of the registry that holds all registered I/O instances.
+ * Read-only view of the runtime registry that tracks every {@link IO} instance created through the Pi4J context.
+ * Each I/O instance is registered under its unique string id when created and removed when shut down, so the
+ * registry reflects the live set of GPIO, I2C, SPI, PWM and similar I/O currently in use. Use it to look up an
+ * existing instance by id, to test for the presence of an id, or to enumerate instances filtered by
+ * {@link IOType} or by the {@link Provider} that produced them.
  */
 public interface Registry extends Describable {
+    /**
+     * Tests whether an I/O instance is currently registered under the given id.
+     *
+     * @param id the unique id assigned to the I/O instance when it was created
+     * @return {@code true} if an instance with this id is registered, otherwise {@code false}
+     */
     boolean exists(String id);
 
     /**
-     * @param identifier an int. Depending on the type of device: bcm (GPIO), identifier (I2C), channel (PWM and SPI)
+     * Tests whether an I/O instance of the given type is registered for the given hardware identifier.
+     *
+     * @param ioType     the category of I/O to match (for example {@link IOType#DIGITAL_OUTPUT}, {@code I2C} or {@code SPI})
+     * @param identifier the hardware address for the device, whose meaning depends on the type: BCM pin for GPIO,
+     *                   device address for I2C, or channel number for PWM and SPI
+     * @return {@code true} if a matching instance is registered, otherwise {@code false}
      */
     boolean exists(IOType ioType, int identifier);
 
+    /**
+     * Returns all currently registered I/O instances keyed by their unique id.
+     *
+     * @return a map of I/O id to I/O instance for every registered instance
+     */
     Map<String, ? extends IO> all();
 
     /**
-     * @throws com.pi4j.io.exception.IOInvalidIDException if any.
-     * @throws com.pi4j.io.exception.IONotFoundException  if any.
+     * Returns the registered I/O instance for the given id, cast to the caller's expected type.
+     *
+     * @param <T> the expected {@link IO} subtype of the returned instance
+     * @param id  the unique id of the I/O instance to retrieve
+     * @return the registered I/O instance associated with the id
+     * @throws IOInvalidIDException if the supplied id is {@code null} or otherwise not a valid identifier
+     * @throws IONotFoundException  if no I/O instance is registered under the given id
      */
     <T extends IO> T get(String id) throws IOInvalidIDException, IONotFoundException;
 
     /**
-     * @throws com.pi4j.io.exception.IOInvalidIDException if any.
-     * @throws com.pi4j.io.exception.IONotFoundException  if any.
+     * Returns the registered I/O instance for the given id, verifying that it is assignable to the given type.
+     *
+     * @param <T>  the expected {@link IO} subtype of the returned instance
+     * @param id   the unique id of the I/O instance to retrieve
+     * @param type the I/O class the instance is expected to be an instance of
+     * @return the registered I/O instance associated with the id
+     * @throws IOInvalidIDException if the supplied id is {@code null} or otherwise not a valid identifier
+     * @throws IONotFoundException  if no I/O instance is registered under the given id, or it is not of the requested type
      */
     <T extends IO> T get(String id, Class<T> type) throws IOInvalidIDException, IONotFoundException;
 
+    /**
+     * Returns all registered I/O instances that are assignable to the given I/O class.
+     *
+     * @param <T>     the {@link IO} subtype used to filter and type the result
+     * @param ioClass the I/O class to match instances against
+     * @return an unmodifiable map of I/O id to matching instance
+     */
     default <T extends IO> Map<String, T> allByType(Class<T> ioClass) {
         // create a map <io-id, io-instance> of I/O instances that extend of the given IO class
         var result = new ConcurrentHashMap<String, T>();
@@ -72,14 +110,35 @@ public interface Registry extends Describable {
         return Collections.unmodifiableMap(result);
     }
 
+    /**
+     * Returns all registered I/O instances belonging to the given {@link IOType} category.
+     *
+     * @param <P>    the {@link Provider} type parameter (unused; retained for binary compatibility)
+     * @param ioType the I/O category to match
+     * @return an unmodifiable map of I/O id to matching instance
+     */
     default <P extends Provider> Map<String, ? extends IO> allByIoType(IOType ioType) {
         return allByType(ioType.getIOClass());
     }
 
+    /**
+     * Returns all registered I/O instances produced by the I/O type associated with the given provider class.
+     *
+     * @param <P>           the {@link Provider} subtype
+     * @param providerClass the provider class whose I/O type is used to select instances
+     * @return an unmodifiable map of I/O id to matching instance
+     */
     default <P extends Provider> Map<String, ? extends IO> allByProvider(Class<P> providerClass) {
         return allByIoType(IOType.getByProviderClass(providerClass));
     }
 
+    /**
+     * Returns all registered I/O instances that were created by the provider with the given id.
+     *
+     * @param <P>        the {@link Provider} type parameter (unused; retained for binary compatibility)
+     * @param providerId the id of the provider to match, compared case-insensitively
+     * @return an unmodifiable map of I/O id to matching instance
+     */
     default <P extends Provider> Map<String, ? extends IO> allByProvider(String providerId) {
 
         // create a map <io-id, io-instance> of providers that extend of the given io class
@@ -90,6 +149,16 @@ public interface Registry extends Describable {
         return Collections.unmodifiableMap(result);
     }
 
+    /**
+     * Returns all registered I/O instances that were created by the provider with the given id and are also
+     * assignable to the given I/O class.
+     *
+     * @param <P>        the {@link Provider} type parameter (unused; retained for binary compatibility)
+     * @param <T>        the {@link IO} subtype used to filter and type the result
+     * @param providerId the id of the provider to match, compared case-insensitively
+     * @param ioClass    the I/O class to match instances against
+     * @return an unmodifiable map of I/O id to matching instance
+     */
     default <P extends Provider, T extends IO> Map<String, T> allByProvider(String providerId, Class<T> ioClass) {
         // create a map <io-id, io-instance> of providers that extend of the given io class
         var result = new ConcurrentHashMap<String, T>();

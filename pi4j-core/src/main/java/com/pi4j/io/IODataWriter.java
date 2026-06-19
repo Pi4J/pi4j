@@ -38,7 +38,15 @@ import java.util.Collection;
 import com.pi4j.exception.Pi4JException;
 
 /**
- * Data Writer Interface for Pi4J Data Communications
+ * Write side of the Pi4J byte-oriented data I/O contract, implemented by stream-style devices such
+ * as I2C, SPI and serial.
+ * <p>
+ * It layers a rich set of convenience overloads on top of the single primitive
+ * {@link #write(byte)} / {@link #write(byte[], int, int)} operations, accepting individual bytes,
+ * byte arrays, {@link java.nio.ByteBuffer}s, char arrays, {@link java.nio.CharBuffer}s,
+ * {@link CharSequence}s and {@link String}s (encoded with an explicit {@link Charset} or ASCII by
+ * default), {@link InputStream}s, and an {@link OutputStream} adapter. It is the write counterpart
+ * of {@link IODataReader}.
  */
 public interface IODataWriter {
 
@@ -47,16 +55,18 @@ public interface IODataWriter {
     // ------------------------------------------------------------------------------------
 
     /**
-     * Write a single raw byte value.
+     * Write a single raw byte value to the I/O device.
      *
      * @param b byte to be written
+     * @return the number of bytes written (normally {@code 1}), possibly zero
      */
     int write(byte b);
 
     /**
-     * Write a single raw byte value.
+     * Write a single raw byte value to the I/O device.
      *
-     * @param b integer value that will be cast to a byte and written
+     * @param b integer value whose low 8 bits are cast to a byte and written
+     * @return the number of bytes written (normally {@code 1}), possibly zero
      */
     default int write(int b) {
         return write((byte)b);
@@ -298,10 +308,10 @@ public interface IODataWriter {
     // ------------------------------------------------------------------------------------
 
     /**
-     * Writes a data string with specified character set (encoding).
+     * Writes a character sequence encoded with the specified character set.
      *
-     * @param data string data (US_ASCII) to be written
      * @param charset character set to use for byte encoding
+     * @param data character sequence to be encoded and written
      * @return The number of bytes written, possibly zero
      */
     default int write(Charset charset, CharSequence data) {
@@ -309,10 +319,10 @@ public interface IODataWriter {
     }
 
     /**
-     * Writes a data string with specified character set (encoding).
+     * Writes multiple character sequences, concatenated and encoded with the specified character set.
      *
-     * @param data string data (US_ASCII) to be written
      * @param charset character set to use for byte encoding
+     * @param data character sequences to be concatenated, encoded and written
      * @return The number of bytes written, possibly zero
      */
     default int write(Charset charset, CharSequence ... data) {

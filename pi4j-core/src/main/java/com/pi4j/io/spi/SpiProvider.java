@@ -29,7 +29,9 @@ package com.pi4j.io.spi;
 import com.pi4j.provider.Provider;
 
 /**
- * <p>SpiProvider interface.</p>
+ * Provider that creates and manages {@link Spi} device instances from an {@link SpiConfig}.
+ * Platform-specific Pi4J plugins implement this interface (typically via {@link SpiProviderBase})
+ * to back SPI communication with concrete hardware or kernel drivers.
  */
 public interface SpiProvider extends Provider<SpiProvider, Spi, SpiConfig> {
 

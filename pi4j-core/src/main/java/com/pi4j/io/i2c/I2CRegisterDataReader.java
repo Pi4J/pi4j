@@ -34,7 +34,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
- * I2C Register Data Writer Interface for Pi4J Data Communications
+ * Defines the register-read operations for I2C devices, supplying a broad family of overloaded
+ * {@code readRegister} methods plus convenience helpers that decode the raw bytes into words, byte/char arrays,
+ * NIO buffers and strings. Implemented by {@link I2CRegister} and {@link I2C} to read from a device register.
  */
 public interface I2CRegisterDataReader {
 
@@ -679,7 +681,7 @@ public interface I2CRegisterDataReader {
      *
      * @param register The I2C device register address to write to.
      * @return The 8-bit byte value
-     * @throws com.pi4j.io.exception.IOReadException if any.
+     * @throws com.pi4j.io.exception.IOReadException if the underlying read returns a negative error code
      */
     default byte readRegisterByte(int register) {
         int actual = readRegister(register);

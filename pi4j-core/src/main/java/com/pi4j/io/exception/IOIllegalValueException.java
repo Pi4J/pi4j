@@ -26,17 +26,15 @@ package com.pi4j.io.exception;
  */
 
 /**
- * <p>
- * This exception is thrown if a platform assignment is attempted when a
- * platform instance has already been assigned.
- * </p>
+ * Thrown when an I/O operation receives a value that cannot be interpreted as a
+ * valid integer. A specialization of {@link IOException}.
  *
  * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
  */
 public class IOIllegalValueException extends IOException {
 
     /**
-     * Default Constructor
+     * Creates an exception reporting that the supplied value is not a valid integer.
      */
     public IOIllegalValueException(){
         super("The requested value is not a valid Integer.");

@@ -33,65 +33,55 @@ import com.pi4j.io.IOConfig;
 import java.util.Collection;
 
 /**
- * <p>PwmConfig interface.</p>
+ * Immutable configuration for a {@link Pwm} instance. It carries the addressing
+ * (chip, channel and/or BCM pin), the generator {@link PwmType}, the
+ * {@link PwmPolarity}, the initial frequency and duty-cycle, optional initial and
+ * shutdown values, and any {@link PwmPreset} definitions. Instances are assembled
+ * with a {@link PwmConfigBuilder} and consumed by a {@link PwmProvider} when
+ * creating the PWM I/O.
  */
 public interface PwmConfig extends ChipConfig<PwmConfig>, ChannelConfig<PwmConfig>, BcmConfig<PwmConfig>, IOConfig<PwmConfig> {
 
     /**
+     * Property key for the legacy PWM address.
+     *
      * @deprecated use {@link #channel()} instead.
-     * <p>
-     * Constant <code>PWM_ADDRESS="address"</code>
      */
     @Deprecated(forRemoval = true)
     String PWM_ADDRESS = "address";
-    /**
-     * Constant <code>PWM_CHIP="chip"</code>
-     */
+    /** Property key for the PWM chip number (hardware PWM). */
     String PWM_CHIP = "chip";
-    /**
-     * Constant <code>PWM_ADDRESS="channel"</code>
-     */
+    /** Property key for the PWM channel number (hardware PWM). */
     String PWM_CHANNEL = "channel";
-    /**
-     * Constant <code>PWM_BCM="bcm"</code>
-     */
+    /** Property key for the BCM GPIO pin number (software PWM). */
     String PWM_BCM = "bcm";
-    /**
-     * Constant <code>PWM_TYPE_KEY="pwm-type"</code>
-     */
+    /** Property key for the PWM generator type (hardware/software). */
     String PWM_TYPE_KEY = "pwm-type";
-    /**
-     * Constant <code>POLARITY_KEY="polarity"</code>
-     */
+    /** Property key for the PWM signal polarity (normal/inversed). */
     String POLARITY_KEY = "polarity";
-    /**
-     * Constant <code>FREQUENCY_KEY="frequency"</code>
-     */
+    /** Property key for the configured frequency in hertz. */
     String FREQUENCY_KEY = "frequency";
-    /**
-     * Constant <code>DUTY_CYCLE_KEY="duty-cycle"</code>
-     */
+    /** Property key for the configured duty-cycle percentage. */
     String DUTY_CYCLE_KEY = "duty-cycle";
-    /**
-     * Constant <code>SHUTDOWN_VALUE_KEY="shutdown"</code>
-     */
+    /** Property key for the duty-cycle applied when the Pi4J context is shut down. */
     String SHUTDOWN_VALUE_KEY = "shutdown";
-    /**
-     * Constant <code>INITIAL_VALUE_KEY="initial"</code>
-     */
+    /** Property key for the duty-cycle applied when the PWM instance is initialized. */
     String INITIAL_VALUE_KEY = "initial";
 
     /**
-     * @deprecated use {@link #channel()} ()} instead.
+     * Returns the legacy PWM address value.
+     *
+     * @return the configured address, or {@code null} if not set
+     * @deprecated use {@link #channel()} instead.
      */
     @Deprecated(forRemoval = true)
     Integer address();
 
     /**
-     * PWM Device Identifier
-     * To be able to identify unique PWM devices, an identifier is available which is based on the channel value.
+     * Returns a unique identifier for this PWM device, derived by combining the
+     * chip, channel and BCM pin values so that distinct PWM channels do not collide.
      *
-     * @return Unique SPI device identifier.
+     * @return a unique integer identifier for this PWM device
      */
     @Override
     default int getUniqueIdentifier() {

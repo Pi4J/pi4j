@@ -28,7 +28,10 @@ package com.pi4j.io.gpio.digital;
 
 
 /**
- * @param <DIGITAL_TYPE>
+ * Event fired when the {@link DigitalState} of a digital I/O instance changes, delivered to registered
+ * {@link DigitalStateChangeListener}s. It carries the I/O source that changed and the new state.
+ *
+ * @param <DIGITAL_TYPE> the type of the {@link Digital} I/O source that produced the event
  */
 public class DigitalStateChangeEvent<DIGITAL_TYPE extends Digital> implements DigitalEvent {
 
@@ -38,9 +41,10 @@ public class DigitalStateChangeEvent<DIGITAL_TYPE extends Digital> implements Di
     protected DIGITAL_TYPE source;
 
     /**
-     * Default constructor
+     * Creates a new state-change event.
      *
-     * @param state the value changed for this event instance
+     * @param source the digital I/O instance whose state changed
+     * @param state  the new digital state after the change
      */
     public DigitalStateChangeEvent(DIGITAL_TYPE source, DigitalState state){
         this.state = state; // cache a copy of the event instance state
@@ -48,7 +52,9 @@ public class DigitalStateChangeEvent<DIGITAL_TYPE extends Digital> implements Di
     }
 
     /**
-     * The value change for this event instance
+     * Returns the new state recorded by this event.
+     *
+     * @return the digital state after the change
      */
     public DigitalState state() {
         return this.state;

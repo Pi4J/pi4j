@@ -31,36 +31,144 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * <p>ContextConfig interface.</p>
+ * Immutable, read-only view of the settings used to create a Pi4J {@link Context}. Produced by a
+ * {@link ContextBuilder} (via {@link ContextBuilder#toConfig()}) and exposed through {@link Context#config()},
+ * it captures auto-detection flags, the default platform, the manually added {@link Provider}s and the
+ * user-supplied properties.
+ *
+ * @see ContextBuilder
+ * @see Context
  */
 public interface ContextConfig {
+    /**
+     * Indicates whether mock plugins should be auto-detected on the classpath.
+     *
+     * @return {@code true} if mock plugin auto-detection is enabled, {@code false} otherwise
+     */
     boolean autoDetectMockPlugins();
+
+    /**
+     * Indicates whether platform implementations should be auto-detected on the classpath.
+     *
+     * @return {@code true} if platform auto-detection is enabled, {@code false} otherwise
+     */
     boolean autoDetectPlatforms();
+
+    /**
+     * Bean-style accessor for {@link #autoDetectPlatforms()}.
+     *
+     * @return {@code true} if platform auto-detection is enabled, {@code false} otherwise
+     */
     default boolean getAutoDetectPlatforms() { return autoDetectPlatforms(); };
+
+    /**
+     * Bean-style accessor for {@link #autoDetectPlatforms()}.
+     *
+     * @return {@code true} if platform auto-detection is enabled, {@code false} otherwise
+     */
     default boolean isAutoDetectPlatforms() { return autoDetectPlatforms(); };
+
+    /**
+     * Indicates whether automatic injection of Pi4J dependencies into annotated members is enabled.
+     *
+     * @return {@code true} if auto-injection is enabled, {@code false} otherwise
+     */
     boolean autoInject();
+
+    /**
+     * Indicates whether a JVM shutdown hook is registered to shut the context down automatically when the
+     * JVM terminates.
+     *
+     * @return {@code true} if the shutdown hook is enabled, {@code false} otherwise
+     */
     boolean enableShutdownHook();
+
+    /**
+     * Bean-style accessor for {@link #autoInject()}.
+     *
+     * @return {@code true} if auto-injection is enabled, {@code false} otherwise
+     */
     default boolean getAutoInject() { return autoInject(); };
+
+    /**
+     * Bean-style accessor for {@link #autoInject()}.
+     *
+     * @return {@code true} if auto-injection is enabled, {@code false} otherwise
+     */
     default boolean isAutoInject() { return autoInject(); };
+
+    /**
+     * Returns the id of the platform configured as the default for the context.
+     *
+     * @return the default platform id, or {@code null} if none was configured
+     */
     String defaultPlatform();
+
+    /**
+     * Bean-style accessor for {@link #defaultPlatform()}.
+     *
+     * @return the default platform id, or {@code null} if none was configured
+     */
     default String getDefaultPlatform(){
         return defaultPlatform();
     }
+
+    /**
+     * Indicates whether a default platform has been configured.
+     *
+     * @return {@code true} if a default platform id is set, {@code false} otherwise
+     */
     default boolean hasDefaultPlatform(){ return getDefaultPlatform() != null;};
 
     // **************************************************
     // PROVIDERS
     // **************************************************
+    /**
+     * Returns the providers that were explicitly added to the configuration (independent of any
+     * auto-detected providers).
+     *
+     * @return the collection of manually configured {@link Provider}s
+     */
     Collection<Provider> providers();
+
+    /**
+     * Bean-style accessor for {@link #providers()}.
+     *
+     * @return the collection of manually configured {@link Provider}s
+     */
     default Collection<Provider> getProviders(){
         return providers();
     }
+
+    /**
+     * Indicates whether provider implementations should be auto-detected on the classpath.
+     *
+     * @return {@code true} if provider auto-detection is enabled, {@code false} otherwise
+     */
     boolean autoDetectProviders();
+
+    /**
+     * Bean-style accessor for {@link #autoDetectProviders()}.
+     *
+     * @return {@code true} if provider auto-detection is enabled, {@code false} otherwise
+     */
     default boolean getAutoDetectProviders() { return autoDetectProviders(); };
+
+    /**
+     * Bean-style accessor for {@link #autoDetectProviders()}.
+     *
+     * @return {@code true} if provider auto-detection is enabled, {@code false} otherwise
+     */
     default boolean isAutoDetectProviders() { return autoDetectProviders(); };
 
     // **************************************************
     // PROPERTIES
     // **************************************************
+    /**
+     * Returns the user-supplied properties passed to the context, used to parameterize platforms,
+     * providers and I/O configuration.
+     *
+     * @return a map of property keys to values
+     */
     Map<String,String> properties();
 }

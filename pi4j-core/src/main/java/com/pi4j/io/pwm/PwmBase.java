@@ -37,17 +37,34 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * <p>Abstract PwmBase class.</p>
+ * Abstract base implementation of the {@link Pwm} interface, providing the common
+ * state and behaviour (frequency, duty-cycle, polarity, on/off state, presets and
+ * initialize/shutdown handling) shared by all PWM provider implementations.
+ * Concrete providers extend this class and supply the platform-specific logic for
+ * actually driving the PWM hardware or software signal.
  */
 public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implements Pwm {
 
+    /** Staged frequency in hertz applied to the signal the next time it is turned on; defaults to 100 Hz. */
     protected double frequency = 100;
+    /** Staged duty-cycle percentage (0-100) applied to the signal the next time it is turned on; defaults to 50%. */
     protected double dutyCycle = 50;
+    /** Signal period in nanoseconds, derived from {@link #frequency}. */
     protected long period = Math.round(TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS) / frequency);
+    /** Current on/off state of the PWM signal; {@code true} when enabled. */
     protected boolean onState = false;
+    /** Configured signal polarity; defaults to {@link PwmPolarity#NORMAL}. */
     protected PwmPolarity polarity = PwmPolarity.NORMAL;
+    /** Presets registered with this instance, keyed by lower-cased, trimmed preset name. */
     protected Map<String, PwmPreset> presets = Collections.synchronizedMap(new HashMap<>());
 
+    /**
+     * Creates a new PWM base instance and registers any presets defined in the
+     * supplied configuration, keyed by their lower-cased, trimmed names.
+     *
+     * @param provider the PWM provider that created this instance
+     * @param config   the configuration describing this PWM channel, including any initial presets
+     */
     public PwmBase(PwmProvider provider, PwmConfig config) {
         super(provider, config);
         for (PwmPreset preset : config.presets()) {

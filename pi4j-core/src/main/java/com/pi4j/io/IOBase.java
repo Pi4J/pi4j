@@ -35,11 +35,15 @@ import com.pi4j.provider.Provider;
 import java.io.Closeable;
 
 /**
- * <p>Abstract IOBase class.</p>
+ * Abstract base implementation of {@link IO} that the concrete I/O types build upon.
+ * <p>
+ * It stores the originating {@link Provider} and {@link IOConfig}, initializes its {@link Identity}
+ * (id, name, description) from that configuration, and integrates with the Pi4J {@link Context}
+ * lifecycle so that {@link #close()} reliably unregisters and shuts the instance down exactly once.
  *
- * @param <CONFIG_TYPE>
- * @param <IO_TYPE>
- * @param <PROVIDER_TYPE>
+ * @param <IO_TYPE>       the concrete I/O type, returned by the fluent identity setters for chaining
+ * @param <CONFIG_TYPE>   the {@link IOConfig} type describing this instance
+ * @param <PROVIDER_TYPE> the {@link Provider} type backing this instance
  */
 public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, PROVIDER_TYPE extends Provider>
         extends IdentityBase implements IO<IO_TYPE,CONFIG_TYPE, PROVIDER_TYPE>, Closeable {
@@ -55,6 +59,13 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
         return this.provider;
     }
 
+    /**
+     * Creates a new I/O instance, copying the id, name and description from the supplied
+     * configuration into this instance's identity.
+     *
+     * @param provider the provider that created and backs this instance
+     * @param config   the configuration defining this instance's identity and properties
+     */
     public IOBase(PROVIDER_TYPE provider, CONFIG_TYPE config){
         super();
         this.id = config.id();
@@ -101,6 +112,11 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
         return this.config;
     }
 
+    /**
+     * Returns the Pi4J {@link Context} this instance was initialized with, for use by subclasses.
+     *
+     * @return the owning context, or {@code null} if the instance has not been initialized
+     */
     protected Context context() {
         return this.context;
     }

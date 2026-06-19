@@ -33,7 +33,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @param <CONFIG_TYPE>
+ * Base implementation of {@link Config} that stores the common identity properties shared by all
+ * I/O configurations and exposes their raw property map. Concrete I/O configuration classes extend
+ * this base to inherit handling of {@code id}, {@code name} and {@code description}, and override
+ * {@link #getUniqueIdentifier()} to supply an I/O-type-specific identity.
+ *
+ * @param <CONFIG_TYPE> the concrete configuration sub-type
  */
 public class ConfigBase<CONFIG_TYPE extends Config> implements Config<CONFIG_TYPE> {
 
@@ -44,13 +49,16 @@ public class ConfigBase<CONFIG_TYPE extends Config> implements Config<CONFIG_TYP
     protected Map<String, String> properties = new HashMap<>();
 
     /**
-     * PRIVATE CONSTRUCTOR
+     * Creates an empty configuration with no properties set.
      */
     protected ConfigBase() {
     }
 
     /**
-     * PRIVATE CONSTRUCTOR
+     * Creates a configuration seeded from the given property map, copying all entries and reading the
+     * common {@code id}, {@code name} and {@code description} values from their respective keys.
+     *
+     * @param properties the raw configuration properties to populate this instance from
      */
     protected ConfigBase(Map<String, String> properties) {
         // add all properties to this config object

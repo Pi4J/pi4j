@@ -55,7 +55,7 @@ public class BoardInfo {
      * Sets the model of the board. To be used when the detected board is not correct,
      * or to force a specific model e.g. on Orange Pi, or during testing.
      *
-     * @param boardModel
+     * @param boardModel the {@link BoardModel} to use, overriding any automatically detected model.
      */
     public void setBoardModel(BoardModel boardModel) {
         this.boardModel = boardModel;

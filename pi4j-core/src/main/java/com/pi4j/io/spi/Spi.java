@@ -35,52 +35,68 @@ import com.pi4j.io.SerialCircuitIO;
 import java.nio.ByteBuffer;
 
 /**
- * <p>Spi interface.</p>
+ * Represents an open SPI (Serial Peripheral Interface) device on a configured bus and channel,
+ * supporting full-duplex byte transfers as well as separate read and write operations. An instance
+ * is created from a {@link SpiProvider} using a {@link SpiConfig} produced by a {@link SpiConfigBuilder};
+ * it inherits write behaviour from {@link IODataWriter}, read behaviour from {@link IODataReader}, and
+ * full-duplex serial exchange behaviour from {@link SerialCircuitIO}.
  */
 public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IODataWriter, IODataReader, SerialCircuitIO {
     /**
-     * Constant <code>DEFAULT_BUS</code>
+     * Default SPI bus ({@link SpiBus#BUS_0}) used when no bus is explicitly configured.
      */
     SpiBus DEFAULT_BUS = SpiBus.BUS_0;
     /**
-     * Constant <code>DEFAULT_CHANNEL</code>
+     * Default SPI channel (chip-select) number used when none is configured.
      */
     int DEFAULT_CHANNEL = 0;
     /**
-     * Constant <code>DEFAULT_MODE</code>
+     * Default SPI clock mode ({@link SpiMode#MODE_0}) used when no mode is configured.
      */
     SpiMode DEFAULT_MODE = SpiMode.MODE_0;
     /**
-     * Constant <code>DEFAULT_CHIP_SELECT</code>
+     * Default SPI chip-select line ({@link SpiChipSelect#CS_0}) used when none is configured.
      */
     SpiChipSelect DEFAULT_CHIP_SELECT = SpiChipSelect.CS_0;
     /**
-     * Constant <code>DEFAULT_BAUD=1000000</code>
+     * Default SPI clock frequency in Hz (1&nbsp;MHz); the supported range is typically 500&nbsp;kHz to 32&nbsp;MHz.
      */
     int DEFAULT_BAUD = 1000000; // 1MHz (range is 500kHz - 32MHz)
     /**
-     * Constant <code>DEFAULT_WRITE_LSB_FIRST</code>
+     * Default bit order for write operations; {@code 0} shifts the LSB first.
      */
     int DEFAULT_WRITE_LSB_FIRST = 0;
     /**
-     * Constant <code>DEFAULT_READ_LSB_FIRST</code>
+     * Default bit order for read operations; {@code 0} shifts the LSB first.
      */
     int DEFAULT_READ_LSB_FIRST = 0;
 
+    /**
+     * Creates a new {@link SpiConfigBuilder} for assembling an {@link SpiConfig}.
+     *
+     * @param context the Pi4J runtime context (retained for API symmetry; not required to build the configuration)
+     * @return a new SPI configuration builder instance
+     */
     static SpiConfigBuilder newConfigBuilder(Context context) {
         return SpiConfigBuilder.newInstance();
     }
 
     /**
-     * SPI Device Communication State is OPEN
+     * Indicates whether this SPI device is currently open and ready for communication.
      *
-     * @return The SPI device communication state
+     * @return {@code true} if the device has been opened and not yet closed, otherwise {@code false}
      */
     boolean isOpen();
 
 
+    /**
+     * Opens this SPI device, acquiring the underlying bus/channel resources needed for communication.
+     */
     void open();
 
+    /**
+     * Closes this SPI device, releasing the underlying bus/channel resources.
+     */
     void close();
 
     // ------------------------------------------------------------------------------------
@@ -88,12 +104,13 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
     // ------------------------------------------------------------------------------------
 
     /**
-     * This function reads a byte from the serial port associated with the handle.
-     * If no data is ready PI_SER_READ_NO_DATA is returned.
+     * Transfers a single byte over SPI: writes the given byte to the device while simultaneously
+     * reading one byte back, and returns the read value.
      *
-     * @param handle the open serial device handle; (&gt;=0, as returned by a call to serOpen)
-     * @return Returns the read byte (&gt;=0) if OK, otherwise PI_BAD_HANDLE, PI_SER_READ_NO_DATA, or PI_SER_READ_FAILED.
-     * @see "http://abyz.me.uk/rpi/pigpio/cif.html#serReadByte"
+     * @param handle reserved for provider use; not consulted by this default implementation
+     * @param value  the byte to write to the SPI device
+     * @return the byte read back from the SPI device as an unsigned value (0&ndash;255) when the transfer
+     *         succeeds, otherwise the negative error code returned by the underlying transfer
      */
     default int transferByte(int handle, byte value) {
         byte[] temp = new byte[]{value};
@@ -110,21 +127,18 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
     // ------------------------------------------------------------------------------------
 
     /**
-     * This function transfers (writes/reads simultaneously) multiple bytes with the SPI
-     * device associated with the handle.  Write data is taken from the 'write' byte array
-     * from the given 'writeOffset' index to the specified length ('numberOfBytes').  Data
-     * read from the SPI device is then copied to the 'read' byte array at the given 'readOffset'
-     * using the same length ('numberOfBytes').  Both the 'write' and 'read' byte arrays must
-     * be at least the size of the defined 'numberOfBytes' + their corresponding offsets.
+     * Transfers (writes and reads simultaneously) multiple bytes with this SPI device. Write data is
+     * taken from the {@code write} array starting at {@code writeOffset} for {@code numberOfBytes} bytes,
+     * and data read back from the device is copied into the {@code read} array starting at {@code readOffset}
+     * using the same length. Both arrays must be at least {@code numberOfBytes} plus their respective offsets
+     * in size. This is the primary transfer operation that all other {@code transfer} overloads delegate to.
      *
      * @param write         the array of bytes to write to the SPI device
-     * @param writeOffset   the starting offset position in the provided 'write' buffer to
-     *                      start writing to the SPI device from.
-     * @param read          the array of bytes to store read data in from the SPI device
-     * @param readOffset    the starting offset position in the provided 'read' buffer to place
-     *                      data bytes read from the SPI device.
-     * @param numberOfBytes the number of bytes to transfer/exchange (read &amp; read))
-     * @return number of bytes read
+     * @param writeOffset   the index in {@code write} at which to begin sending bytes
+     * @param read          the array into which bytes read back from the SPI device are stored
+     * @param readOffset    the index in {@code read} at which to begin storing received bytes
+     * @param numberOfBytes the number of bytes to exchange in this transfer
+     * @return the number of bytes read back, or a negative provider-specific error code on failure
      */
     int transfer(byte[] write, int writeOffset, byte[] read, int readOffset, int numberOfBytes);
 
@@ -139,8 +153,8 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      *
      * @param write         the array of bytes to write to the SPI device
      * @param read          the array of bytes to store read data in from the SPI device
-     * @param numberOfBytes the number of bytes to transfer/exchange (read &amp; read))
-     * @return number of bytes read
+     * @param numberOfBytes the number of bytes to exchange in this transfer
+     * @return the number of bytes read back, or a negative provider-specific error code on failure
      */
     default int transfer(byte[] write, byte[] read, int numberOfBytes) {
         return transfer(write, 0, read, 0, numberOfBytes);
@@ -156,7 +170,7 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      *
      * @param write the array of bytes to write to the SPI device
      * @param read  the array of bytes to store read data in from the SPI device
-     * @return number of bytes read
+     * @return the number of bytes read back, or a negative provider-specific error code on failure
      */
     default int transfer(byte[] write, byte[] read) {
         return transfer(write, 0, read, 0, write.length);
@@ -176,8 +190,8 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      *               start writing to the SPI device from and the position
      *               used as the starting offset position to place data bytes
      *               read back from the SPI device.
-     * @param length the number of bytes to transfer/exchange (read &amp; read))
-     * @return number of bytes read
+     * @param length the number of bytes to exchange in this transfer
+     * @return the number of bytes read back, or a negative provider-specific error code on failure
      */
     default int transfer(byte[] buffer, int offset, int length) {
         return transfer(buffer, offset, buffer, offset, length);
@@ -193,9 +207,8 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      *
      * @param buffer the array of bytes to write to the SPI device and to store read data
      *               back from the SPI device
-     * @param length the number of bytes to transfer/exchange (read &amp; read))
-     * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
-     * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
+     * @param length the number of bytes to exchange in this transfer
+     * @return the number of bytes read back, or a negative provider-specific error code on failure
      */
     default int transfer(byte[] buffer, int length) {
         return transfer(buffer, 0, length);
@@ -209,8 +222,7 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      *
      * @param buffer the array of bytes to write to the SPI device and to store read data
      *               back from the SPI device
-     * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
-     * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
+     * @return the number of bytes read back, or a negative provider-specific error code on failure
      */
     default int transfer(byte[] buffer) {
         return transfer(buffer, 0, buffer.length);
@@ -239,9 +251,9 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * @param read          the ByteBuffer to store read data in from the SPI device
      * @param readOffset    the starting offset position in the provided 'read' buffer to place
      *                      data bytes read from the SPI device.
-     * @param numberOfBytes the number of bytes to transfer/exchange (read &amp; read))
-     * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
-     * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
+     * @param numberOfBytes the number of bytes to exchange in this transfer
+     * @return the number of bytes actually read back into {@code read}, or a negative provider-specific
+     *         error code on failure
      */
     default int transfer(ByteBuffer write, int writeOffset, ByteBuffer read, int readOffset, int numberOfBytes) {
         // perform bounds checking on requested length versus total remaining size available
@@ -295,9 +307,9 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      *
      * @param write         the ByteBuffer to write to the SPI device
      * @param read          the ByteBuffer to store read data in from the SPI device
-     * @param numberOfBytes the number of bytes to transfer/exchange (read &amp; read))
-     * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
-     * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
+     * @param numberOfBytes the number of bytes to exchange in this transfer
+     * @return the number of bytes actually read back into {@code read}, or a negative provider-specific
+     *         error code on failure
      */
     default int transfer(ByteBuffer write, ByteBuffer read, int numberOfBytes) {
         // if the 'write' buffer position is already at the buffer limit, then flip the buffer for
@@ -337,9 +349,9 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      *               start writing to the SPI device from and the position
      *               used as the starting offset position to place data bytes
      *               read back from the SPI device.
-     * @param length the number of bytes to transfer/exchange (read &amp; read))
-     * @return Returns 0 if OK, otherwise PI_BAD_HANDLE, PI_BAD_SPI_COUNT, or PI_SPI_XFER_FAILED.
-     * @see "http://abyz.me.uk/rpi/pigpio/cif.html#spiWrite"
+     * @param length the number of bytes to exchange in this transfer
+     * @return the number of bytes actually read back into {@code buffer}, or a negative provider-specific
+     *         error code on failure
      */
     default int transfer(ByteBuffer buffer, int offset, int length) {
         // perform bounds checking on requested length versus total remaining size available
@@ -394,55 +406,47 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
     // ------------------------------------------------------------------------------------
 
     /**
-     * This function writes bytes to the SPI device and then reads bytes from the device
-     * Write data is taken from the 'buffer' byte array, data
-     * read back from the SPI device is then copied to the 'read' byte array
+     * Writes the entire {@code write} array to the SPI device and then reads bytes back into the
+     * {@code read} array, performing the two operations as distinct (non-overlapping) SPI records
+     * with no inter-record delay.
      *
-     * @param write the array of bytes to write to the SPI device
-     * @param read  Buffer to contain read data
+     * @param write the bytes to send to the SPI device
+     * @param read  the array that receives the bytes read back; its length determines how many bytes are read
      */
     default void writeThenRead(byte[] write, byte[] read) {
         writeThenRead(write, 0, write.length, (short) 0, read, 0, read.length);
     }
 
     /**
-     * This function writes bytes to the SPI device and then reads bytes from the device
-     * Write data is taken from the 'buffer' byte array, data
-     * read back from the SPI device is then copied to the 'read' byte array
+     * Writes the entire {@code write} array to the SPI device, waits the given delay, and then reads
+     * bytes back into the {@code read} array, allowing the target chip time to prepare its response.
      *
-     * @param write          the array of bytes to write to the SPI device
-     * @param readDelayNanos Delay after SPI write record processed by kernel before the
-     *                       read SPI record is processed. Value in nanoseconds.
-     * @param read           Buffer to contain read data
+     * @param write          the bytes to send to the SPI device
+     * @param readDelayNanos delay in nanoseconds, applied after the write record is processed by the
+     *                       kernel and before the read record is processed
+     * @param read           the array that receives the bytes read back; its length determines how many bytes are read
      */
     default void writeThenRead(byte[] write, int readDelayNanos, byte[] read) {
         writeThenRead(write, 0, write.length, (short) readDelayNanos, read, 0, read.length);
     }
 
     /**
-     * This function writes bytes to the SPI device and then reads bytes from the device.
-     * Write data is taken from the 'buffer' byte array from the given 'writeOffset' index to
-     * the specified 'writeLength' (number of bytes).
-     * Data read back from the SPI device is then copied to the 'read' byte array starting
-     * at the given 'readOffset' using the 'readLength' (number of bytes).  The 'buffer' and  'read' byte
-     * array must be at least the size of their defined 'length' + 'offset'.
+     * Writes bytes to the SPI device and then reads bytes back as two distinct SPI records, with a
+     * configurable inter-record delay so the target chip can complete any processing between the
+     * write and the read. Write data is taken from {@code write} starting at {@code writeOffset} for
+     * {@code writeLength} bytes; data read back is stored in {@code read} starting at {@code readOffset}
+     * for {@code readLength} bytes. Each array must be at least its respective length plus offset in size.
      * <p>
-     * In addition. both the write and read operation can provide a configurable delay
-     * allowing the effected SPI chip to complete any processing. The write operation and the read
-     * operation each have an individual delay value.
+     * Not all providers support this operation; the default implementation always throws.
      *
-     * @param write          the array of bytes to write to the SPI device and to store read data
-     *                       back from the SPI device
-     * @param writeOffset    the starting offset position in the provided buffer to
-     *                       start writing to the SPI device from and the position
-     *                       used as the starting offset position to place data bytes
-     *                       read back from the SPI device.
-     * @param writeLength    Number of bytes written from write buffer
-     * @param readDelayNanos Delay after SPI write record processed by kernel before the
-     *                       read SPI record is processed. Value in nanoseconds.
-     * @param read           Buffer to contain read data
-     * @param readOffset     Offset within the read buffer to begin placing read data
-     * @param readLength     The number of bytes to transfer/exchange (read &amp; read))
+     * @param write          the bytes to send to the SPI device
+     * @param writeOffset    the index in {@code write} at which to begin sending bytes
+     * @param writeLength    the number of bytes to send from {@code write}
+     * @param readDelayNanos delay in nanoseconds applied after the write record and before the read record
+     * @param read           the array that receives the bytes read back
+     * @param readOffset     the index in {@code read} at which to begin storing received bytes
+     * @param readLength     the number of bytes to read back into {@code read}
+     * @throws IllegalStateException if the active provider does not support {@code writeThenRead}
      */
     default void writeThenRead(byte[] write, int writeOffset, int writeLength, int readDelayNanos, byte[] read, int readOffset, int readLength) {
         throw new IllegalStateException("writeThenRead Not supported in this provider. \n See https://www.pi4j.com/documentation/providers/");

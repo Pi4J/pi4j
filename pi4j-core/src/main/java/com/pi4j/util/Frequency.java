@@ -26,10 +26,18 @@ package com.pi4j.util;
  */
 
 
+/**
+ * Utility for converting between frequencies (in hertz) and time periods, and between hertz and its kilo/mega
+ * multiples. Used across Pi4J to translate configured frequencies (for example PWM or SPI clock rates) into the
+ * period values expected by lower-level I/O.
+ */
 public class Frequency {
 
+    /** Number of hertz in one megahertz. */
     public static final long MEGAHERTZ = 1000000;
+    /** Number of hertz in one kilohertz. */
     public static final long KILOHERTZ = 1000;
+    /** Base unit; one hertz. */
     public static final long HERTZ = 1;
 
     /**
@@ -90,10 +98,10 @@ public class Frequency {
     }
 
     /**
-     * Get Frequency (in Hertz) from Nanoseconds
+     * Computes the frequency (in hertz) corresponding to a given period expressed in nanoseconds.
      *
-     * @param nanoseconds value in hertz
-     * @return total number of nanoseconds represented by this frequency value
+     * @param nanoseconds the period length in nanoseconds
+     * @return the frequency in hertz, or {@code 0} if the period is zero or negative
      */
     public static int getFrequencyFromNanos(Number nanoseconds){
         int frequency;
