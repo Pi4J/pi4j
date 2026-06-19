@@ -80,6 +80,7 @@ public class Pi4JApi {
      * @param type the board facade class to obtain (for example {@link RaspberryPi.Model4B})
      * @param <T>  the board facade type
      * @return the cached or newly instantiated facade of the requested type
+     * @throws java.util.NoSuchElementException if the requested type is not a known/supported board facade
      * @throws Pi4JException if the requested type does not correspond to the detected board model,
      *                       or if the facade cannot be instantiated via its no-argument constructor
      */
