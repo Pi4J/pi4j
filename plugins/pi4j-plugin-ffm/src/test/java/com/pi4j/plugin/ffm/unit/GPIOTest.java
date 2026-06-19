@@ -13,9 +13,11 @@ import com.pi4j.plugin.ffm.api.RaspberryPi;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.gpio.PinEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
+import com.pi4j.plugin.ffm.common.gpio.enums.LineAttributeId;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineAttribute;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineEvent;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineInfo;
+import com.pi4j.plugin.ffm.common.gpio.structs.LineRequest;
 import com.pi4j.plugin.ffm.common.poll.PollFlag;
 import com.pi4j.plugin.ffm.common.poll.structs.PollingData;
 import com.pi4j.plugin.ffm.mocks.*;
@@ -390,6 +392,117 @@ public class GPIOTest {
             assertEquals(DigitalState.HIGH, pin.state());
             pin.state(DigitalState.LOW);
             assertEquals(DigitalState.LOW, pin.state());
+        }
+    }
+
+    @Test
+    public void testOutputInitialStateHigh() {
+        var capturedRequest = new java.util.concurrent.atomic.AtomicReference<LineRequest>();
+        var lineInfoTestData = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
+            LineInfo lineInfo = answer.getArgument(2);
+            return new LineInfo(("Test").getBytes(), ("FFM-Test").getBytes(),
+                lineInfo.offset(), 0,
+                PinFlag.OUTPUT.getValue(),
+                new LineAttribute[0]);
+        });
+        var lineRequestTestData = new IoctlNativeMock.IoctlTestData(LineRequest.class, (answer) -> {
+            LineRequest lineRequest = answer.getArgument(2);
+            capturedRequest.set(lineRequest);
+            return new LineRequest(lineRequest.offsets(), lineRequest.consumer(), lineRequest.config(),
+                lineRequest.numLines(), lineRequest.eventBufferSize(), 42);
+        });
+        try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE);
+             var _ = IoctlNativeMock.setup(lineInfoTestData, lineRequestTestData)) {
+
+            var builder = DigitalOutputConfigBuilder.newInstance()
+                .bus(-1)
+                .bcm(9)
+                .initial(DigitalState.HIGH)
+                .build();
+            var pin = pi4j0.digitalOutput().create(builder);
+
+            assertEquals(DigitalState.HIGH, pin.state());
+
+            var request = capturedRequest.get();
+            assertNotNull(request, "LineRequest was not sent to the kernel");
+            var config = request.config();
+            assertEquals(1, config.numAttrs(), "Initial state should add a single output-values attribute");
+            var attribute = config.attrs()[0];
+            assertEquals(LineAttributeId.GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES.getValue(), attribute.attr().id());
+            // bit 0 corresponds to the single requested line at index 0 in the offsets array
+            assertEquals(1L, attribute.mask());
+            assertEquals(1L, attribute.attr().values(), "HIGH initial state should set the line's value bit");
+        }
+    }
+
+    @Test
+    public void testOutputInitialStateLowPassedToKernel() {
+        var capturedRequest = new java.util.concurrent.atomic.AtomicReference<LineRequest>();
+        var lineInfoTestData = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
+            LineInfo lineInfo = answer.getArgument(2);
+            return new LineInfo(("Test").getBytes(), ("FFM-Test").getBytes(),
+                lineInfo.offset(), 0,
+                PinFlag.OUTPUT.getValue(),
+                new LineAttribute[0]);
+        });
+        var lineRequestTestData = new IoctlNativeMock.IoctlTestData(LineRequest.class, (answer) -> {
+            LineRequest lineRequest = answer.getArgument(2);
+            capturedRequest.set(lineRequest);
+            return new LineRequest(lineRequest.offsets(), lineRequest.consumer(), lineRequest.config(),
+                lineRequest.numLines(), lineRequest.eventBufferSize(), 42);
+        });
+        try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE);
+             var _ = IoctlNativeMock.setup(lineInfoTestData, lineRequestTestData)) {
+
+            var builder = DigitalOutputConfigBuilder.newInstance()
+                .bus(-1)
+                .bcm(10)
+                .initial(DigitalState.LOW)
+                .build();
+            var pin = pi4j0.digitalOutput().create(builder);
+
+            assertEquals(DigitalState.LOW, pin.state());
+
+            var request = capturedRequest.get();
+            assertNotNull(request, "LineRequest was not sent to the kernel");
+            var config = request.config();
+            assertEquals(1, config.numAttrs(), "Initial state should add a single output-values attribute");
+            var attribute = config.attrs()[0];
+            assertEquals(LineAttributeId.GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES.getValue(), attribute.attr().id());
+            assertEquals(1L, attribute.mask());
+            assertEquals(0L, attribute.attr().values(), "LOW initial state should clear the line's value bit");
+        }
+    }
+
+    @Test
+    public void testOutputWithoutInitialStateHasNoAttributes() {
+        var capturedRequest = new java.util.concurrent.atomic.AtomicReference<LineRequest>();
+        var lineInfoTestData = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
+            LineInfo lineInfo = answer.getArgument(2);
+            return new LineInfo(("Test").getBytes(), ("FFM-Test").getBytes(),
+                lineInfo.offset(), 0,
+                PinFlag.OUTPUT.getValue(),
+                new LineAttribute[0]);
+        });
+        var lineRequestTestData = new IoctlNativeMock.IoctlTestData(LineRequest.class, (answer) -> {
+            LineRequest lineRequest = answer.getArgument(2);
+            capturedRequest.set(lineRequest);
+            return new LineRequest(lineRequest.offsets(), lineRequest.consumer(), lineRequest.config(),
+                lineRequest.numLines(), lineRequest.eventBufferSize(), 42);
+        });
+        try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE);
+             var _ = IoctlNativeMock.setup(lineInfoTestData, lineRequestTestData)) {
+
+            var builder = DigitalOutputConfigBuilder.newInstance()
+                .bus(-1)
+                .bcm(11)
+                .build();
+            pi4j0.digitalOutput().create(builder);
+
+            var request = capturedRequest.get();
+            assertNotNull(request, "LineRequest was not sent to the kernel");
+            assertEquals(0, request.config().numAttrs(),
+                "Without an initial state no output-values attribute should be sent");
         }
     }
 
