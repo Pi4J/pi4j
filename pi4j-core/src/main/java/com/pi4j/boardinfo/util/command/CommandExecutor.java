@@ -109,15 +109,18 @@ public class CommandExecutor {
     }
 
     /**
-     * Splits a command line into its executable and argument tokens. The command is trimmed and split on
+     * Splits a command line into its executable and argument tokens. The command is stripped and split on
      * runs of whitespace ({@code \s+}), so leading or trailing whitespace is ignored and consecutive
-     * spaces or tabs do not produce empty tokens.
+     * spaces or tabs do not produce empty tokens. {@link String#strip()} is used rather than
+     * {@link String#trim()} so that Unicode whitespace is removed consistently with the blank-input check
+     * in {@link #execute(String)} (which relies on {@link String#isBlank()}); otherwise a command starting
+     * with a Unicode space above {@code U+0020} could leave that character attached to the executable name.
      *
      * @param command the command line to split; must not be {@code null} or blank
      * @return the command broken into its whitespace-separated tokens, with the executable first
      */
     static String[] splitCommand(String command) {
-        return command.trim().split("\\s+");
+        return command.strip().split("\\s+");
     }
 
     /**

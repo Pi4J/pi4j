@@ -37,6 +37,13 @@ class CommandExecutorTest {
         assertArrayEquals(new String[]{"vcgencmd", "measure_volts"}, splitCommand("   vcgencmd measure_volts   "));
     }
 
+    @Test
+    void shouldIgnoreLeadingAndTrailingUnicodeWhitespace() {
+        // U+2003 (EM SPACE) is above U+0020, so trim() would leave it attached to the executable name,
+        // but strip() removes it consistently with isBlank().
+        assertArrayEquals(new String[]{"vcgencmd", "measure_temp"}, splitCommand("\u2003vcgencmd measure_temp\u2003"));
+    }
+
     @ParameterizedTest
     @MethodSource("blankCommands")
     void shouldReturnFailureForBlankCommand(String command) {
@@ -46,6 +53,6 @@ class CommandExecutorTest {
     }
 
     private static Stream<String> blankCommands() {
-        return Stream.of(null, "", "   \t  ");
+        return Stream.of(null, "", "   \t  ", "\u2003");
     }
 }
