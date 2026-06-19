@@ -41,9 +41,6 @@ public interface DigitalInputProvider extends DigitalProvider<DigitalInputProvid
         return (T) create(config);
     }
 
-    /**
-     * @param id  pin@link java.lang.String} object.
-     */
     default <T extends DigitalInput> T create(Integer bcm, String id) {
         var config = DigitalInput.newConfigBuilder(context())
             .bcm(bcm)

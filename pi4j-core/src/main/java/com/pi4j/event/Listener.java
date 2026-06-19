@@ -29,5 +29,5 @@ package com.pi4j.event;
  * <p>Listener interface.</p>
  */
 public interface Listener {
-    // MARKET INTERFACE
+    // MARKER INTERFACE
 }
