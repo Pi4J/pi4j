@@ -135,15 +135,24 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         var dCycle = Math.round((double) (period * dutyCycle) / 100);
         logger.debug("{} - period is '{}', dutyCycle is '{}' and polarity '{}'.", pwmPath, period, dutyCycle, polarity);
 
-        // The kernel PWM core rejects (EINVAL) any state where duty_cycle > period. The currently
-        // applied state may carry a duty_cycle larger than the new period (e.g. when lowering the
-        // frequency-derived period), so writing 'period' first would momentarily violate that
-        // invariant and fail. Reset duty_cycle to 0 first, then apply the new period, then the new
-        // duty_cycle - guaranteeing duty_cycle <= period at every step regardless of direction.
-        waitForWritePermission(this.pwmPath + DUTY_CYCLE_PATH, 0);
-        var dutyResetFd = file.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_WRONLY);
-        file.write(dutyResetFd, String.valueOf(0).getBytes());
-        file.close(dutyResetFd);
+        // The kernel PWM core rejects (EINVAL) any state where duty_cycle > period, and also any
+        // state where period == 0. The currently applied state may carry a duty_cycle larger than
+        // the new (smaller) period, so writing 'period' first would momentarily violate
+        // duty_cycle <= period and fail. To avoid that we drop duty_cycle to 0 before changing the
+        // period - but ONLY when a non-zero period is already applied: on a freshly exported channel
+        // the period is still 0, duty_cycle is already 0, and writing duty_cycle there would itself
+        // be rejected (period == 0). So we read the live period and reset the duty cycle only when
+        // needed, guaranteeing duty_cycle <= period at every step regardless of direction.
+        waitForReadPermission(this.pwmPath + PERIOD_PATH, 0);
+        var currentPeriodFd = file.open(this.pwmPath + PERIOD_PATH, FileFlag.O_RDONLY);
+        var currentPeriod = getIntegerContent(file.read(currentPeriodFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
+        file.close(currentPeriodFd);
+        if (currentPeriod > 0) {
+            waitForWritePermission(this.pwmPath + DUTY_CYCLE_PATH, 0);
+            var dutyResetFd = file.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_WRONLY);
+            file.write(dutyResetFd, String.valueOf(0).getBytes());
+            file.close(dutyResetFd);
+        }
 
         waitForWritePermission(this.pwmPath + PERIOD_PATH, 0);
         var periodFd = file.open(this.pwmPath + PERIOD_PATH, FileFlag.O_WRONLY);
