@@ -13,6 +13,15 @@ import com.pi4j.provider.Provider;
 
 import java.util.Arrays;
 
+/**
+ * Pi4J {@link Plugin} entry point for the FFM (Foreign Function &amp; Memory) native I/O backend.
+ * <p>
+ * On initialization it instantiates and registers the FFM providers that talk to the Linux kernel
+ * directly via the Java Foreign Function &amp; Memory API: {@link FFMDigitalInputProviderImpl} and
+ * {@link FFMDigitalOutputProviderImpl} for GPIO, {@link FFMI2CProviderImpl} for I2C,
+ * {@link FFMSpiProviderImpl} for SPI, and {@link FFMPwmProviderImpl} for PWM. These providers
+ * supply the runtime implementations of the corresponding pi4j-core contracts.
+ */
 public class FFMPlugin implements Plugin {
     private Provider<?, ?, ?>[] providers = new Provider[]{};
 

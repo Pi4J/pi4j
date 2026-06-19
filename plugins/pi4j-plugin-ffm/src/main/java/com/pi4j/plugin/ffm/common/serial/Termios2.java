@@ -11,6 +11,23 @@ import java.util.Arrays;
 
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
+/**
+ * {@link MemorySegment}-backed mapping of the Linux {@code struct termios2}
+ * (include/uapi/asm-generic/termbits.h) used to configure a serial terminal
+ * via the {@code TCGETS2}/{@code TCSETS2} ioctls. Unlike the classic
+ * {@code termios}, this variant carries explicit input and output baud rates
+ * ({@code c_ispeed}/{@code c_ospeed}), allowing arbitrary (non-standard) speeds.
+ * Implements the {@link Pi4JLayout} marshalling contract.
+ *
+ * @param c_iflag  input mode flags
+ * @param c_oflag  output mode flags
+ * @param c_cflag  control mode flags (baud, character size, stop bits, parity)
+ * @param c_lflag  local mode flags
+ * @param c_line   line discipline
+ * @param c_cc     control characters array (special characters such as VMIN/VTIME)
+ * @param c_ispeed input baud rate in bits per second
+ * @param c_ospeed output baud rate in bits per second
+ */
 public record Termios2(int c_iflag, int c_oflag, int c_cflag, int c_lflag, byte c_line, byte[] c_cc, int c_ispeed, int c_ospeed) implements Pi4JLayout {
     public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
         ValueLayout.JAVA_INT.withName("c_iflag"),
@@ -32,6 +49,14 @@ public record Termios2(int c_iflag, int c_oflag, int c_cflag, int c_lflag, byte 
     private static final VarHandle VH_ISPEED = LAYOUT.varHandle(groupElement("c_ispeed"));
     private static final VarHandle VH_OSPEED = LAYOUT.varHandle(groupElement("c_ospeed"));
 
+    /**
+     * Decodes a {@code struct termios2} from native memory into a new {@code Termios2}.
+     * A {@link MemorySegment#NULL} segment yields an empty instance with all fields zeroed.
+     *
+     * @param memorySegment native memory holding a {@code struct termios2}, or {@link MemorySegment#NULL}
+     * @return a {@code Termios2} populated from the segment, or an empty instance for a NULL segment
+     * @throws Throwable if reading the fields from native memory fails
+     */
     public static Termios2 create(MemorySegment memorySegment) throws Throwable {
         var termiosInstance = Termios2.createEmpty();
         if (!memorySegment.equals(MemorySegment.NULL)) {
@@ -40,6 +65,12 @@ public record Termios2(int c_iflag, int c_oflag, int c_cflag, int c_lflag, byte 
         return termiosInstance;
     }
 
+    /**
+     * Creates a {@code Termios2} with all flags zeroed and an empty control-character
+     * array, suitable as a target buffer to be filled from native memory.
+     *
+     * @return an empty {@code Termios2} instance
+     */
     public static Termios2 createEmpty() {
         return new Termios2(0,0,0,0, (byte) 0, new byte[0], 0, 0);
     }

@@ -22,6 +22,20 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * {@link Spi} implementation that performs full-duplex SPI transfers against a spidev character device
+ * ({@code /dev/spidevB.C}) using the {@code SPI_IOC_MESSAGE} ioctl.
+ * <p>
+ * During initialization the SPI mode, bits-per-word, maximum clock speed and bit order are configured
+ * through the {@code SPI_IOC_WR_*}/{@code SPI_IOC_RD_*} ioctls. Transfers larger than the driver's
+ * {@code bufsiz} limit are automatically split into chunks, each issued as its own ioctl, to avoid the
+ * kernel rejecting the request with {@code EMSGSIZE}.
+ *
+ * @see com.pi4j.io.spi.Spi
+ * @see IoctlNative
+ * @see SpiTransferBuffer
+ * @see SpiMultipleTransferBuffer
+ */
 public class FFMSpi extends SpiBase implements Spi {
     private static final Logger logger = LoggerFactory.getLogger(FFMSpi.class);
     private static final String SPI_BUS = "/dev/spidev";
@@ -53,12 +67,26 @@ public class FFMSpi extends SpiBase implements Spi {
     private int bufferSize = DEFAULT_BUFFER_SIZE;
     private final String path;
 
+    /**
+     * Creates an SPI instance, resolving the spidev device path ({@code /dev/spidevB.C}) from the bus
+     * and channel in the configuration and verifying that it is accessible with the required permissions.
+     *
+     * @param provider the {@link SpiProvider} that created this instance
+     * @param config   the SPI configuration carrying the bus, channel, mode, baud rate and bit order
+     */
     public FFMSpi(SpiProvider provider, SpiConfig config) {
         super(provider, config);
         this.path = SPI_BUS + config.bus().getBus() + "." + config.channel();
         FFMPermissionHelper.checkDevicePermissions(path, config);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Opens the spidev device read-write and configures both the read and write SPI mode, 8-bit
+     * word length, maximum clock frequency and LSB-first setting via the {@code SPI_IOC_WR_*} and
+     * {@code SPI_IOC_RD_*} ioctls, then reads the driver's {@code bufsiz} to size the transfer chunks.
+     */
     @Override
     public Spi initialize(Context context) throws InitializeException {
         super.initialize(context);
@@ -129,6 +157,17 @@ public class FFMSpi extends SpiBase implements Spi {
         return super.shutdownInternal(context);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Performs a full-duplex exchange: clocks out {@code numberOfBytes} from {@code write} while
+     * capturing the simultaneously clocked-in bytes into {@code read}. Transfers larger than the
+     * driver's {@code bufsiz} are split into separate {@code SPI_IOC_MESSAGE(1)} ioctl calls (chunks
+     * are not batched, since the limit applies to the cumulative total within one ioctl), which
+     * releases chip-select between chunks.
+     *
+     * @throws Pi4JException if the SPI bus has been closed
+     */
     @Override
     public int transfer(byte[] write, int writeOffset, byte[] read, int readOffset, int numberOfBytes) {
         checkClosed();
@@ -176,6 +215,16 @@ public class FFMSpi extends SpiBase implements Spi {
         writeThenRead(write, 0, write.length, readDelayNanos, read, 0, read.length);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * When both halves fit within the driver's {@code bufsiz}, the write phase, the optional read delay
+     * and the read phase are issued as a single {@code SPI_IOC_MESSAGE(2)} ioctl under one chip-select
+     * assertion. Otherwise the write and read phases are split into separate bufsiz-sized
+     * {@code SPI_IOC_MESSAGE(1)} calls, which releases chip-select between chunks.
+     *
+     * @throws Pi4JException if the SPI bus has been closed
+     */
     @Override
     public void writeThenRead(byte[] write, int writeOffset, int writeLength, int readDelayNanos, byte[] read, int readOffset, int readLength) {
         checkClosed();

@@ -10,13 +10,16 @@ import static com.pi4j.plugin.ffm.common.Pi4JNativeContext.CAPTURED_STATE_LAYOUT
 import static com.pi4j.plugin.ffm.common.Pi4JNativeContext.processError;
 
 /**
- * Class for calling native ioctl methods.
- * The logic behind the class is follows:
- * - allocate the needed buffers from a per-call {@link Arena#ofConfined()} arena
- * - optionally add 'errno' context to caller
- * - call native function with 'invoke'
- * - process errors if any captured by 'errno'
- * - return call result if needed
+ * Thin Java wrapper around the Linux {@code ioctl(2)} syscall, reached through the Foreign Function
+ * &amp; Memory API. Each call follows the same pattern:
+ * <ul>
+ *   <li>allocate the needed buffers from a per-call {@link Arena#ofConfined()} arena;</li>
+ *   <li>attach an {@code errno} capture state so failures can be reported;</li>
+ *   <li>invoke the native {@code ioctl} handle held by {@link IoctlContext};</li>
+ *   <li>translate a negative return into a {@link Pi4JException} via {@code processError};</li>
+ *   <li>return the result, reading back any value the kernel wrote into the argument buffer.</li>
+ * </ul>
+ * The request codes passed as the {@code command} argument are produced by {@link Command}/{@link IoctlMagic}.
  */
 public class IoctlNative {
     // Keep the context field to trigger IoctlContext class loading (and thus MethodHandle init).
@@ -24,12 +27,14 @@ public class IoctlNative {
     private final IoctlContext context = new IoctlContext();
 
     /**
-     * Calls ioctl on file descriptor with long command. Data is provided by value.
+     * Invokes {@code ioctl(fd, command, data)} passing {@code data} directly by value, for requests
+     * whose argument is an integer rather than a pointer to a buffer.
      *
-     * @param fd      file descriptor for calling ioctl
-     * @param command long command for ioctl see {@link Command}
-     * @param data    long data for ioctl
-     * @return int ioctl call result
+     * @param fd      open file descriptor of the device the request targets
+     * @param command encoded ioctl request code (see {@link Command} / {@link IoctlMagic})
+     * @param data    the scalar argument passed by value to the request
+     * @return the raw value returned by {@code ioctl}, typically {@code 0} on success
+     * @throws Pi4JException if the syscall fails (negative return); wraps the captured {@code errno}
      */
     public int callByValue(int fd, long command, long data) {
         try (var arena = Arena.ofConfined()) {
@@ -43,12 +48,14 @@ public class IoctlNative {
     }
 
     /**
-     * Calls ioctl on file descriptor with long command. Data is provided reference.
+     * Invokes {@code ioctl(fd, command, &data)} passing a pointer to a freshly allocated {@code long}
+     * holding {@code data}, then reads the (possibly kernel-updated) value back out.
      *
-     * @param fd      file descriptor for calling ioctl
-     * @param command long command for ioctl see {@link Command}
-     * @param data    long data for ioctl
-     * @return long ioctl call result
+     * @param fd      open file descriptor of the device the request targets
+     * @param command encoded ioctl request code (see {@link Command} / {@link IoctlMagic})
+     * @param data    the initial {@code long} value written into the argument buffer
+     * @return the {@code long} value held in the argument buffer after the call returns
+     * @throws Pi4JException if the syscall fails (negative return); wraps the captured {@code errno}
      */
     public long call(int fd, long command, long data) {
         try (var arena = Arena.ofConfined()) {
@@ -64,12 +71,14 @@ public class IoctlNative {
     }
 
     /**
-     * Calls ioctl on file descriptor with long command. Data is provided reference.
+     * Invokes {@code ioctl(fd, command, &data)} passing a pointer to a freshly allocated {@code int}
+     * holding {@code data}, then reads the (possibly kernel-updated) value back out.
      *
-     * @param fd      file descriptor for calling ioctl
-     * @param command long command for ioctl see {@link Command}
-     * @param data    int data for ioctl
-     * @return int ioctl call result
+     * @param fd      open file descriptor of the device the request targets
+     * @param command encoded ioctl request code (see {@link Command} / {@link IoctlMagic})
+     * @param data    the initial {@code int} value written into the argument buffer
+     * @return the {@code int} value held in the argument buffer after the call returns
+     * @throws Pi4JException if the syscall fails (negative return); wraps the captured {@code errno}
      */
     public int call(int fd, long command, int data) {
         try (var arena = Arena.ofConfined()) {
@@ -85,14 +94,17 @@ public class IoctlNative {
     }
 
     /**
-     * Calls ioctl on file descriptor with long command. Data is provided reference.
-     * Data should be implementation of {@link Pi4JLayout}
+     * Invokes {@code ioctl(fd, command, &struct)} for requests whose argument is a kernel struct.
+     * The {@code data} layout is serialized into a native buffer via {@link Pi4JLayout#to}, the syscall
+     * is performed, and a new instance is rebuilt from the buffer via {@link Pi4JLayout#from} so the
+     * caller observes any fields the kernel populated.
      *
-     * @param fd      file descriptor for calling ioctl
-     * @param command long command for ioctl see {@link Command}
-     * @param data    layout implementing {@link Pi4JLayout}
-     * @param <T>     layout object implementing {@link Pi4JLayout}
-     * @return dereferenced value of data provided in argument
+     * @param fd      open file descriptor of the device the request targets
+     * @param command encoded ioctl request code (see {@link Command} / {@link IoctlMagic})
+     * @param data    the struct wrapper supplying the input bytes and target layout
+     * @param <T>     the concrete {@link Pi4JLayout} struct type
+     * @return a fresh instance of {@code T} decoded from the argument buffer after the call returns
+     * @throws Pi4JException if the syscall fails (negative return); wraps the captured {@code errno}
      */
     public <T extends Pi4JLayout> T call(int fd, long command, T data) {
         try (var arena = Arena.ofConfined()) {

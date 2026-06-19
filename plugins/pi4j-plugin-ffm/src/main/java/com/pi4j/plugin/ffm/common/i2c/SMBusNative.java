@@ -12,13 +12,18 @@ import static com.pi4j.plugin.ffm.common.Pi4JNativeContext.processError;
 import static com.pi4j.plugin.ffm.common.i2c.SMBusContext.*;
 
 /**
- * Class for calling native SMBus native methods with libi2c-dev.
- * The logic behind the class is follows:
- * - allocate the needed buffers from a per-call {@link Arena#ofConfined()} arena
- * - optionally add 'errno' context to caller
- * - call native function with 'invoke'
- * - process errors if any captured by 'errno'
- * - return call result if needed
+ * Performs SMBus read/write transactions by invoking the {@code i2c_smbus_*} helper functions
+ * from {@code libi2c} (see {@link SMBusContext}). This is the low-level native backend used by
+ * the FFM I2C implementation of the pi4j-core {@link com.pi4j.io.i2c.I2C} contract.
+ * <p>
+ * Each call follows the same pattern:
+ * <ul>
+ *   <li>allocate the needed buffers from a per-call {@link Arena#ofConfined()} arena</li>
+ *   <li>add the {@code errno} capture state buffer</li>
+ *   <li>invoke the native function</li>
+ *   <li>translate a captured {@code errno} into a {@link Pi4JException}</li>
+ *   <li>return the call result</li>
+ * </ul>
  */
 public class SMBusNative implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(SMBusNative.class);
@@ -30,9 +35,10 @@ public class SMBusNative implements AutoCloseable {
     /**
      * Writes byte with SMBus protocol.
      *
-     * @param fd   file descriptor of opened SMBus device
-     * @param data one byte of data
-     * @return size of data written
+     * @param fd   file descriptor of the opened I2C/SMBus device
+     * @param data the single data byte to send
+     * @return the native call result (number of bytes written, or {@code 0} on success)
+     * @throws Pi4JException if the native call fails (a non-zero {@code errno} was captured)
      */
     public int writeByte(int fd, byte data) {
         try (var arena = Arena.ofConfined()) {
@@ -49,8 +55,9 @@ public class SMBusNative implements AutoCloseable {
     /**
      * Reads byte with SMBus protocol.
      *
-     * @param fd file descriptor of opened SMBus device
-     * @return one byte from bus in signed integer form
+     * @param fd file descriptor of the opened I2C/SMBus device
+     * @return the byte read from the bus, returned in signed integer form
+     * @throws Pi4JException if the native call fails (a non-zero {@code errno} was captured)
      */
     public int readByte(int fd) {
         try (var arena = Arena.ofConfined()) {
@@ -66,10 +73,11 @@ public class SMBusNative implements AutoCloseable {
     /**
      * Writes byte to the given register with SMBus protocol.
      *
-     * @param fd       file descriptor of opened SMBus device
-     * @param register register to be written
-     * @param data     one byte of data
-     * @return size of data written
+     * @param fd       file descriptor of the opened I2C/SMBus device
+     * @param register the device register address to write to
+     * @param data     the single data byte to store in the register
+     * @return the native call result (number of bytes written, or {@code 0} on success)
+     * @throws Pi4JException if the native call fails (a non-zero {@code errno} was captured)
      */
     public int writeByteData(int fd, byte register, byte data) {
         try (var arena = Arena.ofConfined()) {
@@ -85,9 +93,10 @@ public class SMBusNative implements AutoCloseable {
     /**
      * Reads byte from given register.
      *
-     * @param fd       file descriptor of opened SMBus device
-     * @param register register where to read
-     * @return one byte from bus
+     * @param fd       file descriptor of the opened I2C/SMBus device
+     * @param register the device register address to read from
+     * @return the byte read from the register
+     * @throws Pi4JException if the native call fails (a non-zero {@code errno} was captured)
      */
     public byte readByteData(int fd, byte register) {
         try (var arena = Arena.ofConfined()) {
@@ -103,10 +112,11 @@ public class SMBusNative implements AutoCloseable {
     /**
      * Writes byte array to the given register with SMBus protocol.
      *
-     * @param fd       file descriptor of opened SMBus device
-     * @param register register to be written
-     * @param data     byte array of data
-     * @return size of data written
+     * @param fd       file descriptor of the opened I2C/SMBus device
+     * @param register the device register address to write to
+     * @param data     the block of bytes to write; its length is sent as the block count
+     * @return the native call result (number of bytes written, or {@code 0} on success)
+     * @throws Pi4JException if the native call fails (a non-zero {@code errno} was captured)
      */
     public int writeBlockData(int fd, byte register, byte[] data) {
         try (var arena = Arena.ofConfined()) {
@@ -123,10 +133,11 @@ public class SMBusNative implements AutoCloseable {
     /**
      * Reads byte array from provided register with SMBus protocol.
      *
-     * @param fd       file descriptor of opened SMBus device
-     * @param register register where to read
-     * @param data     byte array of data to be read
-     * @return byte array of data from bus
+     * @param fd       file descriptor of the opened I2C/SMBus device
+     * @param register the device register address to read from
+     * @param data     a byte array sized to the expected block length, used to allocate the read buffer
+     * @return a byte array holding the bytes read from the register
+     * @throws Pi4JException if the native call fails (a non-zero {@code errno} was captured)
      */
     public byte[] readBlockData(int fd, byte register, byte[] data) {
         try (var arena = Arena.ofConfined()) {
@@ -143,10 +154,11 @@ public class SMBusNative implements AutoCloseable {
     /**
      * Writes int data to provided register with SMBus protocol.
      *
-     * @param fd       file descriptor of opened SMBus device
-     * @param register register to be written
-     * @param data     one int data to write
-     * @return size of data written
+     * @param fd       file descriptor of the opened I2C/SMBus device
+     * @param register the device register address to write to
+     * @param data     the 16-bit word value to store (passed as an {@code int})
+     * @return the native call result (number of bytes written, or {@code 0} on success)
+     * @throws Pi4JException if the native call fails (a non-zero {@code errno} was captured)
      */
     public int writeWordData(int fd, byte register, int data) {
         try (var arena = Arena.ofConfined()) {
@@ -162,9 +174,10 @@ public class SMBusNative implements AutoCloseable {
     /**
      * Reads int data from provided register with SMBus protocol.
      *
-     * @param fd       file descriptor of opened SMBus device
-     * @param register register where to read
-     * @return one int data read from bus
+     * @param fd       file descriptor of the opened I2C/SMBus device
+     * @param register the device register address to read from
+     * @return the 16-bit word read from the register, returned as an {@code int}
+     * @throws Pi4JException if the native call fails (a non-zero {@code errno} was captured)
      */
     public int readWordData(int fd, byte register) {
         try (var arena = Arena.ofConfined()) {

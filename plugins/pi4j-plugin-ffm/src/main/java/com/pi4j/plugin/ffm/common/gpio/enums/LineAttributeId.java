@@ -8,49 +8,46 @@ import java.lang.foreign.ValueLayout;
 import java.util.Arrays;
 
 /**
- * Source: include/uapi/linux/gpio.h:108:6
- * <p>
- * enum gpio_v2_line_attr_id - &struct gpio_v2_line_attribute.id values
- * identifying which field of the attribute union is in use.
- *
- * @GPIO_V2_LINE_ATTR_ID_FLAGS: flags field is in use
- * @GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES: values field is in use
- * @GPIO_V2_LINE_ATTR_ID_DEBOUNCE: debounce_period_us field is in use
+ * Identifies which field of the kernel {@code struct gpio_v2_line_attribute} union is in use, mirroring the
+ * {@code enum gpio_v2_line_attr_id} from {@code <uapi/linux/gpio.h>}. As a {@link Pi4JLayout} it is read from and
+ * written to the {@code id} field of a {@link MemorySegment} as a 32-bit integer.
  */
 public enum LineAttributeId implements Pi4JLayout {
     /**
-     * Source: include/uapi/linux/gpio.h:109:2
+     * {@code GPIO_V2_LINE_ATTR_ID_FLAGS}: the attribute's {@code flags} field is in use.
      */
     GPIO_V2_LINE_ATTR_ID_FLAGS(1),
 
     /**
-     * Source: include/uapi/linux/gpio.h:110:2
+     * {@code GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES}: the attribute's {@code values} field is in use.
      */
     GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES(2),
 
     /**
-     * Source: include/uapi/linux/gpio.h:111:2
+     * {@code GPIO_V2_LINE_ATTR_ID_DEBOUNCE}: the attribute's {@code debounce_period_us} field is in use.
      */
     GPIO_V2_LINE_ATTR_ID_DEBOUNCE(3);
 
+    /** Native memory layout of this field: a single 32-bit integer ({@code __u32}). */
     public static final MemoryLayout LAYOUT = ValueLayout.JAVA_INT;
 
     private final int value;
 
     /**
-     * Creates LineAttributeId instance.
+     * Associates the constant with its kernel attribute-id value.
      *
-     * @param value int value of attribute
+     * @param value the {@code GPIO_V2_LINE_ATTR_ID_*} numeric value for this attribute
      */
     LineAttributeId(int value) {
         this.value = value;
     }
 
     /**
-     * Gets LineAttributeId instance by given value.
+     * Resolves the constant whose {@link #getValue()} matches the given attribute id.
      *
-     * @param value int value of attribute
-     * @return LineAttribute instance by given value
+     * @param value the kernel {@code GPIO_V2_LINE_ATTR_ID_*} value to look up
+     * @return the matching {@link LineAttributeId} constant
+     * @throws java.util.NoSuchElementException if no constant has the given value
      */
     public static LineAttributeId create(int value) {
         return Arrays.stream(values()).filter(p -> p.value == value).findFirst().orElseThrow();
@@ -74,9 +71,9 @@ public enum LineAttributeId implements Pi4JLayout {
     }
 
     /**
-     * Gets the value of attribute.
+     * Returns the kernel attribute-id value represented by this constant.
      *
-     * @return int value of attribute
+     * @return the {@code GPIO_V2_LINE_ATTR_ID_*} numeric value
      */
     public int getValue() {
         return value;

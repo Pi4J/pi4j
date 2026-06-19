@@ -3,8 +3,9 @@ package com.pi4j.plugin.ffm.common;
 import java.util.HexFormat;
 
 /**
- * Helper to properly format hex values sent as bytes or byte arrays.
- * E.g. 0xFF or [0x01, 0xFF]
+ * Utility that renders byte values and byte arrays as upper-case, {@code 0x}-prefixed hexadecimal
+ * strings (e.g. {@code 0xFF} or {@code [0x01, 0xFF]}). Used throughout the FFM backend to produce
+ * readable log and exception messages for native I/O payloads.
  */
 public class HexFormatter {
     private static final HexFormat HEX = HexFormat.of().withUpperCase();

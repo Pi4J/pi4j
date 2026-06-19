@@ -10,15 +10,13 @@ import java.lang.invoke.VarHandle;
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
- * Source: include/uapi/linux/gpio.h:96:8
+ * Maps the Linux kernel {@code struct gpio_v2_line_values} (include/uapi/linux/gpio.h) to a
+ * {@link MemorySegment}-backed record, carrying the logical values of GPIO lines for the
+ * {@code GPIO_V2_LINE_GET_VALUES_IOCTL} and {@code GPIO_V2_LINE_SET_VALUES_IOCTL} operations.
  *
- * struct gpio_v2_line_values - Values of GPIO lines
- *
- * @bits: a bitmap containing the value of the lines, set to 1 for active
- * and 0 for inactive.
- * @mask: a bitmap identifying the lines to get or set, with each bit
- * number corresponding to the index into &struct
- * gpio_v2_line_request.offsets.
+ * @param bits  bitmap of line values, 1 for active and 0 for inactive; bit {@code n} corresponds to index
+ *              {@code n} into {@link LineRequest#offsets()}
+ * @param mask  bitmap selecting which lines to get or set; only lines whose bit is set are affected
  */
 public record LineValues(long bits, long mask) implements Pi4JLayout {
 	public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
@@ -31,11 +29,12 @@ public record LineValues(long bits, long mask) implements Pi4JLayout {
 	private static final VarHandle VH_MASK = LAYOUT.varHandle(groupElement("mask"));
 
     /**
-     * Creates LineValues instance from MemorySegment provided.
+     * Decodes a {@link LineValues} from a native buffer holding a {@code gpio_v2_line_values} struct.
+     * A {@link MemorySegment#NULL} buffer yields an empty instance.
      *
-     * @param memorySegment buffer to construct LineValues from
-     * @return LineValues instance
-     * @throws Throwable if there is any exception while converting buffer to java object
+     * @param memorySegment native memory holding the encoded struct, or {@link MemorySegment#NULL}
+     * @return the decoded values, or empty values if the segment is null
+     * @throws Throwable if reading the native memory fails
      */
 	public static LineValues create(MemorySegment memorySegment) throws Throwable {
 		var linevaluesInstance = LineValues.createEmpty();
@@ -46,9 +45,9 @@ public record LineValues(long bits, long mask) implements Pi4JLayout {
 	}
 
     /**
-     * Creates empty LineValues object.
+     * Creates empty values with a zero bitmap and zero mask, suitable as a target for {@link #from(MemorySegment)}.
      *
-     * @return empty LineValues object
+     * @return a zero-initialized {@link LineValues}
      */
 	public static LineValues createEmpty() {
 		return new LineValues(0, 0);

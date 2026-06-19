@@ -12,24 +12,19 @@ import java.util.Arrays;
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
- * Source: include/uapi/linux/gpio.h:224:8
- * <p>
- * struct gpio_v2_line_info - Information about a certain GPIO line
+ * Maps the Linux kernel {@code struct gpio_v2_line_info} (include/uapi/linux/gpio.h) to a
+ * {@link MemorySegment}-backed record, describing the current state of a single line on a GPIO chip as returned
+ * by the {@code GPIO_V2_GET_LINEINFO_IOCTL}. The caller fills in {@code offset} to select the line before the
+ * ioctl, and the kernel fills in the remaining fields.
  *
- * @name: the name of this GPIO line, such as the output pin of the line on
- * the chip, a rail or a pin header name on a board, as specified by the
- * GPIO chip, may be empty (i.e. name[0] == '\0')
- * @consumer: a functional name for the consumer of this GPIO line as set
- * by whatever is using it, will be empty if there is no current user but
- * may also be empty if the consumer doesn't set this up
- * @offset: the local offset on this GPIO chip, fill this in when
- * requesting the line information from the kernel
- * @num_attrs: the number of attributes in @attrs
- * @flags: flags for this GPIO line, with values from &enum
- * gpio_v2_line_flag, such as %GPIO_V2_LINE_FLAG_ACTIVE_LOW,
- * %GPIO_V2_LINE_FLAG_OUTPUT etc, added together.
- * @attrs: the configuration attributes associated with the line
- * @padding: reserved for future use
+ * @param name      name of the line as exported by the GPIO chip (pin header, rail, etc.); may be empty
+ * @param consumer  functional label of the current consumer of the line; empty if the line is unused or the
+ *                  consumer did not set a label
+ * @param offset    local offset of the line on its GPIO chip; supplied by the caller to select the line
+ * @param numAttrs  number of valid entries in {@code attrs}
+ * @param flags     OR-combined line flags from {@code enum gpio_v2_line_flag} (such as
+ *                  {@code GPIO_V2_LINE_FLAG_ACTIVE_LOW} or {@code GPIO_V2_LINE_FLAG_OUTPUT})
+ * @param attrs     configuration attributes currently associated with the line
  */
 public record LineInfo(byte[] name, byte[] consumer, int offset, int numAttrs, long flags,
                        LineAttribute[] attrs) implements Pi4JLayout {
@@ -56,11 +51,12 @@ public record LineInfo(byte[] name, byte[] consumer, int offset, int numAttrs, l
     private static final MethodHandle MH_ATTRS = LAYOUT.sliceHandle(groupElement("attrs"));
 
     /**
-     * Creates LineInfo instance from MemorySegment provided.
+     * Decodes a {@link LineInfo} from a native buffer holding a {@code gpio_v2_line_info} struct.
+     * A {@link MemorySegment#NULL} buffer yields an empty instance.
      *
-     * @param memorySegment buffer to construct LineInfo from
-     * @return LineInfo instance
-     * @throws Throwable if there is any exception while converting buffer to java object
+     * @param memorySegment native memory holding the encoded struct, or {@link MemorySegment#NULL}
+     * @return the decoded line info, or an empty line info if the segment is null
+     * @throws Throwable if reading the native memory fails
      */
     public static LineInfo create(MemorySegment memorySegment) throws Throwable {
         var lineinfoInstance = LineInfo.createEmpty();
@@ -71,9 +67,10 @@ public record LineInfo(byte[] name, byte[] consumer, int offset, int numAttrs, l
     }
 
     /**
-     * Creates empty LineInfo object.
+     * Creates an empty line info with empty name and consumer, zeroed numeric fields and no attributes,
+     * suitable as a target for {@link #from(MemorySegment)}.
      *
-     * @return empty LineInfo object
+     * @return a zero-initialized {@link LineInfo}
      */
     public static LineInfo createEmpty() {
         return new LineInfo(new byte[]{}, new byte[]{}, 0, 0, 0, new LineAttribute[]{});

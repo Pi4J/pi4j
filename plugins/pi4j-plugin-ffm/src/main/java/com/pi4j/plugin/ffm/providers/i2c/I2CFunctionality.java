@@ -1,7 +1,11 @@
 package com.pi4j.plugin.ffm.providers.i2c;
 
 /**
- * Functionalities available on the device.
+ * Adapter functionality flags reported by the Linux {@code I2C_FUNCS} ioctl. Each constant mirrors an
+ * {@code I2C_FUNC_*} bit from {@code linux/i2c.h}; {@link FFMI2CBus} tests the returned bitmask against
+ * these to decide which read/write modes (plain I2C or specific SMBus transactions) the underlying
+ * adapter supports. Combined constants such as {@link #I2C_FUNC_SMBUS_BYTE} OR together the
+ * corresponding read/write bits.
  */
 public enum I2CFunctionality {
     /**
@@ -156,18 +160,18 @@ public enum I2CFunctionality {
     int value;
 
     /**
-     * Creates functionality.
+     * Creates a functionality backed by a single {@code I2C_FUNC_*} bit.
      *
-     * @param value byte value of functionality
+     * @param value the bit value of this functionality flag
      */
     I2CFunctionality(int value) {
         this.value = value;
     }
 
     /**
-     * Creates functionality.
+     * Creates a composite functionality whose bit value is the bitwise OR of the given functionalities.
      *
-     * @param func byte values of functionality
+     * @param func the functionalities whose bits are combined into this one
      */
     I2CFunctionality(I2CFunctionality... func) {
         for (I2CFunctionality item : func) {
@@ -176,9 +180,10 @@ public enum I2CFunctionality {
     }
 
     /**
-     * Gets the functionality.
+     * Returns the bitmask value of this functionality, suitable for AND-testing against the result of
+     * the {@code I2C_FUNCS} ioctl.
      *
-     * @return byte value of functionality
+     * @return the {@code I2C_FUNC_*} bit value of this functionality
      */
     public int getValue() {
         return value;

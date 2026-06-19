@@ -10,25 +10,19 @@ import java.lang.invoke.VarHandle;
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
- * Source: include/uapi/linux/gpio.h:293:8
+ * Maps the Linux kernel {@code struct gpio_v2_line_event} (include/uapi/linux/gpio.h) to a
+ * {@link MemorySegment}-backed record. Such an event is read from the line request file descriptor when edge
+ * detection is enabled and a configured edge is observed on one of the requested lines.
  * <p>
- * struct gpio_v2_line_event - The actual event being pushed to userspace
+ * By default {@code timestampNs} is sampled from {@code CLOCK_MONOTONIC} (suitable for measuring the time
+ * between events, not wall-clock time); if {@code GPIO_V2_LINE_FLAG_EVENT_CLOCK_REALTIME} is set on the line it
+ * is sampled from {@code CLOCK_REALTIME} instead.
  *
- * @timestamp_ns: best estimate of time of event occurrence, in nanoseconds.
- * @id: event identifier with value from &enum gpio_v2_line_event_id
- * @offset: the offset of the line that triggered the event
- * @seqno: the sequence number for this event in the sequence of events for
- * all the lines in this line request
- * @line_seqno: the sequence number for this event in the sequence of
- * events on this particular line
- * @padding: reserved for future use
- * <p>
- * By default the @timestamp_ns is read from %CLOCK_MONOTONIC and is
- * intended to allow the accurate measurement of the time between events.
- * It does not provide the wall-clock time.
- * <p>
- * If the %GPIO_V2_LINE_FLAG_EVENT_CLOCK_REALTIME flag is set then the
- * @timestamp_ns is read from %CLOCK_REALTIME.
+ * @param timestampNs  best estimate of the time the event occurred, in nanoseconds, from the configured clock
+ * @param id           event identifier from {@code enum gpio_v2_line_event_id} (rising vs. falling edge)
+ * @param offset       offset of the line that triggered the event
+ * @param seqno        sequence number of this event across all lines in the originating {@link LineRequest}
+ * @param lineSeqno    sequence number of this event among the events on this particular line
  */
 public record LineEvent(long timestampNs, int id, int offset, int seqno, int lineSeqno) implements Pi4JLayout {
     public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
@@ -51,11 +45,12 @@ public record LineEvent(long timestampNs, int id, int offset, int seqno, int lin
     private static final VarHandle VH_LINE_SEQNO = LAYOUT.varHandle(groupElement("line_seqno"));
 
     /**
-     * Creates LineEvent instance from MemorySegment provided.
+     * Decodes a {@link LineEvent} from a native buffer holding a {@code gpio_v2_line_event} struct.
+     * A {@link MemorySegment#NULL} buffer yields an empty instance.
      *
-     * @param memorySegment buffer to construct LineEvent from
-     * @return LineEvent instance
-     * @throws Throwable if there is any exception while converting buffer to java object
+     * @param memorySegment native memory holding the encoded struct, or {@link MemorySegment#NULL}
+     * @return the decoded event, or an empty event if the segment is null
+     * @throws Throwable if reading the native memory fails
      */
     public static LineEvent create(MemorySegment memorySegment) throws Throwable {
         var lineeventInstance = LineEvent.createEmpty();
@@ -66,9 +61,9 @@ public record LineEvent(long timestampNs, int id, int offset, int seqno, int lin
     }
 
     /**
-     * Creates empty LineEvent object.
+     * Creates an empty event with all fields set to zero, suitable as a target for {@link #from(MemorySegment)}.
      *
-     * @return empty LineEvent object
+     * @return a zero-initialized {@link LineEvent}
      */
     public static LineEvent createEmpty() {
         return new LineEvent(0, 0, 0, 0, 0);

@@ -12,11 +12,21 @@ import java.util.Arrays;
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
- * Source: include/uapi/linux/i2c.h:141:7
- * <p>
- * Data for SMBus Messages
+ * Maps the Linux kernel {@code union i2c_smbus_data} (include/uapi/linux/i2c.h), the data payload
+ * shared by all SMBus transactions. As a union the three components alias the same storage and
+ * only one is meaningful per transaction depending on its size code. Implements {@link Pi4JLayout}
+ * to marshal to/from the off-heap {@link #LAYOUT} representation.
+ *
+ * @param _byte the single-byte payload ({@code byte} member of the union)
+ * @param word  the 16-bit word payload ({@code word} member of the union)
+ * @param block the block payload, up to 32 data bytes plus a leading length and PEC byte
+ *              ({@code block} member of the union)
  */
 public record SMBusData(byte _byte, short word, byte[] block) implements Pi4JLayout {
+	/**
+	 * Off-heap union layout matching the kernel {@code union i2c_smbus_data}, overlaying the
+	 * {@code byte}, {@code word} and 34-element {@code block} members.
+	 */
 	public static final MemoryLayout LAYOUT = MemoryLayout.unionLayout(
 		ValueLayout.JAVA_BYTE.withName("byte"),
 		MemoryLayout.paddingLayout(3),
@@ -33,11 +43,12 @@ public record SMBusData(byte _byte, short word, byte[] block) implements Pi4JLay
 	private static final MethodHandle MH_BLOCK = LAYOUT.sliceHandle(groupElement("block"));
 
     /**
-     * Creates SMBusData instance from MemorySegment provided.
+     * Reads an {@link SMBusData} from the given off-heap buffer, returning an empty instance when
+     * the buffer is {@link MemorySegment#NULL}.
      *
-     * @param memorySegment buffer to construct SMBusData from
-     * @return SMBusData instance
-     * @throws Throwable if there is any exception while converting buffer to java object
+     * @param memorySegment the off-heap buffer holding a {@code union i2c_smbus_data}
+     * @return the decoded {@link SMBusData}, or an empty one if {@code memorySegment} is NULL
+     * @throws Throwable if decoding the buffer fails
      */
 	public static SMBusData create(MemorySegment memorySegment) throws Throwable {
 		var smbusdataInstance = SMBusData.createEmpty();
@@ -48,9 +59,9 @@ public record SMBusData(byte _byte, short word, byte[] block) implements Pi4JLay
 	}
 
     /**
-     * Creates empty SMBusData object.
+     * Creates an empty instance with a zero byte, zero word and empty block buffer.
      *
-     * @return empty SMBusData object
+     * @return a new, zero-initialized {@link SMBusData}
      */
 	public static SMBusData createEmpty() {
 		return new SMBusData((byte) 0, (short) 0, new byte[]{});

@@ -8,7 +8,10 @@ import java.lang.foreign.ValueLayout;
 import java.lang.invoke.MethodHandle;
 
 /**
- * Class is describing native methods to access files (open/read/write/etc)
+ * Holds the downcall {@link MethodHandle}s bound to the glibc file-access functions
+ * ({@code open64}, {@code close}, {@code read}, {@code write}, {@code flock}, {@code access}) used
+ * by {@link FileDescriptorNative}. Extends {@link Pi4JNativeContext} to reuse the shared native
+ * linker setup and {@code errno} capture infrastructure.
  */
 class FileDescriptorContext extends Pi4JNativeContext {
 

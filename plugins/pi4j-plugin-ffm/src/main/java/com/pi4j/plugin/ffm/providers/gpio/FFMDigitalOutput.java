@@ -23,6 +23,11 @@ import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 
+/**
+ * Native {@link DigitalOutput} implementation for the FFM backend. Requests a single GPIO line from a
+ * {@code /dev/gpiochipN} character device as an output via the GPIO v2 character-device ioctl
+ * ({@code GPIO_V2_GET_LINE_IOCTL}) and drives its level with {@code GPIO_V2_LINE_SET_VALUES_IOCTL}.
+ */
 public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput {
     private static final Logger logger = LoggerFactory.getLogger(FFMDigitalOutput.class);
     private final IoctlNative ioctl = new IoctlNative();
@@ -33,6 +38,17 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
     private int chipFileDescriptor;
     private boolean closed = false;
 
+    /**
+     * Creates a digital output bound to a GPIO line. Resolves the target device path
+     * ({@code /dev/gpiochip} + the configured bus number), captures the BCM line offset from the
+     * configuration, and verifies that the current user has the required permissions on the device
+     * file. The line itself is not requested until {@link #initialize(Context)} is called.
+     *
+     * @param chipName human-readable GPIO chip name from configuration, used for logging only
+     * @param provider the {@link DigitalOutputProvider} that created this instance
+     * @param config   the {@link DigitalOutputConfig} supplying the BCM line offset, bus number and
+     *                 initial state
+     */
     public FFMDigitalOutput(String chipName, DigitalOutputProvider provider, DigitalOutputConfig config) {
         super(provider, config);
         this.bcm = config.bcm();
@@ -40,6 +56,20 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
         FFMPermissionHelper.checkDevicePermissions(deviceName, config);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Opens the GPIO chip device, reads the line info to ensure the BCM line is not already in use,
+     * then requests it as an output via {@code GPIO_V2_GET_LINE_IOCTL}. When the configuration
+     * specifies an initial state, that level is supplied in the same request as a
+     * {@code GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES} attribute so the pin is driven to it the moment the
+     * line is requested, avoiding the transient low-then-high glitch that occurs when the value is set
+     * only after the request (issue #654). The returned per-request line file descriptor is retained
+     * for subsequent value writes.
+     *
+     * @throws InitializeException if the device cannot be accessed, the line is already in use, or a
+     *                             native {@code ioctl}/open call fails
+     */
     @Override
     public DigitalOutput initialize(Context context) throws InitializeException {
         try {
@@ -88,6 +118,14 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
         return super.initialize(context);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Closes the requested line file descriptor, releasing the GPIO line back to the kernel. The pin
+     * object cannot be reused afterwards; a new one must be created to drive the same line again.
+     *
+     * @throws ShutdownException if closing the native line file descriptor fails
+     */
     @Override
     public DigitalOutput shutdownInternal(Context context) throws ShutdownException {
         super.shutdownInternal(context);
@@ -105,6 +143,14 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Drives the requested line to the given level via {@code GPIO_V2_LINE_SET_VALUES_IOCTL}.
+     *
+     * @throws IOException     declared by the contract for write failures
+     * @throws Pi4JException   if the line is closed or the native value-write {@code ioctl} fails
+     */
     @Override
     public DigitalOutput state(DigitalState state) throws IOException {
         checkClosed();

@@ -24,6 +24,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+/**
+ * Native I2C bus for the FFM backend. Opens the {@code /dev/i2c-N} character device, queries the
+ * adapter's capabilities via the {@code I2C_FUNCS} ioctl, and selects slave addresses with the
+ * {@code I2C_SLAVE} (and {@code I2C_TENBIT}) ioctls. It serves as the shared, synchronized access
+ * point to the underlying file descriptor for the I2C device implementations
+ * ({@code I2CDirect}, {@code I2CSMBus}, {@code I2CFile}).
+ */
 public class FFMI2CBus extends I2CBusBase {
     private static final Logger logger = LoggerFactory.getLogger(FFMI2CBus.class);
     private final IoctlNative ioctl = new IoctlNative();
@@ -37,6 +44,16 @@ public class FFMI2CBus extends I2CBusBase {
     // selected device
     private int selectedDevice;
 
+    /**
+     * Opens and configures the I2C bus device for the configured bus number. Verifies access
+     * permissions, opens {@code /dev/i2c-N} read-write, queries the adapter functionality bitmask via
+     * the {@code I2C_FUNCS} ioctl, and records which {@link I2CFunctionality} features are supported.
+     * Fails if the adapter supports neither plain I2C nor any usable SMBus read/write functionality.
+     *
+     * @param config the {@link I2CConfig} supplying the bus number and device address
+     * @throws InitializeException if the device cannot be accessed, opened, or queried, or if the
+     *                             adapter supports none of the required read/write operations
+     */
     public FFMI2CBus(I2CConfig config) {
         super(config);
         this.busName = I2C_BUS + bus;
@@ -79,32 +96,63 @@ public class FFMI2CBus extends I2CBusBase {
         }
     }
 
+    /**
+     * Indicates whether the adapter supports plain I2C-level transfers, i.e. the
+     * {@code I2C_RDWR}-based direct access mode used by {@code I2CDirect}.
+     *
+     * @return {@code true} if the {@code I2C_FUNC_I2C} functionality is available
+     */
     public boolean supportsDirect() {
         return hasFunctionality(I2CFunctionality.I2C_FUNC_I2C);
     }
 
+    /**
+     * Indicates whether the adapter supports any of the common SMBus transactions (quick, byte,
+     * byte-data, word-data or block-data), i.e. the SMBus access mode used by {@code I2CSMBus}.
+     *
+     * @return {@code true} if at least one of the supported SMBus functionalities is available
+     */
     public boolean supportsSMBus() {
         return hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_QUICK) || hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_BYTE)
             || hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_BYTE_DATA) || hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_WORD_DATA)
             || hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_BLOCK_DATA);
     }
 
+    /**
+     * Tests whether a specific adapter functionality was reported as available by the
+     * {@code I2C_FUNCS} ioctl during initialization.
+     *
+     * @param functionality the {@link I2CFunctionality} feature flag to test
+     * @return {@code true} if the feature is supported by this adapter
+     */
     public boolean hasFunctionality(I2CFunctionality functionality) {
         return functionalityMap.get(functionality) != null && functionalityMap.get(functionality);
     }
 
+    /**
+     * Returns the full map of adapter functionalities to their supported state, as detected during
+     * initialization.
+     *
+     * @return a map from each {@link I2CFunctionality} to whether the adapter supports it
+     */
     public Map<I2CFunctionality, Boolean> getFunctionalityMap() {
         return functionalityMap;
     }
 
+    /**
+     * Returns the device file path of this bus, e.g. {@code /dev/i2c-1}.
+     *
+     * @return the absolute path of the I2C bus character device
+     */
     public String getBusName() {
         return busName;
     }
 
     /**
-     * Selects the device address for communication.
+     * Selects the active slave device on this bus via the {@code I2C_SLAVE} ioctl. The selection is
+     * cached, so re-selecting the currently active address is a no-op.
      *
-     * @param device device address on the bus
+     * @param device the 7-bit slave address to make active for subsequent transfers
      */
     public void selectDevice(int device) {
         logger.debug("{} - selecting device '{}'.", busName, StringUtil.toHexString(device));
@@ -139,6 +187,18 @@ public class FFMI2CBus extends I2CBusBase {
         this.selectedDevice = device;
     }
 
+    /**
+     * Runs an action under the bus lock, passing it the open I2C device file descriptor so the action
+     * can issue native transfers against it. This is the primary entry point used by the device
+     * implementations to perform {@code I2C_RDWR}/SMBus ioctls while holding exclusive access to the
+     * bus.
+     *
+     * @param i2c    the {@link I2C} device on whose behalf the action runs, used for error reporting
+     * @param action a function receiving the I2C file descriptor and returning a result
+     * @param <R>    the result type produced by the action
+     * @return the value returned by the action
+     * @throws Pi4JException if the action throws while executing
+     */
     public <R> R execute(I2C i2c, CheckedFunction<Integer, R> action) {
         return _execute(i2c, () -> {
             try {
@@ -155,6 +215,11 @@ public class FFMI2CBus extends I2CBusBase {
         return _execute(i2c, action);
     }
 
+    /**
+     * Closes the underlying I2C bus device file descriptor.
+     *
+     * @throws Pi4JException if the native close call fails
+     */
     public void close() {
         try {
             file.close(i2cFileDescriptor);

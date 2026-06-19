@@ -9,13 +9,15 @@ import static com.pi4j.plugin.ffm.common.Pi4JNativeContext.CAPTURED_STATE_LAYOUT
 import static com.pi4j.plugin.ffm.common.Pi4JNativeContext.processError;
 
 /**
- * Class for calling native poll methods.
- * The logic behind the class is follows:
- * - allocate the needed buffers from a per-call {@link Arena#ofConfined()} arena
- * - optionally add 'errno' context to caller
- * - call native function with 'invoke'
- * - process errors if any captured by 'errno'
- * - return call result if needed
+ * Java front end to the Linux {@code poll(2)} syscall bound by {@link PollContext}, used to block until
+ * an event (such as a GPIO line edge) is reported on a file descriptor. The single call:
+ * <ul>
+ *   <li>allocates the {@code struct pollfd} buffer from a per-call {@link Arena#ofConfined()} arena;</li>
+ *   <li>attaches an {@code errno} capture state so failures can be reported;</li>
+ *   <li>invokes the native {@code poll} handle;</li>
+ *   <li>translates failures into a {@link Pi4JException} via {@code processError};</li>
+ *   <li>returns the updated {@link PollingData}, or {@code null} on timeout.</li>
+ * </ul>
  */
 public class PollNative {
     // Keep the context field to trigger PollContext class loading (and thus MethodHandle init).
@@ -23,12 +25,15 @@ public class PollNative {
     private final PollContext context = new PollContext();
 
     /**
-     * Calls native poll method and fills the polling data.
+     * Waits for I/O events on the descriptor(s) described by {@code pollingData} by invoking {@code poll},
+     * blocking until an event occurs or {@code timeout} elapses.
      *
-     * @param pollingData data to filled by poll
-     * @param size        size of the event buffer for polling data
-     * @param timeout     time needed for timeout to occur, in milliseconds
-     * @return filled {@link PollingData} with events or null if no events detected
+     * @param pollingData the {@code struct pollfd} contents (file descriptor and requested events)
+     * @param size        number of {@code pollfd} entries in the buffer (the {@code nfds} argument)
+     * @param timeout     maximum time to block in milliseconds; a negative value blocks indefinitely
+     * @return the {@link PollingData} updated with the reported events, or {@code null} if the call
+     *         timed out before any event was reported
+     * @throws Pi4JException if {@code poll} reports an error or the call cannot be invoked
      */
     public PollingData poll(PollingData pollingData, int size, int timeout) {
         try (var arena = Arena.ofConfined()) {

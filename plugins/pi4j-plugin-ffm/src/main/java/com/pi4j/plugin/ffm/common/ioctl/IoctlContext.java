@@ -6,7 +6,10 @@ import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
 
 /**
- * Class is describing native methods to access ioctl (hardware and syscalls)
+ * Holds the native downcall {@link MethodHandle}s for the glibc {@code ioctl} syscall, bound in a
+ * few signature variants because {@code ioctl}'s third argument is type-punned. All variants
+ * capture {@code errno} so the calling {@code IoctlNative} layer can surface native failures. The
+ * request codes passed to these handles come from {@link Command}.
  */
 class IoctlContext extends Pi4JNativeContext {
 

@@ -14,9 +14,23 @@ import com.pi4j.plugin.ffm.providers.i2c.FFMI2CBus;
 
 import java.util.Objects;
 
+/**
+ * Direct (plain I2C) device implementation for the FFM backend. Performs every read and write as one
+ * or more {@code struct i2c_msg} transfers submitted through a single {@code I2C_RDWR} ioctl on the
+ * bus file descriptor, which lets register reads combine the register-write and data-read into one
+ * atomic transaction with a repeated start. Used when the adapter reports the
+ * {@link com.pi4j.plugin.ffm.providers.i2c.I2CFunctionality#I2C_FUNC_I2C} capability.
+ */
 public class I2CDirect extends I2CBase<FFMI2CBus> {
     private final IoctlNative ioctl = new IoctlNative();
 
+    /**
+     * Creates a direct-mode I2C device bound to the given bus.
+     *
+     * @param provider the {@link I2CProvider} that created this device
+     * @param config   the {@link I2CConfig} supplying the target device address
+     * @param i2CBus   the shared {@link FFMI2CBus} whose file descriptor carries the transfers
+     */
     public I2CDirect(I2CProvider provider, I2CConfig config, FFMI2CBus i2CBus) {
         super(provider, config, i2CBus);
     }
@@ -113,6 +127,12 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
         });
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * In addition to releasing the device, this closes the underlying {@link FFMI2CBus}, releasing its
+     * I2C bus file descriptor.
+     */
     @Override
     public void close() {
         super.close();

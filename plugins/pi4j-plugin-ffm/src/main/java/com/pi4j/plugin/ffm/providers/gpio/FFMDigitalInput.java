@@ -36,6 +36,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Native {@link DigitalInput} implementation for the FFM backend. Requests a single GPIO line from a
+ * {@code /dev/gpiochipN} character device as an input via the GPIO v2 character-device ioctl
+ * ({@code GPIO_V2_GET_LINE_IOCTL}), reads its level with {@code GPIO_V2_LINE_GET_VALUES_IOCTL}, and
+ * watches for edge events by polling the resulting line file descriptor. Configured bias (pull
+ * up/down) and optional debounce are applied through GPIO v2 line attributes.
+ */
 public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
     private static final Logger logger = LoggerFactory.getLogger(FFMDigitalInput.class);
 
@@ -65,6 +72,18 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
 
     private boolean closed = false;
 
+    /**
+     * Creates a digital input bound to a GPIO line. Resolves the target device path
+     * ({@code /dev/gpiochip} + the configured bus number), captures the BCM line offset, pull
+     * resistance and debounce period from the configuration, and verifies that the current user has
+     * the required permissions on the device file. The line itself is not requested until
+     * {@link #initialize(Context)} is called.
+     *
+     * @param chipName human-readable GPIO chip name from configuration, used for logging only
+     * @param provider the {@link DigitalInputProvider} that created this instance
+     * @param config   the {@link DigitalInputConfig} supplying the BCM line offset, bus number,
+     *                 pull resistance and debounce period
+     */
     public FFMDigitalInput(String chipName, DigitalInputProvider provider, DigitalInputConfig config) {
         super(provider, config);
         this.bcm = config.bcm();
@@ -74,6 +93,20 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         FFMPermissionHelper.checkDevicePermissions(deviceName, config);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Opens the GPIO chip device read-only, reads the line info to ensure the BCM line is not already
+     * in use, then requests it as an input via {@code GPIO_V2_GET_LINE_IOCTL} with both rising- and
+     * falling-edge detection enabled. The configured pull resistance is mapped to the matching
+     * {@code GPIO_V2_LINE_FLAG_BIAS_*} flag, and a non-zero debounce period is applied as a
+     * {@code GPIO_V2_LINE_ATTR_ID_DEBOUNCE} line attribute. The returned per-request line file
+     * descriptor is retained for subsequent value reads and event polling.
+     *
+     * @throws InitializeException if the device cannot be accessed, the line is already in use, the
+     *                             debounce value overflows the kernel's nanosecond field, or a native
+     *                             {@code ioctl}/open call fails
+     */
     @Override
     public DigitalInput initialize(Context context) throws InitializeException {
         super.initialize(context);
@@ -125,6 +158,14 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Starts a dedicated daemon {@link EventWatcher} thread that blocks in a native {@code poll()} on
+     * the requested line file descriptor and dispatches a {@link DigitalStateChangeEvent} for every
+     * detected rising (HIGH) or falling (LOW) edge. The first call lazily creates the watcher thread
+     * factory and executor; each call adds a new watcher.
+     */
     @Override
     public DigitalInput addListener(DigitalStateChangeListener... listener) {
         logger.trace("{}-{} - Adding new listener", deviceName, bcm);
@@ -153,6 +194,12 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Signals all running {@link EventWatcher} threads to stop and discards them before delegating
+     * removal of the listeners to the superclass.
+     */
     @Override
     public DigitalInput removeListener(DigitalStateChangeListener... listeners) {
         for (EventWatcher watcher : watchers) {
@@ -162,6 +209,16 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         return super.removeListener(listeners);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Stops all event watchers and waits for their threads to finish their current native
+     * {@code poll()} cycle (those threads cannot be force-interrupted) before closing the requested
+     * line file descriptor. Closing the descriptor while a watcher is still polling would leak it and
+     * leave the GPIO line flagged in-use, so a subsequent request to the same BCM would fail.
+     *
+     * @throws ShutdownException if waiting for the watcher threads or closing native resources fails
+     */
     @Override
     public DigitalInput shutdownInternal(Context context) throws ShutdownException {
         super.shutdownInternal(context);
@@ -207,6 +264,14 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Reads the current level of the requested line via {@code GPIO_V2_LINE_GET_VALUES_IOCTL} and maps
+     * the returned bit to a {@link DigitalState}.
+     *
+     * @throws Pi4JException if the line is closed or the native value-read {@code ioctl} fails
+     */
     @Override
     public DigitalState state() {
         checkClosed();
@@ -241,7 +306,10 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
     }
 
     /**
-     * Internal class for watching the event on GPIO Pin.
+     * Runnable that blocks in a native {@code poll()} on the requested GPIO line file descriptor,
+     * reads {@code struct gpio_v2_line_event} records as they arrive, applies optional software
+     * debounce, and hands the resulting {@link DetectedEvent} list to a {@link PinEventProcessing}
+     * callback. It runs until {@link #stopWatching()} is called.
      */
     private class EventWatcher implements Runnable {
         private static final Logger logger = LoggerFactory.getLogger(EventWatcher.class);
@@ -254,10 +322,11 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         private boolean stopWatching = false;
 
         /**
-         * Constructs the EventWatcher
+         * Constructs the watcher for a single requested GPIO line.
          *
-         * @param pinEvent       event
-         * @param eventProcessor event processor
+         * @param fd             the requested line file descriptor to poll for edge events
+         * @param pinEvent       mask of edge types this watcher reacts to (rising, falling or both)
+         * @param eventProcessor callback invoked with the batch of detected events
          */
         EventWatcher(int fd, PinEvent pinEvent, PinEventProcessing eventProcessor) {
             this.fd = fd;

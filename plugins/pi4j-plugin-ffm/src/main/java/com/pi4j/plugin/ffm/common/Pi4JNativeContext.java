@@ -43,12 +43,20 @@ public class Pi4JNativeContext implements SegmentAllocator {
 
 
     /**
-     * Process the error and raise exception method.
+     * Inspects the return value of a native call and, if it indicates failure, reads {@code errno}
+     * from the captured-state segment, resolves the matching message via the native {@code strerror}
+     * function, and raises a {@link Pi4JException}. A non-negative {@code callResult} is treated as
+     * success and the method returns without action.
      *
-     * @param callResult    result of the call
-     * @param capturedState state of errno
-     * @param method        string representation of called method
-     * @param args          arguments called to function
+     * @param callResult    the value returned by the native call; a negative value signals an error
+     * @param capturedState segment laid out as {@link #CAPTURED_STATE_LAYOUT} holding the captured
+     *                      {@code errno} value
+     * @param method        the name of the native function that was called, used in the message
+     * @param args          the arguments passed to the native function, included in the message for
+     *                      diagnostics
+     * @throws Pi4JException if {@code callResult} is negative, carrying the {@code errno} number and
+     *                       its textual description
+     * @throws Throwable     if invoking the native {@code strerror} handle fails
      */
     public static void processError(int callResult, MemorySegment capturedState, String method, Object... args) throws Throwable {
         if (callResult < 0) {

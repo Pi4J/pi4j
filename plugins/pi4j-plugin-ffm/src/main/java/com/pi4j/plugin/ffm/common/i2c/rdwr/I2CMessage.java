@@ -11,62 +11,24 @@ import java.util.Arrays;
 
 
 /**
- * Source: include/uapi/linux/i2c.h:73:0
- * <p>
- * struct i2c_msg - an I2C transaction segment beginning with START
+ * Maps the Linux kernel {@code struct i2c_msg} (include/uapi/linux/i2c.h), one segment of an
+ * I2C transaction beginning with a START condition. Several of these are batched together in a
+ * {@link RDWRData} buffer and submitted through the {@code I2C_RDWR} ioctl. Implements
+ * {@link Pi4JLayout} to marshal to/from the off-heap {@link #LAYOUT} representation.
  *
- * @addr: Slave address, either 7 or 10 bits. When this is a 10 bit address,
- * %I2C_M_TEN must be set in @flags and the adapter must support
- * %I2C_FUNC_10BIT_ADDR.
- * @flags: Supported by all adapters:
- * %I2C_M_RD: read data (from slave to master). Guaranteed to be 0x0001!
- * <p>
- * Optional:
- * %I2C_M_DMA_SAFE: the buffer of this message is DMA safe. Makes only sense
- * in kernelspace, because userspace buffers are copied anyway
- * <p>
- * Only if I2C_FUNC_10BIT_ADDR is set:
- * %I2C_M_TEN: this is a 10 bit chip address
- * <p>
- * Only if I2C_FUNC_SMBUS_READ_BLOCK_DATA is set:
- * %I2C_M_RECV_LEN: message length will be first received byte
- * <p>
- * Only if I2C_FUNC_NOSTART is set:
- * %I2C_M_NOSTART: skip repeated start sequence
- * <p>
- * Only if I2C_FUNC_PROTOCOL_MANGLING is set:
- * %I2C_M_NO_RD_ACK: in a read message, master ACK/NACK bit is skipped
- * %I2C_M_IGNORE_NAK: treat NACK from client as ACK
- * %I2C_M_REV_DIR_ADDR: toggles the Rd/Wr bit
- * %I2C_M_STOP: force a STOP condition after the message
- * @len: Number of data bytes in @buf being read from or written to the I2C
- * slave address. For read transactions where %I2C_M_RECV_LEN is set, the
- * caller guarantees that this buffer can hold up to %I2C_SMBUS_BLOCK_MAX
- * bytes in addition to the initial length byte sent by the slave (plus,
- * if used, the SMBus PEC); and this value will be incremented by the number
- * of block data bytes received.
- * @buf: The buffer into which data is read, or from which it's written.
- * <p>
- * An i2c_msg is the low level representation of one segment of an I2C
- * transaction.  It is visible to drivers in the @i2c_transfer() procedure,
- * to userspace from i2c-dev, and to I2C adapter drivers through the
- * @i2c_adapter.@master_xfer() method.
- * <p>
- * Except when I2C "protocol mangling" is used, all I2C adapters implement
- * the standard rules for I2C transactions.  Each transaction begins with a
- * START.  That is followed by the slave address, and a bit encoding read
- * versus write.  Then follow all the data bytes, possibly including a byte
- * with SMBus PEC.  The transfer terminates with a NAK, or when all those
- * bytes have been transferred and ACKed.  If this is the last message in a
- * group, it is followed by a STOP.  Otherwise it is followed by the next
- * @i2c_msg transaction segment, beginning with a (repeated) START.
- * <p>
- * Alternatively, when the adapter supports %I2C_FUNC_PROTOCOL_MANGLING then
- * passing certain @flags may have changed those standard protocol behaviors.
- * Those flags are only for use with broken/nonconforming slaves, and with
- * adapters which are known to support the specific mangling options they need.
+ * @param address the slave address, either 7 or 10 bits (a 10-bit address additionally requires
+ *                the {@code I2C_M_TEN} flag and adapter support)
+ * @param flags   the message flags bitmask (e.g. {@code I2C_M_RD = 0x0001} to read from slave to
+ *                master, {@code I2C_M_TEN}, {@code I2C_M_RECV_LEN}, {@code I2C_M_NOSTART}, ...)
+ * @param len     the number of data bytes in {@code buf} to read from or write to the slave
+ * @param buf     the data buffer that is read into, or written from
  */
 public record I2CMessage(int address, int flags, int len, byte[] buf) implements Pi4JLayout {
+    /**
+     * Off-heap memory layout matching the kernel {@code struct i2c_msg}: three 16-bit fields
+     * ({@code address}, {@code flags}, {@code len}), two padding bytes, and a pointer to the
+     * data buffer ({@code buf}).
+     */
     public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
         ValueLayout.JAVA_SHORT.withName("address"),
         ValueLayout.JAVA_SHORT.withName("flags"),
@@ -80,9 +42,10 @@ public record I2CMessage(int address, int flags, int len, byte[] buf) implements
     private static final VarHandle VH_BUFFER = LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("buf"));
 
     /**
-     * Creates empty I2CMessage object.
+     * Creates an empty message with zeroed address, flags and length and an empty buffer,
+     * typically used as a target for {@link #from(MemorySegment)} when reading a struct back.
      *
-     * @return empty I2CMessage object
+     * @return a new, zero-initialized {@link I2CMessage}
      */
     public static I2CMessage createEmpty() {
         return new I2CMessage((byte) 0, (byte) 0, 0, new byte[0]);
@@ -110,6 +73,14 @@ public record I2CMessage(int address, int flags, int len, byte[] buf) implements
         return new I2CMessage(address, flags, len, buf);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Not supported for this type: the data buffer pointer must be allocated off-heap, so the
+     * {@link #to(MemorySegment, SegmentAllocator)} overload with an allocator must be used instead.
+     *
+     * @throws UnsupportedOperationException always
+     */
     @Override
     public void to(MemorySegment buffer) throws Throwable {
         throw new UnsupportedOperationException("I2CMessage needs to be called with external Segment Allocator");
