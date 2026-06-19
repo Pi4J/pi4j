@@ -9,6 +9,7 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
+#include <linux/version.h>
 
 #define MODULE_NAME "i2c-mock"
 
@@ -299,7 +300,11 @@ static int i2c_mock_smbus_xfer(struct i2c_adapter *adap, u16 addr,
 
 static const struct i2c_algorithm i2c_algorithm = {
 	.functionality	= i2c_mock_funcions,
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 11, 0)
 	.xfer			= i2c_mock_xfer,
+#else
+	.master_xfer	= i2c_mock_xfer,
+#endif
 	.smbus_xfer 	= i2c_mock_smbus_xfer,
 };
 

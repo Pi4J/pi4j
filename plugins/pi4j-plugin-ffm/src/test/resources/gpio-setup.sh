@@ -11,7 +11,7 @@
 NGPIOS="${GPIO_MOCK_NGPIOS:-8,1}"
 LABELS="${GPIO_MOCK_LABELS:-accessible,inaccessible}"
 HOGS="${GPIO_MOCK_HOGS:-2,-1}"
-NUMBERS="${GPIO_MOCK_NUMBERS:-2,3,99}"
+NUMBERS="${GPIO_MOCK_NUMBERS:-97,98}"
 # Set to 1 to enable verbose debug logging from the mock driver (visible in dmesg)
 DEBUG="${GPIO_MOCK_DEBUG:-0}"
 
@@ -20,20 +20,18 @@ insmod gpio-mock.ko ngpios="$NGPIOS" labels="$LABELS" hog_lines="$HOGS" debug="$
 
 # The kernel assigns /dev/gpiochip<N> numbers automatically (always the lowest
 # free integer) - a GPIO driver cannot request a specific one the way i2c can.
-# To expose a chip under a fixed number, we locate it by its label (which the
-# driver lets us set) and symlink it to the requested /dev/gpiochip<N>.
+# To expose a chip under a fixed number, we symlink it to the requested
+# /dev/gpiochip<N>. The mock's chips are children of its platform device in sysfs
+# and the kernel numbers them consecutively in registration order, which matches
+# the order of the labels/ngpios/NUMBERS lists - so we map them by position,
+# without needing the libgpiod 'gpiodetect' tool.
 if [ -n "$NUMBERS" ]; then
 	i=1
-	for number in $(echo "$NUMBERS" | tr ',' ' '); do
-		label=$(echo "$LABELS" | cut -d',' -f"$i")
+	for chip in $(ls -d /sys/devices/platform/gpio-mock/gpiochip* 2>/dev/null | sort -V); do
+		real="${chip##*/}"  # gpiochip<N> as assigned by the kernel
+		number=$(echo "$NUMBERS" | cut -d',' -f"$i")
 		i=$((i + 1))
-		[ -z "$label" ] && continue
-		# resolve the real /dev node of the chip carrying this label
-		real=$(gpiodetect 2>/dev/null | awk -v l="[$label]" '$2 == l { print $1; exit }')
-		if [ -z "$real" ]; then
-			echo "gpio-mock: could not find chip labelled '$label' to map to gpiochip$number" >&2
-			continue
-		fi
+		[ -z "$number" ] && continue
 		# only create a symlink if the chip is not already under the wanted number
 		if [ "$real" != "gpiochip$number" ]; then
 			ln -sf "/dev/$real" "/dev/gpiochip$number"

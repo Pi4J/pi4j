@@ -7,6 +7,7 @@
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/version.h>
 #include <linux/slab.h>
 #include <linux/debugfs.h>
 #include <linux/platform_device.h>
@@ -127,14 +128,24 @@ static int gpio_mock_get(struct gpio_chip *gc, unsigned int offset)
 	return value;
 }
 
-/* stores the driven value of an output line */
+/*
+ * Stores the driven value of an output line. The .set callback returned void until
+ * v6.17, where it was changed to return an int (error code), so the signature is
+ * selected by kernel version to keep the driver portable (e.g. 6.8 on a Pi vs 6.17).
+ */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)
 static int gpio_mock_set(struct gpio_chip *gc, unsigned int offset, int value)
+#else
+static void gpio_mock_set(struct gpio_chip *gc, unsigned int offset, int value)
+#endif
 {
 	struct gpio_mock_chip *chip = gpiochip_get_data(gc);
 
 	chip->lines[offset].value = !!value;
 	mock_dbg(gc->parent, "%s: set line %u value %d", gc->label, offset, !!value);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 17, 0)
 	return 0;
+#endif
 }
 
 /* maps a line to a simulated interrupt so consumers can poll() for edge events */
@@ -358,7 +369,15 @@ err:
 	return ret;
 }
 
+/*
+ * platform_driver.remove returned int until v6.11, where it was changed to return
+ * void, so the signature is selected by kernel version to keep the driver portable.
+ */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 11, 0)
 static void gpio_mock_remove(struct platform_device *pdev)
+#else
+static int gpio_mock_remove(struct platform_device *pdev)
+#endif
 {
 	int i;
 
@@ -368,6 +387,9 @@ static void gpio_mock_remove(struct platform_device *pdev)
 			gpiochip_free_own_desc(mock_chips[i].hogged);
 	}
 	debugfs_remove_recursive(debugfs_root);
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0)
+	return 0;
+#endif
 }
 
 static struct platform_driver gpio_mock_driver = {

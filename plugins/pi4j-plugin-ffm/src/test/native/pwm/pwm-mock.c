@@ -10,6 +10,7 @@
 #include <linux/slab.h>
 #include <linux/platform_device.h>
 #include <linux/pwm.h>
+#include <linux/version.h>
 
 #define MODULE_NAME "pwm-mock"
 
@@ -33,6 +34,18 @@ MODULE_PARM_DESC(debug, "Enable verbose debug logging (default 0)");
 #define mock_dbg(dev, fmt, ...) \
     do { if (debug) dev_info(dev, fmt, ##__VA_ARGS__); } while (0)
 
+/*
+ * In v6.9 the PWM core gained a 'struct device' embedded in 'struct pwm_chip' (allocated
+ * through pwmchip_alloc()), replacing the earlier 'struct device *dev' pointer. This macro
+ * yields a 'struct device *' for logging on both layouts. The same 6.9 boundary also selects
+ * the chip allocation/registration path in pwm_mockup_pwm_probe().
+ */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0)
+#define pwm_chip_dev(chip)	(&(chip)->dev)
+#else
+#define pwm_chip_dev(chip)	((chip)->dev)
+#endif
+
 static struct platform_device *pwm_mock_device;
 
 // per-channel stored state, indexed by hwpwm; allocated for 'channels' entries
@@ -52,7 +65,7 @@ static int pwm_mock_get_state(struct pwm_chip *chip, struct pwm_device *pwm_dev,
                            		     struct pwm_state *state)
 {
     *state = channel_states[pwm_dev->hwpwm];
-    mock_dbg(&chip->dev, "Get state of pwm%d: period=%llu, duty_cycle=%llu, polarity=%s, enabled=%d",
+    mock_dbg(pwm_chip_dev(chip), "Get state of pwm%d: period=%llu, duty_cycle=%llu, polarity=%s, enabled=%d",
         pwm_dev->hwpwm,
         state->period,
         state->duty_cycle,
@@ -68,25 +81,25 @@ static int pwm_mock_apply(struct pwm_chip *chip, struct pwm_device *pwm_dev,
     struct pwm_state *current_state = &channel_states[pwm_dev->hwpwm];
 
     if (current_state->period != state->period) {
-        mock_dbg(&chip->dev, "Set period of pwm%d: %llu",
+        mock_dbg(pwm_chip_dev(chip), "Set period of pwm%d: %llu",
             pwm_dev->hwpwm,
             state->period);
     }
 
     if (current_state->duty_cycle != state->duty_cycle) {
-        mock_dbg(&chip->dev, "Set duty_cycle of pwm%d: %llu",
+        mock_dbg(pwm_chip_dev(chip), "Set duty_cycle of pwm%d: %llu",
             pwm_dev->hwpwm,
             state->duty_cycle);
     }
 
     if (current_state->polarity != state->polarity) {
-        mock_dbg(&chip->dev, "Set polarity of pwm%d: %s",
+        mock_dbg(pwm_chip_dev(chip), "Set polarity of pwm%d: %s",
             pwm_dev->hwpwm,
             getPolarityName(state->polarity));
     }
 
     if (current_state->enabled != state->enabled) {
-        mock_dbg(&chip->dev, "Set enabled pwm%d: %s",
+        mock_dbg(pwm_chip_dev(chip), "Set enabled pwm%d: %s",
             pwm_dev->hwpwm,
             state->enabled ? "true" : "false");
     }
@@ -100,14 +113,14 @@ static int pwm_mock_apply(struct pwm_chip *chip, struct pwm_device *pwm_dev,
 // Export PWM channel
 static int pwm_mock_request(struct pwm_chip *chip, struct pwm_device *pwm_dev)
 {
-    mock_dbg(&chip->dev, "Export channel %d", pwm_dev->hwpwm);
+    mock_dbg(pwm_chip_dev(chip), "Export channel %d", pwm_dev->hwpwm);
     return 0;
 }
 
 // Unexport PWM channel
 static void pwm_mock_free(struct pwm_chip *chip, struct pwm_device *pwm_dev)
 {
-    mock_dbg(&chip->dev, "Unexport channel %d", pwm_dev->hwpwm);
+    mock_dbg(pwm_chip_dev(chip), "Unexport channel %d", pwm_dev->hwpwm);
 }
 
 static const struct pwm_ops pwm_mock_ops = {
@@ -133,6 +146,7 @@ static int pwm_mockup_pwm_probe(struct platform_device *pdev)
     if (!channel_states)
         return -ENOMEM;
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0)
     // chip is allocated and added through devm, so it is removed and freed on unbind
     chip = devm_pwmchip_alloc(&pdev->dev, channels, 0);
     if (IS_ERR(chip)) {
@@ -141,6 +155,16 @@ static int pwm_mockup_pwm_probe(struct platform_device *pdev)
     }
 
     chip->ops = &pwm_mock_ops;
+#else
+    // pre-6.9: the driver owns the pwm_chip and sets its fields directly. devm frees it on unbind.
+    chip = devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
+    if (!chip)
+        return -ENOMEM;
+
+    chip->dev = &pdev->dev;
+    chip->npwm = channels;
+    chip->ops = &pwm_mock_ops;
+#endif
 
     ret = devm_pwmchip_add(&pdev->dev, chip);
     if (ret < 0) {
@@ -148,7 +172,7 @@ static int pwm_mockup_pwm_probe(struct platform_device *pdev)
         return ret;
     }
 
-    mock_dbg(&chip->dev, "Created new mock pwmchip with %d channels", channels);
+    mock_dbg(pwm_chip_dev(chip), "Created new mock pwmchip with %d channels", channels);
     return 0;
 }
 
