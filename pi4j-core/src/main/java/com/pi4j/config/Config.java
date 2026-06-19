@@ -28,47 +28,85 @@ package com.pi4j.config;
 import java.util.Map;
 
 /**
- * <p>Config interface.</p>
+ * Root contract for all Pi4J I/O configuration objects. A {@code Config} carries the common
+ * identity properties ({@code id}, {@code name}, {@code description}) shared by every I/O, exposes
+ * the raw underlying property map, and validates its own required values. I/O-specific
+ * configurations (such as {@link BcmConfig}, {@link BusConfig} or {@link ChannelConfig}) extend
+ * this interface, and instances are typically assembled with a {@link ConfigBuilder}.
  *
- * @param <CONFIG_TYPE>
+ * @param <CONFIG_TYPE> the concrete configuration sub-type
  */
 public interface Config<CONFIG_TYPE> {
     /**
-     * Constant <code>ID_KEY="id"</code>
+     * Property key under which the configuration identifier is stored in the properties map.
      */
     String ID_KEY = "id";
     /**
-     * Constant <code>NAME_KEY="name"</code>
+     * Property key under which the configuration name is stored in the properties map.
      */
     String NAME_KEY = "name";
     /**
-     * Constant <code>DESCRIPTION_KEY="description"</code>
+     * Property key under which the configuration description is stored in the properties map.
      */
     String DESCRIPTION_KEY = "description";
 
     /**
-     * Underlying raw configuration properties.
+     * Returns the underlying raw configuration properties backing this instance.
      *
-     * @return a {@link Map} of {@link String},{@link String} of raw property keys and string values.
+     * @return an unmodifiable map of raw property keys to their string values
      */
     Map<String, String> properties();
 
+    /**
+     * Returns the unique identifier of this configuration.
+     *
+     * @return the configuration id, or {@code null} if none was set
+     */
     String id();
 
+    /**
+     * Returns the human-readable name of this configuration.
+     *
+     * @return the configuration name, or {@code null} if none was set
+     */
     String name();
 
+    /**
+     * Returns the human-readable description of this configuration.
+     *
+     * @return the configuration description, or {@code null} if none was set
+     */
     String description();
 
+    /**
+     * Validates that this configuration contains all required values, throwing if any are missing
+     * or invalid. Called before the configured I/O is created.
+     */
     void validate();
 
+    /**
+     * Returns the unique identifier of this configuration.
+     *
+     * @return the configuration id, or {@code null} if none was set
+     */
     default String getId() {
         return this.id();
     }
 
+    /**
+     * Returns the human-readable name of this configuration.
+     *
+     * @return the configuration name, or {@code null} if none was set
+     */
     default String getName() {
         return this.name();
     }
 
+    /**
+     * Returns the human-readable description of this configuration.
+     *
+     * @return the configuration description, or {@code null} if none was set
+     */
     default String getDescription() {
         return this.description();
     }

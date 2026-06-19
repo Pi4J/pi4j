@@ -10,23 +10,21 @@ import java.lang.invoke.VarHandle;
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
- * Source: include/uapi/linux/gpio.h:130:8
- * <p>
- * struct gpio_v2_line_attribute - a configurable attribute of a line
+ * Maps the Linux kernel {@code struct gpio_v2_line_attribute} (include/uapi/linux/gpio.h) to a
+ * {@link MemorySegment}-backed record, representing a single configurable attribute of one or more GPIO lines.
+ * The {@code id} selects which member of the kernel union is meaningful, so only one of {@code flags},
+ * {@code values}, or {@code debouncePeriodUs} carries data for a given attribute.
  *
- * @id: attribute identifier with value from &enum gpio_v2_line_attr_id
- * @padding: reserved for future use and must be zero filled
- * @flags: if id is %GPIO_V2_LINE_ATTR_ID_FLAGS, the flags for the GPIO
- * line, with values from &enum gpio_v2_line_flag, such as
- * %GPIO_V2_LINE_FLAG_ACTIVE_LOW, %GPIO_V2_LINE_FLAG_OUTPUT etc, added
- * together.  This overrides the default flags contained in the &struct
- * gpio_v2_line_config for the associated line.
- * @values: if id is %GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES, a bitmap
- * containing the values to which the lines will be set, with each bit
- * number corresponding to the index into &struct
- * gpio_v2_line_request.offsets.
- * @debounce_period_us: if id is %GPIO_V2_LINE_ATTR_ID_DEBOUNCE, the
- * desired debounce period, in microseconds
+ * @param id                attribute identifier from {@code enum gpio_v2_line_attr_id} that selects which union
+ *                          member below is active ({@code GPIO_V2_LINE_ATTR_ID_FLAGS},
+ *                          {@code GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES} or {@code GPIO_V2_LINE_ATTR_ID_DEBOUNCE})
+ * @param flags             when {@code id} is {@code GPIO_V2_LINE_ATTR_ID_FLAGS}, the OR-combined line flags from
+ *                          {@code enum gpio_v2_line_flag}; overrides the default flags of the associated
+ *                          {@link LineConfig} for the matching lines
+ * @param values            when {@code id} is {@code GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES}, a bitmap of output
+ *                          values (bit {@code n} corresponds to index {@code n} into {@link LineRequest#offsets()})
+ * @param debouncePeriodUs  when {@code id} is {@code GPIO_V2_LINE_ATTR_ID_DEBOUNCE}, the desired debounce period
+ *                          in microseconds
  */
 public record LineAttribute(int id, long flags, long values,
                             int debouncePeriodUs) implements Pi4JLayout {
@@ -49,11 +47,12 @@ public record LineAttribute(int id, long flags, long values,
     private static final VarHandle VH_DEBOUNCE_PERIOD_US = LAYOUT.select(groupElement("internal_union_0")).varHandle(groupElement("debounce_period_us"));
 
     /**
-     * Creates LineAttribute instance from MemorySegment provided.
+     * Decodes a {@link LineAttribute} from a native buffer holding a {@code gpio_v2_line_attribute} struct.
+     * A {@link MemorySegment#NULL} buffer yields an empty instance.
      *
-     * @param memorySegment buffer to construct LineAttribute from
-     * @return LineAttribute instance
-     * @throws Throwable if there is any exception while converting buffer to java object
+     * @param memorySegment native memory holding the encoded struct, or {@link MemorySegment#NULL}
+     * @return the decoded attribute, or an empty attribute if the segment is null
+     * @throws Throwable if reading the native memory fails
      */
     public static LineAttribute create(MemorySegment memorySegment) throws Throwable {
         var lineattributeInstance = LineAttribute.createEmpty();
@@ -64,9 +63,9 @@ public record LineAttribute(int id, long flags, long values,
     }
 
     /**
-     * Creates empty LineAttribute object.
+     * Creates an empty attribute with all fields set to zero, suitable as a target for {@link #from(MemorySegment)}.
      *
-     * @return empty LineAttribute object
+     * @return a zero-initialized {@link LineAttribute}
      */
     public static LineAttribute createEmpty() {
         return new LineAttribute(0, 0, 0, 0);

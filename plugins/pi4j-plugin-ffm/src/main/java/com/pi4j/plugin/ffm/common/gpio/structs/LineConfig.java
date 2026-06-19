@@ -12,21 +12,17 @@ import java.util.Arrays;
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
- * Source: include/uapi/linux/gpio.h:167:8
- * <p>
- * struct gpio_v2_line_config - Configuration for GPIO lines
+ * Maps the Linux kernel {@code struct gpio_v2_line_config} (include/uapi/linux/gpio.h) to a
+ * {@link MemorySegment}-backed record, holding the requested configuration for the lines of a
+ * {@link LineRequest}. The {@code flags} apply to all requested lines by default, while individual
+ * {@link LineConfigAttribute} entries can override that default for specific lines.
  *
- * @flags: flags for the GPIO lines, with values from &enum
- * gpio_v2_line_flag, such as %GPIO_V2_LINE_FLAG_ACTIVE_LOW,
- * %GPIO_V2_LINE_FLAG_OUTPUT etc, added together.  This is the default for
- * all requested lines but may be overridden for particular lines using
- * @attrs.
- * @num_attrs: the number of attributes in @attrs
- * @padding: reserved for future use and must be zero filled
- * @attrs: the configuration attributes associated with the requested
- * lines.  Any attribute should only be associated with a particular line
- * once.  If an attribute is associated with a line multiple times then the
- * first occurrence (i.e. lowest index) has precedence.
+ * @param flags     OR-combined default line flags from {@code enum gpio_v2_line_flag} (such as
+ *                  {@code GPIO_V2_LINE_FLAG_ACTIVE_LOW} or {@code GPIO_V2_LINE_FLAG_OUTPUT}) applied to all
+ *                  requested lines unless overridden by an entry in {@code attrs}
+ * @param numAttrs  number of valid entries in {@code attrs}
+ * @param attrs     per-line configuration overrides; an attribute should be associated with a given line only
+ *                  once, and if it appears multiple times the lowest-indexed occurrence takes precedence
  */
 public record LineConfig(long flags, int numAttrs,
                          LineConfigAttribute[] attrs) implements Pi4JLayout {
@@ -44,11 +40,12 @@ public record LineConfig(long flags, int numAttrs,
     private static final MethodHandle MH_ATTRS = LAYOUT.sliceHandle(groupElement("attrs"));
 
     /**
-     * Creates LineConfig instance from MemorySegment provided.
+     * Decodes a {@link LineConfig} from a native buffer holding a {@code gpio_v2_line_config} struct.
+     * A {@link MemorySegment#NULL} buffer yields an empty instance.
      *
-     * @param memorySegment buffer to construct LineConfig from
-     * @return LineConfig instance
-     * @throws Throwable if there is any exception while converting buffer to java object
+     * @param memorySegment native memory holding the encoded struct, or {@link MemorySegment#NULL}
+     * @return the decoded configuration, or an empty configuration if the segment is null
+     * @throws Throwable if reading the native memory fails
      */
     public static LineConfig create(MemorySegment memorySegment) throws Throwable {
         var lineconfigInstance = LineConfig.createEmpty();
@@ -59,9 +56,10 @@ public record LineConfig(long flags, int numAttrs,
     }
 
     /**
-     * Creates empty LineConfig object.
+     * Creates an empty configuration with zero flags and no attributes, suitable as a target for
+     * {@link #from(MemorySegment)}.
      *
-     * @return empty LineConfig object
+     * @return a zero-initialized {@link LineConfig}
      */
     public static LineConfig createEmpty() {
         return new LineConfig(0, 0, new LineConfigAttribute[]{});

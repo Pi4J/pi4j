@@ -9,7 +9,9 @@ import static com.pi4j.plugin.ffm.common.Pi4JNativeContext.CAPTURED_STATE_LAYOUT
 import static com.pi4j.plugin.ffm.common.Pi4JNativeContext.processError;
 
 /**
- * Class for calling native file methods.
+ * High-level wrapper around the glibc file syscalls exposed by {@link FileDescriptorContext},
+ * providing the {@code open}/{@code close}/{@code read}/{@code write}/{@code flock}/{@code access}
+ * operations the FFM backend uses to talk to character device nodes (gpiochip, i2c, spidev, pwm).
  * The logic behind the class is follows:
  * - allocate the needed buffers from a per-call {@link Arena#ofConfined()} arena
  * - optionally add 'errno' context to caller
@@ -26,8 +28,9 @@ public class FileDescriptorNative {
      * Opens file. Delegate to native 'open64' glibc method.
      *
      * @param path     the path to be opened in file system
-     * @param openFlag flag to be used when opening (see {@link  FileFlag} enum for details)
-     * @return internal file descriptor to be used for other file manipulations
+     * @param openFlag bitmask of open flags (e.g. {@code O_RDWR}); see {@link FileFlag} for the values
+     * @return the non-negative file descriptor to be used for subsequent file operations
+     * @throws Pi4JException if the native {@code open64} call fails, carrying the {@code errno} detail
      */
     public int open(String path, int openFlag) {
         try (var arena = Arena.ofConfined()) {
@@ -44,7 +47,8 @@ public class FileDescriptorNative {
     /**
      * Closes file. Delegate to native 'close' glibc method.
      *
-     * @param fd file descriptor of closing file
+     * @param fd file descriptor of the file to close
+     * @throws Pi4JException if the native {@code close} call fails, carrying the {@code errno} detail
      */
     public void close(int fd) {
         try (var arena = Arena.ofConfined()) {
@@ -59,10 +63,11 @@ public class FileDescriptorNative {
     /**
      * Reads file. Delegate to native 'read' glibc method.
      *
-     * @param fd     file descriptor of file to read
-     * @param buffer byte buffer which will contain the result of read
-     * @param size   byte buffer size to be read
-     * @return the byte buffer with the data read from file descriptor
+     * @param fd     file descriptor of the file to read
+     * @param buffer byte buffer sized to receive the read; its length defines the native segment size
+     * @param size   number of bytes to request from the read call
+     * @return a byte array holding the bytes read back from the file descriptor
+     * @throws Pi4JException if the native {@code read} call fails, carrying the {@code errno} detail
      */
     public byte[] read(int fd, byte[] buffer, int size) {
         try (var arena = Arena.ofConfined()) {
@@ -79,9 +84,10 @@ public class FileDescriptorNative {
     /**
      * Writes to file. Delegate to native 'write' glibc method.
      *
-     * @param fd   file descriptor of file to write
-     * @param data byte buffer, containing data to write
-     * @return size of data written
+     * @param fd   file descriptor of the file to write
+     * @param data the bytes to write; the full array length is passed as the write count
+     * @return the number of bytes actually written
+     * @throws Pi4JException if the native {@code write} call fails, carrying the {@code errno} detail
      */
     public int write(int fd, byte[] data) {
         try (var arena = Arena.ofConfined()) {
@@ -98,9 +104,10 @@ public class FileDescriptorNative {
     /**
      * Locks the file on filesystem. Delegate to native 'flock' glibc method.
      *
-     * @param fd       file descriptor of file to lock
-     * @param lockFlag lock flags as described in {@link FileFlag}
-     * @return file locking descriptor
+     * @param fd       file descriptor of the file to lock
+     * @param lockFlag the {@code flock} operation, e.g. {@code LOCK_EX} or {@code LOCK_UN}; see {@link FileFlag}
+     * @return the native call result, {@code 0} on success
+     * @throws Pi4JException if the native {@code flock} call fails, carrying the {@code errno} detail
      */
     public int flock(int fd, int lockFlag) {
         try (var arena = Arena.ofConfined()) {
@@ -118,8 +125,9 @@ public class FileDescriptorNative {
      * NOTE: this method checks access only for the current user and is not taking in account SUID/GUID type of calls.
      *
      * @param path the path to be checked in file system
-     * @param flag access flags as described in {@link FileFlag}
-     * @return the result of checking, 0 means all checks are passed
+     * @param flag the access mode to test, e.g. {@code R_OK}, {@code W_OK} or {@code F_OK}; see {@link FileFlag}
+     * @return {@code 0} if all requested access checks pass, a negative value otherwise
+     * @throws Pi4JException if invoking the native {@code access} handle fails
      */
     public int access(String path, int flag) {
         try (var arena = Arena.ofConfined()) {

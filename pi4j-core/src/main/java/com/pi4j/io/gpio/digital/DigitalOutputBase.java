@@ -36,16 +36,34 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * <p>Abstract DigitalOutputBase class.</p>
+ * Base implementation of {@link DigitalOutput} that tracks the current {@link DigitalState}, applies the
+ * configured initial and shutdown states, and provides shared blocking/asynchronous {@code pulse} and
+ * {@code blink} behaviour. Concrete providers extend this class and override {@link #state(DigitalState)} to
+ * actually drive the hardware.
  */
 public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, DigitalOutputConfig, DigitalOutputProvider> implements DigitalOutput {
 
+    /** The current cached state of this output; {@link DigitalState#UNKNOWN} until first set. */
     protected DigitalState state = DigitalState.UNKNOWN;
 
+    /**
+     * Creates a new digital output bound to the given provider and configuration.
+     *
+     * @param provider the provider that created and manages this output instance
+     * @param config   the configuration describing the pin address, initial state, shutdown state and identity
+     */
     public DigitalOutputBase(DigitalOutputProvider provider, DigitalOutputConfig config) {
         super(provider, config);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * After the base initialization completes, the output is driven to the configured initial state if
+     * {@link DigitalOutputConfig#initialState()} is set.
+     *
+     * @throws InitializeException if base initialization fails or the initial state cannot be written
+     */
     @Override
     public DigitalOutput initialize(Context context) throws InitializeException {
         super.initialize(context);
@@ -61,6 +79,12 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Updates the cached state and, only when the state actually changes, dispatches a
+     * {@link DigitalStateChangeEvent} to any registered listeners or bindings.
+     */
     @Override
     public DigitalOutput state(DigitalState state) throws IOException {
 
@@ -213,6 +237,14 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
         return this.state;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Before delegating to the base shutdown logic, drives the output to the configured shutdown state if
+     * {@link DigitalOutputConfig#shutdownState()} is set and not {@link DigitalState#UNKNOWN}.
+     *
+     * @throws ShutdownException if the shutdown state cannot be written or base shutdown fails
+     */
     @Override
     public DigitalOutput shutdownInternal(Context context) throws ShutdownException {
         // set pin state to the shutdown state if a shutdown state is configured
@@ -226,6 +258,12 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
         return super.shutdownInternal(context);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Drives the output to the configured {@link DigitalConfig#onState()}, defaulting to
+     * {@link DigitalState#HIGH} when none is configured.
+     */
     @Override
     public DigitalOutput on() throws IOException {
 
@@ -241,6 +279,12 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
         return state(onState);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Drives the output to the inverse of the configured {@link DigitalConfig#onState()}, defaulting to
+     * {@link DigitalState#LOW} when no on-state is configured.
+     */
     @Override
     public DigitalOutput off() throws IOException {
         // the default OFF state is LOW

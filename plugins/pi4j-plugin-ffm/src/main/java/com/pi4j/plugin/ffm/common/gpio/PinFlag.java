@@ -1,59 +1,61 @@
 package com.pi4j.plugin.ffm.common.gpio;
 
 /**
- * Pin Flag for configuring / reading configuration from GPIO.
+ * Bit flags describing or configuring a GPIO line, mirroring the kernel {@code GPIO_V2_LINE_FLAG_*} bits from
+ * {@code <uapi/linux/gpio.h>}. Each constant's {@link #getValue()} is the corresponding bit, so flags are combined
+ * with bitwise OR when building or interpreting a v2 line configuration.
  */
 public enum PinFlag {
     /**
-     * line is not available for request
+     * {@code GPIO_V2_LINE_FLAG_USED}: line is in use and not available for request.
      */
     USED(1),
     /**
-     * line active state is physical low
+     * {@code GPIO_V2_LINE_FLAG_ACTIVE_LOW}: line active state is physical low.
      */
     ACTIVE_LOW(1 << 1),
     /**
-     * line is an input
+     * {@code GPIO_V2_LINE_FLAG_INPUT}: line is an input.
      */
     INPUT(1 << 2),
     /**
-     * line is an output
+     * {@code GPIO_V2_LINE_FLAG_OUTPUT}: line is an output.
      */
     OUTPUT(1 << 3),
     /**
-     * line detects rising (inactive to active) edges
+     * {@code GPIO_V2_LINE_FLAG_EDGE_RISING}: line detects rising (inactive-to-active) edges.
      */
     EDGE_RISING(1 << 4),
     /**
-     * line detects rising (inactive to active) edges
+     * {@code GPIO_V2_LINE_FLAG_EDGE_FALLING}: line detects falling (active-to-inactive) edges.
      */
     EDGE_FALLING(1 << 5),
     /**
-     * line is an open drain output
+     * {@code GPIO_V2_LINE_FLAG_OPEN_DRAIN}: line is an open-drain output.
      */
     OPEN_DRAIN(1 << 6),
     /**
-     * line is an open source output
+     * {@code GPIO_V2_LINE_FLAG_OPEN_SOURCE}: line is an open-source output.
      */
     OPEN_SOURCE(1 << 7),
     /**
-     * line has pull-up bias enabled
+     * {@code GPIO_V2_LINE_FLAG_BIAS_PULL_UP}: line has pull-up bias enabled.
      */
     BIAS_PULL_UP(1 << 8),
     /**
-     * line has pull-down bias enabled
+     * {@code GPIO_V2_LINE_FLAG_BIAS_PULL_DOWN}: line has pull-down bias enabled.
      */
     BIAS_PULL_DOWN(1 << 9),
     /**
-     * line has bias disabled
+     * {@code GPIO_V2_LINE_FLAG_BIAS_DISABLED}: line has bias disabled.
      */
     BIAS_DISABLED(1 << 10),
     /**
-     * line events contain REALTIME timestamps
+     * {@code GPIO_V2_LINE_FLAG_EVENT_CLOCK_REALTIME}: line events carry timestamps from the realtime clock.
      */
     EVENT_CLOCK_REALTIME(1 << 11),
     /**
-     * line events contain timestamps from the hardware timestamping engine (HTE) subsystem
+     * {@code GPIO_V2_LINE_FLAG_EVENT_CLOCK_HTE}: line events carry timestamps from the hardware timestamping engine (HTE) subsystem.
      */
     EVENT_CLOCK_HTE(1 << 12);
 
@@ -61,18 +63,18 @@ public enum PinFlag {
     private final int value;
 
     /**
-     * Creates Pin Flag enum by given integer value.
+     * Associates the constant with its kernel flag bit.
      *
-     * @param value integer value
+     * @param value the {@code GPIO_V2_LINE_FLAG_*} bit value for this flag
      */
     PinFlag(int value) {
         this.value = value;
     }
 
     /**
-     * Gets integer value of Pin Flag enum
+     * Returns the kernel flag bit represented by this constant.
      *
-     * @return integer value
+     * @return the {@code GPIO_V2_LINE_FLAG_*} bit value
      */
     public int getValue() {
         return value;

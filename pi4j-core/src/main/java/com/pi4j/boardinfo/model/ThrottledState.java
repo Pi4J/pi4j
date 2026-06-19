@@ -34,13 +34,21 @@ import java.util.List;
  * undervoltage, frequency capping, throttling, or temperature limits.
  */
 public enum ThrottledState {
+    /** Bit 0: the board is currently experiencing under-voltage. */
     UNDERVOLTAGE_DETECTED(0x1, "Undervoltage detected"),
+    /** Bit 1: the ARM frequency is currently being capped. */
     ARM_FREQUENCY_CAPPED(0x2, "ARM frequency capped"),
+    /** Bit 2: the board is currently being throttled. */
     CURRENTLY_THROTTLED(0x4, "Currently throttled"),
+    /** Bit 3: the soft temperature limit is currently active. */
     SOFT_TEMPERATURE_LIMIT_ACTIVE(0x8, "Soft temperature limit active"),
+    /** Bit 16: under-voltage has occurred at some point since boot (sticky). */
     UNDERVOLTAGE_HAS_OCCURED(0x10000, "Undervoltage has occurred"),
+    /** Bit 17: ARM frequency capping has occurred at some point since boot (sticky). */
     ARM_FREQUENCY_CAPPING_HAS_OCCURED(0x20000, "ARM frequency capping has occurred"),
+    /** Bit 18: throttling has occurred at some point since boot (sticky). */
     THROTTLING_HAS_OCCURED(0x40000, "Throttling has occurred"),
+    /** Bit 19: the soft temperature limit has been reached at some point since boot (sticky). */
     SOFT_TEMPERATURE_LIMIT_HAS_OCCURED(0x80000, "Soft temperature limit has occurred");
 
     private final int value;

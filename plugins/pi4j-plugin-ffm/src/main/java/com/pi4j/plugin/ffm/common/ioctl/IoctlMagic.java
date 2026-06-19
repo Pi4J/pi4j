@@ -7,8 +7,11 @@ import com.pi4j.plugin.ffm.common.gpio.structs.LineValues;
 import com.pi4j.plugin.ffm.common.serial.Termios2;
 
 /**
- * Internal reference file from Kernel headers to calculate ioctl commands.
- * These constants are special parameters and represented as is from macros and static values.
+ * Reproduces the Linux kernel {@code <asm-generic/ioctl.h>} encoding macros and the per-subsystem
+ * request constants in pure Java. The {@code _IOC}/{@code _IO}/{@code _IOR}/{@code _IOW}/{@code _IOWR}
+ * helpers pack the direction, type ("magic" character), command number, and argument size into the
+ * single {@code long} request value that {@link IoctlNative} passes to the {@code ioctl} syscall, while
+ * the named constants (SPI, GPIO v2, termios2) are the concrete requests used by this backend.
  */
 final class IoctlMagic {
 

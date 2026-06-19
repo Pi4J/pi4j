@@ -28,10 +28,16 @@ import java.util.EnumSet;
  */
 
 /**
- * PWM Polarity Enumerations
+ * Enumerates the supported polarities of a PWM signal, as configured via
+ * {@link PwmConfig#polarity()} and {@link PwmConfigBuilder#polarity(PwmPolarity)}.
+ * Polarity determines whether the active (high) portion of each period corresponds
+ * to the duty-cycle directly or to its complement. Not all providers support
+ * inverted polarity.
  */
 public enum PwmPolarity {
+    /** Normal polarity: the duty-cycle represents the proportion of each period the signal is HIGH. */
     NORMAL(0, "normal"),
+    /** Inverted polarity: the duty-cycle represents the proportion of each period the signal is LOW. */
     INVERSED(1, "inversed");
 
     private final int value;
@@ -43,14 +49,18 @@ public enum PwmPolarity {
     }
 
     /**
-     * <p>Getter for the field <code>value</code>.</p>
+     * Returns the numeric code of this polarity (0 for {@link #NORMAL}, 1 for {@link #INVERSED}).
+     *
+     * @return the numeric polarity code
      */
     public int getValue() {
         return value;
     }
 
     /**
-     * <p>Getter for the field <code>name</code>.</p>
+     * Returns the lower-case textual name of this polarity ({@code "normal"} or {@code "inversed"}).
+     *
+     * @return the polarity name
      */
     public String getName() {
         return name;
@@ -61,10 +71,23 @@ public enum PwmPolarity {
         return name.toUpperCase();
     }
 
+    /**
+     * Returns a set containing every defined polarity.
+     *
+     * @return an {@link EnumSet} of all {@link PwmPolarity} values
+     */
     public static EnumSet<PwmPolarity> all() {
         return EnumSet.allOf(PwmPolarity.class);
     }
 
+    /**
+     * Parses a polarity from a string. Accepts the numeric codes {@code "0"}/{@code "1"}
+     * or any value starting with {@code 'n'} (normal) or {@code 'i'} (inversed),
+     * case-insensitively; any unrecognized value defaults to {@link #NORMAL}.
+     *
+     * @param polarity the polarity text to parse
+     * @return the matching polarity, or {@link #NORMAL} if not recognized
+     */
     public static PwmPolarity parse(String polarity) {
         if(polarity.equalsIgnoreCase("0")) return PwmPolarity.NORMAL;
         if(polarity.equalsIgnoreCase("1")) return PwmPolarity.INVERSED;

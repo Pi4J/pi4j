@@ -18,7 +18,7 @@ import java.util.concurrent.locks.LockSupport;
  * The set call is chainable to make immediately materializing a call concise and simple.
  * <p>
  * If the high precision constructor parameter is set, active waiting will be used for
- * delay times below the precsion of parking on linux.
+ * delay times below the precision of parking on Linux.
  */
 public class Delay {
 
@@ -28,13 +28,19 @@ public class Delay {
     private final boolean highPrecision;
     private Instant busyUntil = Instant.now();
 
+    /**
+     * Creates a delay that uses normal (low-precision) waiting, suitable when sub-millisecond accuracy is not
+     * required.
+     */
     public Delay() {
         this(false);
     }
 
     /**
-     * If the high precision parameter is set, active waiting will be used for
-     * delay times below the precsion of parking on linux.
+     * Creates a delay, optionally enabling high-precision waiting.
+     *
+     * @param highPrecision if {@code true}, active (busy) waiting is used for very short remaining delays that
+     *                      fall below the precision achievable by thread parking on Linux
      */
     public Delay(boolean highPrecision) {
         this.highPrecision = highPrecision;
@@ -47,6 +53,9 @@ public class Delay {
      * <p>
      * Typically called after device IO calls where it's known how long command processing will take and the
      * device will be ready again.
+     *
+     * @param micros the delay duration in microseconds
+     * @return this instance for method chaining
      */
     public Delay setMicros(long micros) {
         return setNanos(micros * 1_000);
@@ -59,6 +68,9 @@ public class Delay {
      * <p>
      * Typically called after device IO calls where it's known how long command processing will take and the
      * device will be ready again.
+     *
+     * @param millis the delay duration in milliseconds
+     * @return this instance for method chaining
      */
     public Delay setMillis(long millis) {
         return setNanos(millis * 1_000_000);
@@ -71,6 +83,9 @@ public class Delay {
      * <p>
      * Typically called after device IO calls where it's known how long command processing will take and the
      * device will be ready again.
+     *
+     * @param nanos the delay duration in nanoseconds
+     * @return this instance for method chaining
      */
     public Delay setNanos(long nanos) {
         Instant candidate = Instant.now().plusNanos(nanos);
@@ -80,7 +95,11 @@ public class Delay {
         return this;
     }
 
-    /** Returns the instant when the requested delay will be over. Can be in the past or future. */
+    /**
+     * Returns the instant up to which a delay is currently pending.
+     *
+     * @return the instant when the requested delay will be over; may be in the past (no delay pending) or the future
+     */
     public Instant getBusyUntil() {
         return busyUntil;
     }

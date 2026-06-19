@@ -31,7 +31,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Represents the result of executing a command.
+ * Immutable outcome of running an external command through {@link CommandExecutor}, bundling a
+ * success flag together with the captured standard-output and error text. Instances are created
+ * via the {@link #success(String)} and {@link #failure(String)} factory methods.
  */
 public class CommandResult {
     private final boolean success;
@@ -52,20 +54,24 @@ public class CommandResult {
     }
 
     /**
-     * Static method to create a successful CommandResult.
+     * Creates a result marking a successful command execution, carrying the captured standard output.
      *
-     * @param outputMessage The standard output of the successful command.
-     * @return A CommandResult representing a successful command execution.
+     * @param outputMessage the standard output produced by the command; {@code null} is normalized to
+     *                       an empty string
+     * @return a {@link CommandResult} whose {@link #isSuccess()} is {@code true} and whose error message
+     *         is empty
      */
     public static CommandResult success(String outputMessage) {
         return new CommandResult(true, outputMessage, null);
     }
 
     /**
-     * Static method to create a failed CommandResult.
+     * Creates a result marking a failed command execution, carrying the describing error message.
      *
-     * @param errorMessage The error message from the failed command execution.
-     * @return A CommandResult representing a failed command execution.
+     * @param errorMessage the reason the command failed, such as a timeout or exception detail;
+     *                      {@code null} is normalized to an empty string
+     * @return a {@link CommandResult} whose {@link #isSuccess()} is {@code false} and whose output
+     *         message is empty
      */
     public static CommandResult failure(String errorMessage) {
         return new CommandResult(false, null, errorMessage);
@@ -98,24 +104,12 @@ public class CommandResult {
         return errorMessage;
     }
 
-    /**
-     * Provides a string representation of the CommandResult object.
-     * Useful for logging and debugging.
-     *
-     * @return A string describing the CommandResult.
-     */
     @Override
     public String toString() {
         return String.format("CommandResult{success=%b, outputMessage='%s', errorMessage='%s'}",
                 success, outputMessage, errorMessage);
     }
 
-    /**
-     * Compares this CommandResult to another object for equality.
-     *
-     * @param o The object to compare to.
-     * @return {@code true} if the objects are equal, {@code false} otherwise.
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -126,11 +120,6 @@ public class CommandResult {
                 Objects.equals(errorMessage, that.errorMessage);
     }
 
-    /**
-     * Returns a hash code value for this CommandResult.
-     *
-     * @return The hash code for this object.
-     */
     @Override
     public int hashCode() {
         return Objects.hash(success, outputMessage, errorMessage);

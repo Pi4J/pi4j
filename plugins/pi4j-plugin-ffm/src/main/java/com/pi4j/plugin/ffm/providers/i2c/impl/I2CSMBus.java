@@ -16,14 +16,40 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * {@link I2C} implementation that communicates with an I2C device using the Linux SMBus protocol,
+ * issued through the {@code I2C_SMBUS} ioctl wrapped by {@link SMBusNative}.
+ * <p>
+ * The concrete SMBus transaction (byte, word or block read/write) is chosen at runtime from the
+ * adapter's advertised {@link I2CFunctionality} capabilities. Operations that the SMBus protocol cannot
+ * express - notably register-less array transfers and multi-byte register addressing - throw
+ * {@link UnsupportedOperationException}; use {@link I2CFile} for those cases.
+ *
+ * @see com.pi4j.io.i2c.I2C
+ * @see SMBusNative
+ * @see FFMI2CBus
+ */
 public class I2CSMBus extends I2CBase<FFMI2CBus> {
     private static final Logger logger = LoggerFactory.getLogger(I2CSMBus.class);
     private final SMBusNative SMBUS = new SMBusNative();
 
+    /**
+     * Creates an SMBus-based I2C device bound to the given bus.
+     *
+     * @param provider the {@link I2CProvider} that created this instance
+     * @param config   the I2C configuration carrying the bus number and target slave device address
+     * @param i2CBus   the shared {@link FFMI2CBus} wrapping the open {@code /dev/i2c-N} file descriptor
+     */
     public I2CSMBus(I2CProvider provider, I2CConfig config, FFMI2CBus i2CBus) {
         super(provider, config, i2CBus);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Selects the configured slave address on the bus (issuing the {@code I2C_SLAVE} ioctl) before
+     * delegating to the superclass initialization.
+     */
     @Override
     public I2C initialize(Context context) throws InitializeException {
         i2CBus.selectDevice(config.device());
@@ -32,10 +58,13 @@ public class I2CSMBus extends I2CBase<FFMI2CBus> {
     }
 
     /**
-     * Internal method.
-     * Writes the data array into the register address of device selected previously.
+     * Writes the given bytes to the specified register of the selected device, choosing the SMBus
+     * write transaction (byte, word or block) according to the adapter's advertised functionality.
      *
-     * @param data data array to be written
+     * @param register the device register address (used as the SMBus command byte)
+     * @param data     the payload bytes to write
+     * @return the native return code of the SMBus write call
+     * @throws Pi4JException if the adapter advertises none of the supported SMBus write modes
      */
     private int writeInternal(int register, byte[] data) {
         return i2CBus.execute(this, (i2cFileDescriptor) -> {
@@ -53,11 +82,13 @@ public class I2CSMBus extends I2CBase<FFMI2CBus> {
     }
 
     /**
-     * Internal method.
-     * Reads the data byte from the register address of device selected previously.
+     * Reads bytes from the specified register of the selected device, choosing the SMBus read
+     * transaction (byte, word or block) according to the adapter's advertised functionality.
      *
-     * @param register register address of selected device
-     * @return data byte read from register
+     * @param register the device register address (used as the SMBus command byte)
+     * @param size     the number of bytes requested; a value of 1 prefers the single-byte read
+     * @return the bytes read from the register
+     * @throws Pi4JException if the adapter advertises none of the supported SMBus read modes
      */
     private byte[] readInternal(int register, int size) {
         return i2CBus.execute(this, (i2cFileDescriptor) -> {

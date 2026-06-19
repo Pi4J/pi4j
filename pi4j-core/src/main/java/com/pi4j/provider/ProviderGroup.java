@@ -35,7 +35,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @param <T>
+ * A typed, type-scoped view over the {@link Providers} registry restricted to a single
+ * {@link IOType}. It is a convenience facade returned by accessors such as
+ * {@link Providers#digitalInput()} that lets callers look up providers of one I/O category by id
+ * without repeatedly specifying the type.
+ *
+ * @param <T> the {@link Provider} subtype contained in this group
  */
 public class ProviderGroup<T extends Provider> implements Describable {
 
@@ -45,7 +50,10 @@ public class ProviderGroup<T extends Provider> implements Describable {
     private Providers providers;
 
     /**
-     * Default Constructor
+     * Creates a group that exposes the providers of a single I/O type from the given registry.
+     *
+     * @param providers the backing provider registry this group delegates to
+     * @param type      the I/O type this group is restricted to
      */
     public ProviderGroup(Providers providers, IOType type){
         this.providers = providers;
@@ -56,14 +64,22 @@ public class ProviderGroup<T extends Provider> implements Describable {
     }
 
     /**
-     * @throws com.pi4j.provider.exception.ProviderException if any.
+     * Returns the provider with the given id from this group's I/O type.
+     *
+     * @param providerId the unique identifier of the provider to retrieve
+     * @return the matching provider of this group's I/O type
+     * @throws ProviderException if no provider with the given id exists or it is not of this group's type
      */
     public T get(String providerId) throws ProviderException {
         return providers.get(providerId, type);
     }
 
     /**
-     * @throws com.pi4j.provider.exception.ProviderException if any.
+     * Indicates whether a provider with the given id exists within this group's I/O type.
+     *
+     * @param providerId the unique identifier of the provider to test
+     * @return {@code true} if a matching provider of this group's I/O type exists
+     * @throws ProviderException if the existence check fails
      */
     public boolean exists(String providerId) throws ProviderException {
         return providers.exists(providerId, type);

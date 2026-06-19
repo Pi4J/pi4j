@@ -34,6 +34,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * Primary entry point for the Pi4J library. This utility class provides static factory methods for
+ * obtaining a {@link Context}, the root object that holds the Pi4J runtime state and lifecycle and
+ * from which all platforms, {@link com.pi4j.provider.Provider}s and I/O instances are accessed.
+ * Applications typically start by calling {@link #newAutoContext()} or by configuring a
+ * {@link ContextBuilder} obtained from {@link #newContextBuilder()}.
+ */
 public class Pi4J {
 
     private static final Logger logger = LoggerFactory.getLogger(Pi4J.class);
@@ -45,12 +52,11 @@ public class Pi4J {
     }
 
     /**
-     * Returns a new 'ContextBuilder' instance to help create
-     * a custom 'Context' which represents the Pi4J runtime
-     * state and lifecycle.  The 'ContextBuilder' will allow
-     * you to add custom 'Platforms' and 'Providers'.
+     * Returns a new {@link ContextBuilder} for assembling a customized {@link Context}. Use the builder
+     * when the runtime needs explicit configuration, such as manually registering platforms and
+     * {@link com.pi4j.provider.Provider}s or enabling auto-detection before the {@link Context} is built.
      *
-     * @return ContextBuilder
+     * @return a fresh {@link ContextBuilder} instance ready to be configured
      */
     public static ContextBuilder newContextBuilder() {
         logger.info("New context builder");
@@ -59,12 +65,11 @@ public class Pi4J {
     }
 
     /**
-     * <p>Returns a new 'Context' instance which represents the Pi4J runtime
-     * state and lifecycle.   This 'Context' instance will automatically
-     * load all detected 'Platforms' and 'Providers' that are detected
-     * in the application's class-path.</p>
+     * Returns a new, fully initialized {@link Context} with auto-detection enabled. All platforms and
+     * {@link com.pi4j.provider.Provider}s discovered on the application's class-path are automatically
+     * loaded and registered. This is the most convenient way to bootstrap Pi4J for typical applications.
      *
-     * @return Context
+     * @return an initialized {@link Context} populated with all auto-detected platforms and providers
      */
     public static Context newAutoContext() {
         logger.info("New auto context");
@@ -72,13 +77,12 @@ public class Pi4J {
     }
 
     /**
-     * Returns a new empty 'Context' instance which represents the Pi4J
-     * runtime state and lifecycle.  This empty 'Context' will not contain
-     * any 'Platforms' or 'Providers' by default.  The empty context
-     * can be used if 'Platforms' and 'Providers' need to be added to the
-     * runtime context.
+     * Returns a new {@link Context} without any auto-detection. The resulting context contains no
+     * platforms or {@link com.pi4j.provider.Provider}s by default; use this when the runtime should be
+     * populated explicitly rather than by class-path discovery. For finer control over the contents,
+     * build a context with {@link #newContextBuilder()} instead.
      *
-     * @return Context
+     * @return an initialized but otherwise empty {@link Context}
      */
     public static Context newContext() {
         logger.info("New context");
@@ -94,6 +98,11 @@ public class Pi4J {
      * @param timestamp The date and time when this build was produced.
      */
     public record BuildInfo(String branch, String commitId, String version, String timestamp) {
+        /**
+         * Writes this build information to the Pi4J log at INFO level, listing the branch, commit ID,
+         * version and timestamp. Invoked when a new context builder is created so the running Pi4J
+         * version is recorded in application logs.
+         */
         public void log() {
             logger.info("Pi4J library build info:");
             logger.info("\tBranch: {}", branch);
@@ -103,6 +112,13 @@ public class Pi4J {
         }
     }
 
+    /**
+     * Returns the build information for the Pi4J library in use, read once from the bundled
+     * {@code build.properties} resource. When that resource is absent or unreadable, the returned
+     * {@link BuildInfo} carries empty fields and a version of {@code "UNKNOWN"}.
+     *
+     * @return the {@link BuildInfo} describing this Pi4J build
+     */
     public static BuildInfo getBuildInfo() {
         return buildInfo;
     }

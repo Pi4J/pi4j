@@ -3,16 +3,21 @@ package com.pi4j.plugin.ffm.common;
 import com.pi4j.exception.Pi4JException;
 
 /**
- * Class-helper to detect the right processor architecture.
- * This is needed to determine the right path for library to load.
+ * Resolves the absolute path of a native shared library based on the host CPU architecture, so the
+ * FFM backend can load glibc-style libraries (such as {@code libi2c}) via the Foreign Function and
+ * Memory API. Only 64-bit Linux on {@code amd64} and {@code aarch64} is supported.
  */
 public class Pi4JArchitectureGuess {
 
     /**
-     * Gets the full absolute system library path from library name.
+     * Resolves the absolute path of the given shared library for the current Linux architecture,
+     * using the standard multiarch library directories ({@code /usr/lib/x86_64-linux-gnu} or
+     * {@code /usr/lib/aarch64-linux-gnu}) and appending the {@code .so} suffix.
      *
-     * @param libraryName library name, e.g. 'libi2c'
-     * @return absolute library path
+     * @param libraryName the base library name without path or extension, e.g. {@code libi2c}
+     * @return the absolute {@code .so} path for the detected architecture
+     * @throws Pi4JException if the host OS is Windows or macOS, or the CPU architecture is neither
+     *                       {@code amd64} nor {@code aarch64}
      */
     public static String getLibraryPath(String libraryName) {
         var os = System.getProperty("os.name");

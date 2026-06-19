@@ -28,7 +28,10 @@ package com.pi4j.io.pwm;
 import com.pi4j.io.pwm.impl.DefaultPwmPresetBuilder;
 
 /**
- * <p>PwmPreset interface.</p>
+ * A named, reusable combination of PWM frequency and duty-cycle that can be applied
+ * to a {@link Pwm} instance on demand via {@link Pwm#applyPreset(String)}. Presets are
+ * built with a {@link PwmPresetBuilder} (see {@link #newBuilder(String)}) and may be
+ * registered through {@link PwmConfig} or {@link Pwm#addPreset(PwmPreset)}.
  */
 public interface PwmPreset {
 

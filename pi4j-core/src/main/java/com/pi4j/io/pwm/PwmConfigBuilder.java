@@ -31,11 +31,20 @@ import com.pi4j.io.IOConfigBuilder;
 import com.pi4j.io.pwm.impl.DefaultPwmConfigBuilder;
 
 /**
- * <p>PwmConfigBuilder interface.</p>
+ * Fluent builder for assembling a {@link PwmConfig}. It exposes chained setters for
+ * the addressing (chip, channel, BCM pin), {@link PwmType}, {@link PwmPolarity},
+ * frequency, duty-cycle, initial/shutdown values and {@link PwmPreset} definitions,
+ * and produces an immutable configuration via its {@code build()} method.
  */
 public interface PwmConfigBuilder extends
     IOConfigBuilder<PwmConfigBuilder, PwmConfig>,
     ConfigBuilder<PwmConfigBuilder, PwmConfig> {
+    /**
+     * Creates a new PWM configuration builder instance.
+     *
+     * @param context the Pi4J context the configuration will be bound to
+     * @return a new, empty PWM configuration builder
+     */
     static PwmConfigBuilder newInstance(Context context) {
         return DefaultPwmConfigBuilder.newInstance();
     }
@@ -83,7 +92,13 @@ public interface PwmConfigBuilder extends
      */
     PwmConfigBuilder frequency(Double frequency);
 
-    /** Provided for backward compatibility with Pi4J 4.x */
+    /**
+     * Sets the configured frequency from an integer hertz value. Provided for
+     * backward compatibility with Pi4J 4.x; delegates to {@link #frequency(Double)}.
+     *
+     * @param frequency the number of cycles per second (Hertz), or {@code null} to leave unset
+     * @return this builder instance for method chaining
+     */
     default PwmConfigBuilder frequency(Integer frequency) {
         return frequency(frequency == null ? null : frequency.doubleValue());
     }
@@ -103,28 +118,36 @@ public interface PwmConfigBuilder extends
      */
     PwmConfigBuilder dutyCycle(Double dutyCycle);
 
-    /** Provided for backward compatibility with Pi4J 4.x */
+    /**
+     * Sets the duty-cycle from an integer percentage value. Provided for backward
+     * compatibility with Pi4J 4.x; delegates to {@link #dutyCycle(Double)}.
+     *
+     * @param dutyCycle duty-cycle value expressed as a percentage (range: 0-100), or {@code null} to leave unset
+     * @return this builder instance for method chaining
+     */
     default PwmConfigBuilder dutyCycle(Integer dutyCycle) {
         return dutyCycle(dutyCycle == null ? null : (double) dutyCycle);
     }
 
     /**
-     * Set the PwmType of this PWM instance. (Hardware/Software)
+     * Set the {@link PwmType} of this PWM instance (hardware or software).
      * Please note that not all PWM providers support both hardware and software
      * PWM generators.  Please consult the documentation for your PWM provider
      * to determine what support is available and what limitations may apply.
      *
-     * @return this builder instance
+     * @param pwmType the PWM generator type to use ({@link PwmType#HARDWARE} or {@link PwmType#SOFTWARE})
+     * @return this builder instance for method chaining
      */
     PwmConfigBuilder pwmType(PwmType pwmType);
 
     /**
-     * Set the polarity of this PWM instance. (Normal/Inversed)
+     * Set the {@link PwmPolarity} of this PWM instance (normal or inversed).
      * Please note that not all PWM providers support polarity.  Please
      * consult the documentation for your PWM provider to determine
      * what support is available and what limitations may apply.
      *
-     * @return this builder instance
+     * @param polarity the signal polarity to apply ({@link PwmPolarity#NORMAL} or {@link PwmPolarity#INVERSED})
+     * @return this builder instance for method chaining
      */
     PwmConfigBuilder polarity(PwmPolarity polarity);
 
@@ -140,6 +163,13 @@ public interface PwmConfigBuilder extends
      */
     PwmConfigBuilder shutdown(Double dutyCycle);
 
+    /**
+     * Configures the shutdown duty-cycle from an integer percentage value;
+     * delegates to {@link #shutdown(Double)}.
+     *
+     * @param dutyCycle duty-cycle value expressed as a percentage (range: 0-100), or {@code null} to leave unset
+     * @return this builder instance for method chaining
+     */
     default PwmConfigBuilder shutdown(Integer dutyCycle) {
         return shutdown(dutyCycle == null ? null : (double) dutyCycle);
     };
@@ -156,6 +186,13 @@ public interface PwmConfigBuilder extends
      */
     PwmConfigBuilder initial(Double dutyCycle);
 
+    /**
+     * Configures the initial duty-cycle from an integer percentage value;
+     * delegates to {@link #initial(Double)}.
+     *
+     * @param dutyCycle duty-cycle value expressed as a percentage (range: 0-100), or {@code null} to leave unset
+     * @return this builder instance for method chaining
+     */
     default PwmConfigBuilder initial(Integer dutyCycle) {
         return initial(dutyCycle == null ? null : (double) dutyCycle);
     }

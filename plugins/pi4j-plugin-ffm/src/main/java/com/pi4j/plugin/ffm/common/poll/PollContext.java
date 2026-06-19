@@ -8,7 +8,9 @@ import java.lang.foreign.ValueLayout;
 import java.lang.invoke.MethodHandle;
 
 /**
- * Class is describing native methods to polling (poll)
+ * Binds the libc {@code poll(2)} syscall as a {@link MethodHandle} with {@code errno} capture, used to
+ * wait for events (such as GPIO line edge interrupts) on a set of file descriptors. The handle is
+ * invoked by {@link PollNative}.
  */
 class PollContext extends Pi4JNativeContext {
 

@@ -34,14 +34,29 @@ import com.pi4j.util.Frequency;
 import java.util.Map;
 
 /**
- * <p>Pwm interface.</p>
+ * Represents a single PWM (Pulse Width Modulation) I/O instance, generating a
+ * square-wave signal with a configurable frequency and duty-cycle. A {@code Pwm}
+ * is created by a {@link PwmProvider} from a {@link PwmConfig} and supports both
+ * hardware and software generators (see {@link PwmType}). As an {@link OnOff}
+ * device it can be enabled and disabled, and pre-defined frequency/duty-cycle
+ * combinations can be stored and recalled as {@link PwmPreset} instances.
  */
 public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
 
+    /** Multiplier for expressing a frequency in megahertz (cycles per second). */
     static final long MEGAHERTZ = Frequency.MEGAHERTZ;
+    /** Multiplier for expressing a frequency in kilohertz (cycles per second). */
     static final long KILOHERTZ = Frequency.KILOHERTZ;
+    /** Multiplier for expressing a frequency in hertz (cycles per second). */
     static final long HERTZ = Frequency.HERTZ;
 
+    /**
+     * Creates a new {@link PwmConfigBuilder} used to assemble a {@link PwmConfig}
+     * for a PWM instance.
+     *
+     * @param context the Pi4J context the configuration will be bound to
+     * @return a new, empty PWM configuration builder
+     */
     static PwmConfigBuilder newConfigBuilder(Context context) {
         return PwmConfigBuilder.newInstance(context);
     }
@@ -424,13 +439,13 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
     Pwm addPreset(PwmPreset preset);
 
     /**
-     * Apply/recall a PwmPreset by name to this PWM instance.
-     * This will update the PWM signal with the configured
-     * PWM frequency and duty-cycle defined in the preset object.
+     * Apply/recall a {@link PwmPreset} by name to this PWM instance.
+     * This will immediately update the live PWM signal with the
+     * frequency and duty-cycle defined in the preset.
      *
-     * @param name preset name string
-     * @return the deleted PWM Preset instance
-     * @throws IOException if fails to communicate with the PWM pin
+     * @param name the name of a preset previously added to this instance
+     * @return this PWM instance for method chaining
+     * @throws IOException if the named preset cannot be found or communication with the PWM pin fails
      */
     Pwm applyPreset(String name) throws IOException;
 }

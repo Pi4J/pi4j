@@ -31,12 +31,19 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Reflection helpers for discovering the full set of interfaces and superclasses in an object's or class's type
+ * hierarchy. Pi4J uses this to inspect the I/O interfaces implemented by a provider or component when wiring up
+ * the registry and event handling.
+ */
 public class ReflectionUtil {
 
     /**
-     * <p>getAllInterfacesSorted.  Interfaces are sorted by full qualified class name.</p>
+     * Returns all interfaces implemented anywhere in the given object's type hierarchy, ordered by fully
+     * qualified interface name.
      *
-     * @return a sorted {@link java.util.Collection} object.
+     * @param target the object whose runtime class hierarchy is inspected
+     * @return the interfaces, sorted by their fully qualified class name
      */
     public static Collection<Class> getAllInterfacesSorted(Object target){
         return getAllInterfaces(target.getClass())
@@ -45,10 +52,23 @@ public class ReflectionUtil {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Returns all interfaces implemented anywhere in the given object's type hierarchy.
+     *
+     * @param target the object whose runtime class hierarchy is inspected
+     * @return the set of interfaces, in no particular order
+     */
     public static Collection<Class> getAllInterfaces(Object target){
         return getAllInterfaces(target.getClass());
     }
 
+    /**
+     * Returns all interfaces reachable from the given class, including those of its superclasses and the
+     * super-interfaces of every interface found.
+     *
+     * @param targetClass the class whose interface hierarchy is traversed
+     * @return the set of interfaces, in no particular order
+     */
     public static Collection<Class> getAllInterfaces(Class targetClass){
         Set<Class> results = new HashSet<>();
 
@@ -72,11 +92,23 @@ public class ReflectionUtil {
         return results;
     }
 
+    /**
+     * Returns the given object's runtime class together with all of its superclasses.
+     *
+     * @param target the object whose runtime class hierarchy is inspected
+     * @return the set of classes in the hierarchy, in no particular order
+     */
     public static Collection<Class> getAllClasses(Object target){
         Set<Class> results = new HashSet<>();
         return getAllClasses(target.getClass());
     }
 
+    /**
+     * Returns the given class together with all of its superclasses.
+     *
+     * @param targetClass the class whose superclass hierarchy is traversed
+     * @return the set of classes in the hierarchy, in no particular order
+     */
     public static Collection<Class> getAllClasses(Class targetClass){
         Set<Class> results = new HashSet<>();
 

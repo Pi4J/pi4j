@@ -10,9 +10,14 @@ import java.lang.invoke.MethodHandle;
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
- * Class representing data returned by glibc 'getgrgid' native call.
+ * Maps the leading {@code gr_name} field of the glibc {@code struct group} returned by {@code getgrgid}
+ * and {@code getgrent}. Implements {@link Pi4JLayout} so it can be (de)serialized to a native
+ * {@link MemorySegment}; only the group name is captured.
+ *
+ * @param grName the NUL-terminated group name bytes copied out of the native struct
  */
 public record GroupData(byte[] grName) implements Pi4JLayout {
+    /** Native memory layout of the captured prefix of {@code struct group}: a 1024-byte {@code gr_name} field. */
     public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
         MemoryLayout.sequenceLayout(1024, ValueLayout.JAVA_BYTE).withName("gr_name")
     );

@@ -26,17 +26,15 @@ package com.pi4j.io.exception;
  */
 
 /**
- * <p>
- * This exception is thrown if a platform assignment is attempted when a
- * platform instance has already been assigned.
- * </p>
+ * Thrown when an I/O operation requires an instance identifier but none was
+ * supplied. A specialization of {@link IOException}.
  *
  * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
  */
 public class IOInvalidIDException extends IOException {
 
     /**
-     * Default Constructor
+     * Creates an exception reporting that the required ID attribute is missing from the request.
      */
     public IOInvalidIDException(){
         super("The requested operation is missing the ID attribute.  Unable to complete request.");

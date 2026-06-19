@@ -12,16 +12,17 @@ import java.util.Arrays;
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
- * Source: include/uapi/linux/gpio.h:32:8
- * <p>
- * struct gpiochip_info - Information about a certain GPIO chip
+ * Java mapping of the kernel {@code struct gpiochip_info} from {@code <uapi/linux/gpio.h>}, returned by the
+ * {@link com.pi4j.plugin.ffm.common.gpio.GpioConstants#GPIO_GET_CHIPINFO_IOCTL} {@code ioctl} on a
+ * {@code /dev/gpiochipN} file descriptor. As a {@link Pi4JLayout} it can be marshalled to and from a
+ * {@link MemorySegment}.
  *
- * @name: the Linux kernel name of this GPIO chip
- * @label: a functional name for this GPIO chip, such as a product
- * number, may be empty (i.e. label[0] == '\0')
- * @lines: number of GPIO lines on this chip
+ * @param name  the Linux kernel name of this GPIO chip, as raw NUL-padded bytes (up to 32 bytes)
+ * @param label a functional name for this GPIO chip such as a product number, as raw NUL-padded bytes (may be empty)
+ * @param lines the number of GPIO lines exposed by this chip
  */
 public record ChipInfo(byte[] name, byte[] label, int lines) implements Pi4JLayout {
+    /** Native memory layout of {@code struct gpiochip_info}: two 32-byte name buffers followed by a 32-bit line count. */
     public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
         MemoryLayout.sequenceLayout(32, ValueLayout.JAVA_BYTE).withName("name"),
         MemoryLayout.sequenceLayout(32, ValueLayout.JAVA_BYTE).withName("label"),
@@ -35,11 +36,12 @@ public record ChipInfo(byte[] name, byte[] label, int lines) implements Pi4JLayo
     private static final VarHandle VH_LINES = LAYOUT.varHandle(groupElement("lines"));
 
     /**
-     * Creates ChipInfo instance from MemorySegment provided.
+     * Decodes a {@code struct gpiochip_info} from the given native buffer. A {@link MemorySegment#NULL} buffer
+     * yields an empty instance (see {@link #createEmpty()}) rather than reading memory.
      *
-     * @param memorySegment buffer to construct ChipInfo from
-     * @return ChipInfo instance
-     * @throws Throwable if there is any exception while converting buffer to java object
+     * @param memorySegment the native buffer holding a {@code struct gpiochip_info}, or {@link MemorySegment#NULL}
+     * @return a {@link ChipInfo} populated from the buffer, or an empty instance if the buffer is NULL
+     * @throws Throwable if reading or converting the buffer fails
      */
     public static ChipInfo create(MemorySegment memorySegment) throws Throwable {
         var chipinfoInstance = ChipInfo.createEmpty();
@@ -50,9 +52,10 @@ public record ChipInfo(byte[] name, byte[] label, int lines) implements Pi4JLayo
     }
 
     /**
-     * Creates empty ChipInfo object.
+     * Creates an empty {@link ChipInfo} with zero-length name and label and a line count of zero, used as a
+     * placeholder before a buffer is read.
      *
-     * @return empty ChipInfo object
+     * @return an empty {@link ChipInfo} instance
      */
     public static ChipInfo createEmpty() {
         return new ChipInfo(new byte[]{}, new byte[]{}, 0);

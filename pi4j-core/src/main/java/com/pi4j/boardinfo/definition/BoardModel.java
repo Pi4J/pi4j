@@ -37,9 +37,12 @@ import java.util.stream.Collectors;
 import static com.pi4j.boardinfo.definition.BoardType.*;
 
 /**
- * Represents various Raspberry Pi board models along with their specifications and attributes.
+ * Catalog of known Raspberry Pi board models together with their hardware specifications, such as the
+ * {@link BoardType}, {@link PiModel}, {@link Soc}, {@link Cpu}, {@link HeaderVersion}, release date, clock
+ * speeds and memory options. Pi4J uses this catalog to identify the running board (by revision code or name)
+ * and to expose its capabilities through the Board Information API.
  *
- * <p>This class is partially based on resources such as Raspberry Pi documentation, GitHub, and other online references.</p>
+ * <p>This data is partially based on resources such as Raspberry Pi documentation, GitHub, and other online references.</p>
  *
  * @see <a href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#new-style-revision-codes-in-use">Board Codes</a>
  * @see <a href="https://community.volumio.com/t/guide-identifying-your-raspberry-pi-board-on-volumio-a-comprehensive-guide-to-revision-codes/71350">Identifying Your Raspberry Pi Board</a>
@@ -489,112 +492,145 @@ public enum BoardModel {
     }
 
     /**
-     * @return the enum name of the board model
+     * Returns the programmatic identifier of this board model, which is the name of the enum constant.
+     *
+     * @return the enum constant name, e.g. {@code "MODEL_4_B"}
      */
     public String getName() {
         return name();
     }
 
     /**
-     * @return the label of the board model
+     * Returns the human-readable name of the board.
+     *
+     * @return the descriptive label, e.g. {@code "Raspberry Pi 4 Model B"}
      */
     public String getLabel() {
         return label;
     }
 
     /**
-     * @return the board type
+     * Returns the category this board belongs to.
+     *
+     * @return the {@link BoardType} (single-board computer, microcontroller, etc.)
      */
     public BoardType getBoardType() {
         return boardType;
     }
 
     /**
-     * @return the list of board codes
+     * Returns the revision codes that identify this board in the {@code /proc/cpuinfo} revision field.
+     *
+     * @return the list of board revision codes, possibly empty when no codes are known
      */
     public List<String> getBoardCodes() {
         return boardCodes;
     }
 
     /**
-     * @return the Pi model of the board
+     * Returns the Raspberry Pi model family of this board.
+     *
+     * @return the {@link PiModel}, e.g. Model A, Model B, Zero, Compute or Pico
      */
     public PiModel getModel() {
         return model;
     }
 
     /**
-     * @return the header version of the board
+     * Returns the GPIO header layout used by this board.
+     *
+     * @return the {@link HeaderVersion} describing the available header(s)
      */
     public HeaderVersion getHeaderVersion() {
         return headerVersion;
     }
 
     /**
-     * @return the release date of the board
+     * Returns the date on which this board was released.
+     *
+     * @return the release date, or {@code null} when the date is unknown
      */
     public LocalDate getReleaseDate() {
         return releaseDate;
     }
 
     /**
-     * @return the system-on-chip used by the board
+     * Returns the system-on-chip that powers this board.
+     *
+     * @return the {@link Soc} of the board
      */
     public Soc getSoc() {
         return soc;
     }
 
     /**
-     * @return the CPU type used by the board
+     * Returns the CPU core type of this board.
+     *
+     * @return the {@link Cpu} of the board
      */
     public Cpu getCpu() {
         return cpu;
     }
 
     /**
-     * @return the number of CPU cores
+     * Returns the number of CPU cores on this board.
+     *
+     * @return the core count
      */
     public Integer getNumberOfCpu() {
         return numberOfCpu;
     }
 
     /**
-     * @return a list of processor speeds in MHz
+     * Returns the clock speeds at which this board's processor has shipped across its hardware revisions.
+     *
+     * @return the processor speeds in MHz, one entry per known variant
      */
     public List<Integer> getVersionsProcessorSpeedInMhz() {
         return versionsProcessorSpeedInMhz;
     }
 
     /**
-     * @return a list of memory sizes in KB
+     * Returns the memory sizes in which this board has shipped, expressed in kilobytes.
+     *
+     * @return the memory options in KB, one entry per known variant
      */
     public List<Integer> getVersionsMemoryInKb() {
         return versionsMemoryInKb;
     }
 
     /**
-     * @return a list of memory sizes in MB
+     * Returns the memory options of this board converted from kilobytes to megabytes.
+     *
+     * @return the memory options in MB, one entry per known variant
      */
     public List<Float> getVersionsMemoryInMb() {
         return versionsMemoryInKb.stream().map(m -> m / 1024F).collect(Collectors.toList());
     }
 
     /**
-     * @return a list of memory sizes in GB
+     * Returns the memory options of this board converted from kilobytes to gigabytes.
+     *
+     * @return the memory options in GB, one entry per known variant
      */
     public List<Float> getVersionsMemoryInGb() {
         return versionsMemoryInKb.stream().map(m -> m / 1024F / 1024F).collect(Collectors.toList());
     }
 
     /**
-     * @return any remarks associated with the board
+     * Returns free-form notes about this board, for example revision history or sourcing details.
+     *
+     * @return the remarks, possibly empty
      */
     public List<String> getRemarks() {
         return remarks;
     }
 
     /**
-     * @return board contains the RP1 chip to control GPIOs
+     * Indicates whether this board routes its GPIO through the RP1 I/O controller, as used on the
+     * Raspberry Pi 5 family. Pi4J relies on this to select the appropriate GPIO access path.
+     *
+     * @return {@code true} if the board uses the RP1 chip to control its GPIOs
      */
     public boolean usesRP1() {
         return usesRP1;

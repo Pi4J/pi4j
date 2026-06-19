@@ -11,15 +11,13 @@ import java.lang.invoke.VarHandle;
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
- * Source: include/uapi/linux/gpio.h:148:8
- * <p>
- * struct gpio_v2_line_config_attribute - a configuration attribute
- * associated with one or more of the requested lines.
+ * Maps the Linux kernel {@code struct gpio_v2_line_config_attribute} (include/uapi/linux/gpio.h) to a
+ * {@link MemorySegment}-backed record, binding a single {@link LineAttribute} to the subset of requested
+ * lines selected by {@code mask}. Entries of this type populate the {@code attrs} array of a {@link LineConfig}.
  *
- * @attr: the configurable attribute
- * @mask: a bitmap identifying the lines to which the attribute applies,
- * with each bit number corresponding to the index into &struct
- * gpio_v2_line_request.offsets.
+ * @param attr  the configurable attribute to apply
+ * @param mask  a bitmap selecting the lines the attribute applies to; bit {@code n} corresponds to index
+ *              {@code n} into {@link LineRequest#offsets()}
  */
 public record LineConfigAttribute(LineAttribute attr, long mask) implements Pi4JLayout {
     public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
@@ -32,11 +30,12 @@ public record LineConfigAttribute(LineAttribute attr, long mask) implements Pi4J
     private static final VarHandle VH_MASK = LAYOUT.varHandle(groupElement("mask"));
 
     /**
-     * Creates LineConfigAttribute instance from MemorySegment provided.
+     * Decodes a {@link LineConfigAttribute} from a native buffer holding a {@code gpio_v2_line_config_attribute}
+     * struct. A {@link MemorySegment#NULL} buffer yields an empty instance.
      *
-     * @param memorySegment buffer to construct LineConfigAttribute from
-     * @return LineConfigAttribute instance
-     * @throws Throwable if there is any exception while converting buffer to java object
+     * @param memorySegment native memory holding the encoded struct, or {@link MemorySegment#NULL}
+     * @return the decoded config attribute, or an empty config attribute if the segment is null
+     * @throws Throwable if reading the native memory fails
      */
     public static LineConfigAttribute create(MemorySegment memorySegment) throws Throwable {
         var lineconfigattributeInstance = LineConfigAttribute.createEmpty();
@@ -47,9 +46,10 @@ public record LineConfigAttribute(LineAttribute attr, long mask) implements Pi4J
     }
 
     /**
-     * Creates empty LineConfigAttribute object.
+     * Creates an empty config attribute with an empty {@link LineAttribute} and a zero mask, suitable as a
+     * target for {@link #from(MemorySegment)}.
      *
-     * @return empty LineConfigAttribute object
+     * @return a zero-initialized {@link LineConfigAttribute}
      */
     public static LineConfigAttribute createEmpty() {
         return new LineConfigAttribute(LineAttribute.createEmpty(), 0);

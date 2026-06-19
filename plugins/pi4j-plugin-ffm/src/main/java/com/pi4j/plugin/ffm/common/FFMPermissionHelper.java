@@ -28,7 +28,12 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Helper class to check permissions needed to run with FFM API
+ * Static helper that validates the runtime permissions required by the FFM native backend before a
+ * provider opens a kernel device. It inspects POSIX users and groups (via {@link PermissionNative},
+ * which wraps the glibc group database) and the POSIX file attributes of device nodes such as
+ * {@code /dev/gpiochip0}, {@code /dev/i2c-1} or {@code /dev/spidev0.0}, and raises a
+ * {@link Pi4JException} when the configuration would prevent native access. Used by the FFM
+ * {@link ProviderBase} implementations during initialization.
  */
 public class FFMPermissionHelper {
     private static final Logger logger = LoggerFactory.getLogger(FFMPermissionHelper.class);
@@ -47,6 +52,13 @@ public class FFMPermissionHelper {
      * - run as `root`. Prints warning message, skip checks
      * - presence of hardware related groups (gpio/dialout, input, i2c, spi). Throws an exception.
      * - current user is a member of hardware related groups. Throws an exception.
+     * <p>
+     * The required group set depends on the concrete provider type: GPIO/PWM providers need
+     * {@code gpio} or {@code dialout}, I2C needs {@code i2c}, and SPI needs {@code spi}.
+     *
+     * @param provider the FFM provider whose access requirements determine which OS groups are checked
+     * @throws Pi4JException if no matching group exists on the system, if the current user does not
+     *                       belong to one, or if the provider type is not recognized
      */
     public static void checkUserPermissions(ProviderBase<?, ?, ?> provider) {
         // check if running with sudo
@@ -136,8 +148,17 @@ public class FFMPermissionHelper {
      * - checks user is owner of device. Skip checks.
      * - checks device has group permissions to write/read. Throws exception.
      * - checks device does not have other permissions. Prints warning.
+     * <p>
+     * The expected owning group depends on the hardware interface described by {@code config}:
+     * {@code gpio}/{@code dialout} for digital and PWM devices, {@code i2c} for I2C, and {@code spi}
+     * for SPI.
      *
-     * @param devicePath path to be checked
+     * @param devicePath absolute path of the device node to check, e.g. {@code /dev/i2c-1}
+     * @param config     the I/O configuration that identifies the hardware interface and thus the
+     *                   expected owning group
+     * @throws Pi4JException if the device does not exist, its attributes cannot be read, it does not
+     *                       belong to the expected group, it lacks group read/write permission, or
+     *                       the configuration type is not recognized
      */
     public static void checkDevicePermissions(String devicePath, IOConfig<?> config) {
         var path = Paths.get(devicePath);

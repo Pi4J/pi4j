@@ -38,8 +38,9 @@ import static com.pi4j.boardinfo.util.command.CommandResult.failure;
 import static com.pi4j.boardinfo.util.command.CommandResult.success;
 
 /**
- * This class reads memory information from the file system, specifically
- * the `/proc/meminfo` file on Linux systems, to extract the total memory.
+ * Reads memory information from the local file system, by default from the {@code /proc/meminfo}
+ * entry on Linux systems, in order to extract the {@code MemTotal} line reporting the total amount
+ * of installed RAM. The outcome is returned as a {@link CommandResult}.
  */
 public class MemInfoReader {
 
@@ -47,21 +48,23 @@ public class MemInfoReader {
     private static String memInfoFilePath = "/proc/meminfo";
 
     /**
-     * Sets the memory info file path for testing purposes.
+     * Overrides the file path read by {@link #getMemTotal()}, primarily so tests can point the
+     * reader at a fixture file instead of the real {@code /proc/meminfo} entry.
      *
-     * @param path The file path to be used.
+     * @param path the absolute path of the memory info file to read from
      */
     public static void setMemInfoFilePath(String path) {
         memInfoFilePath = path;
     }
 
     /**
-     * Reads the memory information file and extracts the "MemTotal" entry.
+     * Scans the configured memory info file for the first line beginning with {@code MemTotal:} and
+     * returns that whole trimmed line (key, value, and {@code kB} unit).
      *
-     * @return A {@link CommandResult} containing:
-     *         - {@code success}: true if the "MemTotal" entry is found and valid.
-     *         - {@code outputMessage}: the value of the "MemTotal" entry (trimmed).
-     *         - {@code errorMessage}: an error message if the entry is not found or if reading fails.
+     * @return a {@link CommandResult} whose {@link CommandResult#isSuccess()} is {@code true} and
+     *         whose {@link CommandResult#getOutputMessage()} holds the trimmed {@code MemTotal} line
+     *         when found; a failure result (with the reason in {@link CommandResult#getErrorMessage()})
+     *         is returned when the file cannot be read or contains no {@code MemTotal} entry
      */
     public static CommandResult getMemTotal() {
         String errorMessage = StringUtil.EMPTY;

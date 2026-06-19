@@ -8,7 +8,10 @@ import java.lang.foreign.ValueLayout;
 import java.lang.invoke.MethodHandle;
 
 /**
- * Class is describing native methods to help detecting permissions.
+ * Binds the glibc group-database functions used to determine whether the current user is permitted
+ * to access GPIO/I2C/SPI device nodes. Each {@link MethodHandle} is a downcall to a libc symbol
+ * ({@code setgrent}, {@code getgrent}, {@code endgrent}, {@code getgrouplist}, {@code getgrgid}) with
+ * {@code errno} capture enabled; {@link PermissionNative} invokes these handles.
  */
 class PermissionContext extends Pi4JNativeContext {
 

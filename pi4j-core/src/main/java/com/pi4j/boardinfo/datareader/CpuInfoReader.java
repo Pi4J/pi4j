@@ -37,8 +37,10 @@ import static com.pi4j.boardinfo.util.command.CommandResult.failure;
 import static com.pi4j.boardinfo.util.command.CommandResult.success;
 
 /**
- * This class reads CPU information from the file system, specifically
- * the `/proc/cpuinfo` file on Linux systems, to extract the CPU revision.
+ * Reads CPU information from the local file system, by default from the {@code /proc/cpuinfo} entry
+ * on Linux systems, in order to extract the {@code Revision} field. On a Raspberry Pi this revision
+ * code identifies the exact board model, so the value feeds into board detection. The outcome is
+ * returned as a {@link CommandResult}.
  */
 public class CpuInfoReader {
 
@@ -46,21 +48,23 @@ public class CpuInfoReader {
     private static String cpuInfoFilePath = "/proc/cpuinfo";
 
     /**
-     * Sets the CPU info file path for testing purposes.
+     * Overrides the file path read by {@link #getCpuRevision()}, primarily so tests can point the
+     * reader at a fixture file instead of the real {@code /proc/cpuinfo} entry.
      *
-     * @param path The file path to be used.
+     * @param path the absolute path of the CPU info file to read from
      */
     public static void setCpuInfoFilePath(String path) {
         cpuInfoFilePath = path;
     }
 
     /**
-     * Reads the CPU revision from the `/proc/cpuinfo` file.
+     * Scans the configured CPU info file for the first line beginning with {@code Revision} and
+     * returns the trimmed value following the colon.
      *
-     * @return A {@link CommandResult} containing:
-     *         - {@code success}: true if the revision was successfully extracted, false otherwise.
-     *         - {@code outputMessage}: the CPU revision value.
-     *         - {@code errorMessage}: any error message encountered during the process.
+     * @return a {@link CommandResult} whose {@link CommandResult#isSuccess()} is {@code true} and
+     *         whose {@link CommandResult#getOutputMessage()} holds the revision value when found;
+     *         a failure result (with the reason in {@link CommandResult#getErrorMessage()}) is
+     *         returned when the file cannot be read or contains no {@code Revision} entry
      */
     public static CommandResult getCpuRevision() {
         String outputMessage = StringUtil.EMPTY;

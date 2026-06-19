@@ -11,8 +11,26 @@ import java.util.Arrays;
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
- * Source: include/linux/spi/spidev.h:70:0
- * Internal class representing SPI ioctl transfer object.
+ * {@link MemorySegment}-backed mapping of the Linux {@code struct spi_ioc_transfer}
+ * (include/uapi/linux/spi/spidev.h), the descriptor passed to the
+ * {@code SPI_IOC_MESSAGE} ioctl to perform a single full-duplex SPI transfer.
+ * In native memory the {@code tx_buf}/{@code rx_buf} fields are 64-bit pointers to
+ * the data buffers; here the buffer contents are held as byte arrays and the
+ * pointer fields are written separately via {@link #to(MemorySegment, long, long)}.
+ * Package-private wrapper used through {@link SpiTransferBuffer}; implements the
+ * {@link Pi4JLayout} marshalling contract.
+ *
+ * @param txBuf          bytes to transmit (mapped to the {@code tx_buf} pointer)
+ * @param rxBuf          buffer receiving the bytes read back (mapped to the {@code rx_buf} pointer)
+ * @param length         number of bytes to transfer ({@code len})
+ * @param speedHz        bus clock speed for this transfer in Hertz ({@code speed_hz}); 0 uses the device default
+ * @param delayUsecs     delay in microseconds after this transfer before deselecting ({@code delay_usecs})
+ * @param bitsPerWord    word size in bits ({@code bits_per_word}); 0 uses the device default (typically 8)
+ * @param csChange       if non-zero, deselect the device after this transfer ({@code cs_change})
+ * @param txNbits        number of bit lanes used for transmit ({@code tx_nbits}; e.g. 1, 2 or 4 for dual/quad SPI)
+ * @param rxNbits        number of bit lanes used for receive ({@code rx_nbits})
+ * @param wordDelayUsecs inter-word delay in microseconds ({@code word_delay_usecs})
+ * @param pad            structure padding ({@code pad}); reserved, normally zero
  */
 record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, int delayUsecs, byte bitsPerWord,
                       byte csChange, byte txNbits, byte rxNbits, byte wordDelayUsecs,
@@ -58,12 +76,14 @@ record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, int d
     }
 
     /**
-     * Makes the SpiIocTransfer object from memory buffer and tx/rx buffers.
+     * Decodes a {@code struct spi_ioc_transfer} into a new {@code SpiIocTransfer}, reading the
+     * scalar settings from {@code buffer} and the transmit/receive payloads from the separately
+     * tracked data segments. A {@link MemorySegment#NULL} data segment is decoded as an empty array.
      *
-     * @param buffer main memory buffer, holding all settings data
-     * @param txBuf send memory buffer
-     * @param rxBuf receive memory buffer
-     * @return SpiIocTransfer object from memory buffers
+     * @param buffer native memory holding the {@code spi_ioc_transfer} scalar fields
+     * @param txBuf  native memory backing the transmit buffer, or {@link MemorySegment#NULL}
+     * @param rxBuf  native memory backing the receive buffer (holds the bytes read back), or {@link MemorySegment#NULL}
+     * @return a new {@code SpiIocTransfer} populated from the supplied segments
      */
     SpiIocTransfer from(MemorySegment buffer, MemorySegment txBuf, MemorySegment rxBuf) {
         return new SpiIocTransfer(
@@ -94,12 +114,15 @@ record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, int d
     }
 
     /**
-     * Makes memory buffer from provided memory buffer and tx/rx memory addresses.
+     * Encodes this transfer into a {@code struct spi_ioc_transfer} in native memory, writing the
+     * scalar settings and storing the supplied native addresses into the {@code tx_buf}/{@code rx_buf}
+     * pointer fields. The pointer for a side is only written when its corresponding byte array is
+     * non-null.
      *
-     * @param buffer memory buffer with object data
-     * @param txAddress send memory buffer address
-     * @param rxAddress receive memory buffer address
-     * @throws Throwable if any exception occurred during conversion process
+     * @param buffer    native memory to be filled with the {@code spi_ioc_transfer} fields
+     * @param txAddress native address of the transmit buffer, written to {@code tx_buf}
+     * @param rxAddress native address of the receive buffer, written to {@code rx_buf}
+     * @throws Throwable if writing the fields to native memory fails
      */
     public void to(MemorySegment buffer, long txAddress, long rxAddress) throws Throwable {
         if (txBuf != null) {

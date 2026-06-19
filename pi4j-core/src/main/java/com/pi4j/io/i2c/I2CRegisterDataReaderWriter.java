@@ -26,7 +26,9 @@ package com.pi4j.io.i2c;
  */
 
 /**
- * I2C Register Data Writer Interface for Pi4J Data Communications
+ * Combines the I2C register read and write capabilities of {@link I2CRegisterDataReader} and
+ * {@link I2CRegisterDataWriter} into a single interface, and adds combined write-then-read register helpers.
+ * Implemented by {@link I2C} so a device exposes the full register data API.
  */
 public interface I2CRegisterDataReaderWriter extends I2CRegisterDataReader, I2CRegisterDataWriter {
     /**

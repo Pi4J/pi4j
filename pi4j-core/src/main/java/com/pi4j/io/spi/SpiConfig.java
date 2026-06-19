@@ -30,42 +30,36 @@ import com.pi4j.context.Context;
 import com.pi4j.io.IOConfig;
 
 /**
- * <p>SpiConfig interface.</p>
+ * Immutable configuration for an {@link Spi} device, describing the bus, channel/chip-select, clock
+ * mode, baud rate, bit ordering, and provider flags. Instances are produced by a {@link SpiConfigBuilder}
+ * and consumed by a {@link SpiProvider} when creating an SPI device.
  */
 public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig> {
     /**
+     * Configuration property key for the legacy SPI address.
+     *
      * @deprecated use {@link #BUS_KEY} instead.
-     * <p>
-     * Constant <code>BAUD_KEY="baud"</code>
      */
     @Deprecated(forRemoval = true)
     String ADDRESS_KEY = "address";
-    /**
-     * Constant <code>BAUD_KEY="baud"</code>
-     */
+    /** Configuration property key for the SPI baud (clock) rate. */
     String BAUD_KEY = "baud";
-    /**
-     * Constant <code>BUS_KEY="bus"</code>
-     */
+    /** Configuration property key for the SPI bus number. */
     String BUS_KEY = "bus";
-    /**
-     * Constant <code>MODE_KEY="mode"</code>
-     */
+    /** Configuration property key for the SPI clock mode. */
     String MODE_KEY = "mode";
-    /**
-     * Constant <code>FLAGS_KEY="flags"</code>
-     */
+    /** Configuration property key for the raw provider flags value. */
     String FLAGS_KEY = "flags";
-    /**
-     * Constant <code>WRITE_LSB_KEY="baud"</code>
-     */
+    /** Configuration property key for the write bit-order (LSB-first) setting. */
     String WRITE_LSB_KEY = "write_lsb";
-    /**
-     * Constant <code>READ_LSB_KEY="baud"</code>
-     */
+    /** Configuration property key for the read bit-order (LSB-first) setting. */
     String READ_LSB_KEY = "read_lsb";
 
     /**
+     * Creates a new {@link SpiConfigBuilder}.
+     *
+     * @param context the Pi4J runtime context
+     * @return a new SPI configuration builder instance
      * @deprecated As of version 5, please use {@link #newBuilder()} instead.
      */
     @Deprecated
@@ -73,124 +67,224 @@ public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig>
         return SpiConfigBuilder.newInstance(context);
     }
 
+    /**
+     * Creates a new {@link SpiConfigBuilder}.
+     *
+     * @return a new SPI configuration builder instance
+     */
     static SpiConfigBuilder newBuilder() {
         return SpiConfigBuilder.newInstance();
     }
 
     /**
-     * SPI Device Identifier
-     * To be able to identify unique SPI devices, an identifier is available which is based on the bus and channel value.
+     * {@inheritDoc}
+     * <p>
+     * The SPI identifier is derived from the bus and channel: the bus number occupies the high byte
+     * and the channel the low byte, so that each (bus, channel) pair maps to a distinct value.
      *
-     * @return Unique SPI device identifier.
+     * @return a unique identifier combining the bus number and channel
      */
     @Override
     default int getUniqueIdentifier() {
         return (bus().getBus() << 8) + channel();
     }
 
+    /**
+     * Returns the configured SPI clock (baud) rate in Hz.
+     *
+     * @return the clock rate in Hz
+     */
     Integer baud();
 
+    /**
+     * Returns the configured SPI clock (baud) rate in Hz.
+     *
+     * @return the clock rate in Hz
+     */
     default Integer getBaud() {
         return baud();
     }
 
     /**
-     * <p>ReadLsbFirst.</p>
-     * In accordance with the flags parm, Read operations
-     * 0 is  LSB bit shifted first, 1 MSB bit shifted first
+     * Returns the bit order used for read operations: {@code 0} shifts the least significant bit first,
+     * {@code 1} shifts the most significant bit first.
+     *
+     * @return the read bit-order setting
      */
     Integer readLsbFirst();
 
+    /**
+     * Returns the bit order used for read operations: {@code 0} shifts the least significant bit first,
+     * {@code 1} shifts the most significant bit first.
+     *
+     * @return the read bit-order setting
+     */
     default Integer getReadLsbFirst() {
         return readLsbFirst();
     }
 
 
     /**
-     * <p>WriteLsbFirst.</p>
-     * In accordance with the flags parm, Write operations
-     * 0 is  LSB bit shifted first, 1 MSB bit shifted first
+     * Returns the bit order used for write operations: {@code 0} shifts the least significant bit first,
+     * {@code 1} shifts the most significant bit first.
+     *
+     * @return the write bit-order setting
      */
     Integer writeLsbFirst();
 
+    /**
+     * Returns the bit order used for write operations: {@code 0} shifts the least significant bit first,
+     * {@code 1} shifts the most significant bit first.
+     *
+     * @return the write bit-order setting
+     */
     default Integer getWriteLsbFirst() {
         return writeLsbFirst();
     }
 
     /**
-     * <p>bus.</p>
-     * <p>If the Bus value is configured, that SpiBus
-     * value will be set in the flags {@link #flags()}   bit 'A' 8
-     * </p>
+     * Returns the configured SPI bus this device communicates over.
+     *
+     * @return the {@link SpiBus} for this device
      */
     SpiBus bus();
 
+    /**
+     * Returns the configured SPI bus this device communicates over.
+     *
+     * @return the {@link SpiBus} for this device
+     */
     default SpiBus getBus() {
         return bus();
     }
 
+    /**
+     * Indicates whether the bus value was explicitly supplied by the user rather than defaulted.
+     *
+     * @return {@code true} if the user provided the bus value, otherwise {@code false}
+     */
     boolean busUserProvided();
 
+    /**
+     * Indicates whether the bus value was explicitly supplied by the user rather than defaulted.
+     *
+     * @return {@code true} if the user provided the bus value, otherwise {@code false}
+     */
     default boolean getBusUserProvided() {
         return busUserProvided();
     }
 
+    /**
+     * Indicates whether the write bit-order value was explicitly supplied by the user rather than defaulted.
+     *
+     * @return {@code true} if the user provided the write bit-order value, otherwise {@code false}
+     */
     boolean writeLsbFirstUserProvided();
 
+    /**
+     * Indicates whether the write bit-order value was explicitly supplied by the user rather than defaulted.
+     *
+     * @return {@code true} if the user provided the write bit-order value, otherwise {@code false}
+     */
     default boolean getWriteLsbFIrstUserProvided() {
         return writeLsbFirstUserProvided();
     }
 
+    /**
+     * Indicates whether the read bit-order value was explicitly supplied by the user rather than defaulted.
+     *
+     * @return {@code true} if the user provided the read bit-order value, otherwise {@code false}
+     */
     boolean readLsbFirstUserProvided();
 
+    /**
+     * Indicates whether the read bit-order value was explicitly supplied by the user rather than defaulted.
+     *
+     * @return {@code true} if the user provided the read bit-order value, otherwise {@code false}
+     */
     default boolean getReadLsbFIrstUserProvided() {
         return readLsbFirstUserProvided();
     }
 
 
     /**
-     * <p>mode.</p>
-     * <p>If the Mode value is configured, that SpiMode
-     * value will be set in the flags  {@link #mode()}  bit 'm m' 1:0
-     * </p>
+     * Returns the configured SPI clock mode (clock polarity and phase).
+     *
+     * @return the {@link SpiMode} for this device
      */
     SpiMode mode();
 
+    /**
+     * Returns the configured SPI clock mode (clock polarity and phase).
+     *
+     * @return the {@link SpiMode} for this device
+     */
     default SpiMode getMode() {
         return mode();
     }
 
+    /**
+     * Indicates whether the mode value was explicitly supplied by the user rather than defaulted.
+     *
+     * @return {@code true} if the user provided the mode value, otherwise {@code false}
+     */
     boolean modeUserProvided();
 
+    /**
+     * Indicates whether the mode value was explicitly supplied by the user rather than defaulted.
+     *
+     * @return {@code true} if the user provided the mode value, otherwise {@code false}
+     */
     default boolean getModeUserProvided() {
         return modeUserProvided();
     }
 
+    /**
+     * Returns the raw provider flags value that encodes mode, bus, and bit-order settings into the
+     * bit layout expected by the underlying SPI driver.
+     *
+     * @return the encoded provider flags
+     */
     Long flags();
 
+    /**
+     * Returns the raw provider flags value that encodes mode, bus, and bit-order settings into the
+     * bit layout expected by the underlying SPI driver.
+     *
+     * @return the encoded provider flags
+     */
     default Long getFlags() {
         return flags();
     }
 
     /**
-     * <p>channel. (ALIAS for 'address')</p>
+     * Returns the SPI channel (chip-select line) this device is addressed on. This is an alias for the
+     * underlying channel/address value.
+     *
+     * @return the channel number
      */
     Integer channel();
 
     /**
-     * <p>getFlags. (ALIAS for 'getAddress')</p>
+     * Returns the SPI channel (chip-select line) this device is addressed on.
+     *
+     * @return the channel number
      */
     default Integer getChannel() {
         return channel();
     }
 
     /**
-     * <p>chipSelect. (ALIAS for 'address')</p>
+     * Returns the chip-select line for this device, derived from the configured channel.
+     *
+     * @return the {@link SpiChipSelect} corresponding to the configured channel
      */
     SpiChipSelect chipSelect();
 
     /**
-     * <p>getFlags. (ALIAS for 'getAddress')</p>
+     * Returns the chip-select line for this device, derived from the configured channel.
+     *
+     * @return the {@link SpiChipSelect} corresponding to the configured channel
      */
     default SpiChipSelect getChipSelect() {
         return chipSelect();

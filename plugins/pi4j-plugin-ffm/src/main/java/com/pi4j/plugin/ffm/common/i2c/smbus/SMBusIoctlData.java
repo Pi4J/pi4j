@@ -7,14 +7,22 @@ import java.lang.foreign.*;
 import java.lang.invoke.VarHandle;
 
 /**
- * Structure that represents SBBusIoctlData for communicating through ioctl.
+ * Maps the Linux kernel {@code struct i2c_smbus_ioctl_data} (include/uapi/linux/i2c-dev.h), the
+ * argument passed to the {@code I2C_SMBUS} ioctl to perform a single SMBus transaction. Implements
+ * {@link Pi4JLayout} to marshal to/from the off-heap {@link #LAYOUT} representation.
  *
- * @param readWrite read or write byte
- * @param command   command to execute
- * @param size      size of data
- * @param data      the data to be sent
+ * @param readWrite transfer direction: {@code I2C_SMBUS_READ} or {@code I2C_SMBUS_WRITE}
+ * @param command   the SMBus command/register byte for the transaction
+ * @param size      the SMBus transaction size code (e.g. {@code I2C_SMBUS_BYTE},
+ *                  {@code I2C_SMBUS_BYTE_DATA}, {@code I2C_SMBUS_WORD_DATA}, {@code I2C_SMBUS_BLOCK_DATA})
+ * @param data      the {@link SMBusData} payload read or written, or {@code null} when none is needed
  */
 public record SMBusIoctlData(byte readWrite, byte command, int size, SMBusData data) implements Pi4JLayout {
+    /**
+     * Off-heap memory layout matching the kernel {@code struct i2c_smbus_ioctl_data}: the
+     * {@code read_write} and {@code command} bytes, two padding bytes, the {@code size} code,
+     * and a pointer to the {@link SMBusData} payload.
+     */
     public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
         ValueLayout.JAVA_BYTE.withName("read_write"),
         ValueLayout.JAVA_BYTE.withName("command"),
@@ -27,6 +35,11 @@ public record SMBusIoctlData(byte readWrite, byte command, int size, SMBusData d
     private static final VarHandle VH_SIZE = LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("size"));
     private static final VarHandle MH_DATA = LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("data"));
 
+    /**
+     * Creates an empty instance with zeroed fields and a {@code null} data payload.
+     *
+     * @return a new, zero-initialized {@link SMBusIoctlData}
+     */
     public static SMBusIoctlData createEmpty() {
         return new SMBusIoctlData((byte) 0, (byte) 0, 0, null);
     }
@@ -57,6 +70,14 @@ public record SMBusIoctlData(byte readWrite, byte command, int size, SMBusData d
         MH_DATA.set(buffer, 0L, smbusOffHeap);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Not supported for this type: the {@link SMBusData} payload must be allocated off-heap, so the
+     * {@link #to(MemorySegment, SegmentAllocator)} overload with an allocator must be used instead.
+     *
+     * @throws UnsupportedOperationException always
+     */
     @Override
     public void to(MemorySegment buffer) throws Throwable {
         throw new UnsupportedOperationException("Converting to MemorySegment without context is not supported");

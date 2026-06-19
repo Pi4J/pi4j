@@ -9,7 +9,10 @@ import java.lang.invoke.MethodHandle;
 import java.nio.file.Path;
 
 /**
- * Class is describing native methods to access SMBus protocol with libi2c-dev runtime dependency.
+ * Holds the native downcall {@link MethodHandle}s for the SMBus helper functions provided by
+ * the {@code libi2c} (libi2c-dev) shared library. Loading this class triggers the library
+ * lookup; the bound handles wrap {@code i2c_smbus_*} functions and capture {@code errno} so
+ * callers in {@link SMBusNative} can report native failures.
  */
 class SMBusContext extends Pi4JNativeContext {
     private static final SymbolLookup LIBI2C;

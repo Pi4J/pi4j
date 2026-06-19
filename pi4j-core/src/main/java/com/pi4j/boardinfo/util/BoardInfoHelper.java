@@ -86,16 +86,17 @@ public class BoardInfoHelper {
      * Sets the model of the board. To be used when the detected board is not correct,
      * or to force a specific model e.g. on Orange Pi, or during testing.
      *
-     * @param boardModel
+     * @param boardModel the board model to use instead of the auto-detected one
      */
     public void setBoardModel(BoardModel boardModel) {
         this.boardInfo.setBoardModel(boardModel);
     }
 
     /**
-     * Returns the current instance of {@code BoardInfoHelper}, which contains board information.
+     * Returns the {@link BoardInfo} detected for the running system, lazily initializing the singleton
+     * on first access. This is the primary entry point for querying board, OS and Java details.
      *
-     * @return the current {@link BoardInfo} instance
+     * @return the detected board information for the current device
      */
     public static BoardInfo current() {
         return SingletonHelper.INSTANCE.boardInfo;
@@ -191,14 +192,22 @@ public class BoardInfoHelper {
     }
 
     /**
-     * Checks if the device uses the RP1 chip.
+     * Indicates whether the detected board uses the RP1 I/O controller chip, which changes how
+     * peripherals such as PWM are addressed (e.g. on the Raspberry Pi 5).
      *
-     * @return {@code true} if the board is a Raspberry Pi Model 5B, otherwise {@code false}.
+     * @return {@code true} if the detected board model uses the RP1 chip, otherwise {@code false}
      */
     public static boolean usesRP1() {
         return current().getBoardModel().usesRP1();
     }
 
+    /**
+     * Returns the PWM chip number to use for the detected board. On boards with an RP1 chip the
+     * chip is detected from the sysfs PWM filesystem, while older boards use the legacy chip
+     * {@link PwmChipUtil#DEFAULT_LEGACY_PWM_CHIP}.
+     *
+     * @return the PWM chip number (sysfs {@code pwmchip} index) appropriate for the current board
+     */
     public static int getPwmChipAddress() {
         if (BoardInfoHelper.usesRP1()) {
             return PwmChipUtil.getPWMChipForRP1(DEFAULT_PWM_SYSTEM_PATH);

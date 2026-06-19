@@ -38,28 +38,29 @@ import static com.pi4j.boardinfo.util.command.CommandResult.failure;
 import static com.pi4j.boardinfo.util.command.CommandResult.success;
 
 /**
- * A utility class for executing system commands and capturing their output.
+ * Utility for running external system commands and capturing their output as a {@link CommandResult}.
+ * Used by Pi4J board-detection code to query the host operating system (for example reading
+ * Raspberry Pi model and revision details) without depending on a shell.
  *
- * <p>Please be careful when using this method. Since we decided to remove the
- * 'sh -c' part, this method no longer supports shell-specific features such as pipes,
- * redirection, or complex shell commands. It is intended to execute simple commands directly.</p>
+ * <p>The command is run directly, not through {@code sh -c}, so shell features such as pipes,
+ * redirection, globbing, environment-variable expansion and command chaining are not supported.
+ * Provide a single executable followed by literal arguments only.</p>
  */
 public class CommandExecutor {
     private static final Logger logger = LoggerFactory.getLogger(CommandExecutor.class);
     private static final int COMMAND_TIMEOUT_SECONDS = 30;
 
     /**
-     * Executes a given command and captures its output and error streams.
+     * Runs the given command, waits up to 30 seconds for it to finish, and returns the captured result.
+     * The command is split on spaces into the executable and its arguments and started directly,
+     * so it must not rely on shell features such as pipes or redirection. On timeout the process is
+     * forcibly destroyed and a failure result is returned; an empty error stream together with normal
+     * termination is treated as success.
      *
-     * <p>Please be careful when using this method. Since we decided to remove the
-     * 'sh -c' part, this method no longer supports pipes, redirection, or other
-     * shell-specific features. Only simple, direct commands should be executed.</p>
-     *
-     * @param command The command to execute (must be simple, direct command without shell features).
-     * @return A {@link CommandResult} containing:
-     *         - {@code success}: true if the command executed successfully within the timeout.
-     *         - {@code outputMessage}: the standard output from the command.
-     *         - {@code errorMessage}: the error output or any exception message.
+     * @param command the executable to run followed by space-separated literal arguments, without any
+     *                shell metacharacters
+     * @return a successful {@link CommandResult} carrying the captured standard output, or a failure
+     *         result whose error message describes the timeout, non-empty error stream, or exception
      */
     public static CommandResult execute(String command) {
         boolean finished = false;

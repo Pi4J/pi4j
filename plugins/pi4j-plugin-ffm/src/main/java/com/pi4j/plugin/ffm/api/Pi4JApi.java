@@ -8,14 +8,38 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Experimental, board-oriented convenience entry point for the FFM plugin. Instead of building a
+ * {@link com.pi4j.context.Context} and individual I/O configurations by hand, callers obtain a
+ * board-specific facade (such as {@link RaspberryPi.Model4B}) that exposes the interfaces actually
+ * present on that hardware (e.g. i2c1, spi0, pwm0). The facade is created lazily and cached, so
+ * repeated requests for the same board type reuse a single instance.
+ */
 public class Pi4JApi {
 
+    /**
+     * Marker for board facades returned by {@link #board(Class)}. Implemented by the board-specific
+     * types in {@link RaspberryPi}.
+     */
     public interface API {
+        /**
+         * Reports whether this facade is an instance of exactly the given class, used to decide
+         * whether a cached instance can satisfy a new {@link Pi4JApi#board(Class)} request.
+         *
+         * @param clazz the board facade type being requested
+         * @return {@code true} if this instance's runtime class equals {@code clazz}
+         */
         default boolean isEqual(Class<?> clazz) {
             return this.getClass().equals(clazz);
         }
     }
 
+    /**
+     * Demonstrates the board-oriented API by acquiring a {@link RaspberryPi.Model4B} facade and
+     * reading register {@code 0x0A} from two different I2C devices on bus 1.
+     *
+     * @param args ignored command-line arguments
+     */
     public static void main(String[] args) {
         // Example usage of new API.
         // You can lazily create new specific board with well known protocols and settings
@@ -47,6 +71,19 @@ public class Pi4JApi {
 
     private static API instance;
 
+    /**
+     * Returns the board facade of the requested type, creating it lazily on first use and caching
+     * it for reuse. Before creating a new facade this verifies that the requested type matches the
+     * board this code is actually running on, as reported by
+     * {@link BoardInfoHelper#current()}.
+     *
+     * @param type the board facade class to obtain (for example {@link RaspberryPi.Model4B})
+     * @param <T>  the board facade type
+     * @return the cached or newly instantiated facade of the requested type
+     * @throws java.util.NoSuchElementException if the requested type is not a known/supported board facade
+     * @throws Pi4JException if the requested type does not correspond to the detected board model,
+     *                       or if the facade cannot be instantiated via its no-argument constructor
+     */
     public static <T extends API> T board(Class<T> type) {
         // essentially, if you are requesting the same board, we return the instance already created
         if (instance != null && instance.isEqual(type)) {

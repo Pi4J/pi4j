@@ -8,9 +8,20 @@ import com.pi4j.plugin.ffm.providers.i2c.impl.I2CSMBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * FFM backend {@link I2CProvider}. Opens an {@link FFMI2CBus} for each requested device and selects
+ * the concrete I2C access implementation - {@link I2CDirect} ({@code I2C_RDWR} ioctls),
+ * {@link com.pi4j.plugin.ffm.providers.i2c.impl.I2CSMBus} (SMBus ioctls) or
+ * {@link com.pi4j.plugin.ffm.providers.i2c.impl.I2CFile} (plain file read/write) - based on the
+ * configured preference and the capabilities the adapter actually reports.
+ */
 public class FFMI2CProviderImpl extends I2CProviderBase implements I2CProvider {
     private static final Logger logger = LoggerFactory.getLogger(FFMI2CProviderImpl.class);
 
+    /**
+     * Creates the provider, assigning its id and name and checking that the current user is permitted
+     * to access the I2C character devices used by this backend.
+     */
     public FFMI2CProviderImpl() {
         this.id = "ffm-i2c";
         this.name = "FFM API Provider I2C";
@@ -22,6 +33,14 @@ public class FFMI2CProviderImpl extends I2CProviderBase implements I2CProvider {
         return 200;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Opens the {@link FFMI2CBus} for the configured bus, then chooses the access implementation: the
+     * configured {@link I2CImplementation} is honoured when the adapter actually supports it
+     * (SMBus or direct), otherwise it falls back to the plain file-based implementation. The created
+     * device is registered with the context.
+     */
     @Override
     public I2C create(I2CConfig config) {
         var bus = new FFMI2CBus(config);

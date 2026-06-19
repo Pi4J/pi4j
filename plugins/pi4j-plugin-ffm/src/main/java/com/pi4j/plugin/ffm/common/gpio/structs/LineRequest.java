@@ -12,28 +12,22 @@ import java.util.Arrays;
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
- * Source: include/uapi/linux/gpio.h:196:8
- * <p>
- * struct gpio_v2_line_request - Information about a request for GPIO lines
+ * Maps the Linux kernel {@code struct gpio_v2_line_request} (include/uapi/linux/gpio.h) to a
+ * {@link MemorySegment}-backed record, used to request a set of GPIO lines via the {@code GPIO_V2_GET_LINE_IOCTL}.
+ * On success the kernel populates {@code fd} with an anonymous file descriptor that owns the requested lines and
+ * is used for subsequent value and event operations.
  *
- * @offsets: an array of desired lines, specified by offset index for the
- * associated GPIO chip
- * @consumer: a desired consumer label for the selected GPIO lines such as
- * "my-bitbanged-relay"
- * @config: requested configuration for the lines.
- * @num_lines: number of lines requested in this request, i.e. the number
- * of valid fields in the %GPIO_V2_LINES_MAX sized arrays, set to 1 to
- * request a single line
- * @event_buffer_size: a suggested minimum number of line events that the
- * kernel should buffer.  This is only relevant if edge detection is
- * enabled in the configuration. Note that this is only a suggested value
- * and the kernel may allocate a larger buffer or cap the size of the
- * buffer. If this field is zero then the buffer size defaults to a minimum
- * of @num_lines 16.
- * @padding: reserved for future use and must be zero filled
- * @fd: if successful this field will contain a valid anonymous file handle
- * after a %GPIO_GET_LINE_IOCTL operation, zero or negative value means
- * error
+ * @param offsets          line offsets on the associated GPIO chip to request; the first {@code numLines}
+ *                         entries are valid
+ * @param consumer         desired consumer label for the requested lines, e.g. "my-bitbanged-relay"
+ * @param config           requested {@link LineConfig} (flags and per-line attribute overrides) for the lines
+ * @param numLines         number of lines being requested, i.e. valid entries in {@code offsets}; set to 1 for
+ *                         a single line
+ * @param eventBufferSize  suggested minimum number of line events the kernel should buffer (only relevant when
+ *                         edge detection is enabled); the kernel may allocate more or cap it, and a value of
+ *                         zero defaults to {@code numLines * 16}
+ * @param fd               filled by the kernel on success with a valid anonymous file descriptor for the
+ *                         requested lines; a zero or negative value indicates an error
  */
 public record LineRequest(int[] offsets, byte[] consumer, LineConfig config, int numLines,
                           int eventBufferSize, int fd) implements Pi4JLayout {
@@ -60,11 +54,12 @@ public record LineRequest(int[] offsets, byte[] consumer, LineConfig config, int
     private static final VarHandle VH_FD = LAYOUT.varHandle(groupElement("fd"));
 
     /**
-     * Creates LineRequest instance from MemorySegment provided.
+     * Decodes a {@link LineRequest} from a native buffer holding a {@code gpio_v2_line_request} struct.
+     * A {@link MemorySegment#NULL} buffer yields an empty instance.
      *
-     * @param memorySegment buffer to construct LineRequest from
-     * @return LineRequest instance
-     * @throws Throwable if there is any exception while converting buffer to java object
+     * @param memorySegment native memory holding the encoded struct, or {@link MemorySegment#NULL}
+     * @return the decoded request, or an empty request if the segment is null
+     * @throws Throwable if reading the native memory fails
      */
     public static LineRequest create(MemorySegment memorySegment) throws Throwable {
         var linerequestInstance = LineRequest.createEmpty();
@@ -75,9 +70,10 @@ public record LineRequest(int[] offsets, byte[] consumer, LineConfig config, int
     }
 
     /**
-     * Creates empty LineRequest object.
+     * Creates an empty request with no offsets, an empty consumer label, an empty {@link LineConfig} and
+     * zeroed numeric fields, suitable as a target for {@link #from(MemorySegment)}.
      *
-     * @return empty LineRequest object
+     * @return a zero-initialized {@link LineRequest}
      */
     public static LineRequest createEmpty() {
         return new LineRequest(new int[]{}, new byte[]{}, LineConfig.createEmpty(), 0, 0, 0);

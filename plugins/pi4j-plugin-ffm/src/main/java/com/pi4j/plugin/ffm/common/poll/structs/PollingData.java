@@ -10,8 +10,15 @@ import java.lang.invoke.VarHandle;
 import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
 
 /**
- * Source: include/uapi/asm-generic/poll.h:36:8
- * Class representing data returned by glibc 'poll' native call.
+ * {@link MemorySegment}-backed mapping of the Linux {@code struct pollfd}
+ * (include/uapi/asm-generic/poll.h) used by the {@code poll(2)} system call.
+ * Each instance describes one file descriptor to watch, the events requested,
+ * and the events the kernel reported after the call returns. Implements the
+ * {@link Pi4JLayout} marshalling contract.
+ *
+ * @param fd      the file descriptor to be polled
+ * @param events  bitmask of requested events to watch for (e.g. {@code POLLIN}, {@code POLLPRI})
+ * @param revents bitmask of events reported by the kernel on return
  */
 public record PollingData(int fd, short events, short revents) implements Pi4JLayout {
     public static final MemoryLayout LAYOUT = MemoryLayout.structLayout(
@@ -27,11 +34,12 @@ public record PollingData(int fd, short events, short revents) implements Pi4JLa
     private static final VarHandle VH_REVENTS = LAYOUT.varHandle(groupElement("revents"));
 
     /**
-     * Creates PollingData instance from MemorySegment provided.
+     * Decodes a {@code struct pollfd} from native memory into a new {@code PollingData}.
+     * A {@link MemorySegment#NULL} segment yields an empty instance with all fields zeroed.
      *
-     * @param memorySegment buffer to construct PollingData from
-     * @return PollingData instance
-     * @throws Throwable if there is any exception while converting buffer to java object
+     * @param memorySegment native memory holding a {@code struct pollfd}, or {@link MemorySegment#NULL}
+     * @return a {@code PollingData} populated from the segment, or an empty instance for a NULL segment
+     * @throws Throwable if reading the fields from native memory fails
      */
     public static PollingData create(MemorySegment memorySegment) throws Throwable {
         var pollingdataInstance = PollingData.createEmpty();
@@ -42,9 +50,10 @@ public record PollingData(int fd, short events, short revents) implements Pi4JLa
     }
 
     /**
-     * Creates empty PollingData object.
+     * Creates a {@code PollingData} with all fields zeroed, suitable as a target buffer
+     * to be filled from native memory.
      *
-     * @return empty PollingData object
+     * @return an empty {@code PollingData} with {@code fd}, {@code events} and {@code revents} set to zero
      */
     public static PollingData createEmpty() {
         return new PollingData(0, (short) 0, (short) 0);

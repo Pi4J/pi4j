@@ -17,6 +17,18 @@ import org.slf4j.LoggerFactory;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Hardware {@link Pwm} implementation backed by the Linux sysfs PWM interface under
+ * {@code /sys/class/pwm/pwmchipN}. The channel is exported on demand and its {@code period},
+ * {@code duty_cycle}, {@code polarity} and {@code enable} attributes are driven by reading and writing
+ * the corresponding text files via {@link FileDescriptorNative}.
+ * <p>
+ * Because sysfs attributes appear asynchronously after an export (the udev rules must apply first), the
+ * implementation waits for read/write access to each attribute file before using it.
+ *
+ * @see com.pi4j.io.pwm.Pwm
+ * @see FFMPwmProviderImpl
+ */
 public class FFMPwmHardware extends PwmBase implements Pwm {
     private final Logger logger = LoggerFactory.getLogger(FFMPwmHardware.class);
 
@@ -44,6 +56,15 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
     private final int chip;
     private final int channel;
 
+    /**
+     * Creates a hardware PWM instance for the chip and channel given in the configuration, and verifies
+     * that the corresponding {@code /sys/class/pwm/pwmchipN} path is accessible with the required
+     * permissions.
+     *
+     * @param provider the {@link PwmProvider} that created this instance
+     * @param config   the PWM configuration supplying the chip number, channel and optional initial
+     *                 duty cycle, polarity and frequency
+     */
     public FFMPwmHardware(PwmProvider provider, PwmConfig config) {
         super(provider, config);
         this.chip = config.chip();
@@ -51,6 +72,17 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         FFMPermissionHelper.checkDevicePermissions(CHIP_PATH + chip, config);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Exports the configured PWM channel if it is not already present (writing the channel number to the
+     * chip's {@code export} file after validating it against {@code npwm}, then waiting for the channel
+     * directory to appear), and seeds the cached on-state, duty cycle, polarity and period from either
+     * the configuration or the current sysfs attribute values.
+     *
+     * @throws IllegalArgumentException if the channel exceeds the chip's number of channels or the
+     *                                  exported channel directory does not appear within the timeout
+     */
     @Override
     public Pwm initialize(Context context) throws InitializeException {
         var pwmChipFile = CHIP_PATH + chip;
@@ -117,6 +149,16 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Recomputes the {@code period} from the configured frequency and the {@code duty_cycle} from the
+     * duty percentage, then writes the sysfs attributes in a reset-then-period-then-duty order (zeroing
+     * {@code duty_cycle} first) so the intermediate state never violates the kernel's
+     * {@code duty_cycle <= period} constraint, before writing the polarity and finally enabling output.
+     *
+     * @throws Pi4JException if the configured frequency is negative
+     */
     @Override
     public Pwm on() throws IOException {
         if (onState) {
@@ -187,6 +229,12 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         return this;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * When the configuration defines a shutdown value it is applied through the superclass; otherwise
+     * the channel is released by writing its number to the chip's {@code unexport} sysfs file.
+     */
     @Override
     public Pwm shutdownInternal(Context context) throws ShutdownException {
         if (config.getShutdownValue() != null) {

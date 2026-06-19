@@ -4,9 +4,11 @@ package com.pi4j.plugin.ffm.common.gpio;
 import java.util.Arrays;
 
 /**
- * Events, that you can subscribe and receive callback on the GPIO Pin state change.
+ * GPIO line edge event types that can be subscribed to and reported back on a pin state change. The integer values
+ * correspond to the kernel {@code GPIOEVENT_EVENT_*}/{@code GPIOEVENT_REQUEST_*} bits in {@link GpioConstants}.
  *
  * @see PinEventProcessing
+ * @see DetectedEvent
  */
 public enum PinEvent {
     /**
@@ -18,7 +20,7 @@ public enum PinEvent {
      */
     FALLING(2),
     /**
-     * if the state is changed.
+     * Either edge: the state changed in either direction (combines {@link #RISING} and {@link #FALLING}).
      */
     BOTH((1) | (1 << 1));
 
@@ -43,10 +45,11 @@ public enum PinEvent {
     }
 
     /**
-     * Gets pin event enum by given integer value.
+     * Resolves the constant whose {@link #getValue()} matches the given integer.
      *
-     * @param value given integer value
-     * @return pin event
+     * @param value the kernel event value to look up
+     * @return the matching {@link PinEvent} constant
+     * @throws java.util.NoSuchElementException if no constant has the given value
      */
     public static PinEvent getByValue(int value) {
         return Arrays.stream(values()).filter(v -> v.getValue() == value).findFirst().orElseThrow();
