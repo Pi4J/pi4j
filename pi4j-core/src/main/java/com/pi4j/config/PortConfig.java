@@ -26,19 +26,21 @@ package com.pi4j.config;
  */
 
 /**
- * Configuration contract for I/O that is addressed by a named port, such as the device path of a serial
- * connection (for example {@code /dev/ttyS0}). Extends the base {@link Config} contract with a single
+ * Configuration contract for I/O that is addressed by a named port.
+ * Extends the base {@link Config} contract with a single
  * {@code port} property identified by {@link #PORT_KEY}.
  *
  * @param <CONFIG_TYPE> the concrete configuration type, enabling fluent access on subtypes
  */
 public interface PortConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
 
-    /** Property key under which the port value is stored in the configuration. */
+    /**
+     * Property key under which the port value is stored in the configuration.
+     */
     String PORT_KEY = "port";
 
     /**
-     * Returns the configured port, for example the serial device path.
+     * Returns the configured port.
      *
      * @return the port identifier, or {@code null} if no port was configured
      */

@@ -27,87 +27,86 @@ package com.pi4j.plugin.mock;
  * #L%
  */
 
+/**
+ * Constants identifying the Mock platform and the Mock I/O providers contributed by this plugin.
+ * <p>
+ * These names and unique IDs are used to register and look up the in-memory, hardware-free
+ * implementations of the Pi4J I/O contracts (Digital I/O, PWM, I2C and SPI) so that Pi4J can run
+ * without real GPIO/I2C/SPI/PWM hardware, for example in unit tests.
+ *
+ * @see MockPlugin
+ */
 public class Mock {
     /**
-     * Constant <code>NAME="Mock"</code>
+     * Human-readable display name shared by the Mock platform and providers.
      */
     public static final String NAME = "Mock";
     /**
-     * Constant <code>ID="mock"</code>
+     * Base identifier prefix used to build the unique IDs of the Mock platform and providers.
      */
     public static final String ID = "mock";
 
     // Platform name and unique ID
     /**
-     * Constant <code>PLATFORM_NAME="NAME +  Platform"</code>
+     * Display name of the Mock platform.
      */
     public static final String PLATFORM_NAME = NAME + " Platform";
     /**
-     * Constant <code>PLATFORM_ID="ID + -platform"</code>
+     * Unique ID of the Mock platform, used when registering and resolving the platform.
      */
     public static final String PLATFORM_ID = ID + "-platform";
     /**
-     * Constant <code>PLATFORM_DESCRIPTION="Pi4J platform used for mock testing."</code>
+     * Human-readable description of the Mock platform.
      */
     public static final String PLATFORM_DESCRIPTION = "Pi4J platform used for mock testing.";
 
     // Digital Input (GPIO) Provider name and unique ID
     /**
-     * Constant <code>DIGITAL_INPUT_PROVIDER_NAME="NAME +   Digital Input (GPIO) Provider"</code>
+     * Display name of the mock digital input (GPIO) provider.
      */
     public static final String DIGITAL_INPUT_PROVIDER_NAME = NAME + " Digital Input (GPIO) Provider";
     /**
-     * Constant <code>DIGITAL_INPUT_PROVIDER_ID="ID + -digital-input"</code>
+     * Unique ID of the mock digital input (GPIO) provider, used when registering and resolving it.
      */
     public static final String DIGITAL_INPUT_PROVIDER_ID = ID + "-digital-input";
 
     // Digital Output (GPIO) Provider name and unique ID
     /**
-     * Constant <code>DIGITAL_OUTPUT_PROVIDER_NAME="NAME +   Digital Output (GPIO) Provider"</code>
+     * Display name of the mock digital output (GPIO) provider.
      */
     public static final String DIGITAL_OUTPUT_PROVIDER_NAME = NAME + " Digital Output (GPIO) Provider";
     /**
-     * Constant <code>DIGITAL_OUTPUT_PROVIDER_ID="ID + -digital-output"</code>
+     * Unique ID of the mock digital output (GPIO) provider, used when registering and resolving it.
      */
     public static final String DIGITAL_OUTPUT_PROVIDER_ID = ID + "-digital-output";
 
     // PWM Provider name and unique ID
     /**
-     * Constant <code>PWM_PROVIDER_NAME="NAME +  PWM Provider"</code>
+     * Display name of the mock PWM provider.
      */
     public static final String PWM_PROVIDER_NAME = NAME + " PWM Provider";
     /**
-     * Constant <code>PWM_PROVIDER_ID="ID + -pwm"</code>
+     * Unique ID of the mock PWM provider, used when registering and resolving it.
      */
     public static final String PWM_PROVIDER_ID = ID + "-pwm";
 
     // I2C Provider name and unique ID
     /**
-     * Constant <code>I2C_PROVIDER_NAME="NAME +  I2C Provider"</code>
+     * Display name of the mock I2C provider.
      */
     public static final String I2C_PROVIDER_NAME = NAME + " I2C Provider";
     /**
-     * Constant <code>I2C_PROVIDER_ID="ID + -i2c"</code>
+     * Unique ID of the mock I2C provider, used when registering and resolving it.
      */
     public static final String I2C_PROVIDER_ID = ID + "-i2c";
 
     // SPI Provider name and unique ID
     /**
-     * Constant <code>SPI_PROVIDER_NAME="NAME +  SPI Provider"</code>
+     * Display name of the mock SPI provider.
      */
     public static final String SPI_PROVIDER_NAME = NAME + " SPI Provider";
     /**
-     * Constant <code>SPI_PROVIDER_ID="ID + -spi"</code>
+     * Unique ID of the mock SPI provider, used when registering and resolving it.
      */
     public static final String SPI_PROVIDER_ID = ID + "-spi";
-
-    // Serial Provider name and unique ID
-    /**
-     * Constant <code>SERIAL_PROVIDER_NAME="NAME +  Serial Provider"</code>
-     */
-    public static final String SERIAL_PROVIDER_NAME = NAME + " Serial Provider";
-    /**
-     * Constant <code>SERIAL_PROVIDER_ID="ID + -serial"</code>
-     */
-    public static final String SERIAL_PROVIDER_ID = ID + "-serial";
 }

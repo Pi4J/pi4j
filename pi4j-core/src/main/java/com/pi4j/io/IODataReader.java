@@ -37,7 +37,7 @@ import java.util.Objects;
 
 /**
  * Read side of the Pi4J byte-oriented data I/O contract, implemented by stream-style devices such
- * as I2C, SPI and serial.
+ * as I2C, and SPI.
  * <p>
  * It extends {@link Readable} and layers a rich set of convenience overloads on top of the single
  * primitive {@link #read()} / {@link #read(byte[], int, int)} operations, allowing data to be read

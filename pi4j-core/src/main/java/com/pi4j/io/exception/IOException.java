@@ -29,7 +29,7 @@ import com.pi4j.exception.Pi4JException;
 
 /**
  * Base unchecked exception for failures originating in the Pi4J I/O subsystem
- * (GPIO, I2C, SPI, PWM, serial, and related providers). It extends
+ * (GPIO, I2C, SPI, PWM, and related providers). It extends
  * {@link Pi4JException} and is the common supertype for the more specific I/O
  * exceptions in this package, allowing callers to catch all I/O-related
  * failures uniformly.
@@ -43,7 +43,7 @@ public class IOException extends Pi4JException {
      *
      * @param message human-readable description of the I/O failure
      */
-    public IOException(String message){
+    public IOException(String message) {
         super(message);
     }
 
@@ -52,7 +52,7 @@ public class IOException extends Pi4JException {
      *
      * @param cause the throwable that triggered this I/O failure
      */
-    public IOException(Throwable cause){
+    public IOException(Throwable cause) {
         super(cause);
     }
 
@@ -62,7 +62,7 @@ public class IOException extends Pi4JException {
      * @param message human-readable description of the I/O failure
      * @param cause   the throwable that triggered this I/O failure
      */
-    public IOException(String message, Throwable cause){
-        super(message,cause);
+    public IOException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

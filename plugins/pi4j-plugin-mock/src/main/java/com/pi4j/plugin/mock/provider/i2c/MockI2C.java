@@ -37,11 +37,27 @@ import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.Objects;
 
+/**
+ * Mock, in-memory implementation of the pi4j-core {@link I2C} contract (also implementing
+ * {@link I2CRegisterDataReader} and {@link I2CRegisterDataWriter}).
+ * <p>
+ * No real I2C transaction is performed. Bytes written to the device are appended to an
+ * in-memory buffer and reads pop bytes back from that same buffer, so a test can write the
+ * "device response" it expects and then read it back. Per-register operations are simulated
+ * the same way, with a separate FIFO buffer per register index. This storage is intentionally
+ * simplistic and meant only for unit testing the Pi4J I2C APIs.
+ *
+ * @see MockI2CBus
+ */
 public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterDataReader, I2CRegisterDataWriter {
 
     private static final Logger logger = LoggerFactory.getLogger(MockI2C.class);
 
     /**
+     * Per-register in-memory FIFO buffers indexed by register number (0-511), used to simulate
+     * register reads and writes. A {@code null} entry means no data has been written to that
+     * register yet.
+     * <p>
      * ATTENTION:  The storage and management of the byte arrays
      *  are terribly inefficient and not intended for real-world
      *  usage.  These are only intended to unit testing the
@@ -49,8 +65,18 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
      */
     // Supporting two byte registers values, requires larger Array.  Limit register value to 0x200
     protected ArrayDeque<Byte>[] registers = new ArrayDeque[512]; // 512 supported registers (0-511)
+    /**
+     * In-memory FIFO buffer backing the raw (non-register) device read/write methods. Writes
+     * append to the tail and reads pop from the head.
+     */
     protected ArrayDeque<Byte> raw = new ArrayDeque<>();
 
+    /**
+     * Creates a mock I2C device, wiring it to a {@link MockI2CBus} built from the same config.
+     *
+     * @param provider the {@link I2CProvider} that created this instance
+     * @param config the {@link I2CConfig} identifying the simulated bus and device address
+     */
     public MockI2C(I2CProvider provider, I2CConfig config){
         super(provider, config, new MockI2CBus(config));
         logger.debug("[{}::{}] :: CREATE(BUS={}; DEVICE={})",
@@ -105,6 +131,12 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
     // RAW DEVICE READ FUNCTIONS
     // -------------------------------------------------------------------
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Pops and returns the next byte from the in-memory raw buffer, or {@code -1} when the
+     * buffer is empty (simulating no data available).
+     */
     @Override
     public int read() {
         if(raw.isEmpty()) return -1;
@@ -116,6 +148,12 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
         return b;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Pops up to {@code length} bytes from the in-memory raw buffer into the supplied array,
+     * returning the number actually copied, or {@code -1} when the buffer is empty.
+     */
     @Override
     public int read(byte[] buffer, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, buffer.length);
@@ -137,6 +175,12 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
         return counter;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Pops up to {@code length} bytes from the in-memory raw buffer and decodes them with the
+     * given charset, or returns {@code null} when the buffer is empty.
+     */
     @Override
     public String readString(Charset charset, int length) {
         if(raw.isEmpty()) return null;
@@ -227,6 +271,14 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
     // DEVICE REGISTER READ FUNCTIONS
     // -------------------------------------------------------------------
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Pops and returns the next byte previously written to the simulated register's in-memory
+     * buffer.
+     *
+     * @throws IllegalStateException if the register has never been written to or its buffer is empty
+     */
     @Override
     public int readRegister(int register) {
         if(registers[register] == null) throw new IllegalStateException("No available data to read");
@@ -242,6 +294,13 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
     }
 
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Resolves the two-byte {@code register} address (LSB first) to an internal index, then
+     * pops up to {@code length} bytes from that register's simulated buffer into {@code buffer},
+     * returning the number copied or {@code -1} when no data has been written there.
+     */
     @Override
     public int readRegister(byte[] register, byte[] buffer, int offset, int length) {
         int internalOffset = (register[0] & 0xff) + (register[1] << 8);
@@ -271,6 +330,13 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
         return counter;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Pops up to {@code length} bytes from the simulated register's in-memory buffer into
+     * {@code buffer}, returning the number copied or {@code -1} when no data has been written
+     * to that register.
+     */
     @Override
     public int readRegister(int register, byte[] buffer, int offset, int length) {
         if(registers[register] == null) return -1;
@@ -292,6 +358,13 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
         return counter;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Pops up to {@code length} bytes from the simulated register's in-memory buffer and
+     * decodes them with the given charset, or returns {@code null} when no data has been
+     * written to that register.
+     */
     @Override
     public String readRegisterString(int register, Charset charset, int length) {
         if(registers[register] == null) return null;

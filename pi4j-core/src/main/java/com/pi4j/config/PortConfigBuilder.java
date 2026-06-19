@@ -31,11 +31,11 @@ package com.pi4j.config;
  * {@link PortConfig}-derived configuration.
  *
  * @param <BUILDER_TYPE> the concrete builder type returned by fluent setters, enabling method chaining on subtypes
- * @param <CONFIG_TYPE> the configuration type produced by this builder
+ * @param <CONFIG_TYPE>  the configuration type produced by this builder
  */
 public interface PortConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
     /**
-     * Sets the port to target, for example the serial device path such as {@code /dev/ttyS0}.
+     * Sets the port to target.
      *
      * @param port the port identifier to use for the I/O connection
      * @return this builder instance for method chaining
