@@ -47,7 +47,6 @@ module com.pi4j {
     exports com.pi4j.event;
     exports com.pi4j.io;
     exports com.pi4j.io.gpio;
-    exports com.pi4j.io.gpio.analog;
     exports com.pi4j.io.gpio.digital;
     exports com.pi4j.io.exception;
     exports com.pi4j.io.i2c;

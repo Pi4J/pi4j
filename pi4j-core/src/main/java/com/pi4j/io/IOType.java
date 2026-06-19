@@ -27,7 +27,6 @@ package com.pi4j.io;
 
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
-import com.pi4j.io.gpio.analog.*;
 import com.pi4j.io.gpio.digital.*;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CConfigBuilder;
@@ -50,8 +49,6 @@ import java.lang.reflect.Method;
  */
 public enum IOType {
 
-    ANALOG_INPUT(AnalogInputProvider.class, AnalogInput.class, AnalogInputConfig.class, AnalogInputConfigBuilder.class),
-    ANALOG_OUTPUT(AnalogOutputProvider.class, AnalogOutput.class, AnalogOutputConfig.class, AnalogOutputConfigBuilder.class),
     DIGITAL_INPUT(DigitalInputProvider.class, DigitalInput.class, DigitalInputConfig.class, DigitalInputConfigBuilder.class),
     DIGITAL_OUTPUT(DigitalOutputProvider.class, DigitalOutput.class, DigitalOutputConfig.class, DigitalOutputConfigBuilder.class),
     PWM(PwmProvider.class, Pwm.class, PwmConfig.class, PwmConfigBuilder.class),
@@ -272,20 +269,6 @@ public enum IOType {
         // lower case the string for comparisons
         ioType = ioType.toLowerCase();
 
-        // ANALOG INPUT
-        if (ioType.startsWith("analog.i")) return ANALOG_INPUT;
-        if (ioType.startsWith("analog-i")) return ANALOG_INPUT;
-        if (ioType.startsWith("analog_i")) return ANALOG_INPUT;
-        if (ioType.startsWith("analog i")) return ANALOG_INPUT;
-        if (ioType.equalsIgnoreCase("ain")) return ANALOG_INPUT;
-
-        // ANALOG OUTPUT
-        if (ioType.startsWith("analog.o")) return ANALOG_OUTPUT;
-        if (ioType.startsWith("analog-o")) return ANALOG_OUTPUT;
-        if (ioType.startsWith("analog_o")) return ANALOG_OUTPUT;
-        if (ioType.startsWith("analog o")) return ANALOG_OUTPUT;
-        if (ioType.equalsIgnoreCase("aout")) return ANALOG_OUTPUT;
-
         // DIGITAL INPUT
         if (ioType.startsWith("digital.i")) return DIGITAL_INPUT;
         if (ioType.startsWith("digital-i")) return DIGITAL_INPUT;
@@ -332,12 +315,3 @@ public enum IOType {
         throw new IllegalArgumentException("Unknown IO TYPE: " + ioType);
     }
 }
-
-//    ANALOG_INPUT(AnalogInputProvider.class, AnalogInput.class, AnalogInputConfig.class, AnalogInputConfigBuilder.class),
-//    ANALOG_OUTPUT(AnalogOutputProvider.class, AnalogOutput.class, AnalogOutputConfig.class, AnalogOutputConfigBuilder.class),
-//    DIGITAL_INPUT(DigitalInputProvider.class, DigitalInput.class, DigitalInputConfig.class, DigitalInputConfigBuilder.class),
-//    DIGITAL_OUTPUT(DigitalOutputProvider.class, DigitalOutput.class, DigitalOutputConfig.class, DigitalOutputConfigBuilder.class),
-//    PWM(PwmProvider.class, Pwm.class, PwmConfig.class, PwmConfigBuilder.class),
-//    I2C(I2CProvider.class, com.pi4j.io.i2c.I2C.class, I2CConfig.class, I2CConfigBuilder.class),
-//    SPI(SpiProvider.class, Spi.class, I2CConfig.class, I2CConfigBuilder.class),
-//    SERIAL(SerialProvider.class, Serial.class, SerialConfig.class, SerialConfigBuilder.class);

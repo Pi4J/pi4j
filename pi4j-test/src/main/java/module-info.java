@@ -42,10 +42,6 @@ module com.pi4j.test {
     requires jdk.incubator.vector;
     // TEST END
 
-    uses com.pi4j.plugin.mock.provider.gpio.analog.MockAnalogInput;
-    uses com.pi4j.plugin.mock.provider.gpio.analog.MockAnalogInputProvider;
-    uses com.pi4j.plugin.mock.provider.gpio.analog.MockAnalogOutput;
-    uses com.pi4j.plugin.mock.provider.gpio.analog.MockAnalogOutputProvider;
     uses com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalInput;
     uses com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalInputProvider;
     uses com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalOutput;

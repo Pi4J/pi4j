@@ -32,7 +32,6 @@ module com.pi4j.plugin.mock {
 
     exports com.pi4j.plugin.mock;
     exports com.pi4j.plugin.mock.provider.gpio.digital;
-    exports com.pi4j.plugin.mock.provider.gpio.analog;
     exports com.pi4j.plugin.mock.provider.pwm;
     exports com.pi4j.plugin.mock.provider.spi;
     exports com.pi4j.plugin.mock.provider.i2c;

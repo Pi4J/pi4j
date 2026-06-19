@@ -34,64 +34,86 @@ package com.pi4j.plugin.mock;
  * @version $Id: $Id
  */
 public class Mock {
-    /** Constant <code>NAME="Mock"</code> */
+    /**
+     * Constant <code>NAME="Mock"</code>
+     */
     public static final String NAME = "Mock";
-    /** Constant <code>ID="mock"</code> */
+    /**
+     * Constant <code>ID="mock"</code>
+     */
     public static final String ID = "mock";
 
     // Platform name and unique ID
-    /** Constant <code>PLATFORM_NAME="NAME +  Platform"</code> */
+    /**
+     * Constant <code>PLATFORM_NAME="NAME +  Platform"</code>
+     */
     public static final String PLATFORM_NAME = NAME + " Platform";
-    /** Constant <code>PLATFORM_ID="ID + -platform"</code> */
+    /**
+     * Constant <code>PLATFORM_ID="ID + -platform"</code>
+     */
     public static final String PLATFORM_ID = ID + "-platform";
-    /** Constant <code>PLATFORM_DESCRIPTION="Pi4J platform used for mock testing."</code> */
+    /**
+     * Constant <code>PLATFORM_DESCRIPTION="Pi4J platform used for mock testing."</code>
+     */
     public static final String PLATFORM_DESCRIPTION = "Pi4J platform used for mock testing.";
 
-    // Analog Input (GPIO) Provider name and unique ID
-    /** Constant <code>ANALOG_INPUT_PROVIDER_NAME="NAME +  Analog Input (GPIO) Provider"</code> */
-    public static final String ANALOG_INPUT_PROVIDER_NAME = NAME + " Analog Input (GPIO) Provider";
-    /** Constant <code>ANALOG_INPUT_PROVIDER_ID="ID + -analog-input"</code> */
-    public static final String ANALOG_INPUT_PROVIDER_ID = ID + "-analog-input";
-
-    // Analog Output (GPIO) Provider name and unique ID
-    /** Constant <code>ANALOG_OUTPUT_PROVIDER_NAME="NAME +  Analog Output (GPIO) Provider"</code> */
-    public static final String ANALOG_OUTPUT_PROVIDER_NAME = NAME + " Analog Output (GPIO) Provider";
-    /** Constant <code>ANALOG_OUTPUT_PROVIDER_ID="ID + -analog-output"</code> */
-    public static final String ANALOG_OUTPUT_PROVIDER_ID = ID + "-analog-output";
-
     // Digital Input (GPIO) Provider name and unique ID
-    /** Constant <code>DIGITAL_INPUT_PROVIDER_NAME="NAME +   Digital Input (GPIO) Provider"</code> */
-    public static final String DIGITAL_INPUT_PROVIDER_NAME = NAME +  " Digital Input (GPIO) Provider";
-    /** Constant <code>DIGITAL_INPUT_PROVIDER_ID="ID + -digital-input"</code> */
+    /**
+     * Constant <code>DIGITAL_INPUT_PROVIDER_NAME="NAME +   Digital Input (GPIO) Provider"</code>
+     */
+    public static final String DIGITAL_INPUT_PROVIDER_NAME = NAME + " Digital Input (GPIO) Provider";
+    /**
+     * Constant <code>DIGITAL_INPUT_PROVIDER_ID="ID + -digital-input"</code>
+     */
     public static final String DIGITAL_INPUT_PROVIDER_ID = ID + "-digital-input";
 
     // Digital Output (GPIO) Provider name and unique ID
-    /** Constant <code>DIGITAL_OUTPUT_PROVIDER_NAME="NAME +   Digital Output (GPIO) Provider"</code> */
-    public static final String DIGITAL_OUTPUT_PROVIDER_NAME = NAME +  " Digital Output (GPIO) Provider";
-    /** Constant <code>DIGITAL_OUTPUT_PROVIDER_ID="ID + -digital-output"</code> */
+    /**
+     * Constant <code>DIGITAL_OUTPUT_PROVIDER_NAME="NAME +   Digital Output (GPIO) Provider"</code>
+     */
+    public static final String DIGITAL_OUTPUT_PROVIDER_NAME = NAME + " Digital Output (GPIO) Provider";
+    /**
+     * Constant <code>DIGITAL_OUTPUT_PROVIDER_ID="ID + -digital-output"</code>
+     */
     public static final String DIGITAL_OUTPUT_PROVIDER_ID = ID + "-digital-output";
 
     // PWM Provider name and unique ID
-    /** Constant <code>PWM_PROVIDER_NAME="NAME +  PWM Provider"</code> */
+    /**
+     * Constant <code>PWM_PROVIDER_NAME="NAME +  PWM Provider"</code>
+     */
     public static final String PWM_PROVIDER_NAME = NAME + " PWM Provider";
-    /** Constant <code>PWM_PROVIDER_ID="ID + -pwm"</code> */
+    /**
+     * Constant <code>PWM_PROVIDER_ID="ID + -pwm"</code>
+     */
     public static final String PWM_PROVIDER_ID = ID + "-pwm";
 
     // I2C Provider name and unique ID
-    /** Constant <code>I2C_PROVIDER_NAME="NAME +  I2C Provider"</code> */
+    /**
+     * Constant <code>I2C_PROVIDER_NAME="NAME +  I2C Provider"</code>
+     */
     public static final String I2C_PROVIDER_NAME = NAME + " I2C Provider";
-    /** Constant <code>I2C_PROVIDER_ID="ID + -i2c"</code> */
+    /**
+     * Constant <code>I2C_PROVIDER_ID="ID + -i2c"</code>
+     */
     public static final String I2C_PROVIDER_ID = ID + "-i2c";
 
     // SPI Provider name and unique ID
-    /** Constant <code>SPI_PROVIDER_NAME="NAME +  SPI Provider"</code> */
+    /**
+     * Constant <code>SPI_PROVIDER_NAME="NAME +  SPI Provider"</code>
+     */
     public static final String SPI_PROVIDER_NAME = NAME + " SPI Provider";
-    /** Constant <code>SPI_PROVIDER_ID="ID + -spi"</code> */
+    /**
+     * Constant <code>SPI_PROVIDER_ID="ID + -spi"</code>
+     */
     public static final String SPI_PROVIDER_ID = ID + "-spi";
 
     // Serial Provider name and unique ID
-    /** Constant <code>SERIAL_PROVIDER_NAME="NAME +  Serial Provider"</code> */
+    /**
+     * Constant <code>SERIAL_PROVIDER_NAME="NAME +  Serial Provider"</code>
+     */
     public static final String SERIAL_PROVIDER_NAME = NAME + " Serial Provider";
-    /** Constant <code>SERIAL_PROVIDER_ID="ID + -serial"</code> */
+    /**
+     * Constant <code>SERIAL_PROVIDER_ID="ID + -serial"</code>
+     */
     public static final String SERIAL_PROVIDER_ID = ID + "-serial";
 }

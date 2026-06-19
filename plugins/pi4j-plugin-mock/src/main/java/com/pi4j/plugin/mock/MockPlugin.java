@@ -29,8 +29,6 @@ package com.pi4j.plugin.mock;
 
 import com.pi4j.extension.Plugin;
 import com.pi4j.extension.PluginService;
-import com.pi4j.plugin.mock.provider.gpio.analog.MockAnalogInputProvider;
-import com.pi4j.plugin.mock.provider.gpio.analog.MockAnalogOutputProvider;
 import com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalInputProvider;
 import com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalOutputProvider;
 import com.pi4j.plugin.mock.provider.i2c.MockI2CProvider;
@@ -47,8 +45,6 @@ import com.pi4j.provider.Provider;
 public class MockPlugin implements Plugin {
 
     private final Provider[] providers = {
-        MockAnalogInputProvider.newInstance(),
-        MockAnalogOutputProvider.newInstance(),
         MockDigitalInputProvider.newInstance(),
         MockDigitalOutputProvider.newInstance(),
         MockPwmProvider.newInstance(),

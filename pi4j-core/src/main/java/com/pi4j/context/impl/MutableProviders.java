@@ -30,8 +30,6 @@ import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.IOType;
-import com.pi4j.io.gpio.analog.AnalogInputProvider;
-import com.pi4j.io.gpio.analog.AnalogOutputProvider;
 import com.pi4j.io.gpio.digital.DigitalInputProvider;
 import com.pi4j.io.gpio.digital.DigitalOutputProvider;
 import com.pi4j.io.i2c.I2CProvider;
@@ -70,29 +68,11 @@ public class MutableProviders implements Providers {
     // all detected/available providers
     private Map<String, Provider> providers = new ConcurrentHashMap<>();
 
-    private ProviderGroup<AnalogInputProvider> _analogInput = new ProviderGroup<>(this, IOType.ANALOG_INPUT);
-    private ProviderGroup<AnalogOutputProvider> _analogOutput = new ProviderGroup<>(this, IOType.ANALOG_OUTPUT);
     private ProviderGroup<DigitalInputProvider> _digitalInput = new ProviderGroup<>(this, IOType.DIGITAL_INPUT);
     private ProviderGroup<DigitalOutputProvider> _digitalOutput = new ProviderGroup<>(this, IOType.DIGITAL_OUTPUT);
     private ProviderGroup<PwmProvider> _pwm = new ProviderGroup<>(this, IOType.PWM);
     private ProviderGroup<SpiProvider> _spi = new ProviderGroup<>(this, IOType.SPI);
     private ProviderGroup<I2CProvider> _i2c = new ProviderGroup<>(this, IOType.I2C);
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ProviderGroup<AnalogInputProvider> analogInput() {
-        return _analogInput;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ProviderGroup<AnalogOutputProvider> analogOutput() {
-        return _analogOutput;
-    }
 
     /**
      * {@inheritDoc}
