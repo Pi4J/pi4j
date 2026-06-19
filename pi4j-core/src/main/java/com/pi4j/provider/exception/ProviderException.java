@@ -29,7 +29,7 @@ import com.pi4j.extension.exception.ExtensionException;
 import com.pi4j.provider.Provider;
 
 /**
- * Base checked exception for all error conditions related to Pi4J {@link Provider}s,
+ * Base unchecked exception for all error conditions related to Pi4J {@link Provider}s,
  * such as a provider being missing, of the wrong type, or failing to initialize. It
  * extends {@link ExtensionException} since providers are loaded as Pi4J extensions, and
  * serves as the common superclass for the more specific provider exceptions in this
