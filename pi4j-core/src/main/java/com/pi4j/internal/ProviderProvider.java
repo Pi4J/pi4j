@@ -26,12 +26,219 @@ package com.pi4j.internal;
  */
 
 import com.pi4j.io.IOType;
+import com.pi4j.io.gpio.analog.AnalogInputProvider;
+import com.pi4j.io.gpio.analog.AnalogOutputProvider;
+import com.pi4j.io.gpio.digital.DigitalInputProvider;
+import com.pi4j.io.gpio.digital.DigitalOutputProvider;
+import com.pi4j.io.i2c.I2CProvider;
+import com.pi4j.io.pwm.PwmProvider;
+import com.pi4j.io.spi.SpiProvider;
 import com.pi4j.provider.Provider;
+import com.pi4j.provider.exception.ProviderException;
 import com.pi4j.provider.exception.ProviderInterfaceException;
 import com.pi4j.provider.exception.ProviderNotFoundException;
 
-public interface ProviderProvider extends ProviderAliases {
+public interface ProviderProvider  {
 
+
+
+    /**
+     * <p>ain.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends AnalogInputProvider> T ain() throws ProviderException {
+        return analogInput();
+    }
+
+    /**
+     * <p>aout.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends AnalogOutputProvider> T aout() throws ProviderException {
+        return analogOutput();
+    }
+
+    /**
+     * <p>din.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends DigitalInputProvider> T din() throws ProviderException {
+        return digitalInput();
+    }
+
+    /**
+     * <p>dout.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends DigitalOutputProvider> T dout() throws ProviderException {
+        return digitalOutput();
+    }
+
+    /**
+     * <p>analogInput.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends AnalogInputProvider> T analogInput() throws ProviderException {
+        return this.provider(IOType.ANALOG_INPUT);
+    }
+
+    /**
+     * <p>analogOutput.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends AnalogOutputProvider> T analogOutput() throws ProviderException {
+        return this.provider(IOType.ANALOG_OUTPUT);
+    }
+
+    /**
+     * <p>digitalInput.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends DigitalInputProvider> T digitalInput() throws ProviderException {
+        return this.provider(IOType.DIGITAL_INPUT);
+    }
+
+    /**
+     * <p>digitalOutput.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends DigitalOutputProvider> T digitalOutput() throws ProviderException {
+        return this.provider(IOType.DIGITAL_OUTPUT);
+    }
+
+    /**
+     * <p>pwm.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends PwmProvider> T pwm() throws ProviderException {
+        return this.provider(IOType.PWM);
+    }
+
+    /**
+     * <p>spi.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends SpiProvider> T spi() throws ProviderException {
+        return this.provider(IOType.SPI);
+    }
+
+    /**
+     * <p>i2c.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends I2CProvider> T i2c() throws ProviderException {
+        return this.provider(IOType.I2C);
+    }
+
+    /**
+     * <p>analogInput.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends AnalogInputProvider> T getAnalogInputProvider() throws ProviderException {
+        return this.analogInput();
+    }
+
+    /**
+     * <p>analogOutput.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends AnalogOutputProvider> T getAnalogOutputProvider() throws ProviderException {
+        return this.analogOutput();
+    }
+
+    /**
+     * <p>digitalInput.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends DigitalInputProvider> T getDigitalInputProvider() throws ProviderException {
+        return this.digitalInput();
+    }
+
+    /**
+     * <p>digitalOutput.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends DigitalOutputProvider> T getDigitalOutputProvider() throws ProviderException {
+        return this.digitalOutput();
+    }
+
+    /**
+     * <p>pwm.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends PwmProvider> T getPwmProvider() throws ProviderException {
+        return this.pwm();
+    }
+
+    /**
+     * <p>spi.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends SpiProvider> T getSpiProvider() throws ProviderException {
+        return this.spi();
+    }
+
+    /**
+     * <p>i2c.</p>
+     *
+     * @param <T> a T object.
+     * @return a T object.
+     * @throws ProviderException if any.
+     */
+    default <T extends I2CProvider> T getI2CProvider() throws ProviderException {
+        return this.i2c();
+    }
     /**
      * <p>provider.</p>
      *

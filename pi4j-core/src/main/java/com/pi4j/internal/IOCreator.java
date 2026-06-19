@@ -42,7 +42,7 @@ import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.io.spi.SpiConfigBuilder;
 
 /**
- * Note: This method previously had string-based create methods.  These have been removed in favor of the
+ * Note: This interface previously had string-based create methods.  These have been removed in favor of the
  * {@link IOConfigBuilder} and {@link IOType} based create methods.
  *
  * We considered keeping these methods around for backwards compatibility, but this would move a compile time
