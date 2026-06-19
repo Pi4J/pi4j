@@ -25,11 +25,32 @@ import java.util.Objects;
 public class FFMSpi extends SpiBase implements Spi {
     private static final Logger logger = LoggerFactory.getLogger(FFMSpi.class);
     private static final String SPI_BUS = "/dev/spidev";
+
+    /**
+     * sysfs file exposing the maximum number of bytes the spidev driver accepts in a single
+     * SPI_IOC_MESSAGE transfer. Transfers larger than this value are rejected by the kernel with
+     * EMSGSIZE, so we read it once and split larger transfers into chunks of at most this size.
+     */
+    private static final String SPIDEV_BUFSIZ_PATH = "/sys/module/spidev/parameters/bufsiz";
+
+    /**
+     * Fallback transfer chunk size used when {@link #SPIDEV_BUFSIZ_PATH} cannot be read. This matches
+     * the spidev driver's own compile-time default of 4096 bytes.
+     */
+    private static final int DEFAULT_BUFFER_SIZE = 4096;
+
+    /**
+     * The bufsiz value is text ASCII (not binary). It is an unsigned int, so the largest decimal
+     * representation is 10 bytes.
+     */
+    private static final int MAX_BUFSIZ_FILE_SIZE = 10;
+
     private final FileDescriptorNative FILE = new FileDescriptorNative();
     private final IoctlNative IOCTL = new IoctlNative();
 
 
     private int spiFileDescriptor;
+    private int bufferSize = DEFAULT_BUFFER_SIZE;
     private final String path;
 
     public FFMSpi(SpiProvider provider, SpiConfig config) {
@@ -53,8 +74,6 @@ public class FFMSpi extends SpiBase implements Spi {
         IOCTL.call(spiFileDescriptor, Command.getSpiIocWrMode(), config.mode().getMode());
         logger.debug("{} - setting Read SPI Mode to {}.", path, config.mode());
         IOCTL.call(spiFileDescriptor, Command.getSpiIocRdMode(), config.mode().getMode());
-//        logger.debug("{} - setting Bit Ordering to {}.", path, config.?);
-//        IOCTL.call(spiFileDescriptor, Command.getSpiIocWrLsbFirst(), bitOrdering);
         logger.debug("{} - setting Write Byte Length to {}.", path, 8);
         IOCTL.call(spiFileDescriptor, Command.getSpiIocWrBitsPerWord(), 8);
         logger.debug("{} - setting Read Byte Length to {}.", path, 8);
@@ -68,9 +87,43 @@ public class FFMSpi extends SpiBase implements Spi {
         logger.debug("{} - setting readLsbFirst to {}.", path, config.getReadLsbFirst());
         IOCTL.call(spiFileDescriptor, Command.getSpiIocRdLsbFirst(), config.getReadLsbFirst());
 
+        this.bufferSize = readBufferSize();
+        logger.debug("{} - SPI transfer chunk size (bufsiz) is {} bytes.", path, bufferSize);
+
         this.isOpen = true;
         logger.info("{} - SPI Bus configured.", path);
         return this;
+    }
+
+    /**
+     * Reads the spidev {@code bufsiz} module parameter, which is the maximum number of bytes accepted
+     * by the kernel in a single SPI_IOC_MESSAGE transfer. Falls back to {@link #DEFAULT_BUFFER_SIZE}
+     * when the sysfs file is missing, unreadable or holds an unexpected value.
+     *
+     * @return the maximum transfer chunk size in bytes
+     */
+    private int readBufferSize() {
+        if (FILE.access(SPIDEV_BUFSIZ_PATH, FileFlag.R_OK) != 0) {
+            logger.debug("{} - '{}' is not accessible, falling back to default chunk size {}.", path, SPIDEV_BUFSIZ_PATH, DEFAULT_BUFFER_SIZE);
+            return DEFAULT_BUFFER_SIZE;
+        }
+        try {
+            var bufsizFd = FILE.open(SPIDEV_BUFSIZ_PATH, FileFlag.O_RDONLY);
+            var content = FILE.read(bufsizFd, new byte[MAX_BUFSIZ_FILE_SIZE], MAX_BUFSIZ_FILE_SIZE);
+            FILE.close(bufsizFd);
+            if (content == null || content.length == 0) {
+                return DEFAULT_BUFFER_SIZE;
+            }
+            var size = Integer.parseInt(new String(content).trim());
+            if (size <= 0) {
+                logger.warn("{} - '{}' reported non-positive value {}, falling back to default chunk size {}.", path, SPIDEV_BUFSIZ_PATH, size, DEFAULT_BUFFER_SIZE);
+                return DEFAULT_BUFFER_SIZE;
+            }
+            return size;
+        } catch (RuntimeException e) {
+            logger.warn("{} - could not read '{}', falling back to default chunk size {}: {}", path, SPIDEV_BUFSIZ_PATH, DEFAULT_BUFFER_SIZE, e.getMessage());
+            return DEFAULT_BUFFER_SIZE;
+        }
     }
 
     /**
@@ -90,16 +143,26 @@ public class FFMSpi extends SpiBase implements Spi {
         checkClosed();
         Objects.checkFromIndexSize(readOffset, numberOfBytes, read.length);
         Objects.checkFromIndexSize(writeOffset, numberOfBytes, write.length);
-        var writeData = Arrays.copyOfRange(write, writeOffset, numberOfBytes + writeOffset);
 
-        logger.trace("{} - Transferring data (length '{}')", path, numberOfBytes);
+        logger.trace("{} - Transferring data (length '{}') in chunks of at most {} bytes", path, numberOfBytes, bufferSize);
         logger.trace("{} - Write buffer: {}", path, HexFormatter.format(write));
-        var spiTransfer = new SpiTransferBuffer(writeData, read, numberOfBytes);
-        spiTransfer = IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(1), spiTransfer);
-        var readBytes = spiTransfer.getRxBuffer();
-        System.arraycopy(readBytes, 0, read, readOffset, numberOfBytes);
+
+        // Split larger transfers into bufsiz-sized chunks, each issued as its own SPI_IOC_MESSAGE(1)
+        // ioctl call. These must NOT be batched into one SPI_IOC_MESSAGE(N): spidev's 'bufsiz' limit
+        // applies to the cumulative tx (and rx) total across all transfers within a single ioctl, so
+        // batching would sum the chunks back up and fail with EMSGSIZE - exactly what we avoid here.
+        var totalRead = 0;
+        for (var chunkOffset = 0; chunkOffset < numberOfBytes; chunkOffset += bufferSize) {
+            var chunkSize = Math.min(bufferSize, numberOfBytes - chunkOffset);
+            var writeData = Arrays.copyOfRange(write, writeOffset + chunkOffset, writeOffset + chunkOffset + chunkSize);
+            var spiTransfer = new SpiTransferBuffer(writeData, new byte[chunkSize], chunkSize);
+            spiTransfer = IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(1), spiTransfer);
+            var readBytes = spiTransfer.getRxBuffer();
+            System.arraycopy(readBytes, 0, read, readOffset + chunkOffset, chunkSize);
+            totalRead += readBytes.length;
+        }
         logger.trace("{} - Read buffer: {}", path, HexFormatter.format(read));
-        return readBytes.length;
+        return totalRead;
     }
 
     /**
@@ -139,20 +202,57 @@ public class FFMSpi extends SpiBase implements Spi {
      */
     @Override
     public void writeThenRead(byte[] write, int writeOffset, int writeLength, int readDelayNanos, byte[] read, int readOffset, int readLength) {
+        checkClosed();
         Objects.checkFromIndexSize(readOffset, readLength, read.length);
         Objects.checkFromIndexSize(writeOffset, writeLength, write.length);
-        var writeData = Arrays.copyOfRange(write, writeOffset, writeLength + writeOffset);
-        var inputBuffer = new SpiTransferBuffer(writeData, new byte[0], writeLength, readDelayNanos / 1000);
-        var outputBuffer = new SpiTransferBuffer(new byte[0], read, readLength, readDelayNanos / 1000);
 
-        var transferBuffer = new SpiMultipleTransferBuffer(inputBuffer, outputBuffer);
-        checkClosed();
-        logger.trace("{} - Transferring data (length '{}')", path, writeLength);
+        logger.trace("{} - Write-then-read (write '{}', read '{}') with chunk size {}", path, writeLength, readLength, bufferSize);
         logger.trace("{} - Write buffer: {}", path, HexFormatter.format(write));
 
-        transferBuffer = IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(2), transferBuffer);
-        var readBytes = transferBuffer.transferBuffer()[1].getRxBuffer();
-        System.arraycopy(readBytes, 0, read, readOffset, readLength);
+        var delayUsecs = readDelayNanos / 1000;
+
+        // Fast path: both halves fit within a single bufsiz, so the whole exchange runs as one
+        // SPI_IOC_MESSAGE(2) under a single chip-select assertion (write, delay, then read). The
+        // bufsiz limit is checked per direction (tx total vs rx total), so the write-only and
+        // read-only transfers are bounded independently.
+        if (writeLength <= bufferSize && readLength <= bufferSize) {
+            var writeData = Arrays.copyOfRange(write, writeOffset, writeOffset + writeLength);
+            // The unused direction must be null (not an empty array): a non-null pointer with a
+            // non-zero len makes the kernel copy len bytes into/out of a zero-length buffer.
+            var inputBuffer = new SpiTransferBuffer(writeData, null, writeLength, delayUsecs);
+            var outputBuffer = new SpiTransferBuffer(null, read, readLength, delayUsecs);
+
+            var transferBuffer = new SpiMultipleTransferBuffer(inputBuffer, outputBuffer);
+            transferBuffer = IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(2), transferBuffer);
+            var readBytes = transferBuffer.transferBuffer()[1].getRxBuffer();
+            System.arraycopy(readBytes, 0, read, readOffset, readLength);
+
+            logger.trace("{} - Read buffer: {}", path, HexFormatter.format(read));
+            return;
+        }
+
+        // Chunked path: the write and/or read exceed spidev's bufsiz. They cannot share a single
+        // ioctl (the limit is the cumulative tx/rx total per SPI_IOC_MESSAGE call), so the write
+        // phase and then the read phase are issued as separate bufsiz-sized SPI_IOC_MESSAGE(1)
+        // calls. This releases chip-select between chunks - unavoidable once a transfer is larger
+        // than bufsiz; the only way to keep a single assertion is to raise the kernel's bufsiz.
+        for (var chunkOffset = 0; chunkOffset < writeLength; chunkOffset += bufferSize) {
+            var chunkSize = Math.min(bufferSize, writeLength - chunkOffset);
+            var writeData = Arrays.copyOfRange(write, writeOffset + chunkOffset, writeOffset + chunkOffset + chunkSize);
+            // apply the read delay only after the final write chunk, i.e. between the write and read phases
+            var chunkDelay = chunkOffset + chunkSize >= writeLength ? delayUsecs : 0;
+            // null rx (write-only): a non-null zero-length rx buffer would be overrun by the kernel
+            var spiTransfer = new SpiTransferBuffer(writeData, null, chunkSize, chunkDelay);
+            IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(1), spiTransfer);
+        }
+
+        for (var chunkOffset = 0; chunkOffset < readLength; chunkOffset += bufferSize) {
+            var chunkSize = Math.min(bufferSize, readLength - chunkOffset);
+            // null tx (read-only): clocks out zeros without reading from a zero-length tx buffer
+            var spiTransfer = new SpiTransferBuffer(null, new byte[chunkSize], chunkSize);
+            spiTransfer = IOCTL.call(spiFileDescriptor, Command.getSpiIocMessage(1), spiTransfer);
+            System.arraycopy(spiTransfer.getRxBuffer(), 0, read, readOffset + chunkOffset, chunkSize);
+        }
 
         logger.trace("{} - Read buffer: {}", path, HexFormatter.format(read));
     }
