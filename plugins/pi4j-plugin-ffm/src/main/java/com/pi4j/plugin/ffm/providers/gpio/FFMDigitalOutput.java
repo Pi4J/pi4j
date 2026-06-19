@@ -10,6 +10,7 @@ import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
+import com.pi4j.plugin.ffm.common.gpio.enums.LineAttributeId;
 import com.pi4j.plugin.ffm.common.gpio.structs.*;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
@@ -20,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.ArrayList;
 
 public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput {
     private static final Logger logger = LoggerFactory.getLogger(FFMDigitalOutput.class);
@@ -59,7 +61,20 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
             }
             logger.trace("{}-{} - DigitalOutput BCM line info: {}", deviceName, bcm, lineInfo);
             var flags = PinFlag.OUTPUT.getValue();
-            var lineConfig = new LineConfig(flags, 0, new LineConfigAttribute[]{});
+            var attributes = new ArrayList<LineConfigAttribute>();
+            var initialState = config().initialState();
+            if (initialState != null) {
+                // Pass the configured initial state to the kernel as part of the line request so the
+                // pin is driven to it the moment the line is requested. Without this the kernel drives
+                // a newly requested output low by default and the pin is only switched to the initial
+                // state afterwards, producing a transient low-then-high glitch (issue #654).
+                var values = initialState.isHigh() ? 1L : 0L;
+                var outputValues = new LineAttribute(LineAttributeId.GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES.getValue(), 0, values, 0);
+                // The single requested line lives at index 0 of the offsets array, so its mask bit is 0.
+                attributes.add(new LineConfigAttribute(outputValues, 1L));
+                logger.trace("{}-{} - DigitalOutput BCM initial state: {}", deviceName, bcm, initialState);
+            }
+            var lineConfig = new LineConfig(flags, attributes.size(), attributes.toArray(new LineConfigAttribute[0]));
             var lineRequest = new LineRequest(new int[]{bcm}, ("pi4j." + getClass().getSimpleName()).getBytes(), lineConfig, 1, 0, 0);
             var result = ioctl.call(fd, Command.getGpioV2GetLineIoctl(), lineRequest);
             this.chipFileDescriptor = result.fd();

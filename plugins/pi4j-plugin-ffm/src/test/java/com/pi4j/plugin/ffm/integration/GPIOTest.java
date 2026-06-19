@@ -153,4 +153,22 @@ public class GPIOTest extends BaseSetup {
         assertEquals(DigitalState.HIGH, output.config().initialState());
         assertEquals(6, output.bcm());
     }
+
+
+    @Test
+    public void testOutputInitialStateHigh() {
+        // Requesting an output with initial state HIGH must succeed through the real character
+        // device ABI: the kernel validates the output-values attribute we attach to the line
+        // request and rejects a malformed one with EINVAL. A successful creation therefore proves
+        // the initial state is passed to the kernel at request time (issue #654).
+        var config = DigitalOutputConfigBuilder.newInstance()
+            .bus(97)
+            .bcm(7)
+            .initial(DigitalState.HIGH)
+            .build();
+        var output = pi4j0.digitalOutput().create(config);
+        assertEquals(7, output.bcm());
+        assertEquals(DigitalState.HIGH, output.config().initialState());
+        assertEquals(DigitalState.HIGH, output.state());
+    }
 }

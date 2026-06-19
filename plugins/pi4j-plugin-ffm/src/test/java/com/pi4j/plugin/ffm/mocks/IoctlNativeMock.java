@@ -21,14 +21,16 @@ public class IoctlNativeMock {
 
     public static MockedConstruction<IoctlNative> setup(IoctlTestData... data) {
         return mockConstruction(IoctlNative.class, (mock, _) -> {
-            for (IoctlTestData testData : data) {
-                when(mock.call(anyInt(), anyLong(), isA(testData.objClass))).thenAnswer(testData.callback::apply);
-            }
+            // Register the defaults first so that test-provided callbacks for the same struct
+            // (e.g. LineRequest) take precedence over them.
             when(mock.call(anyInt(), anyLong(), isA(LineValues.class))).thenAnswer((answer) -> answer.<LineValues>getArgument(2));
             when(mock.call(anyInt(), anyLong(), isA(LineRequest.class))).thenAnswer((answer) -> {
                 LineRequest lineRequest = answer.getArgument(2);
                 return new LineRequest(lineRequest.offsets(), lineRequest.consumer(), lineRequest.config(), lineRequest.numLines(), lineRequest.eventBufferSize(), 42);
             });
+            for (IoctlTestData testData : data) {
+                when(mock.call(anyInt(), anyLong(), isA(testData.objClass))).thenAnswer(testData.callback::apply);
+            }
         });
     }
 
