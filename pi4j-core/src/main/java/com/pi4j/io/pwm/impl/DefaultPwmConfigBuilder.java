@@ -32,12 +32,6 @@ import com.pi4j.io.pwm.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * <p>DefaultPwmConfigBuilder class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultPwmConfigBuilder
     extends IOBcmConfigBuilderBase<PwmConfigBuilder, PwmConfig>
     implements PwmConfigBuilder {
@@ -51,10 +45,7 @@ public class DefaultPwmConfigBuilder
     }
 
     /**
-     * <p>newInstance.</p>
-     *
      * @param context
-     * @return a {@link com.pi4j.io.pwm.PwmConfigBuilder} object.
      */
     @Deprecated
     public static PwmConfigBuilder newInstance(Context context) {
@@ -62,11 +53,6 @@ public class DefaultPwmConfigBuilder
     }
 
 
-    /**
-     * <p>newInstance.</p>
-     *
-     * @return a {@link com.pi4j.io.pwm.PwmConfigBuilder} object.
-     */
     public static PwmConfigBuilder newInstance() {
         return new DefaultPwmConfigBuilder();
     }

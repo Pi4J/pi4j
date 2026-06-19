@@ -31,9 +31,6 @@ import com.pi4j.io.IOConfig;
 
 /**
  * <p>SpiConfig interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig> {
     /**
@@ -69,10 +66,6 @@ public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig>
     String READ_LSB_KEY = "read_lsb";
 
     /**
-     * <p>newBuilder.</p>
-     *
-     * @param context {@link Context}
-     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
      * @deprecated As of version 5, please use {@link #newBuilder()} instead.
      */
     @Deprecated
@@ -95,18 +88,8 @@ public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig>
         return (bus().getBus() << 8) + channel();
     }
 
-    /**
-     * <p>baud.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
     Integer baud();
 
-    /**
-     * <p>getBaud.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
     default Integer getBaud() {
         return baud();
     }
@@ -115,16 +98,9 @@ public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig>
      * <p>ReadLsbFirst.</p>
      * In accordance with the flags parm, Read operations
      * 0 is  LSB bit shifted first, 1 MSB bit shifted first
-     *
-     * @return a {@link java.lang.Integer} object.
      */
     Integer readLsbFirst();
 
-    /**
-     * <p>getreadLsbfISRT.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
     default Integer getReadLsbFirst() {
         return readLsbFirst();
     }
@@ -134,16 +110,9 @@ public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig>
      * <p>WriteLsbFirst.</p>
      * In accordance with the flags parm, Write operations
      * 0 is  LSB bit shifted first, 1 MSB bit shifted first
-     *
-     * @return a {@link java.lang.Integer} object.
      */
     Integer writeLsbFirst();
 
-    /**
-     * <p>getreadLsbfISRT.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
-     */
     default Integer getWriteLsbFirst() {
         return writeLsbFirst();
     }
@@ -153,64 +122,27 @@ public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig>
      * <p>If the Bus value is configured, that SpiBus
      * value will be set in the flags {@link #flags()}   bit 'A' 8
      * </p>
-     *
-     * @return a {@link com.pi4j.io.spi.SpiBus} object.
      */
     SpiBus bus();
 
-    /**
-     * <p>getBus.</p>
-     *
-     * @return a {@link com.pi4j.io.spi.SpiBus} object.
-     */
     default SpiBus getBus() {
         return bus();
     }
 
-    /**
-     * <p>busUserProvided.</p>
-     *
-     * @return a boolean.
-     */
     boolean busUserProvided();
 
-    /**
-     * <p>getBusUserProvided.</p>
-     *
-     * @return a {@link java.lang.Boolean} object.
-     */
     default boolean getBusUserProvided() {
         return busUserProvided();
     }
 
-    /**
-     * <p>writeLsbFirstserProvided.</p>
-     *
-     * @return a boolean.
-     */
     boolean writeLsbFirstUserProvided();
 
-    /**
-     * <p>getWriteLsbFirstUserProvided.</p>
-     *
-     * @return a {@link java.lang.Boolean} object.
-     */
     default boolean getWriteLsbFIrstUserProvided() {
         return writeLsbFirstUserProvided();
     }
 
-    /**
-     * <p>writeLsbFirstserProvided.</p>
-     *
-     * @return a boolean.
-     */
     boolean readLsbFirstUserProvided();
 
-    /**
-     * <p>getReadLsbFirstUserProvided.</p>
-     *
-     * @return a {@link java.lang.Boolean} object.
-     */
     default boolean getReadLsbFIrstUserProvided() {
         return readLsbFirstUserProvided();
     }
@@ -221,63 +153,32 @@ public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig>
      * <p>If the Mode value is configured, that SpiMode
      * value will be set in the flags  {@link #mode()}  bit 'm m' 1:0
      * </p>
-     *
-     * @return a {@link com.pi4j.io.spi.SpiMode} object.
      */
     SpiMode mode();
 
-    /**
-     * <p>getMode.</p>
-     *
-     * @return a {@link com.pi4j.io.spi.SpiMode} object.
-     */
     default SpiMode getMode() {
         return mode();
     }
 
-    /**
-     * <p>modeUserProvided.</p>
-     *
-     * @return a boolean.
-     */
     boolean modeUserProvided();
 
-    /**
-     * <p>bgetModeUserProvided.</p>
-     *
-     * @return a {@link java.lang.Boolean} object.
-     */
     default boolean getModeUserProvided() {
         return modeUserProvided();
     }
 
-    /**
-     * <p>flags.</p>
-     *
-     * @return a {@link java.lang.Long} object.
-     */
     Long flags();
 
-    /**
-     * <p>getFlags.</p>
-     *
-     * @return a {@link java.lang.Long} object.
-     */
     default Long getFlags() {
         return flags();
     }
 
     /**
      * <p>channel. (ALIAS for 'address')</p>
-     *
-     * @return a {@link java.lang.Integer} object.
      */
     Integer channel();
 
     /**
      * <p>getFlags. (ALIAS for 'getAddress')</p>
-     *
-     * @return a {@link java.lang.Long} object.
      */
     default Integer getChannel() {
         return channel();
@@ -285,15 +186,11 @@ public interface SpiConfig extends ChannelConfig<SpiConfig>, IOConfig<SpiConfig>
 
     /**
      * <p>chipSelect. (ALIAS for 'address')</p>
-     *
-     * @return a {@link com.pi4j.io.spi.SpiChipSelect} object.
      */
     SpiChipSelect chipSelect();
 
     /**
      * <p>getFlags. (ALIAS for 'getAddress')</p>
-     *
-     * @return a {@link com.pi4j.io.spi.SpiChipSelect} object.
      */
     default SpiChipSelect getChipSelect() {
         return chipSelect();

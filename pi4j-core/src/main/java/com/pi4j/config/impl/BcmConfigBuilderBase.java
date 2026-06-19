@@ -35,8 +35,6 @@ import com.pi4j.config.ConfigBuilder;
  *
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public abstract class BcmConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
     extends ConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>

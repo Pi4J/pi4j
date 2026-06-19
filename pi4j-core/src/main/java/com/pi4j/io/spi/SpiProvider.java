@@ -30,9 +30,6 @@ import com.pi4j.provider.Provider;
 
 /**
  * <p>SpiProvider interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface SpiProvider extends Provider<SpiProvider, Spi, SpiConfig> {
 

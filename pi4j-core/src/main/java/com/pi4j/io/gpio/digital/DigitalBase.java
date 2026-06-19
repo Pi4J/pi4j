@@ -36,8 +36,6 @@ import java.util.function.Consumer;
 /**
  * <p>Abstract DigitalBase class.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <CONFIG_TYPE>
  * @param <DIGITAL_TYPE>
  * @param <PROVIDER_TYPE>
@@ -51,12 +49,6 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
     // internal listeners collection
     protected final EventManager<DIGITAL_TYPE, DigitalStateChangeListener, DigitalStateChangeEvent> stateChangeEventManager;
 
-    /**
-     * <p>Constructor for DigitalBase.</p>
-     *
-     * @param provider a PROVIDER_TYPE object.
-     * @param config a CONFIG_TYPE object.
-     */
     public DigitalBase(PROVIDER_TYPE provider, CONFIG_TYPE config){
         super(provider,config);
 

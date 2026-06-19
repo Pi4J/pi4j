@@ -32,10 +32,6 @@ import com.pi4j.io.IOConfig;
 import java.util.Map;
 
 /**
- * <p>ConfigBase class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <CONFIG_TYPE>
  */
 public abstract class IOConfigBase<CONFIG_TYPE extends Config> extends ConfigBase<CONFIG_TYPE> implements IOConfig<CONFIG_TYPE> {
@@ -52,8 +48,6 @@ public abstract class IOConfigBase<CONFIG_TYPE extends Config> extends ConfigBas
 
     /**
      * PRIVATE CONSTRUCTOR
-     *
-     * @param properties a {@link Map} object.
      */
     protected IOConfigBase(Map<String,String> properties){
         super(properties);

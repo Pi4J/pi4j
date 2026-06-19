@@ -35,10 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>ProviderGroup class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <T>
  */
 public class ProviderGroup<T extends Provider> implements Describable {
@@ -50,9 +46,6 @@ public class ProviderGroup<T extends Provider> implements Describable {
 
     /**
      * Default Constructor
-     *
-     * @param type a {@link com.pi4j.io.IOType} object.
-     * @param providers a {@link com.pi4j.provider.Providers} object.
      */
     public ProviderGroup(Providers providers, IOType type){
         this.providers = providers;
@@ -63,10 +56,6 @@ public class ProviderGroup<T extends Provider> implements Describable {
     }
 
     /**
-     * <p>get.</p>
-     *
-     * @param providerId a {@link java.lang.String} object.
-     * @return a T object.
      * @throws com.pi4j.provider.exception.ProviderException if any.
      */
     public T get(String providerId) throws ProviderException {
@@ -74,10 +63,6 @@ public class ProviderGroup<T extends Provider> implements Describable {
     }
 
     /**
-     * <p>exists.</p>
-     *
-     * @param providerId a {@link java.lang.String} object.
-     * @return a boolean.
      * @throws com.pi4j.provider.exception.ProviderException if any.
      */
     public boolean exists(String providerId) throws ProviderException {

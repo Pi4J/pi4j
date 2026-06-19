@@ -30,15 +30,7 @@ package com.pi4j.config;
  *
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface PortConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
-    /**
-     * <p>port.</p>
-     *
-     * @param port a {@link String} object.
-     * @return a BUILDER_TYPE object.
-     */
     BUILDER_TYPE port(String port);
 }

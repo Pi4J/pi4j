@@ -31,23 +31,14 @@ import com.pi4j.exception.ShutdownException;
 
 /**
  * <p>Plugin interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface Plugin  {
     /**
-     * <p>initialize.</p>
-     *
-     * @param service a {@link com.pi4j.extension.PluginService} object.
      * @throws InitializeException if error occurs initializing the plugin
      */
     void initialize(PluginService service) throws InitializeException;
 
     /**
-     * <p>shutdown.</p>
-     *
-     * @param context a {@link com.pi4j.context.Context} object.
      * @throws ShutdownException if an error occurs shutting down the plugin
      */
     default void shutdown(Context context) throws ShutdownException {
@@ -56,8 +47,6 @@ public interface Plugin  {
 
     /**
      * <p>Returns true if this plugin is a mock plugin, and shouldn't generally be used</p>
-     *
-     * @return a boolean
      */
     default boolean isMock() {
         return false;

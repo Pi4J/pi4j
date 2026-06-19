@@ -42,9 +42,6 @@ import java.util.Set;
 
 /**
  * A mutable implementation of the Registry interface, managed by the Runtime.
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class MutableRegistry implements Registry {
 

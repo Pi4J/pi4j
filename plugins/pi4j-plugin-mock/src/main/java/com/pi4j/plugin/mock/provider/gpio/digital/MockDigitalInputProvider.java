@@ -32,20 +32,12 @@ import com.pi4j.plugin.mock.Mock;
 
 /**
  * <p>MockDigitalInputProvider interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface MockDigitalInputProvider extends DigitalInputProvider {
     /** Constant <code>NAME="Mock.DIGITAL_INPUT_PROVIDER_NAME"</code> */
     String NAME = Mock.DIGITAL_INPUT_PROVIDER_NAME;
     /** Constant <code>ID="Mock.DIGITAL_INPUT_PROVIDER_ID"</code> */
     String ID = Mock.DIGITAL_INPUT_PROVIDER_ID;
-    /**
-     * <p>newInstance.</p>
-     *
-     * @return a {@link com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalInputProvider} object.
-     */
     static MockDigitalInputProvider newInstance() {
         return new MockDigitalInputProviderImpl();
     }

@@ -27,17 +27,8 @@ package com.pi4j.io.gpio.digital;
 
 /**
  * <p>Abstract DigitalInputBase class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public abstract class DigitalInputBase extends DigitalBase<DigitalInput, DigitalInputConfig, DigitalInputProvider> implements DigitalInput {
-    /**
-     * <p>Constructor for DigitalInputBase.</p>
-     *
-     * @param provider a {@link com.pi4j.io.gpio.digital.DigitalInputProvider} object.
-     * @param config a {@link com.pi4j.io.gpio.digital.DigitalInputConfig} object.
-     */
     public DigitalInputBase(DigitalInputProvider provider, DigitalInputConfig config){
         super(provider, config);
     }

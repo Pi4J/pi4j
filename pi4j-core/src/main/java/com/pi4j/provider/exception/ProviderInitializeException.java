@@ -33,17 +33,11 @@ package com.pi4j.provider.exception;
  * </p>
  *
  * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
- * @author Robert Savage (<a
- *         href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class ProviderInitializeException extends ProviderException {
 
     /**
      * Default Constructor
-     *
-     * @param providerId a {@link java.lang.String} object.
-     * @param ex a {@link java.lang.Throwable} object.
      */
     public ProviderInitializeException(String providerId, Throwable ex){
         super("Pi4J io [" + providerId + "] failed to initialize(); " + ex.getMessage(), ex);

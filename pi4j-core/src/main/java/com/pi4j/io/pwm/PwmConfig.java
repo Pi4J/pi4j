@@ -34,9 +34,6 @@ import java.util.Collection;
 
 /**
  * <p>PwmConfig interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface PwmConfig extends ChipConfig<PwmConfig>, ChannelConfig<PwmConfig>, BcmConfig<PwmConfig>, IOConfig<PwmConfig> {
 

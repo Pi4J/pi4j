@@ -32,36 +32,16 @@ import com.pi4j.io.gpio.digital.DigitalInputProviderBase;
 import com.pi4j.test.provider.TestDigitalInput;
 import com.pi4j.test.provider.TestDigitalInputProvider;
 
-/**
- * <p>TestDigitalInputProviderImpl class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class TestDigitalInputProviderImpl extends DigitalInputProviderBase implements TestDigitalInputProvider {
 
-    /**
-     * <p>Constructor for TestDigitalInputProviderImpl.</p>
-     */
     public TestDigitalInputProviderImpl() {
         super();
     }
 
-    /**
-     * <p>Constructor for TestDigitalInputProviderImpl.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     */
     public TestDigitalInputProviderImpl(String id) {
         super(id);
     }
 
-    /**
-     * <p>Constructor for TestDigitalInputProviderImpl.</p>
-     *
-     * @param id   a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     */
     public TestDigitalInputProviderImpl(String id, String name) {
         super(id, name);
     }

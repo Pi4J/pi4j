@@ -30,15 +30,7 @@ package com.pi4j.config;
  *
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface ChipConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
-    /**
-     * <p>chip.</p>
-     *
-     * @param chip a {@link Integer} object.
-     * @return a BUILDER_TYPE object.
-     */
     BUILDER_TYPE chip(Integer chip);
 }

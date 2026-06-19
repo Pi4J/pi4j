@@ -29,24 +29,11 @@ import com.pi4j.context.Context;
 import com.pi4j.extension.PluginService;
 import com.pi4j.provider.Provider;
 
-/**
- * <p>DefaultPluginService class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultPluginService implements PluginService {
 
     private Context context = null;
     private PluginStore store = null;
 
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param context a {@link com.pi4j.context.Context} object.
-     * @param store a {@link com.pi4j.extension.impl.PluginStore} object.
-     * @return a {@link com.pi4j.extension.PluginService} object.
-     */
     public static PluginService newInstance(Context context, PluginStore store){
         return new DefaultPluginService(context, store);
     }

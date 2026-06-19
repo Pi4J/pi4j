@@ -35,17 +35,11 @@ import com.pi4j.io.IO;
  * </p>
  *
  * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
- * @author Robert Savage (<a
- *         href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class IOShutdownException extends IOException {
 
     /**
      * Default Constructor
-     *
-     * @param instance a {@link com.pi4j.io.IO} object.
-     * @param e a {@link java.lang.Exception} object.
      */
     public IOShutdownException(IO instance, Exception e){
         super("IO instance [" + instance.getId() + "] failed to properly shutdown: " + e.getMessage(), e);

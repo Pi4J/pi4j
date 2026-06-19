@@ -30,35 +30,14 @@ import com.pi4j.test.provider.impl.TestI2CProviderImpl;
 
 /**
  * <p>TestI2CProvider interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface TestI2CProvider extends I2CProvider {
-    /**
-     * <p>newInstance.</p>
-     *
-     * @return a {@link com.pi4j.test.provider.TestI2CProvider} object.
-     */
     static TestI2CProvider newInstance(){
         return new TestI2CProviderImpl();
     }
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.test.provider.TestI2CProvider} object.
-     */
     static TestI2CProvider newInstance(String id){
         return new TestI2CProviderImpl(id);
     }
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.test.provider.TestI2CProvider} object.
-     */
     static TestI2CProvider newInstance(String id, String name){
         return new TestI2CProviderImpl(id, name);
     }

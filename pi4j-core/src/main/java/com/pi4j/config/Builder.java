@@ -28,15 +28,8 @@ package com.pi4j.config;
 /**
  * <p>Builder interface.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <BUILT_TYPE>
  */
 public interface Builder<BUILT_TYPE> {
-    /**
-     * <p>build.</p>
-     *
-     * @return a BUILT_TYPE object.
-     */
     BUILT_TYPE build();
 }

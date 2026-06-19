@@ -33,12 +33,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * <p>MetadataImpl class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class MetadataImpl implements Metadata {
 
     private Map<String, Metadatum> metadata = Collections.synchronizedMap(new LinkedHashMap<>());

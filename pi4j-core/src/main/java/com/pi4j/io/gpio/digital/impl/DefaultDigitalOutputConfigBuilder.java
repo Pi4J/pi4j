@@ -31,12 +31,6 @@ import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
 
-/**
- * <p>DefaultDigitalOutputConfigBuilder class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultDigitalOutputConfigBuilder
     extends DigitalConfigBuilderBase<DigitalOutputConfigBuilder, DigitalOutputConfig>
     implements DigitalOutputConfigBuilder {
@@ -48,21 +42,13 @@ public class DefaultDigitalOutputConfigBuilder
     }
 
     /**
-     * <p>newInstance.</p>
-     *
      * @param context
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder} object.
      */
     @Deprecated
     public static DigitalOutputConfigBuilder newInstance(Context context) {
         return newInstance();
     }
 
-    /**
-     * <p>newInstance.</p>
-     *
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder} object.
-     */
     public static DigitalOutputConfigBuilder newInstance() {
         return new DefaultDigitalOutputConfigBuilder();
     }

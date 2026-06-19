@@ -50,12 +50,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-/**
- * <p>DefaultContext class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultContext implements Context {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -76,12 +70,6 @@ public class DefaultContext implements Context {
 
     private volatile boolean isShutdown = false;
 
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param config a {@link com.pi4j.context.ContextConfig} object.
-     * @return a {@link com.pi4j.context.Context} object.
-     */
     public static Context newInstance(ContextConfig config) {
         return new DefaultContext(config);
     }

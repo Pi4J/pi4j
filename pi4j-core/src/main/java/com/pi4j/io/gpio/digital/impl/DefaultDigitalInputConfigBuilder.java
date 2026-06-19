@@ -33,12 +33,6 @@ import com.pi4j.io.gpio.digital.PullResistance;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * <p>DefaultDigitalInputConfigBuilder class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultDigitalInputConfigBuilder
     extends DigitalConfigBuilderBase<DigitalInputConfigBuilder, DigitalInputConfig>
     implements DigitalInputConfigBuilder {
@@ -51,20 +45,12 @@ public class DefaultDigitalInputConfigBuilder
     }
 
     /**
-     * <p>newInstance.</p>
-     *
      * @param context
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalInputConfigBuilder} object.
      */
     public static DigitalInputConfigBuilder newInstance(Context context) {
         return newInstance();
     }
 
-    /**
-     * <p>newInstance.</p>
-     *
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalInputConfigBuilder} object.
-     */
     public static DigitalInputConfigBuilder newInstance() {
         return new DefaultDigitalInputConfigBuilder();
     }

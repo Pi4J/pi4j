@@ -25,17 +25,6 @@ package com.pi4j.common;
  * #L%
  */
 
-/**
- * <p>Describable interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public interface Describable {
-    /**
-     * <p>describe.</p>
-     *
-     * @return a {@link com.pi4j.common.Descriptor} object.
-     */
     Descriptor describe();
 }

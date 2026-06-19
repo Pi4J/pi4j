@@ -38,12 +38,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-/**
- * <p>DefaultPwmConfig class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultPwmConfig
     extends IOConfigBase<PwmConfig>
     implements PwmConfig {
@@ -73,9 +67,6 @@ public class DefaultPwmConfig
 
     /**
      * PRIVATE CONSTRUCTOR
-     *
-     * @param properties a {@link java.util.Map} object.
-     * @param presets    a {@link java.util.Collection} object.
      */
     protected DefaultPwmConfig(Map<String, String> properties, Collection<PwmPreset> presets) {
         this(properties);
@@ -84,8 +75,6 @@ public class DefaultPwmConfig
 
     /**
      * PRIVATE CONSTRUCTOR
-     *
-     * @param properties a {@link java.util.Map} object.
      */
     protected DefaultPwmConfig(Map<String, String> properties) {
         super(properties);

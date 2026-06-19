@@ -29,10 +29,6 @@ import java.util.EnumSet;
 
 /**
  * Digital Pin Pull Resistance Enumerations
- *
- * @author Robert Savage (<a
- *         href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public enum PullResistance {
     OFF(0, "off"),
@@ -49,8 +45,6 @@ public enum PullResistance {
 
     /**
      * <p>Getter for the field <code>value</code>.</p>
-     *
-     * @return a int.
      */
     public int getValue() {
         return value;
@@ -58,8 +52,6 @@ public enum PullResistance {
 
     /**
      * <p>Getter for the field <code>name</code>.</p>
-     *
-     * @return a {@link java.lang.String} object.
      */
     public String getName() {
         return name;
@@ -70,21 +62,10 @@ public enum PullResistance {
         return name.toUpperCase();
     }
 
-    /**
-     * <p>all.</p>
-     *
-     * @return a {@link java.util.EnumSet} object.
-     */
     public static EnumSet<PullResistance> all() {
         return EnumSet.allOf(PullResistance.class);
     }
 
-    /**
-     * <p>parse.</p>
-     *
-     * @param pull a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.io.gpio.digital.PullResistance} object.
-     */
     public static PullResistance parse(String pull) {
         if(pull.equalsIgnoreCase("0")) return PullResistance.OFF;
         if(pull.equalsIgnoreCase("1")) return PullResistance.PULL_DOWN;

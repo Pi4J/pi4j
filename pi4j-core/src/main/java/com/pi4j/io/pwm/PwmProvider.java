@@ -29,26 +29,14 @@ import com.pi4j.provider.Provider;
 
 /**
  * <p>PwmProvider interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface PwmProvider extends Provider<PwmProvider, Pwm, PwmConfig> {
 
-    /**
-     * <p>create.</p>
-     *
-     * @param builder a {@link com.pi4j.io.pwm.PwmConfigBuilder} object.
-     * @param <T>     a T object.
-     * @return a T object.
-     */
     default <T extends Pwm> T create(PwmConfigBuilder builder) {
         return (T) create(builder.build());
     }
 
     /**
-     * <p>create.</p>
-     *
      * @param chip
      * @param channel
      * @param <T>
@@ -62,15 +50,6 @@ public interface PwmProvider extends Provider<PwmProvider, Pwm, PwmConfig> {
         return (T) create(config);
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param chip    a {@link java.lang.Integer} object.
-     * @param channel a {@link java.lang.Integer} object.
-     * @param id      a {@link java.lang.String} object.
-     * @param <T>     a T object.
-     * @return a T object.
-     */
     default <T extends Pwm> T create(Integer chip, Integer channel, String id) {
         var config = Pwm.newConfigBuilder(context())
             .chip(chip)
@@ -80,16 +59,6 @@ public interface PwmProvider extends Provider<PwmProvider, Pwm, PwmConfig> {
         return (T) create(config);
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param chip    a {@link java.lang.Integer} object.
-     * @param channel a {@link java.lang.Integer} object.
-     * @param id      a {@link java.lang.String} object.
-     * @param name    a {@link java.lang.String} object.
-     * @param <T>     a T object.
-     * @return a T object.
-     */
     default <T extends Pwm> T create(Integer chip, Integer channel, String id, String name) {
         var config = Pwm.newConfigBuilder(context())
             .chip(chip)
@@ -100,17 +69,6 @@ public interface PwmProvider extends Provider<PwmProvider, Pwm, PwmConfig> {
         return (T) create(config);
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param chip        a {@link java.lang.Integer} object.
-     * @param channel     a {@link java.lang.Integer} object.
-     * @param id          a {@link java.lang.String} object.
-     * @param name        a {@link java.lang.String} object.
-     * @param description a {@link java.lang.String} object.
-     * @param <T>         a T object.
-     * @return a T object.
-     */
     default <T extends Pwm> T create(Integer chip, Integer channel, String id, String name, String description) {
         var config = Pwm.newConfigBuilder(context())
             .chip(chip)

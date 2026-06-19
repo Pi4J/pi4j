@@ -37,12 +37,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.Objects;
 
-/**
- * <p>MockI2C class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterDataReader, I2CRegisterDataWriter {
 
     private static final Logger logger = LoggerFactory.getLogger(MockI2C.class);
@@ -57,12 +51,6 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
     protected ArrayDeque<Byte>[] registers = new ArrayDeque[512]; // 512 supported registers (0-511)
     protected ArrayDeque<Byte> raw = new ArrayDeque<>();
 
-    /**
-     * <p>Constructor for MockI2C.</p>
-     *
-     * @param provider a {@link com.pi4j.io.i2c.I2CProvider} object.
-     * @param config a {@link com.pi4j.io.i2c.I2CConfig} object.
-     */
     public MockI2C(I2CProvider provider, I2CConfig config){
         super(provider, config, new MockI2CBus(config));
         logger.debug("[{}::{}] :: CREATE(BUS={}; DEVICE={})",

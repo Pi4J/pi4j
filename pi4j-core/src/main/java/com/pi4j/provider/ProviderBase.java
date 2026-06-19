@@ -40,8 +40,6 @@ import java.util.Map;
 /**
  * <p>Abstract ProviderBase class.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <CONFIG_TYPE>
  * @param <IO_TYPE>
  * @param <PROVIDER_TYPE>
@@ -53,28 +51,14 @@ public abstract class ProviderBase<PROVIDER_TYPE extends Provider, IO_TYPE exten
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
     protected Context context;
 
-    /**
-     * <p>Constructor for ProviderBase.</p>
-     */
     public ProviderBase(){
         super();
     }
 
-    /**
-     * <p>Constructor for ProviderBase.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     */
     public ProviderBase(String id){
         super(id);
     }
 
-    /**
-     * <p>Constructor for ProviderBase.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     */
     public ProviderBase(String id, String name){
         super(id, name);
     }

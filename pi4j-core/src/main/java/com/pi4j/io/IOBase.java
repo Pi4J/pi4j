@@ -37,8 +37,6 @@ import java.io.Closeable;
 /**
  * <p>Abstract IOBase class.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <CONFIG_TYPE>
  * @param <IO_TYPE>
  * @param <PROVIDER_TYPE>
@@ -57,12 +55,6 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
         return this.provider;
     }
 
-    /**
-     * <p>Constructor for IOBase.</p>
-     *
-     * @param provider a PROVIDER_TYPE object.
-     * @param config a CONFIG_TYPE object.
-     */
     public IOBase(PROVIDER_TYPE provider, CONFIG_TYPE config){
         super();
         this.id = config.id();

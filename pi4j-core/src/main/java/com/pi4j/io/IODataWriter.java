@@ -39,13 +39,6 @@ import com.pi4j.exception.Pi4JException;
 
 /**
  * Data Writer Interface for Pi4J Data Communications
- *
- * @author Robert Savage
- * <p>
- * Based on previous contributions from:
- *        Daniel Sendula,
- *        <a href="http://raspelikan.blogspot.co.at">RasPelikan</a>
- * @version $Id: $Id
  */
 public interface IODataWriter {
 
@@ -57,7 +50,6 @@ public interface IODataWriter {
      * Write a single raw byte value.
      *
      * @param b byte to be written
-     * @return a int.
      */
     int write(byte b);
 
@@ -65,7 +57,6 @@ public interface IODataWriter {
      * Write a single raw byte value.
      *
      * @param b integer value that will be cast to a byte and written
-     * @return a int.
      */
     default int write(int b) {
         return write((byte)b);
@@ -470,7 +461,6 @@ public interface IODataWriter {
      *
      * @param data collection of character sequences of data to be written
      * @return The number of bytes written, possibly zero
-     * @param charset a {@link java.nio.charset.Charset} object.
      */
     default int write(Charset charset, Collection<char[]> data) {
         try {

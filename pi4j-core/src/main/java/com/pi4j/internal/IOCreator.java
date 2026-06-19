@@ -63,102 +63,42 @@ public interface IOCreator {
         return create((IOConfig) builder.build(), ioClass);
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param config a {@link com.pi4j.io.gpio.digital.DigitalOutputConfig} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     */
     default DigitalOutput create(DigitalOutputConfig config) {
         return create(config, DigitalOutput.class);
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param config a {@link com.pi4j.io.gpio.digital.DigitalInputConfig} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalInput} object.
-     */
     default DigitalInput create(DigitalInputConfig config) {
         return create(config, DigitalInput.class);
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param config a {@link com.pi4j.io.pwm.PwmConfig} object.
-     * @return a {@link com.pi4j.io.pwm.Pwm} object.
-     */
     default Pwm create(PwmConfig config) {
         return create(config, Pwm.class);
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param config a {@link com.pi4j.io.i2c.I2CConfig} object.
-     * @return a {@link com.pi4j.io.i2c.I2C} object.
-     */
     default I2C create(I2CConfig config) {
         return create(config, I2C.class);
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param config a {@link com.pi4j.io.spi.SpiConfig} object.
-     * @return a {@link com.pi4j.io.spi.Spi} object.
-     */
     default Spi create(SpiConfig config) {
         return create(config, Spi.class);
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param config a {@link com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     */
     default DigitalOutput create(DigitalOutputConfigBuilder config) {
         return create(config.build());
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param config a {@link com.pi4j.io.gpio.digital.DigitalInputConfigBuilder} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalInput} object.
-     */
     default DigitalInput create(DigitalInputConfigBuilder config) {
         return create(config.build());
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param config a {@link com.pi4j.io.pwm.PwmConfigBuilder} object.
-     * @return a {@link com.pi4j.io.pwm.Pwm} object.
-     */
     default Pwm create(PwmConfigBuilder config) {
         return create(config.build());
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param config a {@link com.pi4j.io.i2c.I2CConfigBuilder} object.
-     * @return a {@link com.pi4j.io.i2c.I2C} object.
-     */
     default I2C create(I2CConfigBuilder config) {
         return create(config.build());
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param config a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
-     * @return a {@link com.pi4j.io.spi.Spi} object.
-     */
     default Spi create(SpiConfigBuilder config) {
         return create(config.build());
     }

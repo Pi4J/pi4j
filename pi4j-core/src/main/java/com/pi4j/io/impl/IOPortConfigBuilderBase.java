@@ -39,8 +39,6 @@ import com.pi4j.provider.Provider;
  *
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public abstract class IOPortConfigBuilderBase<BUILDER_TYPE extends ConfigBuilder, CONFIG_TYPE extends Config>
     extends PortConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>

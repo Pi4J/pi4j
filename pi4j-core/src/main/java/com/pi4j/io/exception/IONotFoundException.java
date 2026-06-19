@@ -33,16 +33,11 @@ package com.pi4j.io.exception;
  * </p>
  *
  * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
- * @author Robert Savage (<a
- *         href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class IONotFoundException extends IOException {
 
     /**
      * Default Constructor
-     *
-     * @param id a {@link java.lang.String} object.
      */
     public IONotFoundException(String id){
         super("IO instance [" + id + "] not found in Pi4J Registry.");

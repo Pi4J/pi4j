@@ -30,35 +30,14 @@ import com.pi4j.test.provider.impl.TestPwmProviderImpl;
 
 /**
  * <p>TestPwmProvider interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface TestPwmProvider extends PwmProvider {
-    /**
-     * <p>newInstance.</p>
-     *
-     * @return a {@link com.pi4j.test.provider.TestPwmProvider} object.
-     */
     static TestPwmProvider newInstance(){
         return new TestPwmProviderImpl();
     }
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.test.provider.TestPwmProvider} object.
-     */
     static TestPwmProvider newInstance(String id){
         return new TestPwmProviderImpl(id);
     }
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.test.provider.TestPwmProvider} object.
-     */
     static TestPwmProvider newInstance(String id, String name){
         return new TestPwmProviderImpl(id, name);
     }

@@ -35,8 +35,6 @@ import java.io.Closeable;
 /**
  * <p>IO interface.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <CONFIG_TYPE>
  * @param <IO_TYPE>
  * @param <PROVIDER_TYPE>
@@ -54,41 +52,14 @@ public interface IO<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, PROVIDER_T
     @Override
     void close();
 
-    /**
-     * <p>config.</p>
-     *
-     * @return a CONFIG_TYPE object.
-     */
     CONFIG_TYPE config();
 
-    /**
-     * <p>type.</p>
-     *
-     * @return a {@link com.pi4j.io.IOType} object.
-     */
     default IOType type() { return IOType.getByIOClass(this.getClass()); }
 
     // TODO :: RECONCILE IDENTITY PROPERTIES BETWEEN IO INSTANCE AND UNDERLYING CONFIG; PROBABLY NEED TO REMOVE THESE SETTERS
-    /**
-     * <p>name.</p>
-     *
-     * @param name a {@link java.lang.String} object.
-     * @return a IO_TYPE object.
-     */
     IO_TYPE name(String name);
 
-    /**
-     * <p>description.</p>
-     *
-     * @param description a {@link java.lang.String} object.
-     * @return a IO_TYPE object.
-     */
     IO_TYPE description(String description);
 
-    /**
-     * <p>provider.</p>
-     *
-     * @return a PROVIDER_TYPE object.
-     */
     PROVIDER_TYPE provider();
 }

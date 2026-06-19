@@ -31,17 +31,8 @@ import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CProviderBase;
 
-/**
- * <p>MockI2CProviderImpl class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class MockI2CProviderImpl extends I2CProviderBase implements MockI2CProvider {
 
-    /**
-     * <p>Constructor for MockI2CProviderImpl.</p>
-     */
     public MockI2CProviderImpl() {
         this.id = ID;
         this.name = NAME;

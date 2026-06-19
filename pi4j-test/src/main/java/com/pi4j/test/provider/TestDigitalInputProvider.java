@@ -31,45 +31,18 @@ import com.pi4j.test.provider.impl.TestDigitalInputProviderImpl;
 
 /**
  * <p>TestDigitalInputProvider interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface TestDigitalInputProvider extends DigitalInputProvider {
-    /**
-     * <p>newInstance.</p>
-     *
-     * @return a {@link com.pi4j.test.provider.TestDigitalInputProvider} object.
-     */
     static TestDigitalInputProvider newInstance(){
         return new TestDigitalInputProviderImpl();
     }
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.test.provider.TestDigitalInputProvider} object.
-     */
     static TestDigitalInputProvider newInstance(String id){
         return new TestDigitalInputProviderImpl(id);
     }
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.test.provider.TestDigitalInputProvider} object.
-     */
     static TestDigitalInputProvider newInstance(String id, String name){
         return new TestDigitalInputProviderImpl(id, name);
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param <T> a T object.
-     * @return a T object.
-     */
     default <T extends DigitalInput> T create() {
         return create(0);
     }

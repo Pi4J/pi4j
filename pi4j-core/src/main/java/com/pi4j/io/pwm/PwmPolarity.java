@@ -29,10 +29,6 @@ import java.util.EnumSet;
 
 /**
  * PWM Polarity Enumerations
- *
- * @author Robert Savage (<a
- *         href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public enum PwmPolarity {
     NORMAL(0, "normal"),
@@ -48,8 +44,6 @@ public enum PwmPolarity {
 
     /**
      * <p>Getter for the field <code>value</code>.</p>
-     *
-     * @return a int.
      */
     public int getValue() {
         return value;
@@ -57,8 +51,6 @@ public enum PwmPolarity {
 
     /**
      * <p>Getter for the field <code>name</code>.</p>
-     *
-     * @return a {@link String} object.
      */
     public String getName() {
         return name;
@@ -69,21 +61,10 @@ public enum PwmPolarity {
         return name.toUpperCase();
     }
 
-    /**
-     * <p>all.</p>
-     *
-     * @return a {@link EnumSet} object.
-     */
     public static EnumSet<PwmPolarity> all() {
         return EnumSet.allOf(PwmPolarity.class);
     }
 
-    /**
-     * <p>parse.</p>
-     *
-     * @param polarity a {@link String} object.
-     * @return a {@link PwmPolarity} object.
-     */
     public static PwmPolarity parse(String polarity) {
         if(polarity.equalsIgnoreCase("0")) return PwmPolarity.NORMAL;
         if(polarity.equalsIgnoreCase("1")) return PwmPolarity.INVERSED;

@@ -37,13 +37,6 @@ import java.util.Objects;
 
 /**
  * Data Writer Interface for Pi4J Data Communications
- *
- * @author Robert Savage
- * <p>
- * Based on previous contributions from:
- * Daniel Sendula,
- * <a href="http://raspelikan.blogspot.co.at">RasPelikan</a>
- * @version $Id: $Id
  */
 public interface IODataReader extends Readable {
 

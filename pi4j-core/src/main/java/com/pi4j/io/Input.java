@@ -28,9 +28,6 @@ package com.pi4j.io;
 
 /**
  * <p>Input interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface Input  {
     // MARKER INTERFACE

@@ -40,8 +40,6 @@ import java.util.stream.Collectors;
 /**
  * <p>Abstract ConfigBuilderBase class.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <BUILDER_TYPE>
  * @param <CONFIG_TYPE>
  */

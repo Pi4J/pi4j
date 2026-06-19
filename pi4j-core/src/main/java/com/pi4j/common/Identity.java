@@ -25,79 +25,36 @@ package com.pi4j.common;
  * #L%
  */
 
-/**
- * <p>Identity interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public interface Identity extends Describable {
-    /**
-     * <p>id.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     String id();
-    /**
-     * <p>name.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
+
     String name();
-    /**
-     * <p>description.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
+
     String description();
-    /**
-     * <p>metadata.</p>
-     *
-     * @return a {@link com.pi4j.common.Metadata} object.
-     */
+
     Metadata metadata();
 
-    /**
-     * <p>getId.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    default String getId(){
+    default String getId() {
         return id();
     }
 
-    /**
-     * <p>getName.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    default String getName(){
+    default String getName() {
         return name();
     }
 
-    /**
-     * <p>getDescription.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    default String getDescription(){
+    default String getDescription() {
         return description();
     }
 
-    /**
-     * <p>getMetadata.</p>
-     *
-     * @return a {@link com.pi4j.common.Metadata} object.
-     */
-    default Metadata getMetadata(){
+    default Metadata getMetadata() {
         return metadata();
     }
 
     @Override
     default Descriptor describe() {
         return Descriptor.create()
-                .id(id())
-                .name(name())
-                .description(description());
+            .id(id())
+            .name(name())
+            .description(description());
     }
 }

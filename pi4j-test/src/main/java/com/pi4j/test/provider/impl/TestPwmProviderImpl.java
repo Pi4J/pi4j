@@ -30,34 +30,14 @@ import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.pwm.PwmProviderBase;
 import com.pi4j.test.provider.TestPwmProvider;
 
-/**
- * <p>TestPwmProviderImpl class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class TestPwmProviderImpl extends PwmProviderBase implements TestPwmProvider {
 
-    /**
-     * <p>Constructor for TestPwmProviderImpl.</p>
-     */
     public TestPwmProviderImpl(){ super(); }
 
-    /**
-     * <p>Constructor for TestPwmProviderImpl.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     */
     public TestPwmProviderImpl(String id){
         super(id);
     }
 
-    /**
-     * <p>Constructor for TestPwmProviderImpl.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     */
     public TestPwmProviderImpl(String id, String name){
         super(id, name);
     }

@@ -31,21 +31,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>Abstract SpiBase class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public abstract class SpiBase extends IOBase<Spi, SpiConfig, SpiProvider> implements Spi {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
     protected boolean isOpen = false;
 
-    /**
-     * <p>Constructor for SpiBase.</p>
-     *
-     * @param provider a {@link com.pi4j.io.spi.SpiProvider} object.
-     * @param config a {@link com.pi4j.io.spi.SpiConfig} object.
-     */
     public SpiBase(SpiProvider provider, SpiConfig config) {
         super(provider, config);
     }

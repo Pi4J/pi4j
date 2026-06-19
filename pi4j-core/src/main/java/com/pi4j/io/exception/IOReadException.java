@@ -33,16 +33,11 @@ package com.pi4j.io.exception;
  * </p>
  *
  * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
- * @author Robert Savage (<a
- *         href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class IOReadException extends IOException {
 
     /**
      * Default Constructor
-     *
-     * @param message a {@link java.lang.String} object.
      */
     public IOReadException(String message){
         super(message);
@@ -50,8 +45,6 @@ public class IOReadException extends IOException {
 
     /**
      * Alternate Constructor
-     *
-     * @param error a int.
      */
     public IOReadException(int error){
         super("I/O READ ERROR: " + error);

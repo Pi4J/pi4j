@@ -33,23 +33,11 @@ import com.pi4j.io.i2c.I2CRegisterDataWriter;
 import java.nio.charset.Charset;
 import java.util.Objects;
 
-/**
- * <p>DefaultI2CRegister class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultI2CRegister implements I2CRegister, I2CRegisterDataReader, I2CRegisterDataWriter {
 
     protected final int address;
     protected final I2C i2c;
 
-    /**
-     * <p>Constructor for DefaultI2CRegister.</p>
-     *
-     * @param i2c     a {@link com.pi4j.io.i2c.I2C} object.
-     * @param address a int.
-     */
     public DefaultI2CRegister(I2C i2c, int address) {
         this.i2c = i2c;
         this.address = address;

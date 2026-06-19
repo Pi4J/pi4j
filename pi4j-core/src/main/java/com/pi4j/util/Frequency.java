@@ -26,12 +26,6 @@ package com.pi4j.util;
  */
 
 
-/**
- * <p>Frequency class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class Frequency {
 
     public static final long MEGAHERTZ = 1000000;
@@ -40,6 +34,7 @@ public class Frequency {
 
     /**
      * Convert Kilohertz to Hertz
+     *
      * @param frequency number of kilohertz
      * @return total number of hertz
      */
@@ -49,6 +44,7 @@ public class Frequency {
 
     /**
      * Convert Megahertz to Hertz
+     *
      * @param frequency number of megahertz
      * @return total number of hertz
      */
@@ -59,6 +55,7 @@ public class Frequency {
 
     /**
      * Convert Frequency (in Hertz) to Nanoseconds
+     *
      * @param frequency value in hertz
      * @return total number of nanoseconds represented by this frequency value
      */
@@ -70,6 +67,7 @@ public class Frequency {
 
     /**
      * Convert Frequency (in Hertz) to Microseconds
+     *
      * @param frequency value in hertz
      * @return total number of microseconds represented by this frequency value
      */
@@ -81,6 +79,7 @@ public class Frequency {
 
     /**
      * Convert Frequency (in Hertz) to Milliseconds
+     *
      * @param frequency value in hertz
      * @return total number of milliseconds represented by this frequency value
      */
@@ -92,6 +91,7 @@ public class Frequency {
 
     /**
      * Get Frequency (in Hertz) from Nanoseconds
+     *
      * @param nanoseconds value in hertz
      * @return total number of nanoseconds represented by this frequency value
      */

@@ -31,8 +31,6 @@ import java.util.Map;
  * <p>Config interface.</p>
  *
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface Config<CONFIG_TYPE> {
     /**
@@ -55,55 +53,22 @@ public interface Config<CONFIG_TYPE> {
      */
     Map<String, String> properties();
 
-    /**
-     * <p>id.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     String id();
 
-    /**
-     * <p>name.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     String name();
 
-    /**
-     * <p>description.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     String description();
 
-    /**
-     * <p>validate.</p>
-     */
     void validate();
 
-    /**
-     * <p>getId.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     default String getId() {
         return this.id();
     }
 
-    /**
-     * <p>getName.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     default String getName() {
         return this.name();
     }
 
-    /**
-     * <p>getDescription.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
     default String getDescription() {
         return this.description();
     }

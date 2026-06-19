@@ -32,19 +32,10 @@ import com.pi4j.io.pwm.impl.DefaultPwmConfigBuilder;
 
 /**
  * <p>PwmConfigBuilder interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface PwmConfigBuilder extends
     IOConfigBuilder<PwmConfigBuilder, PwmConfig>,
     ConfigBuilder<PwmConfigBuilder, PwmConfig> {
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param context {@link Context}
-     * @return a {@link com.pi4j.io.pwm.PwmConfigBuilder} object.
-     */
     static PwmConfigBuilder newInstance(Context context) {
         return DefaultPwmConfigBuilder.newInstance();
     }
@@ -123,7 +114,6 @@ public interface PwmConfigBuilder extends
      * PWM generators.  Please consult the documentation for your PWM provider
      * to determine what support is available and what limitations may apply.
      *
-     * @param pwmType a {@link com.pi4j.io.pwm.PwmType} object.
      * @return this builder instance
      */
     PwmConfigBuilder pwmType(PwmType pwmType);
@@ -134,7 +124,6 @@ public interface PwmConfigBuilder extends
      * consult the documentation for your PWM provider to determine
      * what support is available and what limitations may apply.
      *
-     * @param polarity a {@link com.pi4j.io.pwm.PwmPolarity} object.
      * @return this builder instance
      */
     PwmConfigBuilder polarity(PwmPolarity polarity);

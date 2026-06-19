@@ -29,8 +29,6 @@ package com.pi4j.config;
  * <p>BcmConfig interface.</p>
  *
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface BcmConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
     /**
@@ -47,9 +45,6 @@ public interface BcmConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYP
     String ADDRESS_KEY = "address";
 
     /**
-     * <p>address.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
      * @deprecated use {@link #bcm()} instead.
      * <p>
      * Since "address" has lead to many confusions while configuring IOs,
@@ -60,9 +55,6 @@ public interface BcmConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYP
     Integer address();
 
     /**
-     * <p>getAddress.</p>
-     *
-     * @return a {@link java.lang.Integer} object.
      * @deprecated use {@link #getBcm()} instead.
      * <p>
      * Since "address" has lead to many confusions while configuring IOs,
@@ -79,18 +71,8 @@ public interface BcmConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYP
      */
     String BCM_KEY = "bcm";
 
-    /**
-     * <p>pin.</p>
-     *
-     * @return a {@link Integer} object.
-     */
     Integer bcm();
 
-    /**
-     * <p>getBcm.</p>
-     *
-     * @return a {@link Integer} object.
-     */
     default Integer getBcm() {
         return this.bcm();
     }

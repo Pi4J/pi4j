@@ -30,45 +30,22 @@ import com.pi4j.common.IdentityBase;
 /**
  * <p>Abstract ExtensionBase class.</p>
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  * @param <T>
  */
 public abstract class ExtensionBase<T> extends IdentityBase<T> implements Extension<T> {
 
-    /**
-     * <p>Constructor for ExtensionBase.</p>
-     */
     public ExtensionBase(){
         super();
     }
 
-    /**
-     * <p>Constructor for ExtensionBase.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     */
     public ExtensionBase(String id){
         super(id);
     }
 
-    /**
-     * <p>Constructor for ExtensionBase.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     */
     public ExtensionBase(String id, String name){
         super(id, name);
     }
 
-    /**
-     * <p>Constructor for ExtensionBase.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     * @param description a {@link java.lang.String} object.
-     */
     public ExtensionBase(String id, String name, String description){
         super(id, name, description);
     }

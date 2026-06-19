@@ -27,93 +27,33 @@ package com.pi4j.common;
 
 import com.pi4j.common.impl.MetadatumImpl;
 
-/**
- * <p>Metadatum interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public interface Metadatum extends Describable {
 
-    /**
-     * <p>key.</p>
-     *
-     * @param key a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.common.Metadatum} object.
-     */
     Metadatum key(String key);
-    /**
-     * <p>value.</p>
-     *
-     * @param value a {@link java.lang.Object} object.
-     * @return a {@link com.pi4j.common.Metadatum} object.
-     */
+
     Metadatum value(Object value);
-    /**
-     * <p>description.</p>
-     *
-     * @param description a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.common.Metadatum} object.
-     */
+
     Metadatum description(String description);
-    /**
-     * <p>key.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
+
     String key();
-    /**
-     * <p>value.</p>
-     *
-     * @return a {@link java.lang.Object} object.
-     */
+
     Object value();
-    /**
-     * <p>description.</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
+
     String description();
 
-    /**
-     * <p>create.</p>
-     *
-     * @return a {@link com.pi4j.common.Metadatum} object.
-     */
-    static Metadatum create(){
+    static Metadatum create() {
         return new MetadatumImpl();
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param key a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.common.Metadatum} object.
-     */
-    static Metadatum create(String key){
+    static Metadatum create(String key) {
         return create().key(key);
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param key a {@link java.lang.String} object.
-     * @param value a {@link java.lang.Object} object.
-     * @return a {@link com.pi4j.common.Metadatum} object.
-     */
-    static Metadatum create(String key, Object value){
+    static Metadatum create(String key, Object value) {
         return create(key).value(value);
     }
 
-    /**
-     * <p>create.</p>
-     *
-     * @param key a {@link java.lang.String} object.
-     * @param value a {@link java.lang.Object} object.
-     * @param description a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.common.Metadatum} object.
-     */
-    static Metadatum create(String key, Object value, String description){
+    static Metadatum create(String key, Object value, String description) {
         return create(key, value).description(description);
     }
 

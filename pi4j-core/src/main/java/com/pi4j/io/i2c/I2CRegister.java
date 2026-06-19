@@ -31,22 +31,12 @@ import com.pi4j.io.IODataWriter;
 /**
  * I2C Device Register.
  * This abstraction allows data to be read or written to a specific device register on the I2C bus.
- *
- * @author Robert Savage
- * @version $Id: $Id
  */
 public interface I2CRegister extends IODataWriter, IODataReader, I2CRegisterDataReader, I2CRegisterDataWriter {
     /**
-     * <p>getAddress.</p>
-     *
      * @return This I2C device register address
      */
     int getAddress();
-    /**
-     * <p>address.</p>
-     *
-     * @return a int.
-     */
     default int address(){
         return getAddress();
     }

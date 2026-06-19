@@ -59,6 +59,7 @@ record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, int d
 
     /**
      * Makes the SpiIocTransfer object from memory buffer and tx/rx buffers.
+     *
      * @param buffer main memory buffer, holding all settings data
      * @param txBuf send memory buffer
      * @param rxBuf receive memory buffer
@@ -94,6 +95,7 @@ record SpiIocTransfer(byte[] txBuf, byte[] rxBuf, int length, int speedHz, int d
 
     /**
      * Makes memory buffer from provided memory buffer and tx/rx memory addresses.
+     *
      * @param buffer memory buffer with object data
      * @param txAddress send memory buffer address
      * @param rxAddress receive memory buffer address

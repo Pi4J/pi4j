@@ -32,19 +32,10 @@ import com.pi4j.io.i2c.impl.DefaultI2CConfigBuilder;
 
 /**
  * <p>I2CConfigBuilder interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface I2CConfigBuilder extends
         IOConfigBuilder<I2CConfigBuilder, I2CConfig>,
         ConfigBuilder<I2CConfigBuilder, I2CConfig> {
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param context {@link Context}
-     * @return a {@link com.pi4j.io.i2c.I2CConfigBuilder} object.
-     */
     @Deprecated
     static I2CConfigBuilder newInstance(Context context)  {
         return DefaultI2CConfigBuilder.newInstance(context);
@@ -54,19 +45,7 @@ public interface I2CConfigBuilder extends
         return DefaultI2CConfigBuilder.newInstance();
     }
 
-    /**
-     * <p>bus.</p>
-     *
-     * @param bus a {@link java.lang.Integer} object.
-     * @return a {@link com.pi4j.io.i2c.I2CConfigBuilder} object.
-     */
     I2CConfigBuilder bus(Integer bus);
-    /**
-     * <p>device.</p>
-     *
-     * @param device a {@link java.lang.Integer} object.
-     * @return a {@link com.pi4j.io.i2c.I2CConfigBuilder} object.
-     */
     I2CConfigBuilder device(Integer device);
 
     I2CConfigBuilder i2cImplementation(I2CImplementation i2CImplementation);

@@ -31,17 +31,8 @@ import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.io.spi.SpiProviderBase;
 
-/**
- * <p>MockSpiProviderImpl class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class MockSpiProviderImpl extends SpiProviderBase implements MockSpiProvider {
 
-    /**
-     * <p>Constructor for MockSpiProviderImpl.</p>
-     */
     public MockSpiProviderImpl() {
         this.id = ID;
         this.name = NAME;

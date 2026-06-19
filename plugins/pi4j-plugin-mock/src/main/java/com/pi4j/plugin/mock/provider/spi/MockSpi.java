@@ -40,12 +40,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.Objects;
 
-/**
- * <p>MockSpi class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class MockSpi extends SpiBase implements Spi {
 
     private static final Logger logger = LoggerFactory.getLogger(MockSpi.class);
@@ -53,12 +47,6 @@ public class MockSpi extends SpiBase implements Spi {
 
     protected ArrayDeque<Byte> raw = new ArrayDeque<>();
 
-    /**
-     * <p>Constructor for MockSpi.</p>
-     *
-     * @param provider a {@link com.pi4j.io.spi.SpiProvider} object.
-     * @param config   a {@link com.pi4j.io.spi.SpiConfig} object.
-     */
     public MockSpi(SpiProvider provider, SpiConfig config) {
         super(provider, config);
         logPreamble = "[" + Mock.SPI_PROVIDER_NAME + "::" + this.id + "] ::";

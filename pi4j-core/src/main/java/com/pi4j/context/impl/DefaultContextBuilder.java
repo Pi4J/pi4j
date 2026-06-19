@@ -39,12 +39,6 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * <p>DefaultContextBuilder class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultContextBuilder implements ContextBuilder {
 
     protected Logger logger = LoggerFactory.getLogger(DefaultContextBuilder.class);
@@ -75,11 +69,6 @@ public class DefaultContextBuilder implements ContextBuilder {
         // forbid object construction
     }
 
-    /**
-     * <p>newInstance.</p>
-     *
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
     public static ContextBuilder newInstance(){
         return new DefaultContextBuilder();
     }

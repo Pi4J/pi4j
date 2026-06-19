@@ -27,12 +27,6 @@ package com.pi4j.plugin.mock;
  * #L%
  */
 
-/**
- * <p>Mock class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class Mock {
     /**
      * Constant <code>NAME="Mock"</code>

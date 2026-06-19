@@ -33,11 +33,7 @@ import com.pi4j.io.IOConfig;
 import java.util.Map;
 
 /**
- * <p>ConfigBase class.</p>
- *
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class IOPortConfigBase<CONFIG_TYPE extends Config>
     extends PortConfigBase<CONFIG_TYPE>
@@ -55,8 +51,6 @@ public class IOPortConfigBase<CONFIG_TYPE extends Config>
 
     /**
      * PRIVATE CONSTRUCTOR
-     *
-     * @param properties a {@link Map} object.
      */
     protected IOPortConfigBase(Map<String, String> properties) {
         super(properties);

@@ -32,12 +32,6 @@ import com.pi4j.util.StringUtil;
 
 import java.util.Map;
 
-/**
- * <p>DefaultDigitalOutputConfig class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultDigitalOutputConfig
     extends IOBcmConfigBase<DigitalOutputConfig>
     implements DigitalOutputConfig {
@@ -57,8 +51,6 @@ public class DefaultDigitalOutputConfig
 
     /**
      * PRIVATE CONSTRUCTOR
-     *
-     * @param properties a {@link java.util.Map} object.
      */
     protected DefaultDigitalOutputConfig(Map<String, String> properties) {
         super(properties);

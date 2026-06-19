@@ -28,12 +28,6 @@ package com.pi4j.io.pwm.impl;
 import com.pi4j.io.pwm.PwmPreset;
 import com.pi4j.io.pwm.PwmPresetBuilder;
 
-/**
- * <p>DefaultPwmPresetBuilder class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultPwmPresetBuilder implements PwmPresetBuilder{
     protected Integer dutyCycle = null;
     protected Integer frequency = null;
@@ -41,8 +35,6 @@ public class DefaultPwmPresetBuilder implements PwmPresetBuilder{
 
     /**
      * PRIVATE CONSTRUCTOR
-     *
-     * @param name a {@link java.lang.String} object.
      */
     protected DefaultPwmPresetBuilder(String name){
         super(); this.name = name;

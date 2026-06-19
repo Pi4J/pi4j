@@ -27,12 +27,6 @@ package com.pi4j.common.impl;
 
 import com.pi4j.common.Metadatum;
 
-/**
- * <p>MetadatumImpl class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class MetadatumImpl implements Metadatum {
 
     private String key;

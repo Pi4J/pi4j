@@ -29,8 +29,6 @@ package com.pi4j.config;
  * <p>BusConfig interface.</p>
  *
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface BusConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYPE> {
     /**
@@ -38,18 +36,8 @@ public interface BusConfig<CONFIG_TYPE extends Config> extends Config<CONFIG_TYP
      */
     String BUS_KEY = "bus";
 
-    /**
-     * <p>bus.</p>
-     *
-     * @return a {@link Integer} object.
-     */
     Integer bus();
 
-    /**
-     * <p>getBus.</p>
-     *
-     * @return a {@link Integer} object.
-     */
     default Integer getBus() {
         return this.bus();
     }

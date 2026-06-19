@@ -33,11 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>ConfigBase class.</p>
- *
  * @param <CONFIG_TYPE>
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public class ConfigBase<CONFIG_TYPE extends Config> implements Config<CONFIG_TYPE> {
 
@@ -55,8 +51,6 @@ public class ConfigBase<CONFIG_TYPE extends Config> implements Config<CONFIG_TYP
 
     /**
      * PRIVATE CONSTRUCTOR
-     *
-     * @param properties a {@link java.util.Map} object.
      */
     protected ConfigBase(Map<String, String> properties) {
         // add all properties to this config object

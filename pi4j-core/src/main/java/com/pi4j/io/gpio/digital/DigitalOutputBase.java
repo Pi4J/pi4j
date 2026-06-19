@@ -37,20 +37,11 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Abstract DigitalOutputBase class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, DigitalOutputConfig, DigitalOutputProvider> implements DigitalOutput {
 
     protected DigitalState state = DigitalState.UNKNOWN;
 
-    /**
-     * <p>Constructor for DigitalOutputBase.</p>
-     *
-     * @param provider a {@link com.pi4j.io.gpio.digital.DigitalOutputProvider} object.
-     * @param config   a {@link com.pi4j.io.gpio.digital.DigitalOutputConfig} object.
-     */
     public DigitalOutputBase(DigitalOutputProvider provider, DigitalOutputConfig config) {
         super(provider, config);
     }

@@ -29,9 +29,6 @@ import com.pi4j.context.Context;
 
 /**
  * <p>DigitalOutputConfig interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface DigitalOutputConfig extends DigitalConfig<DigitalOutputConfig> {
     /** Constant <code>SHUTDOWN_STATE_KEY="shutdown"</code> */
@@ -39,56 +36,21 @@ public interface DigitalOutputConfig extends DigitalConfig<DigitalOutputConfig> 
     /** Constant <code>INITIAL_STATE_KEY="initial"</code> */
     String INITIAL_STATE_KEY = "initial";
 
-    /**
-     * <p>shutdownState.</p>
-     *
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     */
     DigitalState shutdownState();
-    /**
-     * <p>shutdownState.</p>
-     *
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputConfig} object.
-     */
     DigitalOutputConfig shutdownState(DigitalState state);
-    /**
-     * <p>getShutdownState.</p>
-     *
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     */
     default DigitalState getShutdownState(){
         return shutdownState();
     }
-    /**
-     * <p>setShutdownState.</p>
-     *
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     */
     default void setShutdownState(DigitalState state){
         this.shutdownState(state);
     }
 
-    /**
-     * <p>initialState.</p>
-     *
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     */
     DigitalState initialState();
-    /**
-     * <p>getInitialState.</p>
-     *
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     */
     default DigitalState getInitialState(){
         return initialState();
     }
 
     /**
-     * <p>newBuilder.</p>
-     *
-     * @param context {@link Context}
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder} object.
      * @deprecated As of version 5, please use {@link #newBuilder()} instead.
      */
     @Deprecated

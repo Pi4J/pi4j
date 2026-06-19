@@ -20,13 +20,6 @@ public class I2CSMBus extends I2CBase<FFMI2CBus> {
     private static final Logger logger = LoggerFactory.getLogger(I2CSMBus.class);
     private final SMBusNative SMBUS = new SMBusNative();
 
-    /**
-     * <p>Constructor for I2CBase.</p>
-     *
-     * @param provider a {@link I2CProvider} object.
-     * @param config   a {@link I2CConfig} object.
-     * @param i2CBus   a {@link FFMI2CBus} object.
-     */
     public I2CSMBus(I2CProvider provider, I2CConfig config, FFMI2CBus i2CBus) {
         super(provider, config, i2CBus);
     }

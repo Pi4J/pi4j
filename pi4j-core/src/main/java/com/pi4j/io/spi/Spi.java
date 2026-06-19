@@ -36,9 +36,6 @@ import java.nio.ByteBuffer;
 
 /**
  * <p>Spi interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IODataWriter, IODataReader, SerialCircuitIO {
     /**
@@ -70,12 +67,6 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      */
     int DEFAULT_READ_LSB_FIRST = 0;
 
-    /**
-     * <p>newConfigBuilder.</p>
-     *
-     * @param context {@link Context}
-     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
-     */
     static SpiConfigBuilder newConfigBuilder(Context context) {
         return SpiConfigBuilder.newInstance();
     }
@@ -88,14 +79,8 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
     boolean isOpen();
 
 
-    /**
-     * <p>open.</p>
-     */
     void open();
 
-    /**
-     * <p>close.</p>
-     */
     void close();
 
     // ------------------------------------------------------------------------------------
@@ -107,7 +92,6 @@ public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IOD
      * If no data is ready PI_SER_READ_NO_DATA is returned.
      *
      * @param handle the open serial device handle; (&gt;=0, as returned by a call to serOpen)
-     * @param value  a byte.
      * @return Returns the read byte (&gt;=0) if OK, otherwise PI_BAD_HANDLE, PI_SER_READ_NO_DATA, or PI_SER_READ_FAILED.
      * @see "http://abyz.me.uk/rpi/pigpio/cif.html#serReadByte"
      */

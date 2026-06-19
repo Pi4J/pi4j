@@ -38,9 +38,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Abstract PwmBase class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implements Pwm {
 
@@ -51,12 +48,6 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
     protected PwmPolarity polarity = PwmPolarity.NORMAL;
     protected Map<String, PwmPreset> presets = Collections.synchronizedMap(new HashMap<>());
 
-    /**
-     * <p>Constructor for PwmBase.</p>
-     *
-     * @param provider a {@link com.pi4j.io.pwm.PwmProvider} object.
-     * @param config   a {@link com.pi4j.io.pwm.PwmConfig} object.
-     */
     public PwmBase(PwmProvider provider, PwmConfig config) {
         super(provider, config);
         for (PwmPreset preset : config.presets()) {

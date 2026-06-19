@@ -34,12 +34,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * <p>DescriptorImpl class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DescriptorImpl implements Descriptor {
 
     private Set<Descriptor> children = Collections.synchronizedSet(new LinkedHashSet());
@@ -53,9 +47,6 @@ public class DescriptorImpl implements Descriptor {
     private Class type;
     private Object value;
 
-    /**
-     * <p>Constructor for DescriptorImpl.</p>
-     */
     public DescriptorImpl(){
         this.parent = null;
     }
@@ -156,29 +147,14 @@ public class DescriptorImpl implements Descriptor {
         return this;
     }
 
-    /**
-     * <p>size.</p>
-     *
-     * @return a int.
-     */
     public int size(){
         return children.size();
     }
 
-    /**
-     * <p>isEmpty.</p>
-     *
-     * @return a boolean.
-     */
     public boolean isEmpty(){
         return children.isEmpty();
     }
 
-    /**
-     * <p>isNotEmpty.</p>
-     *
-     * @return a boolean.
-     */
     public boolean isNotEmpty(){
         return !children.isEmpty();
     }

@@ -29,10 +29,6 @@ import java.util.EnumSet;
 
 /**
  * PWM Type Enumerations
- *
- * @author Robert Savage (<a
- *         href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public enum PwmType {
     SOFTWARE(0, "software"),
@@ -48,8 +44,6 @@ public enum PwmType {
 
     /**
      * <p>Getter for the field <code>value</code>.</p>
-     *
-     * @return a int.
      */
     public int getValue() {
         return value;
@@ -57,8 +51,6 @@ public enum PwmType {
 
     /**
      * <p>Getter for the field <code>name</code>.</p>
-     *
-     * @return a {@link java.lang.String} object.
      */
     public String getName() {
         return name;
@@ -69,21 +61,10 @@ public enum PwmType {
         return name.toUpperCase();
     }
 
-    /**
-     * <p>all.</p>
-     *
-     * @return a {@link java.util.EnumSet} object.
-     */
     public static EnumSet<PwmType> all() {
         return EnumSet.allOf(PwmType.class);
     }
 
-    /**
-     * <p>parse.</p>
-     *
-     * @param pwmType a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.io.pwm.PwmType} object.
-     */
     public static PwmType parse(String pwmType) {
         if(pwmType.equalsIgnoreCase("0")) return PwmType.SOFTWARE;
         if(pwmType.equalsIgnoreCase("1")) return PwmType.HARDWARE;

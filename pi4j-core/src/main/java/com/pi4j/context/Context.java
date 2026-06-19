@@ -54,32 +54,14 @@ import java.util.concurrent.Future;
 
 /**
  * <p>Context interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface Context extends Describable, IOCreator, ProviderProvider, InitializedEventProducer<Context>,
     ShutdownEventProducer<Context> {
 
-    /**
-     * <p>config.</p>
-     *
-     * @return a {@link com.pi4j.context.ContextConfig} object.
-     */
     ContextConfig config();
 
-    /**
-     * <p>providers.</p>
-     *
-     * @return a {@link com.pi4j.provider.Providers} object.
-     */
     Providers providers();
 
-    /**
-     * <p>registry.</p>
-     *
-     * @return a {@link com.pi4j.registry.Registry} object.
-     */
     Registry registry();
 
     /**
@@ -91,9 +73,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     Future<?> submitTask(Runnable task);
 
     /**
-     * <p>shutdown.</p>
-     *
-     * @return a {@link com.pi4j.context.Context} object.
      * @throws com.pi4j.exception.ShutdownException if an error occurs during shutdown.
      */
     Context shutdown() throws ShutdownException;
@@ -113,9 +92,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     // ------------------------------------------------------------------------
 
     /**
-     * <p>provider.</p>
-     *
-     * @param providerId a {@link java.lang.String} object.
      * @param <T>
      * @return
      * @throws ProviderNotFoundException
@@ -125,10 +101,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     }
 
     /**
-     * <p>provider.</p>
-     *
-     * @param providerId    a {@link java.lang.String} object.
-     * @param providerClass a T object.
      * @param <T>
      * @return
      * @throws ProviderNotFoundException
@@ -142,7 +114,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     /**
      * <p>Has providers.</p>
      *
-     * @param providerId a {@link java.lang.String} object.
      * @return
      */
     default boolean hasProvider(String providerId) {
@@ -157,7 +128,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     /**
      * <p>Has providers.</p>
      *
-     * @param ioType a {@link com.pi4j.io.IOType} object.
      * @param <T>
      * @return
      */
@@ -168,7 +138,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     /**
      * <p>Has providers.</p>
      *
-     * @param providerClass a {@link java.lang.Class} object.
      * @param <T>
      * @return
      */
@@ -178,9 +147,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
 
 
     /**
-     * <p>provider.</p>
-     *
-     * @param providerClass a {@link java.lang.Class} object.
      * @param <T>
      * @return
      * @throws ProviderNotFoundException
@@ -199,9 +165,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
 
 
     /**
-     * <p>provider.</p>
-     *
-     * @param ioType a {@link com.pi4j.io.IOType} object.
      * @param <T>
      * @return
      * @throws ProviderNotFoundException
@@ -222,8 +185,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     /**
      * Return the BoardInfo containing more info about the
      * {@link BoardModel}, {@link OperatingSystem}, and {@link JavaInfo}.
-     *
-     * @return {@link BoardInfo}
      */
     BoardInfo boardInfo();
 
@@ -304,11 +265,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     // DESCRIPTOR
     // ------------------------------------------------------------------------
 
-    /**
-     * <p>describe.</p>
-     *
-     * @return a {@link com.pi4j.common.Descriptor} object.
-     */
     default Descriptor describe() {
         Descriptor descriptor = Descriptor.create().category("CONTEXT").name("Runtime Context").type(this.getClass());
 

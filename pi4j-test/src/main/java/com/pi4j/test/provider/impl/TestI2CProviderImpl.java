@@ -30,34 +30,14 @@ import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CProviderBase;
 import com.pi4j.test.provider.TestI2CProvider;
 
-/**
- * <p>TestI2CProviderImpl class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class TestI2CProviderImpl extends I2CProviderBase implements TestI2CProvider {
 
-    /**
-     * <p>Constructor for TestI2CProviderImpl.</p>
-     */
     public TestI2CProviderImpl(){ super(); }
 
-    /**
-     * <p>Constructor for TestI2CProviderImpl.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     */
     public TestI2CProviderImpl(String id){
         super(id);
     }
 
-    /**
-     * <p>Constructor for TestI2CProviderImpl.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     */
     public TestI2CProviderImpl(String id, String name){
         super(id, name);
     }

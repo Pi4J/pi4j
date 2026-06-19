@@ -34,12 +34,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-/**
- * <p>Pi4J class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class Pi4J {
 
     private static final Logger logger = LoggerFactory.getLogger(Pi4J.class);
@@ -109,17 +103,12 @@ public class Pi4J {
         }
     }
 
-    /**
-     * @return {@link BuildInfo}
-     */
     public static BuildInfo getBuildInfo() {
         return buildInfo;
     }
 
     /**
      * Reads the build info from the build.properties file.
-     *
-     * @return {@link BuildInfo}
      */
     private static BuildInfo loadBuildInfo() {
         try (InputStream is = Pi4J.class.getResourceAsStream("/build.properties")) {

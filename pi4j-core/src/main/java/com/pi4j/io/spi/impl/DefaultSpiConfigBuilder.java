@@ -29,12 +29,6 @@ import com.pi4j.context.Context;
 import com.pi4j.io.impl.IOBcmConfigBuilderBase;
 import com.pi4j.io.spi.*;
 
-/**
- * <p>DefaultSpiConfigBuilder class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultSpiConfigBuilder
     extends IOBcmConfigBuilderBase<SpiConfigBuilder, SpiConfig>
     implements SpiConfigBuilder {
@@ -46,21 +40,13 @@ public class DefaultSpiConfigBuilder
     }
 
     /**
-     * <p>newInstance.</p>
-     *
      * @param context
-     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
      */
     @Deprecated
     public static SpiConfigBuilder newInstance(Context context) {
         return newInstance();
     }
 
-    /**
-     * <p>newInstance.</p>
-     *
-     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
-     */
     public static SpiConfigBuilder newInstance() {
         return new DefaultSpiConfigBuilder();
     }

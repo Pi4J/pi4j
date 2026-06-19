@@ -31,17 +31,8 @@ import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalInputProviderBase;
 
-/**
- * <p>MockDigitalInputProviderImpl class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class MockDigitalInputProviderImpl extends DigitalInputProviderBase implements MockDigitalInputProvider {
 
-    /**
-     * <p>Constructor for MockDigitalInputProviderImpl.</p>
-     */
     public MockDigitalInputProviderImpl() {
         this.id = ID;
         this.name = NAME;

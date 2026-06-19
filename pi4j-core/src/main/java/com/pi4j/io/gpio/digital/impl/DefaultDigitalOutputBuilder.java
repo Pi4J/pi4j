@@ -31,12 +31,6 @@ import com.pi4j.provider.Provider;
 import com.pi4j.util.StringUtil;
 
 
-/**
- * <p>DefaultDigitalOutputBuilder class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultDigitalOutputBuilder implements DigitalOutputBuilder {
 
     private final Context context;
@@ -57,8 +51,6 @@ public class DefaultDigitalOutputBuilder implements DigitalOutputBuilder {
 
     /**
      * PRIVATE CONSTRUCTOR
-     *
-     * @param context a {@link com.pi4j.context.Context} object.
      */
     protected DefaultDigitalOutputBuilder(Context context) {
         super();

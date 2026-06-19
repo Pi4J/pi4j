@@ -30,35 +30,14 @@ import com.pi4j.test.provider.impl.TestSpiProviderImpl;
 
 /**
  * <p>TestSpiProvider interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
  */
 public interface TestSpiProvider extends SpiProvider {
-    /**
-     * <p>newInstance.</p>
-     *
-     * @return a {@link com.pi4j.test.provider.TestSpiProvider} object.
-     */
     static TestSpiProvider newInstance(){
         return new TestSpiProviderImpl();
     }
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.test.provider.TestSpiProvider} object.
-     */
     static TestSpiProvider newInstance(String id){
         return new TestSpiProviderImpl(id);
     }
-    /**
-     * <p>newInstance.</p>
-     *
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.test.provider.TestSpiProvider} object.
-     */
     static TestSpiProvider newInstance(String id, String name){
         return new TestSpiProviderImpl(id, name);
     }
