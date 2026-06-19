@@ -52,23 +52,31 @@ public class CommandExecutor {
 
     /**
      * Runs the given command, waits up to 30 seconds for it to finish, and returns the captured result.
-     * The command is split on spaces into the executable and its arguments and started directly,
-     * so it must not rely on shell features such as pipes or redirection. On timeout the process is
-     * forcibly destroyed and a failure result is returned; an empty error stream together with normal
-     * termination is treated as success.
+     * The command is split on runs of whitespace into the executable and its arguments and started
+     * directly, so it must not rely on shell features such as pipes or redirection. Leading and trailing
+     * whitespace is ignored and runs of spaces or tabs are treated as a single separator. On timeout the
+     * process is forcibly destroyed and a failure result is returned; an empty error stream together with
+     * normal termination is treated as success.
      *
-     * @param command the executable to run followed by space-separated literal arguments, without any
-     *                shell metacharacters
+     * @param command the executable to run followed by whitespace-separated literal arguments, without any
+     *                shell metacharacters; a {@code null} or blank command yields a failure result
      * @return a successful {@link CommandResult} carrying the captured standard output, or a failure
-     *         result whose error message describes the timeout, non-empty error stream, or exception
+     *         result whose error message describes the blank input, timeout, non-empty error stream, or
+     *         exception
      */
     public static CommandResult execute(String command) {
+        if (command == null || command.isBlank()) {
+            String errorMessage = "No command provided to execute";
+            logger.error(errorMessage);
+            return failure(errorMessage);
+        }
+
         boolean finished = false;
         String outputMessage = "";
         String errorMessage = "";
 
         // Configure the process builder with the command (no shell involved).
-        ProcessBuilder builder = new ProcessBuilder(command.split(" "));
+        ProcessBuilder builder = new ProcessBuilder(splitCommand(command));
 
         try {
             Process process = builder.start();
@@ -98,6 +106,18 @@ public class CommandExecutor {
         }
 
         return success(outputMessage);
+    }
+
+    /**
+     * Splits a command line into its executable and argument tokens. The command is trimmed and split on
+     * runs of whitespace ({@code \s+}), so leading or trailing whitespace is ignored and consecutive
+     * spaces or tabs do not produce empty tokens.
+     *
+     * @param command the command line to split; must not be {@code null} or blank
+     * @return the command broken into its whitespace-separated tokens, with the executable first
+     */
+    static String[] splitCommand(String command) {
+        return command.trim().split("\\s+");
     }
 
     /**
