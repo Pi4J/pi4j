@@ -123,9 +123,6 @@ public class FFMSpi extends SpiBase implements Spi {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Spi shutdownInternal(Context context) throws ShutdownException {
         FILE.close(spiFileDescriptor);

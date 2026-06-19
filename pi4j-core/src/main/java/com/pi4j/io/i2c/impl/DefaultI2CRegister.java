@@ -47,10 +47,10 @@ public class DefaultI2CRegister implements I2CRegister, I2CRegisterDataReader, I
     /**
      * <p>Constructor for DefaultI2CRegister.</p>
      *
-     * @param i2c a {@link com.pi4j.io.i2c.I2C} object.
+     * @param i2c     a {@link com.pi4j.io.i2c.I2C} object.
      * @param address a int.
      */
-    public DefaultI2CRegister(I2C i2c, int address){
+    public DefaultI2CRegister(I2C i2c, int address) {
         this.i2c = i2c;
         this.address = address;
     }
@@ -66,10 +66,9 @@ public class DefaultI2CRegister implements I2CRegister, I2CRegisterDataReader, I
     }
 
 
-
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Write a single word value (16-bit) to the I2C device register.
      */
     @Override
@@ -117,13 +116,13 @@ public class DefaultI2CRegister implements I2CRegister, I2CRegisterDataReader, I
 
     @Override
     public int readRegister(byte[] register, byte[] buffer, int offset, int length) {
-        return this.i2c.readRegister(register,buffer,offset,length);
+        return this.i2c.readRegister(register, buffer, offset, length);
     }
 
 
     @Override
     public int readRegister(int register, byte[] buffer, int offset, int length) {
-        return this.i2c.readRegister(register,buffer,offset,length);
+        return this.i2c.readRegister(register, buffer, offset, length);
     }
 
 
@@ -134,11 +133,11 @@ public class DefaultI2CRegister implements I2CRegister, I2CRegisterDataReader, I
 
     @Override
     public int writeRegister(int register, byte[] data, int offset, int length) {
-        return this.i2c.writeRegister(register,data,offset,length);
+        return this.i2c.writeRegister(register, data, offset, length);
     }
 
     @Override
     public int writeRegister(byte[] register, byte[] data, int offset, int length) {
-        return this.i2c.writeRegister(register,data,offset,length);
+        return this.i2c.writeRegister(register, data, offset, length);
     }
 }
