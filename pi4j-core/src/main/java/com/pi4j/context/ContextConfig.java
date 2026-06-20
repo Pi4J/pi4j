@@ -28,7 +28,6 @@ package com.pi4j.context;
 import com.pi4j.provider.Provider;
 
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Immutable, read-only view of the settings used to create a Pi4J {@link Context}. Produced by a
