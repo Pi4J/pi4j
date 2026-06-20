@@ -44,12 +44,11 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
      * configuration, and verifies that the current user has the required permissions on the device
      * file. The line itself is not requested until {@link #initialize(Context)} is called.
      *
-     * @param chipName human-readable GPIO chip name from configuration, used for logging only
      * @param provider the {@link DigitalOutputProvider} that created this instance
      * @param config   the {@link DigitalOutputConfig} supplying the BCM line offset, bus number and
      *                 initial state
      */
-    public FFMDigitalOutput(String chipName, DigitalOutputProvider provider, DigitalOutputConfig config) {
+    public FFMDigitalOutput(DigitalOutputProvider provider, DigitalOutputConfig config) {
         super(provider, config);
         this.bcm = config.bcm();
         this.deviceName = "/dev/gpiochip" + config.bus();

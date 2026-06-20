@@ -97,29 +97,6 @@ public interface ContextConfig {
      */
     default boolean isAutoInject() { return autoInject(); };
 
-    /**
-     * Returns the id of the platform configured as the default for the context.
-     *
-     * @return the default platform id, or {@code null} if none was configured
-     */
-    String defaultPlatform();
-
-    /**
-     * Bean-style accessor for {@link #defaultPlatform()}.
-     *
-     * @return the default platform id, or {@code null} if none was configured
-     */
-    default String getDefaultPlatform(){
-        return defaultPlatform();
-    }
-
-    /**
-     * Indicates whether a default platform has been configured.
-     *
-     * @return {@code true} if a default platform id is set, {@code false} otherwise
-     */
-    default boolean hasDefaultPlatform(){ return getDefaultPlatform() != null;};
-
     // **************************************************
     // PROVIDERS
     // **************************************************
@@ -161,14 +138,4 @@ public interface ContextConfig {
      */
     default boolean isAutoDetectProviders() { return autoDetectProviders(); };
 
-    // **************************************************
-    // PROPERTIES
-    // **************************************************
-    /**
-     * Returns the user-supplied properties passed to the context, used to parameterize platforms,
-     * providers and I/O configuration.
-     *
-     * @return a map of property keys to values
-     */
-    Map<String,String> properties();
 }
