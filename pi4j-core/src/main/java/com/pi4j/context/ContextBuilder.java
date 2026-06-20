@@ -29,13 +29,6 @@ import com.pi4j.config.Builder;
 import com.pi4j.context.impl.DefaultContextBuilder;
 import com.pi4j.provider.Provider;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.Map;
-import java.util.Properties;
-
 /**
  * Fluent builder used to configure and create a Pi4J {@link Context}. It accumulates settings such as
  * the default platform, auto-detection behaviour for platforms and providers, the shutdown hook, manually

@@ -31,13 +31,11 @@ import com.pi4j.context.ContextBuilder;
 import com.pi4j.context.ContextConfig;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.provider.Provider;
-import com.pi4j.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class DefaultContextBuilder implements ContextBuilder {
 
