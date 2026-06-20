@@ -84,7 +84,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      * @param config   the {@link DigitalInputConfig} supplying the BCM line offset, bus number,
      *                 pull resistance and debounce period
      */
-    public FFMDigitalInput(String chipName, DigitalInputProvider provider, DigitalInputConfig config) {
+    public FFMDigitalInput(DigitalInputProvider provider, DigitalInputConfig config) {
         super(provider, config);
         this.bcm = config.bcm();
         this.deviceName = "/dev/gpiochip" + config.bus();
