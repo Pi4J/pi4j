@@ -79,7 +79,6 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      * the required permissions on the device file. The line itself is not requested until
      * {@link #initialize(Context)} is called.
      *
-     * @param chipName human-readable GPIO chip name from configuration, used for logging only
      * @param provider the {@link DigitalInputProvider} that created this instance
      * @param config   the {@link DigitalInputConfig} supplying the BCM line offset, bus number,
      *                 pull resistance and debounce period
@@ -137,7 +136,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                     throw new InitializeException("Debounce value of " + debounce + " is too large");
                 }
                 var debounceAttribute = new LineAttribute(LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(), 0, 0, (int) debounce * 1000);
-                attributes.add(new LineConfigAttribute(debounceAttribute, 1L << bcm ));
+                attributes.add(new LineConfigAttribute(debounceAttribute, 1L << bcm));
             }
             flags |= switch (pull) {
                 case OFF -> 0;
@@ -391,7 +390,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                             // note: checking only buf[i] (the LSB) is insufficient because a valid timestamp divisible
                             // by 256 ns will have a zero LSB, causing real events to be incorrectly dropped
                             if ((buf[i] | buf[i + 1] | buf[i + 2] | buf[i + 3]
-                                    | buf[i + 4] | buf[i + 5] | buf[i + 6] | buf[i + 7]) == 0) {
+                                | buf[i + 4] | buf[i + 5] | buf[i + 6] | buf[i + 7]) == 0) {
                                 continue;
                             }
                             // convert byte array of events to java object with memory segment
