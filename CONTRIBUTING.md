@@ -4,8 +4,6 @@
 
 Thanks for considering a contribution to the [Pi4J project][pi4j]. We value every contribution, whether it's a document edit, bug fix, code improvement,pi4j or a major revision.
 
-This is the generic contribution guide for the Pi4J project. Check the [repository-specific contributing guide for more detailed instructions](CONTRIBUTING_REPO.md) for this specific code base.
-
 ## Legal
 
 All contributions to this repository are licensed under the [Apache License](http://www.apache.org/licenses/), Version 2.0 or later, or, if another license is specified as governing the file or directory being modified, such other license.
