@@ -65,8 +65,8 @@ public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig, I
     @Override
     public void close() {
         if (isOpen) {
+            super.close();
             this.isOpen = false;
-            context().shutdown(this);
         }
     }
 
