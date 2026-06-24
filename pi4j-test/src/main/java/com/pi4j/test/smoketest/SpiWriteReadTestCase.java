@@ -83,6 +83,8 @@ public class SpiWriteReadTestCase   extends TestCase{
             return new TestResult(TEST_NAME, false, "Test failure: " + e.getMessage());
         } finally {
             if (spi != null) {
+                // this is a workaround as spi.close() no longer removes the ID  runtime context
+                providerContext.getContext().shutdown(spi.id());
                 spi.close();
             }
         }
