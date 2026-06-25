@@ -28,7 +28,7 @@ Usage parms:
 
 Below, you can find a full description of the wiring used for the test setup. If you know how to produce PCBs, you can use the files in the `pcb` directory to order a fully assembled version of it!
 
-![Smoketest PCB](https://github.com/Pi4J/pi4j/raw/develop/pi4j-test/pcb/smoketest-pcb.png)
+![Smoketest PCB](https://github.com/Pi4J/pi4j/raw/develop/pi4j-test/pcb/smoketest-pcb.jpg)
 
 ### Breadboard
 
