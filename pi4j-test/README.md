@@ -24,6 +24,14 @@ Usage parms:
 
 ## Wiring
 
+### PCB
+
+Below, you can find a full description of the wiring used for the test setup. If you know how to produce PCBs, you can use the files in the `pcb` directory to order a fully assembled version of it!
+
+![Smoketest PCB](https://github.com/Pi4J/pi4j/raw/develop/pi4j-test/pcb/smoketest-pcb.png)
+
+### Breadboard
+
 Two BMP280 (air pressure and temperature) or BME280 (air pressure, temperature, and humidity) are used as they are available as PCBs with both I2C and SPI interfaces. Some other wiring is added to connect GPIOs to each other, to test different types of communication. 
 
 <!-- Full image URL as this is used as a source for a page on pi4j.com -->
