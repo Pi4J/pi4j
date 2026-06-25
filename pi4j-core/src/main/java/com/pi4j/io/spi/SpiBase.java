@@ -64,6 +64,7 @@ public abstract class SpiBase extends IOBase<Spi, SpiConfig, SpiProvider> implem
     @Override
     public void close() {
         logger.trace("invoked 'closed()'");
+        super.close();
         this.isOpen = false;
     }
 }

@@ -56,7 +56,6 @@ public class I2CWithOffsetTestCase extends TestCase {
         } finally {
             if (i2c != null) {
                 i2c.close();
-                providerContext.getContext().shutdown(i2c.id());
             }
         }
     }
