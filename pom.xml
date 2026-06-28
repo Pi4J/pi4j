@@ -124,6 +124,26 @@
                 <twitter>https://twitter.com/miragemiko</twitter>
             </properties>
         </contributor>
+        <contributor>
+            <name>Tiza Talla</name>
+            <url>https://github.com/Kurocifer</url>
+            <organization>Open Source Society Cameroon</organization>
+            <organizationUrl>https://osscameroon.com</organizationUrl>
+            <properties>
+                <linkedin>https://www.linkedin.com/in/kurocifer</linkedin>
+                <twitter>https://twitter.com/kurociferx</twitter>
+            </properties>
+        </contributor>
+        <contributor>
+            <name>Fanon Jupkwo</name>
+            <url>https://github.com/FanJups</url>
+            <organization>Open Source Society Cameroon</organization>
+            <organizationUrl>https://osscameroon.com</organizationUrl>
+            <properties>
+                <linkedin>https://www.linkedin.com/in/fanon-jupkwo</linkedin>
+                <twitter>https://twitter.com/fanjups</twitter>
+            </properties>
+        </contributor>
     </contributors>
 
     <!-- SOURCE CONTROL -->
