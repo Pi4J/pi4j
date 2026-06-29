@@ -26,6 +26,7 @@ package com.pi4j.boardinfo.definition;
  */
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Represents a parsed Raspberry Pi 32-bit revision code in the format:
@@ -206,6 +207,32 @@ public final class RevisionCode {
     }
 
     /**
+     * A common interface for the internal enumerations of {@code RevisionCode}.
+     *
+     * <p>Provides access to the numeric field value used in new-style revision codes
+     * and the list of old-style revision codes associated with each constant, allowing
+     * shared lookup logic to operate generically across {@link RevisionCode.MemorySize},
+     * {@link RevisionCode.Processor}, and {@link RevisionCode.Type}.</p>
+     */
+    private interface RevisionCodeEnum {
+        /**
+         * Returns the numeric value of this constant as encoded in the
+         * new-style revision code bit field.
+         *
+         * @return the bit field value
+         */
+        int getValue();
+
+        /**
+         * Returns the old-style revision codes associated with this constant,
+         * or an empty array if this constant has no old-style codes.
+         *
+         * @return the old-style revision codes
+         */
+        int[] getOldStyleRevisionCodes();
+    }
+
+    /**
      * Represents the memory size field (bits 22:20) of a new-style Raspberry Pi revision code.
      *
      * <p>Old-style revision codes are matched against known values. New-style codes are
@@ -214,7 +241,7 @@ public final class RevisionCode {
      * @see <a href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#new-style-revision-codes">
      *     Raspberry Pi New-Style Revision Codes</a>
      */
-    public enum MemorySize {
+    public enum MemorySize implements RevisionCodeEnum {
         MB_256(0, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 0x0008, 0x0009, 0x0012),
         MB_512(1, 0x000d, 0x000e, 0x000f, 0x0010, 0x0011, 0x0013, 0x0014),
         GB_1(2),
@@ -248,23 +275,19 @@ public final class RevisionCode {
          * @return the matching {@code MemorySize}, or {@link #UNKNOWN}
          */
         static MemorySize fromRevisionCode(int revisionCode) {
-            if (isNewStyleRevisionCode(revisionCode)) {
-                final int value = (revisionCode >> 20) & 0x7;
-                for (var s : values()) {
-                    if (s.value == value) {
-                        return s;
-                    }
-                }
-            } else {
-                for (var s : values()) {
-                    for (var r : s.oldStyleRevisionCodes) {
-                        if (r == revisionCode) {
-                            return s;
-                        }
-                    }
-                }
-            }
-            return UNKNOWN;
+            return isNewStyleRevisionCode(revisionCode) ?
+                fromNewStyleCode(revisionCode, 20, 0x7, MemorySize::values, MemorySize.UNKNOWN) :
+                fromOldStyleCode(revisionCode, MemorySize::values, MemorySize.UNKNOWN);
+        }
+
+        @Override
+        public int getValue() {
+            return value;
+        }
+
+        @Override
+        public int[] getOldStyleRevisionCodes() {
+            return oldStyleRevisionCodes;
         }
     }
 
@@ -277,7 +300,7 @@ public final class RevisionCode {
      * @see <a href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#new-style-revision-codes">
      *     Raspberry Pi New-Style Revision Codes</a>
      */
-    public enum Processor {
+    public enum Processor implements RevisionCodeEnum {
         BCM2835(0, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0007, 0x0008, 0x0009, 0x000d, 0x000e, 0x000f, 0x0010, 0x0011, 0x0012, 0x0013, 0x0014, 0x0015),
         BCM2836(1),
         BCM2837(2),
@@ -309,23 +332,19 @@ public final class RevisionCode {
          * @return the matching {@code Processor}, or {@link #UNKNOWN}
          */
         static Processor fromRevisionCode(int revisionCode) {
-            if (isNewStyleRevisionCode(revisionCode)) {
-                final int value = (revisionCode >> 12) & 0xF;
-                for (var s : values()) {
-                    if (s.value == value) {
-                        return s;
-                    }
-                }
-            } else {
-                for (var s : values()) {
-                    for (var r : s.oldStyleRevisionCodes) {
-                        if (r == revisionCode) {
-                            return s;
-                        }
-                    }
-                }
-            }
-            return UNKNOWN;
+            return isNewStyleRevisionCode(revisionCode) ?
+                fromNewStyleCode(revisionCode, 12, 0xF, Processor::values, Processor.UNKNOWN) :
+                fromOldStyleCode(revisionCode, Processor::values, Processor.UNKNOWN);
+        }
+
+        @Override
+        public int getValue() {
+            return value;
+        }
+
+        @Override
+        public int[] getOldStyleRevisionCodes() {
+            return oldStyleRevisionCodes;
         }
     }
 
@@ -339,7 +358,7 @@ public final class RevisionCode {
      * @see <a href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#new-style-revision-codes">
      *     Raspberry Pi New-Style Revision Codes</a>
      */
-    public enum Type {
+    public enum Type implements RevisionCodeEnum {
         RPI_A(0, 0x0007, 0x0008, 0x0009),
         RPI_B(1, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x000d, 0x000e, 0x000f),
         RPI_A_PLUS(2, 0x0012, 0x0015),
@@ -389,23 +408,73 @@ public final class RevisionCode {
          * @return the matching {@code Type}, or {@link #UNKNOWN}
          */
         static Type fromRevisionCode(int revisionCode) {
-            if (isNewStyleRevisionCode(revisionCode)) {
-                final int value = (revisionCode >> 4) & 0xFF;
-                for (var s : values()) {
-                    if (s.value == value) {
-                        return s;
-                    }
-                }
-            } else {
-                for (var s : values()) {
-                    for (var r : s.oldStyleRevisionCodes) {
-                        if (r == revisionCode) {
-                            return s;
-                        }
-                    }
+            return isNewStyleRevisionCode(revisionCode) ?
+                fromNewStyleCode(revisionCode, 4, 0xFF, Type::values, Type.UNKNOWN) :
+                fromOldStyleCode(revisionCode, Type::values, Type.UNKNOWN);
+        }
+
+        @Override
+        public int getValue() {
+            return value;
+        }
+
+        @Override
+        public int[] getOldStyleRevisionCodes() {
+            return oldStyleRevisionCodes;
+        }
+    }
+
+    /**
+     * Returns the enum constant of type {@code T} whose bit field value matches the
+     * extracted field from the given new-style revision code.
+     *
+     * <p>The field value is extracted by shifting the revision code right by {@code shift}
+     * bits and masking with {@code mask}. The result is compared against
+     * {@link RevisionCodeEnum#getValue()} for each constant.</p>
+     *
+     * @param <T>          the enum type, which must implement {@link RevisionCodeEnum}
+     * @param revisionCode the raw 32-bit new-style revision code
+     * @param shift        the number of bits to right-shift before applying the mask
+     * @param mask         the bitmask to apply after shifting
+     * @param values       a supplier of the enum constants to search (e.g. {@code MemorySize::values})
+     * @param unknown      the sentinel value to return if no match is found
+     * @return the matching enum constant, or {@code unknown} if no match is found
+     */
+    private static <T extends RevisionCodeEnum> T fromNewStyleCode(
+            int revisionCode, int shift, int mask,
+            Supplier<T[]> values, T unknown) {
+        final int value = (revisionCode >> shift) & mask;
+        for (var s : values.get()) {
+            if (s.getValue() == value) {
+                return s;
+            }
+        }
+        return unknown;
+    }
+
+    /**
+     * Returns the enum constant of type {@code T} whose old-style revision code list
+     * contains the given revision code.
+     *
+     * <p>Each constant is checked in declaration order. The first constant whose
+     * {@link RevisionCodeEnum#getOldStyleRevisionCodes()} array contains the given
+     * revision code is returned.</p>
+     *
+     * @param <T>          the enum type, which must implement {@link RevisionCodeEnum}
+     * @param revisionCode the raw 32-bit old-style revision code
+     * @param values       a supplier of the enum constants to search (e.g. {@code Type::values})
+     * @param unknown      the sentinel value to return if no match is found
+     * @return the matching enum constant, or {@code unknown} if no match is found
+     */
+    private static <T extends RevisionCodeEnum> T fromOldStyleCode(
+            int revisionCode, Supplier<T[]> values, T unknown) {
+        for (var s : values.get()) {
+            for (var r : s.getOldStyleRevisionCodes()) {
+                if (r == revisionCode) {
+                    return s;
                 }
             }
-            return UNKNOWN;
         }
+        return unknown;
     }
 }
