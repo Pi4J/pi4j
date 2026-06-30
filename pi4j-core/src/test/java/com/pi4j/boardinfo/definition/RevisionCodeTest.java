@@ -11,7 +11,30 @@ class RevisionCodeTest {
         assertAll(
             () -> assertThrows(IllegalArgumentException.class, () -> RevisionCode.of(null)),
             () -> assertThrows(IllegalArgumentException.class, () -> RevisionCode.of("")),
-            () -> assertThrows(IllegalArgumentException.class, () -> RevisionCode.of("invalid hex"))
+            () -> assertThrows(IllegalArgumentException.class, () -> RevisionCode.of("0X")),
+            () -> assertThrows(IllegalArgumentException.class, () -> RevisionCode.of("0xBadHex")),
+            () -> assertThrows(IllegalArgumentException.class, () -> RevisionCode.of("FFFFFFFFF"))
+        );
+    }
+
+    @Test
+    void testHashCodeEqualsToString() {
+        final Object obj = new Object();
+        final String rc1Str = "e04180";
+        final String rc2Str = "0XE04180";
+        final int rcInt = 0xe04180;
+        final RevisionCode rc1 = RevisionCode.of(rc1Str);
+        final RevisionCode rc2 = RevisionCode.of(rc2Str);
+        assertAll(
+            () -> assertNotEquals(rc1Str, rc2Str),
+            () -> assertNotEquals(rc1, obj),
+            () -> assertEquals(rc1, rc2),
+            () -> assertEquals(rc1.hashCode(), rc2.hashCode()),
+            () -> assertEquals(rc1.toString(), rc2.toString()),
+            () -> assertNotEquals(rc1, RevisionCode.of(rcInt ^ (0x1 << 21))),      // Flip a memory size bit.
+            () -> assertNotEquals(rc1, RevisionCode.of(rcInt ^ (0x1 << 5))),       // Flip a type bit.
+            () -> assertNotEquals(rc1, RevisionCode.of(rcInt ^ (0x1 << 14))),      // Flip a processor bit.
+            () -> assertNotEquals(rc1, RevisionCode.of(rcInt ^ 0x1))               // Flip a revision bit.
         );
     }
 

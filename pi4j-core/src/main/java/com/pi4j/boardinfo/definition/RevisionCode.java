@@ -25,6 +25,7 @@ package com.pi4j.boardinfo.definition;
  * #L%
  */
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -174,13 +175,15 @@ public final class RevisionCode {
         if (revisionCode == null || revisionCode.isBlank()) {
             throw new IllegalArgumentException(("Revision code cannot be null or empty."));
         }
-        final String clean = revisionCode.trim().toUpperCase().replace("0X", "").replace(" ", "");
-        try {
-            int value = (int) Long.parseLong(clean, 16);
-            return of(value);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Revision code is not valid hex: " + revisionCode, e);
+        String clean = revisionCode.trim();
+        if (clean.startsWith("0X") || clean.startsWith("0x")) {
+            clean = clean.substring(2);
         }
+
+        if (clean.isEmpty() || clean.length() > 8 || !clean.matches("[0-9a-fA-F]+")) {
+            throw new IllegalArgumentException("Revision code is not valid 32-bit hex value: " + revisionCode);
+        }
+        return of((int) Long.parseLong(clean, 16));
     }
 
     /**
@@ -287,7 +290,7 @@ public final class RevisionCode {
 
         @Override
         public int[] getOldStyleRevisionCodes() {
-            return oldStyleRevisionCodes;
+            return Arrays.copyOf(oldStyleRevisionCodes, oldStyleRevisionCodes.length);
         }
     }
 
@@ -344,7 +347,7 @@ public final class RevisionCode {
 
         @Override
         public int[] getOldStyleRevisionCodes() {
-            return oldStyleRevisionCodes;
+            return Arrays.copyOf(oldStyleRevisionCodes, oldStyleRevisionCodes.length);
         }
     }
 
@@ -420,7 +423,7 @@ public final class RevisionCode {
 
         @Override
         public int[] getOldStyleRevisionCodes() {
-            return oldStyleRevisionCodes;
+            return Arrays.copyOf(oldStyleRevisionCodes, oldStyleRevisionCodes.length);
         }
     }
 

@@ -530,8 +530,7 @@ public enum BoardModel {
         try {
             RevisionCode revisionCode = RevisionCode.of(boardCode);
             BoardModel result = getByRevisionCode(revisionCode);
-            if (result != UNKNOWN)
-            {
+            if (result != UNKNOWN) {
                 return result;
             }
         } catch (IllegalArgumentException e) {
