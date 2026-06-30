@@ -445,13 +445,98 @@ public enum BoardModel {
     }
 
     /**
+     * Returns the {@link BoardModel} corresponding to the given {@link RevisionCode} by matching on the board type and,
+     * where necessary, the PCB revision or memory size.
+     *
+     * @param revisionCode the parsed revision code to identify
+     * @return the matching {@code BoardModel}, or {@code UNKNOWN} if the type is not recognized
+     */
+    public static BoardModel getByRevisionCode(RevisionCode revisionCode) {
+        switch (revisionCode.type()) {
+            case RPI_A:
+                return BoardModel.MODEL_1_A;
+            case RPI_B:
+            case RPI_ALPHA:
+                return BoardModel.MODEL_1_B;
+            case RPI_A_PLUS:
+                return BoardModel.MODEL_1_A_PLUS;
+            case RPI_B_PLUS:
+                return BoardModel.MODEL_1_B_PLUS;
+            case RPI_2B:
+                if (revisionCode.revision() < 2) {
+                    return BoardModel.MODEL_2_B;
+                } else {
+                    return BoardModel.MODEL_2_B_V1_2;
+                }
+            case RPI_CM1:
+                return BoardModel.COMPUTE_1;
+            case RPI_3B:
+                return BoardModel.MODEL_3_B;
+            case RPI_ZERO:
+                if (revisionCode.revision() < 3) {
+                    return BoardModel.ZERO_PCB_1_2;
+                } else {
+                    return BoardModel.ZERO_PCB_1_3;
+                }
+            case RPI_CM3:
+                return BoardModel.COMPUTE_3;
+            case RPI_ZERO_W:
+                return BoardModel.ZERO_W;
+            case RPI_3B_PLUS:
+                return BoardModel.MODEL_3_B_PLUS;
+            case RPI_3A_PLUS:
+                return BoardModel.MODEL_3_A_PLUS;
+            case RPI_CM3_PLUS:
+                return BoardModel.COMPUTE_3_PLUS;
+            case RPI_4B:
+                return BoardModel.MODEL_4_B;
+            case RPI_ZERO_2_W:
+            case RPI_CM0:
+                return BoardModel.ZERO_V2;
+            case RPI_400:
+                return BoardModel.MODEL_400;
+            case RPI_CM4:
+                return BoardModel.COMPUTE_4;
+            case RPI_CM4S:
+                return BoardModel.COMPUTE_4_SODIMM;
+            case RPI_5:
+                return BoardModel.MODEL_5_B;
+            case RPI_CM5:
+            case RPI_CM5_LITE:
+                return BoardModel.COMPUTE_5;
+            case RPI_500_500_PLUS:
+                if (RevisionCode.MemorySize.GB_16.equals(revisionCode.memorySize())) {
+                    return BoardModel.MODEL_500_PLUS;
+                } else {
+                    return BoardModel.MODEL_500;
+                }
+            default:
+                return UNKNOWN;
+        }
+    }
+
+    /**
      * Retrieves the board model corresponding to the given board code.
+     *
+     * <p>Where possible, identification is performed by decoding the structured fields of the revision code per the
+     * Raspberry Pi revision code specification. If the revision code cannot be parsed, falls back to direct string
+     * matching against known board codes.</p>
      *
      * @param boardCode the board code to look up
      * @return the matching {@code BoardModel} or {@code UNKNOWN} if no match is found
      * @throws Exception if multiple matches are found
      */
     public static BoardModel getByBoardCode(String boardCode) throws Exception {
+        try {
+            RevisionCode revisionCode = RevisionCode.of(boardCode);
+            BoardModel result = getByRevisionCode(revisionCode);
+            if (result != UNKNOWN) {
+                return result;
+            }
+        } catch (IllegalArgumentException e) {
+            // Not a valid revision code, fall through to legacy lookup.
+        }
+
         var matches = Arrays.stream(BoardModel.values())
             .filter(bm -> bm.boardCodes.contains(boardCode))
             .collect(Collectors.toList());
