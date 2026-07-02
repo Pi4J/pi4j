@@ -1,6 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.1.0 http://maven.apache.org/xsd/maven-4.1.0.xsd" root="true">
+    <modelVersion>4.1.0</modelVersion>
 
     <groupId>com.pi4j</groupId>
     <artifactId>pi4j-parent</artifactId>
@@ -125,6 +124,26 @@
                 <twitter>https://twitter.com/miragemiko</twitter>
             </properties>
         </contributor>
+        <contributor>
+            <name>Tiza Talla</name>
+            <url>https://github.com/Kurocifer</url>
+            <organization>Open Source Society Cameroon</organization>
+            <organizationUrl>https://osscameroon.com</organizationUrl>
+            <properties>
+                <linkedin>https://www.linkedin.com/in/kurocifer</linkedin>
+                <twitter>https://twitter.com/kurociferx</twitter>
+            </properties>
+        </contributor>
+        <contributor>
+            <name>Fanon Jupkwo</name>
+            <url>https://github.com/FanJups</url>
+            <organization>Open Source Society Cameroon</organization>
+            <organizationUrl>https://osscameroon.com</organizationUrl>
+            <properties>
+                <linkedin>https://www.linkedin.com/in/fanon-jupkwo</linkedin>
+                <twitter>https://twitter.com/fanjups</twitter>
+            </properties>
+        </contributor>
     </contributors>
 
     <!-- SOURCE CONTROL -->
@@ -171,12 +190,11 @@
     </repositories>
 
     <!-- PROJECT MODULES -->
-    <modules>
-        <!-- THE FOLLOWING ARE THE Pi4J MODULES -->
-        <module>pi4j-core</module>
-        <module>plugins/pi4j-plugin</module>
-        <module>pi4j-test</module>
-    </modules>
+    <subprojects>
+        <subproject>pi4j-core</subproject>
+        <subproject>plugins/pi4j-plugin</subproject>
+        <subproject>pi4j-test</subproject>
+    </subprojects>
 
     <!-- BUILD PROPERTIES -->
     <properties>
@@ -244,7 +262,7 @@
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
         <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
         <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
-        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
         <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
         <maven-gpg-plugin.version>3.2.1</maven-gpg-plugin.version>
