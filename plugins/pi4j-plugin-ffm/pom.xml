@@ -47,10 +47,10 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.14.0</version>
+                    <version>${maven-compiler-plugin.version}</version>
                     <configuration>
-                        <source>24</source>
-                        <target>24</target>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
                         <annotationProcessorPaths>
                             <annotationProcessorPath>
                                 <groupId>org.openjdk.jmh</groupId>
