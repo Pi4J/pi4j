@@ -1,4 +1,4 @@
-name: JMH Weekly run and report
+name: "JMH Weekly run and report"
 
 on:
   schedule:
@@ -24,7 +24,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: develop
+          ref: "main"
 
       - name: Check for new commits since last run
         id: check
@@ -41,7 +41,7 @@ jobs:
             echo "should_run=true" >> "$GITHUB_OUTPUT"
           elif [ "${HEAD_SHA#"$LAST"}" != "$HEAD_SHA" ]; then
             # HEAD_SHA starts with the stored short SHA -> same commit -> nothing new.
-            echo "No new commits on develop since last run ($LAST); skipping benchmarks."
+            echo "No new commits on main since last run ($LAST); skipping benchmarks."
             echo "should_run=false" >> "$GITHUB_OUTPUT"
           else
             echo "New commits since last run ($LAST -> $HEAD_SHA); benchmarks will run."

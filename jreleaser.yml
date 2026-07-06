@@ -1,0 +1,76 @@
+---
+# JReleaser configuration for pi4j
+# See https://jreleaser.org/guide/latest/index.html
+#
+# Environment variables required (set as GitHub Actions secrets):
+#   JRELEASER_GITHUB_TOKEN             – GitHub token (GITHUB_TOKEN is fine)
+#   JRELEASER_GPG_PASSPHRASE           – GPG key passphrase
+#   JRELEASER_GPG_SECRET_KEY           – ASCII-armored GPG secret key
+#   JRELEASER_GPG_PUBLIC_KEY           – ASCII-armored GPG public key
+#   JRELEASER_MAVENCENTRAL_USERNAME    – User Token username from central.sonatype.com/account
+#   JRELEASER_MAVENCENTRAL_TOKEN       – User Token password from central.sonatype.com/account
+
+project:
+  name: pi4j
+  description: Pi4J - Friendly GPIO Library for Single-Board Computers
+  longDescription: |
+    Pi4J is intended to provide a friendly object abstraction layer on top of
+    the low-level I/O capabilities of Raspberry Pi and other Linux-based Single-Board Computers.
+  authors:
+    - Pi4J Contributors
+  license: APACHE-2.0
+  links:
+    homepage: https://github.com/Pi4J/pi4j
+    documentation: https://pi4j.com
+  java:
+    groupId: com.pi4j
+    artifactId: pi4j-parent
+    # version is read automatically from Maven's ${project.version}
+    multiProject: true
+
+# ── Signing ──────────────────────────────────────────────────────────────────
+# JReleaser signs every artifact with the GPG key provided via env vars.
+signing:
+  active: ALWAYS
+  armored: true
+  # JRELEASER_GPG_PASSPHRASE, JRELEASER_GPG_SECRET_KEY, JRELEASER_GPG_PUBLIC_KEY
+
+# ── Release (GitHub) ─────────────────────────────────────────────────────────
+release:
+  github:
+    # Repo details are inferred from git remote; override if needed:
+    # owner: Pi4J
+    # name: pi4j
+    tagName: "{{projectVersion}}"
+    releaseName: "{{projectVersion}}"
+    overwrite: false          # fail if the tag already exists (prevents accidental re-release)
+    draft: false
+    prerelease:
+      enabled: false
+    changelog:
+      formatted: ALWAYS
+      preset: conventional-commits
+      contributors:
+        format: "- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}"
+      hide:
+        uncategorized: true
+    milestone:
+      close: false
+    # JRELEASER_GITHUB_TOKEN
+
+# ── Deploy to Maven Central Portal (modern API) ───────────────────────────────
+deploy:
+  maven:
+    mavenCentral:
+      sonatype:
+        active: ALWAYS
+        url: https://central.sonatype.com/api/v1/publisher
+        # Local staging directory populated by:
+        #   ./mvnw -Prelease -DskipTests
+        #          -DaltDeploymentRepository=local::file:./target/staging-deploy
+        #          deploy
+        stagingRepositories:
+          - target/staging-deploy
+        retryDelay: 20
+        maxRetries: 60
+        # JRELEASER_MAVENCENTRAL_USERNAME / JRELEASER_MAVENCENTRAL_TOKEN

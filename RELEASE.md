@@ -5,10 +5,10 @@
 To release pi4j use the following:
 
 ```shell
-MVN_PROFILES=-P\!default ./autoReleaseBranch minor develop release/<version>
+MVN_PROFILES=-P\!default ./autoReleaseBranch minor main release/<version>
 ```
 
-this merges the `develop` branch into `release/<version>`, increments the current tag on the `release/<version>`
+this merges the `main` branch into `release/<version>`, increments the current tag on the `release/<version>`
 branch and then builds it locally. It uses `mvn versions:set` to set the version, and after the version is set, 
 does a test build to make sure all dependencies are really there.
 
