@@ -1,0 +1,42 @@
+{
+  "title": "Pi4J FFM \u2014 JMH Performance Benchmarks",
+  "generated": "2026-06-11T13:18:00.386452+00:00",
+  "runs": [
+    {
+      "file": "jmh-2026-05-04.json",
+      "date": "2026-05-04T02:00:00+00:00",
+      "commit": "ab0acd4",
+      "label": "Weekly run 2026-05-04"
+    },
+    {
+      "file": "jmh-2026-05-11.json",
+      "date": "2026-05-11T02:00:00+00:00",
+      "commit": "edecb07",
+      "label": "Weekly run 2026-05-11"
+    },
+    {
+      "file": "jmh-2026-05-18.json",
+      "date": "2026-05-18T02:00:00+00:00",
+      "commit": "7888d2c",
+      "label": "Weekly run 2026-05-18"
+    },
+    {
+      "file": "jmh-2026-05-25.json",
+      "date": "2026-05-25T02:00:00+00:00",
+      "commit": "9f68286",
+      "label": "Weekly run 2026-05-25"
+    },
+    {
+      "file": "jmh-2026-06-01.json",
+      "date": "2026-06-01T02:00:00+00:00",
+      "commit": "923e4c6",
+      "label": "Weekly run 2026-06-01"
+    },
+    {
+      "file": "jmh-2026-06-08.json",
+      "date": "2026-06-08T02:00:00+00:00",
+      "commit": "5f1c0aa",
+      "label": "Weekly run 2026-06-08"
+    }
+  ]
+}

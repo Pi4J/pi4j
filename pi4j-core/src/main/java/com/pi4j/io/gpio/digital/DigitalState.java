@@ -2,42 +2,18 @@ package com.pi4j.io.gpio.digital;
 
 import java.util.EnumSet;
 
-/*
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  DigitalState.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 /**
- * Digital State Enumerations
- *
- * @author Robert Savage (<a
- *         href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * Enumerates the logical states of a digital GPIO pin used throughout the digital I/O API, for example by
+ * {@link DigitalOutput} and {@link DigitalStateChangeEvent}. Provides helpers to convert to and from numeric,
+ * boolean and string representations and to compute the inverse state.
  */
 public enum DigitalState {
 
+    /** Indeterminate or not-yet-known state; backed by the numeric value {@code -1}. */
     UNKNOWN(-1, "UNKNOWN"),
+    /** The logic-low (off / 0 V) state; backed by the numeric value {@code 0}. */
     LOW(0, "LOW"),
+    /** The logic-high (on) state; backed by the numeric value {@code 1}. */
     HIGH(1, "HIGH");
 
     private final Integer value;
@@ -49,154 +25,154 @@ public enum DigitalState {
     }
 
     /**
-     * <p>isHigh.</p>
+     * Returns whether this state is {@link #HIGH}.
      *
-     * @return a boolean.
+     * @return {@code true} if this state is {@link #HIGH}
      */
     public boolean isHigh() {
         return (this == HIGH);
     }
 
     /**
-     * <p>isLow.</p>
+     * Returns whether this state is {@link #LOW}.
      *
-     * @return a boolean.
+     * @return {@code true} if this state is {@link #LOW}
      */
     public boolean isLow() {
         return (this == LOW);
     }
 
     /**
-     * <p>value.</p>
+     * Returns the numeric representation of this state.
      *
-     * @return a {@link java.lang.Number} object.
+     * @return the numeric value ({@code -1}, {@code 0} or {@code 1})
      */
     public Number value() {
         return getValue();
     }
 
     /**
-     * <p>Getter for the field <code>value</code>.</p>
+     * Returns the numeric representation of this state.
      *
-     * @return a {@link java.lang.Number} object.
+     * @return the numeric value ({@code -1}, {@code 0} or {@code 1})
      */
     public Number getValue() {
         return value;
     }
 
     /**
-     * <p>Getter for the field <code>name</code>.</p>
+     * Returns the display name of this state ({@code "UNKNOWN"}, {@code "LOW"} or {@code "HIGH"}).
      *
-     * @return a {@link java.lang.String} object.
+     * @return the state name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * <p>equals.</p>
+     * Compares this state to another for equality.
      *
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @return a boolean.
+     * @param state the state to compare against
+     * @return {@code true} if they are the same state
      */
     public boolean equals(DigitalState state) {
         return this == state;
     }
     /**
-     * <p>equals.</p>
+     * Compares this state to the state represented by a numeric value.
      *
-     * @param state a {@link java.lang.Number} object.
-     * @return a boolean.
+     * @param state the numeric value to interpret via {@link #getState(Number)}
+     * @return {@code true} if this state matches the interpreted state
      */
     public boolean equals(Number state) {
         return this == DigitalState.getState(state);
     }
     /**
-     * <p>equals.</p>
+     * Compares this state to a boolean, where {@code true} maps to {@link #HIGH} and {@code false} to
+     * {@link #LOW}.
      *
-     * @param state a boolean.
-     * @return a boolean.
+     * @param state the boolean value to interpret
+     * @return {@code true} if this state matches the interpreted state
      */
     public boolean equals(boolean state) {
         return this == DigitalState.getState(state);
     }
     /**
-     * <p>equals.</p>
+     * Compares this state to the state represented by a numeric value.
      *
-     * @param state a byte.
-     * @return a boolean.
+     * @param state the numeric value to interpret via {@link #getState(Number)}
+     * @return {@code true} if this state matches the interpreted state
      */
     public boolean equals(byte state){
         return equals(DigitalState.getState(state));
     }
     /**
-     * <p>equals.</p>
+     * Compares this state to the state represented by a numeric value.
      *
-     * @param state a short.
-     * @return a boolean.
+     * @param state the numeric value to interpret via {@link #getState(Number)}
+     * @return {@code true} if this state matches the interpreted state
      */
     public boolean equals(short state){
         return equals(DigitalState.getState(state));
     }
     /**
-     * <p>equals.</p>
+     * Compares this state to the state represented by a numeric value.
      *
-     * @param state a int.
-     * @return a boolean.
+     * @param state the numeric value to interpret via {@link #getState(Number)}
+     * @return {@code true} if this state matches the interpreted state
      */
     public boolean equals(int state){
         return equals(DigitalState.getState(state));
     }
     /**
-     * <p>equals.</p>
+     * Compares this state to the state represented by a numeric value.
      *
-     * @param state a long.
-     * @return a boolean.
+     * @param state the numeric value to interpret via {@link #getState(Number)}
+     * @return {@code true} if this state matches the interpreted state
      */
     public boolean equals(long state){
         return equals(DigitalState.getState(state));
     }
     /**
-     * <p>equals.</p>
+     * Compares this state to the state represented by a numeric value.
      *
-     * @param state a float.
-     * @return a boolean.
+     * @param state the numeric value to interpret via {@link #getState(Number)}
+     * @return {@code true} if this state matches the interpreted state
      */
     public boolean equals(float state){
         return equals(DigitalState.getState(state));
     }
     /**
-     * <p>equals.</p>
+     * Compares this state to the state represented by a numeric value.
      *
-     * @param state a double.
-     * @return a boolean.
+     * @param state the numeric value to interpret via {@link #getState(Number)}
+     * @return {@code true} if this state matches the interpreted state
      */
     public boolean equals(double state){
         return equals(DigitalState.getState(state));
     }
 
 
-    /** {@inheritDoc} */
     @Override
     public String toString() {
         return name;
     }
 
     /**
-     * <p>state.</p>
+     * Returns the {@link DigitalState} corresponding to the given numeric value.
      *
-     * @param state a {@link java.lang.Number} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalState} object.
+     * @param state the numeric value to map (e.g. {@code 0}, {@code 1})
+     * @return the matching state, or {@code null} if no state has the given value
      */
     public static DigitalState state(Number state) {
         return getState(state);
     }
 
     /**
-     * <p>getState.</p>
+     * Returns the {@link DigitalState} corresponding to the given numeric value, matching on the integer part.
      *
-     * @param state a {@link java.lang.Number} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalState} object.
+     * @param state the numeric value to map (e.g. {@code 0}, {@code 1})
+     * @return the matching state, or {@code null} if no state has the given value
      */
     public static DigitalState getState(Number state) {
         for (var item : DigitalState.values()) {
@@ -208,58 +184,59 @@ public enum DigitalState {
     }
 
     /**
-     * <p>inverseState.</p>
+     * Returns the opposite of the given state.
      *
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalState} object.
+     * @param state the state to invert
+     * @return {@link #LOW} when given {@link #HIGH}, otherwise {@link #HIGH}
      */
     public static DigitalState inverseState(DigitalState state) {
         return getInverseState(state);
     }
 
     /**
-     * <p>getInverseState.</p>
+     * Returns the opposite of the given state.
      *
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalState} object.
+     * @param state the state to invert
+     * @return {@link #LOW} when given {@link #HIGH}, otherwise {@link #HIGH}
      */
     public static DigitalState getInverseState(DigitalState state) {
         return (state == HIGH ? LOW : HIGH);
     }
 
     /**
-     * <p>getState.</p>
+     * Maps a boolean to a digital state.
      *
-     * @param state a boolean.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalState} object.
+     * @param state the boolean value, where {@code true} is high
+     * @return {@link #HIGH} if {@code state} is {@code true}, otherwise {@link #LOW}
      */
     public static DigitalState getState(boolean state) {
         return (state ? DigitalState.HIGH : DigitalState.LOW);
     }
 
     /**
-     * <p>allStates.</p>
+     * Returns all defined digital states, including {@link #UNKNOWN}.
      *
-     * @return an array of {@link com.pi4j.io.gpio.digital.DigitalState} objects.
+     * @return an array of every {@link DigitalState} value
      */
     public static DigitalState[] allStates() {
         return DigitalState.values();
     }
 
     /**
-     * <p>all.</p>
+     * Returns the set of actionable digital states, excluding {@link #UNKNOWN}.
      *
-     * @return a {@link java.util.EnumSet} object.
+     * @return an {@link EnumSet} containing {@link #HIGH} and {@link #LOW}
      */
     public static EnumSet<DigitalState> all() {
         return EnumSet.of(DigitalState.HIGH, DigitalState.LOW);
     }
 
     /**
-     * <p>parse.</p>
+     * Parses a textual representation into a digital state, accepting {@code "0"}/{@code "1"} and strings
+     * starting with {@code l}/{@code h} (case-insensitive).
      *
-     * @param state a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalState} object.
+     * @param state the text to parse
+     * @return the parsed state, or {@link #UNKNOWN} if it cannot be recognized
      */
     public static DigitalState parse(String state) {
         if(state.equalsIgnoreCase("0")) return DigitalState.LOW;

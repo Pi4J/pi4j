@@ -1,50 +1,25 @@
 package com.pi4j.plugin.mock.provider.gpio.digital;
 
-/*
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: PLUGIN   :: Mock Platform & Providers
- * FILENAME      :  MockDigitalInputProvider.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Lesser Public License for more details.
- *
- * You should have received a copy of the GNU General Lesser Public
- * License along with this program.  If not, see
- * <http://www.gnu.org/licenses/lgpl-3.0.html>.
- * #L%
- */
-
 import com.pi4j.io.gpio.digital.DigitalInputProvider;
 import com.pi4j.plugin.mock.Mock;
 
 /**
- * <p>MockDigitalInputProvider interface.</p>
+ * Mock implementation of the pi4j-core {@link DigitalInputProvider} contract. This provider
+ * creates {@link MockDigitalInput} instances backed by in-memory state instead of real GPIO
+ * hardware, allowing digital-input code to be exercised in unit tests.
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * @see MockDigitalInput
  */
 public interface MockDigitalInputProvider extends DigitalInputProvider {
-    /** Constant <code>NAME="Mock.DIGITAL_INPUT_PROVIDER_NAME"</code> */
+    /** Unique provider name, as defined by {@link Mock#DIGITAL_INPUT_PROVIDER_NAME}. */
     String NAME = Mock.DIGITAL_INPUT_PROVIDER_NAME;
-    /** Constant <code>ID="Mock.DIGITAL_INPUT_PROVIDER_ID"</code> */
+    /** Unique provider identifier, as defined by {@link Mock#DIGITAL_INPUT_PROVIDER_ID}. */
     String ID = Mock.DIGITAL_INPUT_PROVIDER_ID;
+
     /**
-     * <p>newInstance.</p>
+     * Creates a new mock digital input provider instance.
      *
-     * @return a {@link com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalInputProvider} object.
+     * @return a new {@link MockDigitalInputProvider} backed by {@link MockDigitalInputProviderImpl}
      */
     static MockDigitalInputProvider newInstance() {
         return new MockDigitalInputProviderImpl();

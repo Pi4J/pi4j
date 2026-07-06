@@ -1,22 +1,22 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.pi4j</groupId>
-	<artifactId>pi4j-parent</artifactId>
-    <version>2.7.0-SNAPSHOT</version>
-	<name>Pi4J :: Parent POM</name>
-	<description>Parent Maven POM for the Pi4J Project</description>
-	<url>https://v2.pi4j.com</url>
-	<inceptionYear>2012</inceptionYear>
-	<packaging>pom</packaging>
+<project xmlns="http://maven.apache.org/POM/4.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.1.0 http://maven.apache.org/xsd/maven-4.1.0.xsd" root="true">
+    <modelVersion>4.1.0</modelVersion>
 
-	<!-- ORGANIZATION -->
-	<organization>
-		<name>Pi4J</name>
-		<url>https://v2.pi4j.com</url>
-	</organization>
+    <groupId>com.pi4j</groupId>
+    <artifactId>pi4j-parent</artifactId>
+    <version>5.0.0-SNAPSHOT</version>
+    <name>Pi4J :: Parent POM</name>
+    <description>Parent Maven POM for the Pi4J Project</description>
+    <url>https://pi4j.com</url>
+    <inceptionYear>2012</inceptionYear>
+    <packaging>pom</packaging>
 
-	<!-- LICENSE -->
+    <!-- ORGANIZATION -->
+    <organization>
+        <name>Pi4J</name>
+        <url>https://pi4j.com</url>
+    </organization>
+
+    <!-- LICENSE -->
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -26,25 +26,25 @@
         </license>
     </licenses>
 
-	<!-- DEVELOPERS/CONTRIBUTORS -->
-	<developers>
-		<developer>
-			<name>Robert Savage</name>
-			<email>robert@pi4j.com</email>
-			<url>http://robertsavage.me</url>
+    <!-- DEVELOPERS/CONTRIBUTORS -->
+    <developers>
+        <developer>
+            <name>Robert Savage</name>
+            <email>robert@pi4j.com</email>
+            <url>http://robertsavage.me</url>
             <organization>Savage Software</organization>
-			<organizationUrl>http://savagesoftware.com</organizationUrl>
+            <organizationUrl>http://savagesoftware.com</organizationUrl>
             <properties>
                 <blog>http://savagehomeautomation.com</blog>
                 <linikedin>https://www.linkedin.com/in/robert-savage</linikedin>
                 <twitter>https://twitter.com/savageautomate</twitter>
             </properties>
-			<roles>
-				<role>sponsor</role>
-				<role>architect</role>
-				<role>developer</role>
-			</roles>
-		</developer>
+            <roles>
+                <role>sponsor</role>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+        </developer>
         <developer>
             <name>Daniel Sendula</name>
             <email>daniel@pi4j.com</email>
@@ -58,24 +58,26 @@
             <url>https://webtechie.be</url>
             <properties>
                 <blog>https://webtechie.be</blog>
-                <linikedin>https://www.linkedin.com/in/frankdelporte/</linikedin>
-                <twitter>https://twitter.com/FrankDelporte</twitter>
+                <linkedin>https://www.linkedin.com/in/frankdelporte/</linkedin>
+                <mastodon>https://foojay.social/@frankdelporte</mastodon>
+                <bluesky>https://bsky.app/profile/frankdelporte.be</bluesky>
             </properties>
             <roles>
                 <role>facilitator</role>
                 <role>developer</role>
             </roles>
+            <timezone>+1</timezone>
         </developer>
-		<developer>
-			<id>eitch</id>
-			<name>Robert von Burg</name>
-			<email>eitch@eitchnet.ch</email>
-			<url>http://strolch.li</url>
-			<roles>
-				<role>developer</role>
-			</roles>
-			<timezone>+1</timezone>
-		</developer>
+        <developer>
+            <id>eitch</id>
+            <name>Robert von Burg</name>
+            <email>eitch@eitchnet.ch</email>
+            <url>http://strolch.li</url>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
         <developer>
             <id>alex9849</id>
             <name>Alexander Liggesmeyer</name>
@@ -85,7 +87,22 @@
             </roles>
             <timezone>+1</timezone>
         </developer>
-	</developers>
+        <developer>
+            <id>taartspi</id>
+            <name>Tom Aarts</name>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>DigitalSmile</id>
+            <name>Nick Gritsenko</name>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
     <contributors>
         <contributor>
             <name>Marcus Hirt</name>
@@ -107,35 +124,55 @@
                 <twitter>https://twitter.com/miragemiko</twitter>
             </properties>
         </contributor>
+        <contributor>
+            <name>Tiza Talla</name>
+            <url>https://github.com/Kurocifer</url>
+            <organization>Open Source Society Cameroon</organization>
+            <organizationUrl>https://osscameroon.com</organizationUrl>
+            <properties>
+                <linkedin>https://www.linkedin.com/in/kurocifer</linkedin>
+                <twitter>https://twitter.com/kurociferx</twitter>
+            </properties>
+        </contributor>
+        <contributor>
+            <name>Fanon Jupkwo</name>
+            <url>https://github.com/FanJups</url>
+            <organization>Open Source Society Cameroon</organization>
+            <organizationUrl>https://osscameroon.com</organizationUrl>
+            <properties>
+                <linkedin>https://www.linkedin.com/in/fanon-jupkwo</linkedin>
+                <twitter>https://twitter.com/fanjups</twitter>
+            </properties>
+        </contributor>
     </contributors>
 
-	<!-- SOURCE CONTROL -->
-	<scm>
-		<developerConnection>scm:git:ssh://git@github.com/Pi4J/pi4j-v2.git</developerConnection>
-		<connection>scm:git:ssh://git@github.com/Pi4J/pi4j-v2.git</connection>
-		<url>https://github.com/Pi4J/pi4j-v2.git</url>
-	</scm>
+    <!-- SOURCE CONTROL -->
+    <scm>
+        <developerConnection>scm:git:ssh://git@github.com/Pi4J/pi4j.git</developerConnection>
+        <connection>scm:git:ssh://git@github.com/Pi4J/pi4j.git</connection>
+        <url>https://github.com/Pi4J/pi4j.git</url>
+    </scm>
 
-	<!-- ISSUE MANAGEMENT -->
-	<issueManagement>
-		<url>https://github.com/Pi4J/pi4j-v2/issues</url>
-		<system>github</system>
-	</issueManagement>
+    <!-- ISSUE MANAGEMENT -->
+    <issueManagement>
+        <url>https://github.com/Pi4J/pi4j/issues</url>
+        <system>github</system>
+    </issueManagement>
 
-	<!-- DISTRIBUTION REPOSITORIES -->
-	<distributionManagement>
-		<downloadUrl>https://pi4j.com/download</downloadUrl>
-		<repository>
-			<id>sonatype-oss-staging</id>
-			<name>Sonatype Open Source Maven Repository</name>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-		</repository>
-		<snapshotRepository>
-			<id>sonatype-oss-snapshots</id>
-			<name>Sonatype Open Source Maven Snapshots Repository</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-	</distributionManagement>
+    <!-- DISTRIBUTION REPOSITORIES -->
+    <distributionManagement>
+        <downloadUrl>https://pi4j.com/download</downloadUrl>
+        <repository>
+            <id>sonatype-oss-staging</id>
+            <name>Sonatype Open Source Maven Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
+        <snapshotRepository>
+            <id>sonatype-oss-snapshots</id>
+            <name>Sonatype Open Source Maven Snapshots Repository</name>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <!-- DEPENDENCY REPOSITORIES -->
     <repositories>
@@ -152,66 +189,16 @@
         </repository>
     </repositories>
 
-	<!-- PROJECT MODULES -->
-	<modules>
-        <!-- THE FOLLOWING MODULES ARE V2 -->
-        <module>libraries/pi4j-library</module>
-        <module>pi4j-core</module>
-        <module>plugins/pi4j-plugin</module>
-        <module>pi4j-test</module>
-        <module>pi4j-distribution</module>
-    </modules>
+    <!-- PROJECT MODULES -->
+    <subprojects>
+        <subproject>pi4j-core</subproject>
+        <subproject>plugins/pi4j-plugin</subproject>
+        <subproject>pi4j-test</subproject>
+    </subprojects>
 
-	<!-- BUILD PROPERTIES -->
-	<properties>
-        <!-- =================================================================== -->
-        <!-- SELECT THE PROPER COMPILER OPTION FOR THE NATIVE LIBRARY BUILDS     -->
-        <!-- The supported options are:                                          -->
-        <!--    "CROSS-COMPILER"  for cross-compiling on your host with a cross  -->
-        <!--                      compiler environment setup for 64-bit (aarch64)-->
-        <!--                      and 32-bit (armhf) platforms.  The host must   -->
-        <!--                      be a Linux-based system with an Intel/AMD or   -->
-        <!--                      ARM 64-bit CPU and Operating System.  The host -->
-        <!--                      can be a RaspberryPi 3B or 4B that is running  -->
-        <!--                      Pi OS 64-bit. (Unable to cross-compile for     -->
-        <!--                      64-bit library on 32-bit only hosts.)          -->
-        <!--                      [THIS IS THE DEFAULT IF NOT SPECIFIED]         -->
-        <!--                                                                     -->
-        <!--    "DOCKER-COMPILER" for cross-compiling inside a Docker container  -->
-        <!--                      best option when compiling on MacOS or Windows -->
-        <!--                      This option is also suitable for a Linux-based -->
-        <!--                      system where you would prefer not to install   -->
-        <!--                      ARM-based cross-compilers and other build      -->
-        <!--                      environment requirements like Java/JDK and     -->
-        <!--                      Maven.  This open only requires that you have  -->
-        <!--                      Docker (https://www.docker.com/) or Docker     -->
-        <!--                      Desktop installed and running on a 64-bit      -->
-        <!--                      Intel/AMD or ARM host system.                  -->
-        <!--                                                                     -->
-        <!-- (Note: you should override these options in a custom active profile -->
-        <!--        in your local M2 settings.xml file or use one of the         -->
-        <!--        associated profiles with the '-P' flag.  -->
-        <!-- =================================================================== -->
-
-        <!-- YOU CAN DEFINE ONE OF THE FOLLOWING YOU A CUSTOM ACTIVE PROFILE
-             IN YOU ~/.m2/settings.xml file TO PERMANENTLY APPLY THE DESIRED
-             COMPILER BEHAVIOR -->
-        <!-- <pi4j.native.compiler>CROSS-COMPILER</pi4j.native.compiler> -->
-        <!-- <pi4j.native.compiler>DOCKER-COMPILER</pi4j.native.compiler> -->
-
-        <!-- OR YOU CAN DEFINE THE PROPERTY VALUE USING THE '-D' FLAG ON YOUR MAVEN COMMAND -->
-        <!-- i.e.:   mvn clean install -Pnative -Dpi4j.native.compiler=CROSS-COMPILER -->
-        <!-- i.e.:   mvn clean install -Pnative -Dpi4j.native.compiler=DOCKER-COMPILER -->
-
-        <!-- OR YOU CAN DEFINE THE ASSOCIATED PROFILE VALUE USING THE '-P' FLAG ON YOUR MAVEN COMMAND -->
-        <!-- i.e.:   mvn clean install -Pnative -Pcross-compile -->
-        <!-- i.e.:   mvn clean install -Pnative -Pdocker -->
-
-        <!-- used internally; do not change value here -->
-        <!-- BY DEFAULT, ENABLE THE 'CROSS-COMPILER' FOR NATIVE BUILDS -->
-        <pi4j.native.compiler.effective>CROSS-COMPILER</pi4j.native.compiler.effective>
-
-        <!-- DEFAULT SETTINGS FOR REMOTELY BUILDING NATIVE LIBRARY ON A REMOTE PLATFORM -->
+    <!-- BUILD PROPERTIES -->
+    <properties>
+        <!-- DEFAULT SETTINGS FOR REMOTELY BUILDING ON A REMOTE PLATFORM -->
         <pi4j.default.host>192.168.1.1</pi4j.default.host>
         <pi4j.default.port>22</pi4j.default.port>
         <pi4j.default.user>pi</pi4j.default.user>
@@ -249,44 +236,45 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- JAVA COMPILER VERSIONS -->
-        <java.version>11</java.version>
+        <java.version>25</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <!-- DEPENDENCY VERSIONS -->
         <!--
-        Seems we are stuck at this version of ant-contrib. Bumping it leads to:
+        It seems we are stuck at this version of ant-contrib. Bumping it leads to:
         Error executing Ant tasks: 'org.apache.tools.ant.util.FileUtils
         org.apache.tools.ant.util.FileUtils.getFileUtils()
         -->
         <ant-contrib.version>20020829</ant-contrib.version>
-        <ant-jsch.version>1.10.8</ant-jsch.version>
+        <ant-jsch.version>1.10.15</ant-jsch.version>
+        <jna.version>5.16.0</jna.version>
         <jsch.version>0.1.55</jsch.version>
-        <junit.jupiter.version>5.10.2</junit.jupiter.version>
-        <slf4j.version>2.0.12</slf4j.version>
-        <jserialcomm.version>2.10.4</jserialcomm.version>
+        <junit.jupiter.version>5.12.1</junit.jupiter.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <jna.version>5.15.0</jna.version>
 
         <!-- PLUGIN VERSIONS -->
-        <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
-        <exec-maven-plugin.version>3.2.0</exec-maven-plugin.version>
+        <build-helper-maven-plugin.version>3.6.0</build-helper-maven-plugin.version>
+        <exec-maven-plugin.version>3.5.0</exec-maven-plugin.version>
         <jdeb.version>1.8</jdeb.version>
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
         <maven-antrun-plugin.version>3.1.0</maven-antrun-plugin.version>
-        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
-        <maven-bundle-plugin.version>5.1.2</maven-bundle-plugin.version>
-        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-        <maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
+        <maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
+        <maven-bundle-plugin.version>5.1.9</maven-bundle-plugin.version>
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
+        <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
         <maven-gpg-plugin.version>3.2.1</maven-gpg-plugin.version>
-        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
-        <maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
-        <maven-release-plugin.version>3.0.0-M4</maven-release-plugin.version>
-        <maven-resource-plugin.version>3.2.0</maven-resource-plugin.version>
-        <maven-scm-plugin.version>1.11.2</maven-scm-plugin.version>
-        <maven-site-plugin.version>3.9.1</maven-site-plugin.version>
-        <maven-source-plugin.version>3.2.0</maven-source-plugin.version>
-        <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
-        <native-maven-plugin.version>1.0-alpha-9</native-maven-plugin.version>
-        <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
+        <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
+        <maven-javadoc-plugin.version>3.11.1</maven-javadoc-plugin.version>
+        <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
+        <maven-resource-plugin.version>3.3.1</maven-resource-plugin.version>
+        <maven-scm-plugin.version>2.1.0</maven-scm-plugin.version>
+        <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
+        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+        <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
+        <central-publishing-maven-plugin.version>0.9.0</central-publishing-maven-plugin.version>
 
         <!-- REPORTS VERSIONS -->
         <maven-project-info-reports-plugin.version>3.5.0</maven-project-info-reports-plugin.version>
@@ -302,7 +290,7 @@
         <gpg.keyname>${pi4j.gpg.key}</gpg.keyname>
 
         <!-- Project Properties -->
-        <launcher.class>com.pi4j.test/com.pi4j.test.GpiodTest</launcher.class>
+        <launcher.class>com.pi4j.test/com.pi4j.test.Main</launcher.class>
         <launcher.args></launcher.args>
         <!-- <launcher.args>ButtonApp</launcher.args>  -->
 
@@ -313,7 +301,7 @@
         <raspberrypi.password>raspberry</raspberrypi.password>
         <raspberrypi.deploydirectory>/home/pi/deploy</raspberrypi.deploydirectory>
         <raspberrypi.jvmOptions/>
-	</properties>
+    </properties>
 
     <!-- PROJECT DEPENDENCIES -->
     <dependencyManagement>
@@ -360,7 +348,12 @@
                 <version>${junit.jupiter.version}</version>
                 <scope>test</scope>
             </dependency>
-
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit.jupiter.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -380,12 +373,6 @@
 
         <!-- TEST DEPENDENCIES -->
         <dependency>
-            <groupId>com.fazecast</groupId>
-            <artifactId>jSerialComm</artifactId>
-            <version>${jserialcomm.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
@@ -395,24 +382,28 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
-	<!-- BUILD INSTRUCTIONS -->
-	<build>
+    <!-- BUILD INSTRUCTIONS -->
+    <build>
 
         <!-- GLOBAL PROJECT RESOURCES -->
-		<resources>
-			<resource>
-				<directory>${basedir}</directory>
-				<filtering>false</filtering>
-				<includes>
-					<include>LICENSE.txt</include>
-					<include>NOTICE.txt</include>
-					<include>README.md</include>
-				</includes>
-			</resource>
-		</resources>
+        <resources>
+            <resource>
+                <directory>${basedir}</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>LICENSE.txt</include>
+                    <include>NOTICE.txt</include>
+                    <include>README.md</include>
+                </includes>
+            </resource>
+        </resources>
 
         <!-- PLUGIN MANAGEMENT -->
         <pluginManagement>
@@ -450,6 +441,7 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
+                        <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory"/>
                         <excludes>
                             <exclude>**/*UsingTestHarness.java</exclude>
                         </excludes>
@@ -501,6 +493,14 @@
                             </goals>
                         </execution>
                     </executions>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <detectJavaApiLink>false</detectJavaApiLink>
+                        <doclint>none</doclint>
+                        <!-- Optional: skip errors -->
+                        <failOnError>false</failOnError>
+                        <additionalOptions>-Xdoclint:none</additionalOptions>
+                    </configuration>
                 </plugin>
 
                 <!-- DOWNLOAD LICENSE, README & NOTICE ARTIFACTS -->
@@ -591,13 +591,6 @@
                     <extensions>true</extensions>
                 </plugin>
 
-                <!-- USED TO GENERATE HEADER FILES FOR NATIVE LIBS -->
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>native-maven-plugin</artifactId>
-                    <version>${native-maven-plugin.version}</version>
-                </plugin>
-
                 <!-- GENERATE SITE DOCUMENTATION -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -668,90 +661,30 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.0.0-M2</version>
-                </plugin>
-
-                <!-- Deploy to Maven plugin -->
-                <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>${nexus-staging-maven-plugin.version}</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <serverId>oss.sonatype.org</serverId>
-                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>deploy-to-sonatype</id>
-                            <phase>deploy</phase>
-                            <goals>
-                                <goal>deploy</goal>
-                                <goal>release</goal>
-                            </goals>
-                        </execution>
-                    </executions>
+                    <version>3.5.0</version>
                 </plugin>
 
             </plugins>
         </pluginManagement>
 
         <!-- GLOBAL BUILD PLUGINS (used when building all modules) -->
-		<plugins>
-			<!-- USE LATEST SCM PLUGIN TO SUPPORT GIT -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-scm-plugin</artifactId>
-				<configuration>
-					<goals>install</goals>
-				</configuration>
-			</plugin>
-
-			<!-- ATTACH LICENSE AS ARTIFACT -->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-artifacts</id>
-						<phase>package</phase>
-						<goals>
-							<goal>attach-artifact</goal>
-						</goals>
-						<configuration>
-							<artifacts>
-								<artifact>
-									<file>${basedir}/LICENSE.txt</file>
-									<type>txt</type>
-									<classifier>license</classifier>
-								</artifact>
-								<artifact>
-									<file>${basedir}/NOTICE.txt</file>
-									<type>txt</type>
-									<classifier>notice</classifier>
-								</artifact>
-								<artifact>
-									<file>${basedir}/README.md</file>
-									<type>md</type>
-									<classifier>readme</classifier>
-								</artifact>
-							</artifacts>
-						</configuration>
-					</execution>
-				</executions>
-				<inherited>false</inherited>
-			</plugin>
+        <plugins>
+            <!-- SPECIFY MINIMAL MAVEN VERSION -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.5.0</version>
                 <executions>
                     <execution>
-                        <id>enforce-java</id>
+                        <id>enforce-maven</id>
                         <goals>
                             <goal>enforce</goal>
                         </goals>
                         <configuration>
                             <rules>
+                                <requireMavenVersion>
+                                    <version>[3.9,)</version>
+                                </requireMavenVersion>
                                 <requireJavaVersion>
                                     <version>${java.version}</version>
                                 </requireJavaVersion>
@@ -760,9 +693,86 @@
                     </execution>
                 </executions>
             </plugin>
-		</plugins>
-	</build>
 
+            <!-- USE LATEST SCM PLUGIN TO SUPPORT GIT -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <configuration>
+                    <goals>install</goals>
+                </configuration>
+            </plugin>
+
+            <!-- ATTACH LICENSE AS ARTIFACT -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${basedir}/LICENSE.txt</file>
+                                    <type>txt</type>
+                                    <classifier>license</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>${basedir}/NOTICE.txt</file>
+                                    <type>txt</type>
+                                    <classifier>notice</classifier>
+                                </artifact>
+                                <artifact>
+                                    <file>${basedir}/README.md</file>
+                                    <type>md</type>
+                                    <classifier>readme</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+                <inherited>false</inherited>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven-checkstyle-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>checkstyle-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>validate</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <failsOnError>true</failsOnError>
+                    <configLocation>config/checkstyle/checkstyle.xml</configLocation>
+                    <excludes>**/module-info.java</excludes>
+                    <outputFileFormat>plain</outputFileFormat>
+                    <consoleOutput>true</consoleOutput>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>${central-publishing-maven-plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
     <reporting>
         <plugins>
             <plugin>
@@ -900,71 +910,6 @@
             </build>
         </profile>
 
-        <!-- BUILD NATIVE SOURCES -->
-        <profile>
-            <id>native</id>
-            <activation>
-                <property>
-                    <name>release-build</name>
-                </property>
-            </activation>
-            <properties/>
-        </profile>
-
-        <!-- SPECIAL PROFILE TO ENABLE DOCKER-COMPILER NATIVE BUILDS BY DEFAULT IF RUNNING ON MACOS -->
-        <profile>
-            <id>mac</id>
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
-            <properties>
-                <pi4j.native.compiler.effective>DOCKER-COMPILER</pi4j.native.compiler.effective>
-            </properties>
-        </profile>
-
-        <!-- SPECIAL PROFILE TO ENABLE DOCKER-COMPILER NATIVE BUILDS BY DEFAULT IF RUNNING ON WINDOWS -->
-        <profile>
-            <id>windows</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                </os>
-            </activation>
-            <properties>
-                <pi4j.native.compiler.effective>DOCKER-COMPILER</pi4j.native.compiler.effective>
-            </properties>
-        </profile>
-
-        <!-- SPECIAL PROFILE TO SUPPORT DOCKER-COMPILER NATIVE BUILDS -->
-        <profile>
-            <id>docker</id>
-            <activation>
-                <property>
-                    <name>pi4j.native.compiler</name>
-                    <value>DOCKER-COMPILER</value>
-                </property>
-            </activation>
-            <properties>
-                <pi4j.native.compiler.effective>DOCKER-COMPILER</pi4j.native.compiler.effective>
-            </properties>
-        </profile>
-
-        <!-- SPECIAL PROFILE TO SUPPORT CROSS-COMPILER NATIVE BUILDS -->
-        <profile>
-            <id>cross-compile</id>
-            <activation>
-                <property>
-                    <name>pi4j.native.compiler</name>
-                    <value>CROSS-COMPILER</value>
-                </property>
-            </activation>
-            <properties>
-                <pi4j.native.compiler.effective>CROSS-COMPILER</pi4j.native.compiler.effective>
-            </properties>
-        </profile>
-
         <!-- TRANSFER DEVELOPMENT ARTIFACTS TO HARDWARE TESTING PLATFORM -->
         <profile>
             <id>transfer</id>
@@ -973,7 +918,7 @@
             </properties>
         </profile>
 
-        <!-- profile to deploy to sonatype nexus -->
+        <!-- profile to deploy to Maven Central -->
         <profile>
             <id>deploy</id>
             <build>
@@ -991,8 +936,8 @@
                         <artifactId>maven-javadoc-plugin</artifactId>
                     </plugin>
                     <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>

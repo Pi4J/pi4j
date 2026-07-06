@@ -1,19 +1,19 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.1.0 https://maven.apache.org/xsd/maven-4.1.0.xsd">
+    <modelVersion>4.1.0</modelVersion>
 
-    <!-- MAVEN ARTIFACT INFORMATION -->
-    <artifactId>pi4j-core</artifactId>
-    <name>Pi4J :: LIBRARY  :: Java Library (CORE)</name>
-    <description>Pi4J Java API &amp; Runtime Library</description>
-    <packaging>jar</packaging>
-
+    <!-- MAVEN PARENT POM -->
     <parent>
         <groupId>com.pi4j</groupId>
         <artifactId>pi4j-parent</artifactId>
-        <version>2.7.0-SNAPSHOT</version>
+        <version>5.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
+
+    <!-- MAVEN ARTIFACT INFORMATION -->
+    <artifactId>pi4j-core</artifactId>
+    <name>Pi4J :: LIBRARY :: Java Library (CORE)</name>
+    <description>Pi4J Java API &amp; Runtime Library</description>
+    <packaging>jar</packaging>
 
     <!-- BUILD INSTRUCTIONS -->
     <build>
@@ -36,6 +36,56 @@
         </resources>
 
         <plugins>
+            <!-- GENERATE GIT PROPERTIES -->
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <version>6.0.0</version>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <generateGitPropertiesFile>false</generateGitPropertiesFile>
+                    <includeOnlyProperties>
+                        <includeOnlyProperty>^git.commit.id.abbrev$</includeOnlyProperty>
+                        <includeOnlyProperty>^git.commit.id</includeOnlyProperty>
+                        <includeOnlyProperty>^git.branch$</includeOnlyProperty>
+                    </includeOnlyProperties>
+                </configuration>
+            </plugin>
+
+            <!-- GENERATE BUILD PROPERTIES -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-build-properties</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                    <includes>
+                                        <include>build.properties</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
             <!-- JAVA COMPILER -->
             <plugin>
@@ -137,14 +187,15 @@
                         <configuration>
                             <target>
                                 <taskdef resource="net/sf/antcontrib/antcontrib.properties"
-                                         classpathref="maven.plugin.classpath" />
+                                         classpathref="maven.plugin.classpath"/>
                                 <if>
-                                    <equals arg1="${pi4j.dev.transfer}" arg2="true" />
+                                    <equals arg1="${pi4j.dev.transfer}" arg2="true"/>
                                     <then>
                                         <!-- ensure the target directory exists on the Raspberry Pi -->
-                                        <sshexec host="${pi4j.dev.host}" port="${pi4j.dev.port}" username="${pi4j.dev.user}"
+                                        <sshexec host="${pi4j.dev.host}" port="${pi4j.dev.port}"
+                                                 username="${pi4j.dev.user}"
                                                  password="${pi4j.dev.password}" trust="true" failonerror="false"
-                                                 verbose="false" command="mkdir --parents ${pi4j.dev.directory}" />
+                                                 verbose="false" command="mkdir --parents ${pi4j.dev.directory}"/>
 
                                         <!-- copy the JAR file to the Raspberry Pi -->
                                         <scp file="${project.build.directory}/${project.build.finalName}.jar"
@@ -153,8 +204,9 @@
                                         </scp>
 
                                         <!-- copy the JAR file(s) to the Raspberry Pi -->
-                                        <scp todir="${pi4j.dev.user}:${pi4j.dev.password}@${pi4j.dev.host}:${pi4j.dev.directory}"
-                                             port="${pi4j.dev.port}" trust="true" verbose="false" failonerror="true">
+                                        <scp
+                                            todir="${pi4j.dev.user}:${pi4j.dev.password}@${pi4j.dev.host}:${pi4j.dev.directory}"
+                                            port="${pi4j.dev.port}" trust="true" verbose="false" failonerror="true">
                                             <fileset dir="${project.build.directory}">
                                                 <include name="${project.build.finalName}.jar"/>
                                             </fileset>

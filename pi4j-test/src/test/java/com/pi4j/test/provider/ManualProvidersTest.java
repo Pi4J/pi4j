@@ -1,30 +1,5 @@
 package com.pi4j.test.provider;
 
-/*-
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: TESTING  :: Unit/Integration Tests
- * FILENAME      :  ManualProvidersTest.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -32,6 +7,7 @@ import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.io.i2c.I2CProvider;
 import com.pi4j.io.pwm.PwmProvider;
+import com.pi4j.test.Slf4jStreamBridge;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +39,8 @@ public class ManualProvidersTest {
 
         // print out the detected Pi4J io libraries found on the class path
         logger.info("2 CUSTOM PROVIDERS (added via API)");
-        pi4j.providers().describe().print(System.out);
+        var ps = Slf4jStreamBridge.createPrintStream(logger);
+        pi4j.providers().describe().print(ps);
 
         // shutdown Pi4J runtime
         pi4j.shutdown();

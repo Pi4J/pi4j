@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pi4J — JMH Performance Dashboard</title>
+
+  <!--
+    ===========================================================================
+    Pi4J JMH Performance Dashboard
+    ===========================================================================
+    A no-build single-page dashboard for JMH benchmark results. It reads one
+    JSON file per run (the standard output of `jmh ... -rf json`) plus a small
+    `manifest.json` listing the runs.
+
+    Tech (all via CDN, no bundler):
+      - Bootstrap 5 .... layout, cards, tables, tabs — light theme, warm bg.
+      - Vue 3 .......... reactive UI / state.
+      - Chart.js 4 ..... all charts, plus a tiny inline plugin for error bars.
+
+    Three views (the nav tabs):
+      1. Overview  — latest-run summary with a micro score chart, AND every
+                     benchmark over time (absolute or normalised).
+      2. History   — per-class history across every run as line charts + table.
+      3. Deltas    — run-to-run change (+/-) for a selected benchmark.
+
+    A date-range control (default: last 3 months) filters every chart and table.
+
+    Data loading: fetches `manifest.json` from `dataBaseUrl` (see data(),
+    default = same folder), then lazily fetches ONLY the run JSON files whose
+    dates fall in the selected range (cached, so changing range re-fetches just
+    the newly visible files). Opened from disk (file://) it offers a file
+    picker fallback.
+    ===========================================================================
+  -->
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.4.38/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* ---- Pi4J theme -----------------------------------------------------
+       Mirrors www.pi4j.com (Hugo "Learn" blue variant): azure-blue accent,
+       dark-grey text on a white page, Work Sans typography. */
+    :root {
+      --bs-primary: #1C90F3;
+      --bs-primary-rgb: 28, 144, 243;
+      --bs-link-color: #1C90F3;
+      --bs-link-color-rgb: 28, 144, 243;
+      --bs-link-hover-color: #167ad0;
+      --pi4j-text: #323232;
+      --pi4j-heading: #5e5e5e;
+    }
+    body {
+      background-color: #fff;
+      color: var(--pi4j-text);
+      font-family: "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
+    }
+    h1, h2, h3, h4, h5, h6, .card-title { color: var(--pi4j-heading); }
+    a { color: #1C90F3; }
+    a:hover { color: #167ad0; }
+    .nav-tabs .nav-link { color: #5e5e5e; }
+    .nav-tabs .nav-link.active { color: #1C90F3; font-weight: 600; }
+    .btn-check:checked + .btn-outline-primary,
+    .btn-group .btn-outline-primary.active { background-color: #1C90F3; border-color: #1C90F3; }
+
+    /* ---- Layout helpers ---- */
+    .chart-wrap { position: relative; width: 100%; }   /* required for Chart.js responsive height */
+    .table tbody tr td, .table thead tr th { white-space: nowrap; }
+    .num { font-variant-numeric: tabular-nums; text-align: right; }
+    .mono { font-family: "Consolas", ui-monospace, Menlo, monospace; }
+    .nav-tabs { margin-bottom: 1.25rem; }
+    .metric-label { font-size: .8rem; color: var(--bs-secondary-color); }
+    .metric-value { font-size: 1.25rem; font-weight: 600; color: var(--pi4j-text); }
+    .micro-caption { font-size: .75rem; color: var(--bs-secondary-color); margin-bottom: .25rem; }
+    .section-divider { border: 0; border-top: 1px solid var(--bs-border-color); margin: 1.5rem 0; }
+  </style>
+</head>
+
+<body>
+<div id="app">
+
+  <!-- No page header — the tab bar is the top-level navigation. -->
+  <div class="container-fluid py-4">
+
+    <!-- ---------- Loading / error / empty states ---------- -->
+    <div v-if="loading" class="text-center text-secondary py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <div class="mt-3">Loading benchmark runs…</div>
+    </div>
+
+    <div v-else-if="!manifestEntries.length" class="row justify-content-center">
+      <div class="col-lg-7">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">No runs loaded</h5>
+            <div v-if="loadError" class="alert alert-warning py-2">
+              Could not fetch <code>manifest.json</code> automatically
+              ({{ loadError }}).
+            </div>
+            <p class="text-secondary">
+              This usually means the page was opened directly from disk
+              (<code>file://</code>), which browsers block from reading local
+              files. Either:
+            </p>
+            <ul class="text-secondary">
+              <li>serve the folder over HTTP, e.g.
+                <code>python3 -m http.server</code>, then open
+                <code>http://localhost:8000/</code>, <em>or</em></li>
+              <li>load the run JSON files manually below.</li>
+            </ul>
+            <label class="form-label fw-semibold">Load run files
+              (the <code>jmh-*.json</code> outputs):</label>
+            <input class="form-control" type="file" accept="application/json,.json"
+                   multiple @change="onFilesPicked" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---------- Loaded: tabs + date range + views ---------- -->
+    <template v-else>
+      <ul class="nav nav-tabs">
+        <li class="nav-item" v-for="t in tabs" :key="t.id">
+          <button class="nav-link" :class="{ active: view === t.id }"
+                  @click="view = t.id">{{ t.label }}</button>
+        </li>
+      </ul>
+
+      <!-- Global date-range filter: applies to every chart and table. -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-body py-3">
+          <div class="row g-3 align-items-end">
+            <div class="col-auto">
+              <label class="metric-label d-block">From</label>
+              <input type="date" class="form-control form-control-sm"
+                     v-model="fromDate" :min="bounds.min" :max="toDate" />
+            </div>
+            <div class="col-auto">
+              <label class="metric-label d-block">To</label>
+              <input type="date" class="form-control form-control-sm"
+                     v-model="toDate" :min="fromDate" :max="bounds.max" />
+            </div>
+            <div class="col-auto">
+              <label class="metric-label d-block">Quick range</label>
+              <div class="btn-group btn-group-sm" role="group">
+                <button v-for="p in presets" :key="p.label" type="button"
+                        class="btn btn-outline-primary"
+                        :class="{ active: rangePreset === p.label }"
+                        @click="setRange(p.months, p.label)">{{ p.label }}</button>
+              </div>
+            </div>
+            <div class="col-auto ms-auto text-secondary small">
+              <span v-if="loadingRange" class="spinner-border spinner-border-sm me-1" role="status"></span>
+              <span v-if="loadingRange">Fetching {{ entriesInRange.length }} run file(s)…</span>
+              <span v-else>Showing {{ filteredRuns.length }} of {{ manifestEntries.length }} runs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="loadingRange && !filteredRuns.length" class="text-center text-secondary py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <div class="mt-3">Fetching run files for the selected range…</div>
+      </div>
+
+      <div v-else-if="!filteredRuns.length" class="alert alert-warning">
+        No runs fall within the selected date range — widen it above.
+      </div>
+
+      <template v-else>
+        <!-- =============================================================
+             VIEW 1 — OVERVIEW (latest run + change over time)
+             ============================================================= -->
+        <template v-if="view === 'overview'">
+          <!-- Latest run summary, with a micro chart of the latest scores. -->
+          <div class="card shadow-sm mb-4">
+            <div class="card-body">
+              <div class="row g-3 align-items-center">
+                <div class="col-md-7">
+                  <div class="row g-3">
+                    <div class="col-6 col-lg-3">
+                      <div class="metric-label">Latest run</div>
+                      <div class="metric-value">{{ fmtDate(latest.date) }}</div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                      <div class="metric-label">Commit</div>
+                      <div class="metric-value mono">
+                        <a v-if="latest.commit && commitUrlBase"
+                           :href="commitUrlBase + latest.commit"
+                           target="_blank" rel="noopener">{{ latest.commit }}</a>
+                        <span v-else>{{ latest.commit || '—' }}</span>
+                      </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                      <div class="metric-label">Benchmarks</div>
+                      <div class="metric-value">{{ latest.rows.length }}</div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                      <div class="metric-label">Compared to</div>
+                      <div class="metric-value">{{ previous ? fmtDate(previous.date) : '—' }}</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-5">
+                  <div class="micro-caption">Latest scores · ms/op (hover for details)</div>
+                  <div class="chart-wrap" style="height:140px"><canvas ref="latestChart"></canvas></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Change over time -->
+          <div class="card shadow-sm mb-4">
+            <div class="card-body">
+              <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" id="norm" v-model="normalise" />
+                <label class="form-check-label" for="norm">Normalise to first run (100%)</label>
+              </div>
+              <h5 class="card-title">All benchmarks over time</h5>
+              <p class="text-secondary small">
+                {{ normalise
+                  ? 'Each benchmark relative to its own first run in range, so trends are comparable across benchmarks of different magnitude.'
+                  : 'Absolute score (ms/op) for every benchmark across the selected runs.' }}
+              </p>
+              <div class="chart-wrap" style="height:400px"><canvas ref="overviewChart"></canvas></div>
+
+              <hr class="section-divider" />
+
+              <h6 class="text-secondary">First vs latest (in range)</h6>
+              <div class="table-responsive">
+                <table class="table table-hover table-sm align-middle">
+                  <thead>
+                    <tr>
+                      <th>Benchmark</th><th class="num">First</th><th class="num">Latest</th>
+                      <th>Unit</th><th class="num">Overall change</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="o in overviewRows" :key="o.name">
+                      <td>{{ shortName(o.name) }}</td>
+                      <td class="num">{{ fmtNum(o.first) }}</td>
+                      <td class="num">{{ fmtNum(o.last) }}</td>
+                      <td class="text-secondary">{{ o.unit }}</td>
+                      <td class="num" :class="deltaClass(o.change, o.lowerIsBetter)">{{ fmtPct(o.change) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- =============================================================
+             VIEW 2 — PER-CLASS HISTORY
+             ============================================================= -->
+        <template v-else-if="view === 'history'">
+          <div class="card shadow-sm mb-4">
+            <div class="card-body">
+              <div class="row g-2 align-items-center mb-3">
+                <div class="col-auto"><label class="col-form-label" for="classSel">Benchmark class</label></div>
+                <div class="col-auto">
+                  <select id="classSel" class="form-select" v-model="selectedClass">
+                    <option v-for="c in classNames" :key="c" :value="c">{{ c }}</option>
+                  </select>
+                </div>
+              </div>
+              <h5 class="card-title">{{ selectedClass }} — score history</h5>
+              <p class="text-secondary small">Every selected run, oldest to newest. One line per benchmark method.</p>
+              <div class="chart-wrap" style="height:380px"><canvas ref="historyChart"></canvas></div>
+            </div>
+          </div>
+
+          <div class="card shadow-sm mb-4">
+            <div class="card-body">
+              <h5 class="card-title">Run table</h5>
+              <p class="text-secondary small">Score ({{ classUnit }}) for each method at every run.</p>
+              <div class="table-responsive">
+                <table class="table table-hover table-sm align-middle">
+                  <thead>
+                    <tr>
+                      <th>Run</th>
+                      <th class="num" v-for="m in classMethods" :key="m">{{ methodName(m) }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="run in filteredRuns" :key="run.id">
+                      <td>{{ fmtDate(run.date) }}</td>
+                      <td class="num" v-for="m in classMethods" :key="m">
+                        <span v-if="run.byName[m]">{{ fmtNum(run.byName[m].score) }}</span>
+                        <span v-else class="text-secondary">—</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <!-- =============================================================
+             VIEW 3 — RUN-TO-RUN DELTAS (+/-)
+             ============================================================= -->
+        <template v-else-if="view === 'deltas'">
+          <div class="card shadow-sm mb-4">
+            <div class="card-body">
+              <div class="row g-2 align-items-center mb-3">
+                <div class="col-auto"><label class="col-form-label" for="benchSel">Benchmark</label></div>
+                <div class="col-auto">
+                  <select id="benchSel" class="form-select" v-model="selectedBenchmark">
+                    <option v-for="b in benchmarkNames" :key="b" :value="b">{{ shortName(b) }}</option>
+                  </select>
+                </div>
+              </div>
+              <h5 class="card-title">Run-to-run change</h5>
+              <p class="text-secondary small">
+                Percentage change from each run to the next.
+                <span class="text-success">Green = faster (improvement)</span>,
+                <span class="text-danger">red = slower (regression)</span>.
+              </p>
+              <div class="chart-wrap" style="height:380px"><canvas ref="deltaChart"></canvas></div>
+            </div>
+          </div>
+
+          <div class="card shadow-sm mb-4">
+            <div class="card-body">
+              <h5 class="card-title">Change table</h5>
+              <div class="table-responsive">
+                <table class="table table-hover table-sm align-middle">
+                  <thead>
+                    <tr><th>Transition</th><th class="num">From</th><th class="num">To</th><th class="num">Change</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="d in deltaRows" :key="d.label">
+                      <td>{{ d.label }}</td>
+                      <td class="num">{{ fmtNum(d.from) }}</td>
+                      <td class="num">{{ fmtNum(d.to) }}</td>
+                      <td class="num" :class="deltaClass(d.change, d.lowerIsBetter)">{{ fmtPct(d.change) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </template>
+      </template>
+    </template>
+  </div>
+</div>
+
+<script>
+/* ===========================================================================
+   Application logic
+   ===========================================================================
+   Organised as:
+     1. Pure helpers (parsing JMH records, formatting).
+     2. A Chart.js plugin for JMH error bars + warm light-theme defaults.
+     3. The Vue app: state, derived data (computed), and chart drawing.
+   =========================================================================== */
+
+const { createApp } = Vue;
+
+/* ---- Constants ---------------------------------------------------------- */
+
+// Distinct palette for chart series, led by the pi4j.com azure accent.
+const PALETTE = [
+  '#1C90F3', '#198754', '#fd7e14', '#6f42c1',
+  '#dc3545', '#20c997', '#d63384', '#e8a400',
+];
+const COLOR_GOOD = '#198754';   // faster / improvement (Bootstrap success)
+const COLOR_BAD  = '#dc3545';   // slower / regression (Bootstrap danger)
+
+// JMH modes where a LOWER score is better (time-based modes). Throughput
+// ('thrpt') is the opposite. Used to colour deltas correctly.
+const LOWER_IS_BETTER_MODES = new Set(['avgt', 'sample', 'ss']);
+
+/* ---- Pure helpers ------------------------------------------------------- */
+
+/** True when, for the given JMH mode, a smaller score means better performance. */
+function lowerIsBetter(mode) {
+  return LOWER_IS_BETTER_MODES.has((mode || '').toLowerCase());
+}
+
+/**
+ * Normalise a raw JMH JSON array (one run) into a flat list of result rows.
+ * JMH stores the headline number under `primaryMetric`.
+ */
+function parseRun(rawArray) {
+  return rawArray.map(b => ({
+    name: b.benchmark,
+    mode: b.mode,
+    score: b.primaryMetric.score,
+    error: b.primaryMetric.scoreError === 'NaN' ? 0 : (b.primaryMetric.scoreError || 0),
+    unit: b.primaryMetric.scoreUnit,
+    lowerIsBetter: lowerIsBetter(b.mode),
+  }));
+}
+
+/** "com.pi4j.plugin.jmh.GPIOPerformanceTest.testFooBar" -> "GPIO · testFooBar". */
+function shortName(fullName) {
+  return `${className(fullName)} · ${methodName(fullName)}`;
+}
+/** Class part without package, with the verbose "PerformanceTest" suffix dropped. */
+function className(fullName) {
+  const parts = fullName.split('.');
+  return parts[parts.length - 2].replace(/PerformanceTest$/, '');
+}
+/** Method (last segment) of a fully-qualified benchmark name. */
+function methodName(fullName) {
+  const parts = fullName.split('.');
+  return parts[parts.length - 1];
+}
+
+/** Percentage change from a→b (signed). Returns null if a is missing/zero. */
+function pctChange(a, b) {
+  if (a === null || a === undefined || a === 0) return null;
+  return ((b - a) / a) * 100;
+}
+
+/** Date -> "YYYY-MM-DD" (the value format used by <input type="date">). */
+function isoDay(d) {
+  return d.toISOString().slice(0, 10);
+}
+
+/* ---- Chart.js plugin: JMH error bars ------------------------------------ */
+/*
+   Draws a vertical whisker (score ± error) on top of each bar. The per-bar
+   error values are read from `dataset.errorBars`, set when the chart is built.
+*/
+const errorBarsPlugin = {
+  id: 'errorBars',
+  afterDatasetsDraw(chart) {
+    const { ctx } = chart;
+    chart.data.datasets.forEach((dataset, dsIndex) => {
+      const errors = dataset.errorBars;
+      if (!errors) return;
+      const meta = chart.getDatasetMeta(dsIndex);
+      if (meta.hidden) return;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(33,37,41,.65)';
+      ctx.lineWidth = 1.5;
+      meta.data.forEach((bar, i) => {
+        const err = errors[i];
+        if (!err) return;
+        const yTop = chart.scales.y.getPixelForValue(dataset.data[i] + err);
+        const yBot = chart.scales.y.getPixelForValue(dataset.data[i] - err);
+        const x = bar.x;
+        ctx.beginPath();
+        ctx.moveTo(x, yTop); ctx.lineTo(x, yBot);          // vertical line
+        ctx.moveTo(x - 4, yTop); ctx.lineTo(x + 4, yTop);  // top cap
+        ctx.moveTo(x - 4, yBot); ctx.lineTo(x + 4, yBot);  // bottom cap
+        ctx.stroke();
+      });
+      ctx.restore();
+    });
+  },
+};
+Chart.register(errorBarsPlugin);
+
+// Pi4J-themed Chart.js defaults (azure accent, dark-grey text, Work Sans).
+Chart.defaults.color = '#323232';
+Chart.defaults.borderColor = '#e6e6e6';
+Chart.defaults.font.family = '"Work Sans", Helvetica, Arial, sans-serif';
+// High-contrast tooltip: solid dark panel (matches the pi4j.com sidebar) with
+// white text and a blue accent border, so it reads clearly over any chart.
+Object.assign(Chart.defaults.plugins.tooltip, {
+  backgroundColor: '#20272b',
+  titleColor: '#ffffff',
+  bodyColor: '#ffffff',
+  borderColor: '#1C90F3',
+  borderWidth: 1,
+  cornerRadius: 6,
+  padding: 10,
+  titleFont: { weight: '700' },
+  displayColors: true,
+});
+// Draw synchronously. A dashboard gains nothing from animation, and disabling it
+// avoids a requestAnimationFrame race: when a tab switch destroys a chart that is
+// still mid-animation, Chart.js would otherwise render a detached (null) canvas.
+Chart.defaults.animation = false;
+
+/* ---- Vue app ------------------------------------------------------------ */
+
+createApp({
+  data() {
+    return {
+      title: 'Pi4J — JMH Performance Dashboard',
+      // Where to load `manifest.json` and the run/sample JSON files from.
+      // Empty string = same folder as this page. Set to a URL or path to host
+      // the dashboard separately from the data, e.g.
+      //   'https://pi4j.github.io/jmh/'  or  '/static-jmh/'
+      // It must end with a '/'. Absolute file URLs in the manifest are kept as-is.
+      dataBaseUrl: '',
+      // Base URL for linking a run's commit hash to its GitHub page. The hash
+      // from the manifest is appended. Set to '' to disable the link.
+      commitUrlBase: 'https://github.com/Pi4J/pi4j/commit/',
+      loading: true,
+      loadError: null,
+      // Lightweight run metadata from the manifest (chronological, oldest first):
+      //   [{ file, date, commit, label }]. The heavy JSON files are NOT fetched
+      //   up front — only the ones whose date falls in the selected range are.
+      manifestEntries: [],
+      // Cache of fetched run files, keyed by filename -> built run object:
+      //   { id, date, commit, label, rows: [...], byName: { fullName -> row } }.
+      runCache: {},
+      loadingRange: false,   // true while fetching run files for the current range
+      view: 'overview',
+      tabs: [
+        { id: 'overview', label: 'Overview' },
+        { id: 'history',  label: 'History' },
+        { id: 'deltas',   label: 'Deltas (+/-)' },
+      ],
+      // Date-range filter (YYYY-MM-DD). Defaults to the last 3 months.
+      fromDate: '',
+      toDate: '',
+      rangePreset: '3M',
+      presets: [
+        { label: '3M', months: 3 },
+        { label: '6M', months: 6 },
+        { label: '1Y', months: 12 },
+        { label: 'All', months: null },
+      ],
+      // View-specific selections.
+      selectedClass: null,
+      selectedBenchmark: null,
+      normalise: true,
+      // Live Chart.js instances, destroyed/recreated on data or selection change.
+      charts: {},
+    };
+  },
+
+  computed: {
+    /** Earliest/latest run dates (whole history) as YYYY-MM-DD, for input bounds. */
+    bounds() {
+      const e = this.manifestEntries;
+      if (!e.length) return { min: '', max: '' };
+      return {
+        min: isoDay(new Date(e[0].date)),
+        max: isoDay(new Date(e[e.length - 1].date)),
+      };
+    },
+
+    /** Manifest entries whose date falls inside the [fromDate, toDate] window. */
+    entriesInRange() {
+      const from = this.fromDate ? new Date(this.fromDate + 'T00:00:00Z') : null;
+      const to = this.toDate ? new Date(this.toDate + 'T23:59:59Z') : null;
+      return this.manifestEntries.filter(e => {
+        const d = new Date(e.date);
+        if (from && d < from) return false;
+        if (to && d > to) return false;
+        return true;
+      });
+    },
+
+    /** Run files already fetched (for stable benchmark/class option lists). */
+    loadedRuns() {
+      return Object.values(this.runCache);
+    },
+
+    /** In-range runs that have been fetched, oldest first — what every view uses. */
+    filteredRuns() {
+      return this.entriesInRange.map(e => this.runCache[e.file]).filter(Boolean);
+    },
+
+    /** Newest run in range, with Δ vs the previous run in range. */
+    latest() {
+      const fr = this.filteredRuns;
+      const run = fr[fr.length - 1];
+      if (!run) return { rows: [], date: null };
+      const prev = fr.length > 1 ? fr[fr.length - 2] : null;
+      return {
+        date: run.date, commit: run.commit,
+        rows: run.rows.map(r => ({
+          ...r,
+          delta: prev && prev.byName[r.name]
+            ? pctChange(prev.byName[r.name].score, r.score) : null,
+        })),
+      };
+    },
+    /** Run immediately before the latest (in range), or null. */
+    previous() {
+      const fr = this.filteredRuns;
+      return fr.length > 1 ? fr[fr.length - 2] : null;
+    },
+
+    /** All benchmark full names across the fetched runs (dropdown options). */
+    benchmarkNames() {
+      const set = new Set();
+      this.loadedRuns.forEach(run => run.rows.forEach(r => set.add(r.name)));
+      return [...set].sort();
+    },
+    /** Distinct class names, sorted. */
+    classNames() {
+      return [...new Set(this.benchmarkNames.map(className))].sort();
+    },
+    /** Benchmark full names belonging to the selected class. */
+    classMethods() {
+      return this.benchmarkNames.filter(n => className(n) === this.selectedClass);
+    },
+    /** Display unit for the selected class. */
+    classUnit() {
+      const first = this.classMethods[0];
+      const row = first && this.anyRowFor(first);
+      return row ? row.unit : '';
+    },
+
+    /** Overview table: first vs latest score per benchmark (within range). */
+    overviewRows() {
+      return this.benchmarkNames.map(name => {
+        const series = this.seriesFor(name);
+        const firstPt = series.find(p => p.score !== null);
+        const lastPt = [...series].reverse().find(p => p.score !== null);
+        const meta = this.anyRowFor(name);
+        return {
+          name,
+          first: firstPt ? firstPt.score : null,
+          last: lastPt ? lastPt.score : null,
+          change: firstPt && lastPt ? pctChange(firstPt.score, lastPt.score) : null,
+          unit: meta ? meta.unit : '',
+          lowerIsBetter: meta ? meta.lowerIsBetter : true,
+        };
+      });
+    },
+
+    /** Delta table rows for the selected benchmark (run-to-run, within range). */
+    deltaRows() {
+      const series = this.seriesFor(this.selectedBenchmark);
+      const meta = this.anyRowFor(this.selectedBenchmark);
+      const rows = [];
+      for (let i = 1; i < series.length; i++) {
+        const from = series[i - 1].score, to = series[i].score;
+        if (from === null || to === null) continue;
+        rows.push({
+          label: `${this.fmtDate(series[i - 1].date)} → ${this.fmtDate(series[i].date)}`,
+          from, to,
+          change: pctChange(from, to),
+          lowerIsBetter: meta ? meta.lowerIsBetter : true,
+        });
+      }
+      return rows;
+    },
+  },
+
+  watch: {
+    // Redraw the relevant chart whenever the view, a selector or normalisation changes.
+    view() { this.redraw(); },
+    selectedClass() { this.redraw(); },
+    selectedBenchmark() { this.redraw(); },
+    normalise() { this.redraw(); },
+    // A range change may bring new run files into view: fetch them, then redraw.
+    fromDate() { this.onRangeChange(); },
+    toDate() { this.onRangeChange(); },
+  },
+
+  async mounted() {
+    await this.loadFromManifest();
+  },
+
+  methods: {
+    /* ---- Data loading -------------------------------------------------- */
+
+    /** Resolve a manifest/run path against `dataBaseUrl`. */
+    dataUrl(path) {
+      const base = this.dataBaseUrl;
+      if (!base) return path;                                   // same folder
+      if (/^https?:\/\//.test(path) || path.startsWith('/')) return path; // already absolute
+      return base.replace(/\/?$/, '/') + path;                 // ensure single trailing slash
+    },
+
+    /** Fetch the manifest (metadata only), then load just the default range. */
+    async loadFromManifest() {
+      try {
+        const manifest = await (await fetch(this.dataUrl('manifest.json'), { cache: 'no-store' })).json();
+        if (manifest.title) { this.title = manifest.title; document.title = manifest.title; }
+        // Keep only metadata here — run JSON files are fetched lazily, by range.
+        this.manifestEntries = [...manifest.runs].sort((a, b) => new Date(a.date) - new Date(b.date));
+        // Flip `loading` off BEFORE installing data so the view (and its
+        // <canvas> elements) is in the DOM by the time we draw charts.
+        this.loading = false;
+        // Setting the range triggers the watcher -> onRangeChange(), which
+        // fetches the in-range files and draws. Do it explicitly too so the
+        // initial defaults are deterministic regardless of watcher timing.
+        this.setRange(3, '3M');   // default window: last 3 months
+        await this.onRangeChange();
+      } catch (err) {
+        // Most common cause: opened via file:// where fetch is blocked.
+        this.loadError = err.message;
+        this.loading = false;
+      }
+    },
+
+    /** Fallback loader: build runs from manually picked JSON files (no fetch). */
+    async onFilesPicked(event) {
+      const entries = [];
+      for (const file of [...event.target.files]) {
+        const raw = JSON.parse(await file.text());
+        // Derive a date from a `jmh-YYYY-MM-DD.json` name, else file mtime.
+        const m = file.name.match(/(\d{4}-\d{2}-\d{2})/);
+        const date = m ? `${m[1]}T00:00:00Z` : new Date(file.lastModified).toISOString();
+        // The file is already in hand, so populate the cache directly.
+        this.runCache[file.name] = this.buildRun(date, '', file.name, raw);
+        entries.push({ file: file.name, date, commit: '', label: file.name });
+      }
+      entries.sort((a, b) => new Date(a.date) - new Date(b.date));
+      this.manifestEntries = entries;
+      this.setRange(3, '3M');
+      await this.onRangeChange();
+    },
+
+    /** Build one normalised run object. */
+    buildRun(date, commit, label, raw) {
+      const rows = parseRun(raw);
+      const byName = Object.fromEntries(rows.map(r => [r.name, r]));
+      return { id: date + label, date, commit, label, rows, byName };
+    },
+
+    /** Fetch a single run file once, memoised (cache + in-flight de-duplication). */
+    loadRun(entry) {
+      if (this.runCache[entry.file]) return Promise.resolve(this.runCache[entry.file]);
+      this._inflight = this._inflight || {};
+      if (this._inflight[entry.file]) return this._inflight[entry.file];
+      const promise = (async () => {
+        const raw = await (await fetch(this.dataUrl(entry.file), { cache: 'no-store' })).json();
+        this.runCache[entry.file] = this.buildRun(entry.date, entry.commit, entry.label, raw);
+        delete this._inflight[entry.file];
+        return this.runCache[entry.file];
+      })();
+      this._inflight[entry.file] = promise;
+      return promise;
+    },
+
+    /** Ensure every run file in the current range is fetched. */
+    async ensureRangeLoaded() {
+      const pending = this.entriesInRange.filter(e => !this.runCache[e.file]);
+      if (!pending.length) return;
+      this.loadingRange = true;
+      try {
+        await Promise.all(pending.map(e => this.loadRun(e)));
+      } finally {
+        this.loadingRange = false;
+      }
+    },
+
+    /** Range changed: fetch any newly in-range files, set defaults, redraw. */
+    async onRangeChange() {
+      await this.ensureRangeLoaded();
+      if (!this.selectedClass && this.classNames.length) this.selectedClass = this.classNames[0];
+      if (!this.selectedBenchmark && this.benchmarkNames.length) this.selectedBenchmark = this.benchmarkNames[0];
+      this.redraw();
+    },
+
+    /** Set the date window to the last `months` (or all of history if null). */
+    setRange(months, presetLabel) {
+      if (!this.manifestEntries.length) return;
+      const last = new Date(this.manifestEntries[this.manifestEntries.length - 1].date);
+      this.toDate = isoDay(last);
+      if (months == null) {
+        this.fromDate = isoDay(new Date(this.manifestEntries[0].date));
+      } else {
+        const from = new Date(last);
+        from.setMonth(from.getMonth() - months);
+        this.fromDate = isoDay(from);
+      }
+      this.rangePreset = presetLabel || null;
+    },
+
+    /* ---- Per-benchmark lookups ----------------------------------------- */
+
+    /** Time series [{date, score}] for one benchmark across the runs in range. */
+    seriesFor(name) {
+      return this.filteredRuns.map(run => ({
+        date: run.date,
+        score: run.byName[name] ? run.byName[name].score : null,
+      }));
+    },
+    /** Result row for a benchmark from any fetched run (first match) — metadata. */
+    anyRowFor(name) {
+      for (const run of this.loadedRuns) if (run.byName[name]) return run.byName[name];
+      return null;
+    },
+
+    /* ---- Chart drawing ------------------------------------------------- */
+
+    /** Destroy any chart bound to a canvas ref, then return the 2d context. */
+    freshCtx(refName, key) {
+      if (this.charts[key]) { this.charts[key].destroy(); delete this.charts[key]; }
+      const canvas = this.$refs[refName];
+      return canvas ? canvas.getContext('2d') : null;
+    },
+
+    /** Redraw the chart(s) for the active view after the DOM updates. */
+    redraw() {
+      // Only the active view's <canvas> elements are in the DOM (the others are
+      // removed by Vue's v-if). Destroy every live chart first, otherwise
+      // Chart.js keeps a detached canvas around and throws on its null context.
+      Object.keys(this.charts).forEach(k => { this.charts[k].destroy(); });
+      this.charts = {};
+      this.$nextTick(() => {
+        if (this.view === 'overview') { this.drawLatest(); this.drawOverview(); }
+        else if (this.view === 'history') this.drawHistory();
+        else if (this.view === 'deltas') this.drawDeltas();
+      });
+    },
+
+    // Compact "micro widget" bar chart of the latest run. Benchmark names are
+    // omitted from the cramped x-axis and surfaced via the tooltip instead.
+    drawLatest() {
+      const ctx = this.freshCtx('latestChart', 'latest');
+      if (!ctx) return;
+      const rows = this.latest.rows;
+      this.charts.latest = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: rows.map(r => shortName(r.name)),
+          datasets: [{
+            label: 'Score (' + (rows[0] ? rows[0].unit : '') + ')',
+            data: rows.map(r => r.score),
+            errorBars: rows.map(r => r.error),   // consumed by errorBarsPlugin
+            backgroundColor: '#1C90F3',
+            borderRadius: 3,
+          }],
+        },
+        options: {
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                // Score on the first line, Δ vs the previous run on the second.
+                label: (i) => `${this.fmtNum(i.raw)} ms/op`,
+                afterLabel: (i) => {
+                  const d = rows[i.dataIndex].delta;
+                  if (d === null || d === undefined) return 'no previous run';
+                  const dir = this.isImprovement(d, rows[i.dataIndex].lowerIsBetter) ? 'faster' : 'slower';
+                  return `Δ ${this.fmtPct(d)} vs previous (${dir})`;
+                },
+              },
+            },
+          },
+          scales: {
+            x: { ticks: { display: false }, grid: { display: false } },
+            y: { beginAtZero: true, ticks: { font: { size: 10 } } },
+          },
+        },
+      });
+    },
+
+    drawHistory() {
+      const ctx = this.freshCtx('historyChart', 'history');
+      if (!ctx) return;
+      const methods = this.classMethods;
+      this.charts.history = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: this.filteredRuns.map(r => this.fmtDate(r.date)),
+          datasets: methods.map((name, i) => ({
+            label: methodName(name),
+            data: this.seriesFor(name).map(p => p.score),
+            borderColor: PALETTE[i % PALETTE.length],
+            backgroundColor: PALETTE[i % PALETTE.length],
+            spanGaps: true,
+            tension: 0.25,
+          })),
+        },
+        options: {
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          scales: { y: { beginAtZero: false, title: { display: true, text: 'ms/op' } } },
+        },
+      });
+    },
+
+    drawOverview() {
+      const ctx = this.freshCtx('overviewChart', 'overview');
+      if (!ctx) return;
+      const datasets = this.benchmarkNames.map((name, i) => {
+        const series = this.seriesFor(name);
+        const base = series.find(p => p.score !== null);
+        const data = series.map(p => {
+          if (p.score === null) return null;
+          // In normalised mode, express each point as % of the benchmark's own
+          // first run (in range) so different magnitudes share one axis.
+          return this.normalise && base ? (p.score / base.score) * 100 : p.score;
+        });
+        const meta = this.anyRowFor(name);
+        return {
+          label: shortName(name),
+          data,
+          // Stash the raw scores + direction so the tooltip can show the actual
+          // ms/op and the run-to-run delta regardless of normalisation.
+          rawScores: series.map(p => p.score),
+          lowerIsBetter: meta ? meta.lowerIsBetter : true,
+          borderColor: PALETTE[i % PALETTE.length],
+          backgroundColor: PALETTE[i % PALETTE.length],
+          spanGaps: true,
+          tension: 0.25,
+          pointRadius: 2,
+        };
+      });
+      this.charts.overview = new Chart(ctx, {
+        type: 'line',
+        data: { labels: this.filteredRuns.map(r => this.fmtDate(r.date)), datasets },
+        options: {
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                // "Class · method: 0.381 ms/op (Δ -2.5% vs prev)".
+                label: (item) => {
+                  const ds = item.dataset;
+                  const cur = ds.rawScores[item.dataIndex];
+                  if (cur === null) return `${ds.label}: —`;
+                  const prev = item.dataIndex > 0 ? ds.rawScores[item.dataIndex - 1] : null;
+                  const d = pctChange(prev, cur);
+                  const delta = d === null ? '' : ` (Δ ${this.fmtPct(d)} vs prev)`;
+                  return `${ds.label}: ${this.fmtNum(cur)} ms/op${delta}`;
+                },
+              },
+            },
+          },
+          scales: {
+            y: {
+              title: {
+                display: true,
+                text: this.normalise ? '% of first run (lower is better)' : 'ms/op',
+              },
+            },
+          },
+        },
+      });
+    },
+
+    drawDeltas() {
+      const ctx = this.freshCtx('deltaChart', 'deltas');
+      if (!ctx) return;
+      const rows = this.deltaRows;
+      // Improvement (faster) is negative change for lower-is-better metrics.
+      const colors = rows.map(d =>
+        this.isImprovement(d.change, d.lowerIsBetter) ? COLOR_GOOD : COLOR_BAD);
+      this.charts.deltas = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: rows.map((_, i) => `#${i + 1} → #${i + 2}`),
+          datasets: [{
+            label: '% change vs previous run',
+            data: rows.map(d => d.change),
+            backgroundColor: colors,
+            borderRadius: 4,
+          }],
+        },
+        options: {
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                title: (items) => rows[items[0].dataIndex].label,
+                label: (item) => `${this.fmtPct(item.raw)} ` +
+                  (this.isImprovement(rows[item.dataIndex].change,
+                                      rows[item.dataIndex].lowerIsBetter)
+                    ? '(faster)' : '(slower)'),
+              },
+            },
+          },
+          scales: { y: { title: { display: true, text: '% change' } } },
+        },
+      });
+    },
+
+    /* ---- Formatting helpers (also used in templates) ------------------- */
+
+    shortName, methodName,    // expose module helpers to the template
+    fmtNum(n) {
+      if (n === null || n === undefined) return '—';
+      return Number(n).toLocaleString(undefined, { maximumFractionDigits: 4 });
+    },
+    fmtPct(n) {
+      if (n === null || n === undefined) return '—';
+      const sign = n > 0 ? '+' : '';
+      return `${sign}${n.toFixed(2)}%`;
+    },
+    fmtDate(iso) {
+      if (!iso) return '—';
+      return new Date(iso).toLocaleDateString(undefined,
+        { year: 'numeric', month: 'short', day: 'numeric' });
+    },
+    /** Is a signed % change an improvement, given the metric direction? */
+    isImprovement(change, lowerIsBetter) {
+      if (change === null) return false;
+      return lowerIsBetter ? change < 0 : change > 0;
+    },
+    /** Bootstrap text colour for a delta cell: green improvement / red regression. */
+    deltaClass(change, lowerIsBetter) {
+      if (change === null || change === 0) return 'text-secondary';
+      return this.isImprovement(change, lowerIsBetter) ? 'text-success' : 'text-danger';
+    },
+  },
+}).mount('#app');
+</script>
+</body>
+</html>

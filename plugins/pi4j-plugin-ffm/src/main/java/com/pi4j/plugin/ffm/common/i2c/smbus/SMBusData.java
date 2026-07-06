@@ -1,0 +1,117 @@
+package com.pi4j.plugin.ffm.common.i2c.smbus;
+
+import com.pi4j.plugin.ffm.common.Pi4JLayout;
+
+import java.lang.foreign.MemoryLayout;
+import java.lang.foreign.MemorySegment;
+import java.lang.foreign.ValueLayout;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.VarHandle;
+import java.util.Arrays;
+
+import static java.lang.foreign.MemoryLayout.PathElement.groupElement;
+
+/**
+ * Maps the Linux kernel {@code union i2c_smbus_data} (include/uapi/linux/i2c.h), the data payload
+ * shared by all SMBus transactions. As a union the three components alias the same storage and
+ * only one is meaningful per transaction depending on its size code. Implements {@link Pi4JLayout}
+ * to marshal to/from the off-heap {@link #LAYOUT} representation.
+ *
+ * @param _byte the single-byte payload ({@code byte} member of the union)
+ * @param word  the 16-bit word payload ({@code word} member of the union)
+ * @param block the block payload, up to 32 data bytes plus a leading length and PEC byte
+ *              ({@code block} member of the union)
+ */
+public record SMBusData(byte _byte, short word, byte[] block) implements Pi4JLayout {
+	/**
+	 * Off-heap union layout matching the kernel {@code union i2c_smbus_data}, overlaying the
+	 * {@code byte}, {@code word} and 34-element {@code block} members.
+	 */
+	public static final MemoryLayout LAYOUT = MemoryLayout.unionLayout(
+		ValueLayout.JAVA_BYTE.withName("byte"),
+		MemoryLayout.paddingLayout(3),
+		ValueLayout.JAVA_SHORT.withName("word"),
+		MemoryLayout.paddingLayout(1),
+		MemoryLayout.sequenceLayout(34, ValueLayout.JAVA_BYTE).withName("block"),
+		MemoryLayout.paddingLayout(3)
+	);
+
+	private static final VarHandle VH_BYTE = LAYOUT.varHandle(groupElement("byte"));
+
+	private static final VarHandle VH_WORD = LAYOUT.varHandle(groupElement("word"));
+
+	private static final MethodHandle MH_BLOCK = LAYOUT.sliceHandle(groupElement("block"));
+
+    /**
+     * Reads an {@link SMBusData} from the given off-heap buffer, returning an empty instance when
+     * the buffer is {@link MemorySegment#NULL}.
+     *
+     * @param memorySegment the off-heap buffer holding a {@code union i2c_smbus_data}
+     * @return the decoded {@link SMBusData}, or an empty one if {@code memorySegment} is NULL
+     * @throws Throwable if decoding the buffer fails
+     */
+	public static SMBusData create(MemorySegment memorySegment) throws Throwable {
+		var smbusdataInstance = SMBusData.createEmpty();
+		if (!memorySegment.equals(MemorySegment.NULL)) {
+			smbusdataInstance = smbusdataInstance.from(memorySegment);
+		}
+		return smbusdataInstance;
+	}
+
+    /**
+     * Creates an empty instance with a zero byte, zero word and empty block buffer.
+     *
+     * @return a new, zero-initialized {@link SMBusData}
+     */
+	public static SMBusData createEmpty() {
+		return new SMBusData((byte) 0, (short) 0, new byte[]{});
+	}
+
+	@Override
+	public MemoryLayout getMemoryLayout() {
+		return LAYOUT;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public SMBusData from(MemorySegment buffer) throws Throwable {
+        byte[] buf = null;
+        if (block != null && block.length > 0) {
+            var bufMemorySegment = invokeExact(MH_BLOCK, buffer);
+            buf = new byte[block.length];
+            for (int i = 0; i < buf.length; i++) {
+                buf[i] = bufMemorySegment.getAtIndex(ValueLayout.JAVA_BYTE, i);
+            }
+        }
+		return new SMBusData(
+			_byte != 0 ? (byte) VH_BYTE.get(buffer, 0L) : 0,
+			word != 0 ? (short) VH_WORD.get(buffer, 0L) : 0,
+            buf != null ? buf : new byte[]{}
+        );
+	}
+
+	@Override
+	public void to(MemorySegment buffer) throws Throwable {
+        if (_byte != 0) {
+            VH_BYTE.set(buffer, 0L, _byte);
+        }
+        if (word != 0) {
+            VH_WORD.set(buffer, 0L, word);
+        }
+        if (block != null && block.length != 0) {
+            var blockTmp = invokeExact(MH_BLOCK, buffer);
+            for (int i = 0; i < block.length; i++) {
+                blockTmp.setAtIndex(ValueLayout.JAVA_BYTE, i, block[i]);
+            }
+        }
+	}
+
+    @Override
+    public String toString() {
+        return "SMBusData{" +
+            "byte=" + _byte +
+            ", word=" + word +
+            ", block=" + Arrays.toString(block) +
+            '}';
+    }
+}

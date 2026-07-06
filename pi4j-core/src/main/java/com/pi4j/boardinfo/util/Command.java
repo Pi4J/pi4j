@@ -1,0 +1,54 @@
+package com.pi4j.boardinfo.util;
+
+/**
+ * Interface that defines constants for common system commands.
+ * These commands are typically used to gather system-related information
+ * such as voltage, uptime, and temperature on Raspberry Pi or similar systems.
+ */
+public interface Command {
+
+    /**
+     * Command to measure the core voltage of the system.
+     * <p>
+     * This command uses the `vcgencmd` tool to query the system's core voltage,
+     * which is useful for monitoring the power supply to the system's central processing unit (CPU).
+     * The result is usually in the format of a voltage value (e.g., "1.20V").
+     * </p>
+     */
+    String CORE_VOLTAGE_COMMAND = "vcgencmd measure_volts";
+
+    /**
+     * Command to retrieve the system's uptime.
+     * <p>
+     * This command uses the `uptime` utility to get the amount of time the system has been running since
+     * its last boot. The output typically includes the system's uptime in days, hours, and minutes.
+     * This can be useful for monitoring the system's stability or for detecting if the system has been restarted recently.
+     * </p>
+     */
+    String UPTIME_COMMAND = "uptime";
+
+    /**
+     * Command to measure the temperature of the system's CPU.
+     * <p>
+     * This command uses the `vcgencmd` tool to query the CPU temperature of the system, which is crucial
+     * for thermal management and ensuring that the system is not overheating. The output typically includes
+     * the temperature value in Celsius (e.g., "48.3'C").
+     * </p>
+     */
+    String TEMPERATURE_COMMAND = "vcgencmd measure_temp";
+
+    /**
+     * Command to retrieve throttled state information.
+     * <p>
+     * This command uses the `vcgencmd` tool to query the throttled state of the system. The output provides
+     * details about under-voltage, throttling, and frequency capping conditions. It is useful for diagnosing
+     * power and thermal management issues.
+     * </p>
+     * <p>
+     * For more details on the bit interpretation of the output, see the
+     * <a href="https://www.raspberrypi.com/documentation/computers/os.html#get_throttled">
+     * Raspberry Pi documentation</a>.
+     * </p>
+     */
+    String THROTTLED_STATE_COMMAND = "vcgencmd get_throttled";
+}

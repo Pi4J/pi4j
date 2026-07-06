@@ -1,155 +1,98 @@
-package com.pi4j.test;/*-
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: TESTING  :: Unit/Integration Tests
- * FILENAME      :  Main.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
+package com.pi4j.test;
 
-import com.pi4j.Pi4J;
-import com.pi4j.context.Context;
 import com.pi4j.io.IOType;
-import com.pi4j.io.binding.AnalogOutputBinding;
-import com.pi4j.io.gpio.analog.AnalogValueChangeListener;
-import com.pi4j.test.provider.TestAnalogInputProvider;
+import com.pi4j.test.smoketest.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 /**
- * <p>Main class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * Simple test of the six providers. Dependent upon the wiring described in the README file.
  */
 public class Main {
 
-    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+    private static Logger logger;
 
     /**
-     * <p>Constructor for Main.</p>
-     */
-    public Main() {
-    }
-
-    /**
-     * <p>main.</p>
+     * The entry point for the application. This method processes command-line
+     * arguments to configure the application, initializes required components,
+     * runs tests, and outputs results.
      *
-     * @param args an array of {@link java.lang.String} objects.
+     * @param args Command-line arguments for the application. Accepted parameters:
+     *             - "-p <provider>": Specifies the test provider, either "newautocontext", or "ffm".
+     *             - "-h": Displays help information and exits the application.
      */
     public static void main(String[] args) {
-        // Initialize Pi4J with an auto context
-        // An auto context includes AUTO-DETECT BINDINGS enabled
-        // which will load all detected Pi4J extension libraries
-        // (Platforms and Providers) in the class path
-        Context pi4j = Pi4J.newContextBuilder()
-                .add(TestAnalogInputProvider.newInstance("test-analog-input-provider", "TestAnalogInputProvider"))
-                .autoDetect()
-                .build();
+        // Use the line below if you want to store the output of the smoke test in a file
+        // System.setProperty(org.slf4j.simple.SimpleLogger.LOG_FILE_KEY, "trace.log");
+        System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
+        logger = LoggerFactory.getLogger(Main.class);
 
-        // create About class instance
-        About about = new About();
-        about.enumerateProviders(pi4j);
-        about.enumeratePlatforms(pi4j);
-        about.describeDefaultPlatform(pi4j);
-        for(var ioType : IOType.values()){
-            about.enumerateProviders(pi4j, ioType);
+        logger.info("==============================================================");
+        logger.info("startup  Main ");
+        logger.info("==============================================================");
+
+        ProviderContext providerContext = null;
+        String helpString = "params: -p <newautocontext,ffm>, -h help";
+        for (int i = 0; i < args.length; i++) {
+            String o = args[i];
+            if (o.contentEquals("-p")) {
+                String a = args[i + 1];
+                providerContext = new ProviderContext(ProviderContext.TestProvider.getByName(a));
+                i++;
+            } else if (o.contentEquals("-h")) {
+                logger.info(helpString);
+                System.exit(31);
+            } else {
+                logger.info("  !!! Invalid Parm " + args);
+                logger.info(helpString);
+                System.exit(32);
+            }
         }
 
-//        Serial serial = Serial.instance("/dev/ttyUSB1");
-//        serial.open();
-//        serial.send("TEST DATA");
-//        serial.close();
+        // Fallback in case no providerContext was specified with a parameter
+        if (providerContext == null) {
+            providerContext = new ProviderContext(ProviderContext.TestProvider.NEWAUTOCONTEXT);
+        }
 
+        // create About class instance
+        About about = new About(providerContext);
+        about.enumerateProviders();
 
+        for (var ioType : IOType.values()) {
+            about.enumerateProviders(ioType);
+        }
 
-        var din1 = pi4j.dout().create(11);
-        var ain1 = pi4j.ain().create(21, "test-analog-input-provider");
-        var input = pi4j.ain().create(98);
+        // Run the tests
+        var tests = List.of(
+            I2CTestCase.run(providerContext),
+            I2CWithOffsetTestCase.run(providerContext),
+            SpiTestCase.run(providerContext),
+            SpiWithOffsetTestCase.run(providerContext),
+            //SpiWriteReadTestCase.run(providerContext), // requires manual CS across write/read operation
+            PWMTestCase.run(providerContext, 1, 50, 10),
+            DigitalInputTestCase.run(providerContext),
+            FiveDigitalInputsTestCase.run(providerContext),
+            DigitalOutputTestCase.run(providerContext),
+            //DigitalInputDebounceMonitorTestCase.run(providerContext), // This test needs a Logic Analyzer
+            DigitalInputDebounceTimeTestCase.run(providerContext),
+            DigitalInputDebounceCountTestCase.run(providerContext)
+        );
 
-        input.name("My Analog Input #1");
+        // Overall results
+        logger.info("");
+        logger.info("==============================================================");
+        logger.info("Test results with {}:", providerContext.getTestProvider().name());
+        logger.info("\tTotal Tests: {}", tests.size());
+        logger.info("\tPassed: {}", tests.stream().filter(TestResult::success).count());
+        logger.info("\tFailed: {}", tests.stream().filter(t -> !t.success()).count());
+        logger.info("==============================================================");
+        logger.info("");
 
-        var output1 = pi4j.aout().create(99);
-        var output2 = pi4j.aout().create(100);
+        // Output results
+        tests.forEach(t -> t.log(logger));
 
-        input.addListener((AnalogValueChangeListener) event -> {
-            logger.info("ANALOG INPUT [");
-            logger.info(String.valueOf(event.source().address()));
-            logger.info("] VALUE CHANGE: ");
-            logger.info(event.value().toString());
-        });
-
-        output1.addListener((AnalogValueChangeListener) event -> {
-            logger.info("ANALOG OUTPUT [");
-            logger.info(String.valueOf(event.source().address()));
-            logger.info("] VALUE CHANGE: ");
-            logger.info(event.value().toString());
-        });
-        output2.addListener((AnalogValueChangeListener) event -> {
-            logger.info("ANALOG OUTPUT [");
-            logger.info(String.valueOf(event.source().address()));
-            logger.info("] VALUE CHANGE: ");
-            logger.info(event.value().toString());
-        });
-
-        input.bind(AnalogOutputBinding.newInstance(output1, output2));
-
-        logger.info("Inpur: " + input.name());
-        //((TestAnalogInput)input).test(21).test(22).test(23);
-
-        //output.value(12);
-        //output.setValue(78);
-        //output.value(0x01);
-
-
-        //AnalogOutput aout1 = AnalogOutput.in
-//        DigitalOutput dout1 = DigitalOutput;
-
-
-//        Descriptor descriptor = Descriptor.create("1");
-//        var des1 = descriptor.add("1.1");
-//        des1.add("1.1.1");
-//        des1.add("1.1.2");
-//        var des2 = descriptor.add("1.2");
-//        des2.add("1.2.1");
-//        des2.add("1.2.2");
-//        descriptor.add("1.2--1");
-//        descriptor.add("1.2--2");
-//        descriptor.add("1.2--3");
-//        var des3 = descriptor.add("1.3");
-//        var des4 = des3.add("1.3.1");
-//        des4.add("1.3.1.1");
-//        des4.add("1.3.1.2");
-//        des4.add("1.3.1.3");
-//        des4.add("1.3.1.4");
-//        var des5 = des3.add("1.3.2");
-//        des5.add("1.3.2.1");
-//        des5.add("1.3.2.2");
-//        des5.add("1.3.2.3");
-//        des5.add("1.3.2.4");
-//        descriptor.print(System.out);
-
-        logger.info("\r\n\r\n-----------------------------------\r\n" + "Pi4J - Runtime Information\r\n" + "-----------------------------------");
-        pi4j.describe().print(System.out);
-
-        // shutdown Pi4J
-        pi4j.shutdown();
-
+        providerContext.getContext().shutdown();
     }
 }

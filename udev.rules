@@ -1,0 +1,10 @@
+SUBSYSTEM=="pwm", ACTION=="add|change", PROGRAM="/bin/sh -c 'chgrp -R dialout /sys%p && chmod -R 770 /sys%p'"
+SUBSYSTEM=="spidev", GROUP="spi", MODE="0660"
+
+SUBSYSTEM=="gpio", KERNEL=="gpiochip*", GROUP="dialout", MODE="0660"
+KERNEL=="gpio", GROUP="dialout", MODE="0660"
+KERNEL=="gpio*", PROGRAM="/bin/sh -c '\
+          chown -R root:dialout /sys/class/gpio && chmod -R 770 /sys/class/gpio;\
+          chown -R root:dialout /sys/devices/virtual/gpio && chmod -R 770 /sys/devices/virtual/gpio;\
+          chown -R root:dialout /sys$devpath && chmod -R 770 /sys$devpath\
+'"

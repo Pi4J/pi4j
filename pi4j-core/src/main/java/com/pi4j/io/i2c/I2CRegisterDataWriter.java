@@ -1,30 +1,5 @@
 package com.pi4j.io.i2c;
 
-/*
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  I2CRegisterDataWriter.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,14 +10,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
 /**
- * I2C Register Data Writer Interface for Pi4J Data Communications
- *
- * @author Robert Savage
- *
- * Based on previous contributions from:
- *        Daniel Sendula,
- *        <a href="http://raspelikan.blogspot.co.at">RasPelikan</a>
- * @version $Id: $Id
+ * Defines the register-write operations for I2C devices, supplying a broad family of overloaded
+ * {@code writeRegister} methods that accept bytes, words, byte/char arrays, NIO buffers, input streams and
+ * character sequences. Implemented by {@link I2CRegister} and {@link I2C} to write to a device register.
  */
 public interface I2CRegisterDataWriter {
 
@@ -56,7 +26,6 @@ public interface I2CRegisterDataWriter {
      *
      * @param register the register address to write to
      * @param b byte to be written
-     * @return a int.
      */
     int writeRegister(int register, byte b);
 
@@ -66,7 +35,6 @@ public interface I2CRegisterDataWriter {
      *
      * @param register the register address to write to
      * @param b byte to be written; the provided Integer wll be cast to a Byte.
-     * @return a int.
      */
     default int writeRegister(int register, int b) {
         return writeRegister(register, (byte)b);
@@ -81,7 +49,6 @@ public interface I2CRegisterDataWriter {
      *
      * @param register the register address to write to
      * @param word 16-bit word value to be written
-     * @return a int.
      */
     default int writeRegisterWord(int register, int word) {
         byte[] buffer = new byte[] { (byte)(word >> 8), (byte)word };
@@ -196,7 +163,7 @@ public interface I2CRegisterDataWriter {
     /**
      * Write a buffer of byte values starting from a given offset index in the
      * array up to the provided length to a specific I2C device register.
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is no
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -224,7 +191,7 @@ public interface I2CRegisterDataWriter {
     /**
      * Write a buffer of byte values starting from the first byte in the buffer
      * up to the provided length to a specific I2C device register.
-     *
+     * <p>
      * NOTE:  The contents from the byte buffer is read
      *        from the current position index up to the length
      *        requested or up to the buffer's remaining limit;
@@ -253,7 +220,7 @@ public interface I2CRegisterDataWriter {
 
     /**
      * Write a buffer of byte values (all bytes in buffer) to a specific I2C device register.
-     *
+     * <p>
      * NOTE:  The contents from the byte buffer is read
      *        from the current position index up to the buffer's
      *        remaining limit.  If the buffer's current position
@@ -278,7 +245,7 @@ public interface I2CRegisterDataWriter {
 
     /**
      * Write multiple byte buffers to a specific I2C device register.
-     *
+     * <p>
      * NOTE:  The contents from each byte buffer is read
      *        from the current position index up to the buffer's
      *        remaining limit.  If the buffer's current position
@@ -544,7 +511,6 @@ public interface I2CRegisterDataWriter {
      * @param data collection of character sequences of data to be written
      * @return The number of bytes written, possibly zero
      * @throws java.io.IOException thrown on write error
-     * @param charset a {@link java.nio.charset.Charset} object.
      */
     default int writeRegister(int register, Charset charset, Collection<char[]> data) throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -615,7 +581,7 @@ public interface I2CRegisterDataWriter {
     /**
      * Writes a character buffer with a given offset and length using a specified
      * character set to encode the chars into bytes to a specific I2C device register.
-     *
+     * <p>
      * NOTE:  The buffer's internal position tracking is no
      *        used but rather only the explicit offset and
      *        length provided.  If the requested length is
@@ -646,7 +612,7 @@ public interface I2CRegisterDataWriter {
     /**
      * Write a character buffer starting at first index to a given length using
      * a specified character set to encode the chars into bytes to a specific I2C device register.
-     *
+     * <p>
      * NOTE:  The contents from the character buffer is read
      *        from the current position index up to the length
      *        requested or up to the buffer's remaining limit;
@@ -677,7 +643,7 @@ public interface I2CRegisterDataWriter {
     /**
      * Write a character buffer using a specified character set
      * to encode the chars into bytes to a specific I2C device register.
-     *
+     * <p>
      * NOTE:  The contents from the character buffer is read
      *        from the current position index up to the buffer's
      *        remaining limit.  If the buffer's current position
@@ -704,7 +670,7 @@ public interface I2CRegisterDataWriter {
     /**
      * Writes multiple character buffers using a specified character
      * set to encode the chars into bytes to a specific I2C device register.
-     *
+     * <p>
      * NOTE:  The contents from each character buffer is read
      *        from the current position index up to the buffer's
      *        remaining limit.  If the buffer's current position

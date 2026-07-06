@@ -1,166 +1,169 @@
 package com.pi4j.io.gpio.digital;
 
-/*-
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  Digital.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
-import com.pi4j.io.OnOffRead;
-import com.pi4j.io.binding.Bindable;
-import com.pi4j.io.binding.DigitalBinding;
+import com.pi4j.io.ListenableOnOffRead;
 import com.pi4j.io.gpio.Gpio;
 
 /**
- * <p>Digital interface.</p>
+ * Base contract for a two-state (HIGH/LOW) digital I/O instance in Pi4J, such as a
+ * {@link DigitalInput} or digital output. Extends the generic {@link Gpio} contract with
+ * {@link DigitalState} access and adds listener registration for state-change events, while
+ * {@link ListenableOnOffRead} provides the on/off abstraction shared with simpler I/O types.
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * @param <DIGITAL_TYPE> the concrete digital I/O type, used as the self-referencing return type for fluent methods
+ * @param <CONFIG_TYPE> the {@link DigitalConfig} type describing this instance
+ * @param <PROVIDER_TYPE> the {@link DigitalProvider} type that created this instance
  */
 public interface Digital<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
-        CONFIG_TYPE extends DigitalConfig<CONFIG_TYPE>,
-        PROVIDER_TYPE extends DigitalProvider>
-        extends Gpio<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
-        OnOffRead<DIGITAL_TYPE>,
-        Bindable<DIGITAL_TYPE, DigitalBinding>
-{
+    CONFIG_TYPE extends DigitalConfig<CONFIG_TYPE>,
+    PROVIDER_TYPE extends DigitalProvider>
+    extends Gpio<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
+    ListenableOnOffRead<DIGITAL_TYPE> {
 
     /**
-     * <p>state.</p>
+     * Returns the current logic level of this digital I/O instance.
      *
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalState} object.
+     * @return the present {@link DigitalState} (typically HIGH or LOW)
      */
     DigitalState state();
 
     /**
-     * <p>addListener.</p>
+     * Returns the BCM (Broadcom) GPIO pin number this instance is bound to, as supplied by its configuration.
      *
-     * @param listener a {@link DigitalStateChangeListener} object.
-     * @return a DIGITAL_TYPE object.
+     * @return the configured BCM pin number, or {@code null} if none was configured
+     */
+    default Integer bcm() {
+        return config().bcm();
+    }
+
+    /**
+     * Registers one or more listeners to be notified whenever this instance's {@link DigitalState} changes.
+     *
+     * @param listener one or more {@link DigitalStateChangeListener} instances to register
+     * @return this instance for method chaining
      */
     DIGITAL_TYPE addListener(DigitalStateChangeListener... listener);
+
     /**
-     * <p>removeListener.</p>
+     * Unregisters one or more previously added state-change listeners.
      *
-     * @param listener a {@link DigitalStateChangeListener} object.
-     * @return a DIGITAL_TYPE object.
+     * @param listener one or more {@link DigitalStateChangeListener} instances to remove
+     * @return this instance for method chaining
      */
     DIGITAL_TYPE removeListener(DigitalStateChangeListener... listener);
 
     /**
-     * <p>equals.</p>
+     * Tests whether this instance's current state equals the given {@link DigitalState}.
      *
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @return a boolean.
+     * @param state the state to compare against
+     * @return {@code true} if the current state matches {@code state}
      */
-    default boolean equals(DigitalState state){
+    default boolean equals(DigitalState state) {
         return this.state().equals(state);
     }
+
     /**
-     * <p>equals.</p>
+     * Tests whether this instance's current state equals the state derived from the given number,
+     * where a non-zero value maps to HIGH and zero maps to LOW.
      *
-     * @param state a {@link java.lang.Number} object.
-     * @return a boolean.
+     * @param state the numeric value to interpret as a {@link DigitalState}
+     * @return {@code true} if the current state matches the derived state
      */
-    default boolean equals(Number state){
+    default boolean equals(Number state) {
         return equals(DigitalState.getState(state));
     }
+
     /**
-     * <p>equals.</p>
+     * Tests whether this instance's current state equals the state derived from the given boolean,
+     * where {@code true} maps to HIGH and {@code false} maps to LOW.
      *
-     * @param state a boolean.
-     * @return a boolean.
+     * @param state the boolean value to interpret as a {@link DigitalState}
+     * @return {@code true} if the current state matches the derived state
      */
-    default boolean equals(boolean state){
+    default boolean equals(boolean state) {
         return equals(DigitalState.getState(state));
     }
+
     /**
-     * <p>equals.</p>
+     * Tests whether this instance's current state equals the state derived from the given byte,
+     * where a non-zero value maps to HIGH and zero maps to LOW.
      *
-     * @param state a byte.
-     * @return a boolean.
+     * @param state the byte value to interpret as a {@link DigitalState}
+     * @return {@code true} if the current state matches the derived state
      */
-    default boolean equals(byte state){
+    default boolean equals(byte state) {
         return equals(DigitalState.getState(state));
     }
+
     /**
-     * <p>equals.</p>
+     * Tests whether this instance's current state equals the state derived from the given short,
+     * where a non-zero value maps to HIGH and zero maps to LOW.
      *
-     * @param state a short.
-     * @return a boolean.
+     * @param state the short value to interpret as a {@link DigitalState}
+     * @return {@code true} if the current state matches the derived state
      */
-    default boolean equals(short state){
+    default boolean equals(short state) {
         return equals(DigitalState.getState(state));
     }
+
     /**
-     * <p>equals.</p>
+     * Tests whether this instance's current state equals the state derived from the given int,
+     * where a non-zero value maps to HIGH and zero maps to LOW.
      *
-     * @param state a int.
-     * @return a boolean.
+     * @param state the int value to interpret as a {@link DigitalState}
+     * @return {@code true} if the current state matches the derived state
      */
-    default boolean equals(int state){
+    default boolean equals(int state) {
         return equals(DigitalState.getState(state));
     }
+
     /**
-     * <p>equals.</p>
+     * Tests whether this instance's current state equals the state derived from the given long,
+     * where a non-zero value maps to HIGH and zero maps to LOW.
      *
-     * @param state a long.
-     * @return a boolean.
+     * @param state the long value to interpret as a {@link DigitalState}
+     * @return {@code true} if the current state matches the derived state
      */
-    default boolean equals(long state){
+    default boolean equals(long state) {
         return equals(DigitalState.getState(state));
     }
+
     /**
-     * <p>equals.</p>
+     * Tests whether this instance's current state equals the state derived from the given float,
+     * where a non-zero value maps to HIGH and zero maps to LOW.
      *
-     * @param state a float.
-     * @return a boolean.
+     * @param state the float value to interpret as a {@link DigitalState}
+     * @return {@code true} if the current state matches the derived state
      */
-    default boolean equals(float state){
+    default boolean equals(float state) {
         return equals(DigitalState.getState(state));
     }
+
     /**
-     * <p>equals.</p>
+     * Tests whether this instance's current state equals the state derived from the given double,
+     * where a non-zero value maps to HIGH and zero maps to LOW.
      *
-     * @param state a double.
-     * @return a boolean.
+     * @param state the double value to interpret as a {@link DigitalState}
+     * @return {@code true} if the current state matches the derived state
      */
-    default boolean equals(double state){
+    default boolean equals(double state) {
         return equals(DigitalState.getState(state));
     }
+
     /**
-     * <p>isHigh.</p>
+     * Convenience test for whether the current state is HIGH.
      *
-     * @return a boolean.
+     * @return {@code true} if the current {@link DigitalState} is HIGH
      */
-    default boolean isHigh(){
+    default boolean isHigh() {
         return this.state().isHigh();
     }
+
     /**
-     * <p>isLow.</p>
+     * Convenience test for whether the current state is LOW.
      *
-     * @return a boolean.
+     * @return {@code true} if the current {@link DigitalState} is LOW
      */
-    default boolean isLow(){
+    default boolean isLow() {
         return this.state().isLow();
     }
 }

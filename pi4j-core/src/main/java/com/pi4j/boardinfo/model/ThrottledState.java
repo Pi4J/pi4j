@@ -1,0 +1,94 @@
+package com.pi4j.boardinfo.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Enum representing the different throttling and under-voltage states of the Raspberry Pi board.
+ * Each enum value represents a specific condition that might be detected on the board, such as
+ * undervoltage, frequency capping, throttling, or temperature limits.
+ */
+public enum ThrottledState {
+    /** Bit 0: the board is currently experiencing under-voltage. */
+    UNDERVOLTAGE_DETECTED(0x1, "Undervoltage detected"),
+    /** Bit 1: the ARM frequency is currently being capped. */
+    ARM_FREQUENCY_CAPPED(0x2, "ARM frequency capped"),
+    /** Bit 2: the board is currently being throttled. */
+    CURRENTLY_THROTTLED(0x4, "Currently throttled"),
+    /** Bit 3: the soft temperature limit is currently active. */
+    SOFT_TEMPERATURE_LIMIT_ACTIVE(0x8, "Soft temperature limit active"),
+    /** Bit 16: under-voltage has occurred at some point since boot (sticky). */
+    UNDERVOLTAGE_HAS_OCCURED(0x10000, "Undervoltage has occurred"),
+    /** Bit 17: ARM frequency capping has occurred at some point since boot (sticky). */
+    ARM_FREQUENCY_CAPPING_HAS_OCCURED(0x20000, "ARM frequency capping has occurred"),
+    /** Bit 18: throttling has occurred at some point since boot (sticky). */
+    THROTTLING_HAS_OCCURED(0x40000, "Throttling has occurred"),
+    /** Bit 19: the soft temperature limit has been reached at some point since boot (sticky). */
+    SOFT_TEMPERATURE_LIMIT_HAS_OCCURED(0x80000, "Soft temperature limit has occurred");
+
+    private final int value;
+    private final String description;
+
+    /**
+     * Constructor for the ThrottledState enum.
+     *
+     * @param value The integer value representing the state.
+     * @param description A human-readable description of the state.
+     */
+    ThrottledState(int value, String description) {
+        this.value = value;
+        this.description = description;
+    }
+
+    /**
+     * Returns the integer value representing this throttled state.
+     *
+     * @return the integer value associated with the state.
+     */
+    public int getValue() {
+        return value;
+    }
+
+    /**
+     * Returns a human-readable description of this throttled state.
+     *
+     * @return the description of the throttled state.
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Decodes a raw throttled state (as an integer) and returns a list of active {@link ThrottledState} enums.
+     *
+     * @param rawState the raw throttled state as an integer (e.g., 0x50005).
+     * @return a list of active throttled states.
+     */
+    public static List<ThrottledState> decode(int rawState) {
+        List<ThrottledState> activeStates = new ArrayList<>();
+        for (ThrottledState state : ThrottledState.values()) {
+            if ((rawState & state.getValue()) != 0) {
+                activeStates.add(state);
+            }
+        }
+        return activeStates;
+    }
+
+    /**
+     * Returns a human-readable description of the active throttled states based on the raw throttled state value.
+     *
+     * @param rawState the raw throttled state as an integer (e.g., 0x50005).
+     * @return a description of the active throttled states.
+     */
+    public static String getActiveStatesDescription(int rawState) {
+        List<ThrottledState> activeStates = decode(rawState);
+        StringBuilder description = new StringBuilder();
+        for (ThrottledState state : activeStates) {
+            if (description.length() > 0) {
+                description.append(", ");
+            }
+            description.append(state.getDescription());
+        }
+        return description.length() > 0 ? description.toString() : "No active throttled states";
+    }
+}

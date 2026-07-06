@@ -1,30 +1,5 @@
 package com.pi4j.io.i2c;
 
-/*
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  I2CRegisterDataReader.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import com.pi4j.io.exception.IOReadException;
 
 import java.nio.ByteBuffer;
@@ -34,14 +9,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
- * I2C Register Data Writer Interface for Pi4J Data Communications
- *
- * @author Robert Savage
- * <p>
- * Based on previous contributions from:
- * Daniel Sendula,
- * <a href="http://raspelikan.blogspot.co.at">RasPelikan</a>
- * @version $Id: $Id
+ * Defines the register-read operations for I2C devices, supplying a broad family of overloaded
+ * {@code readRegister} methods plus convenience helpers that decode the raw bytes into words, byte/char arrays,
+ * NIO buffers and strings. Implemented by {@link I2CRegister} and {@link I2C} to read from a device register.
  */
 public interface I2CRegisterDataReader {
 
@@ -183,6 +153,7 @@ public interface I2CRegisterDataReader {
      * this function will only write the number of
      * bytes up to the buffers' available space.
      *</p>
+     *
      * @param register The I2C device register address to write to.
      * @param buffer   the byte array/buffer the read data will be copied/inserted into
      * @param offset   the offset index in the data buffer to start copying read data
@@ -236,6 +207,7 @@ public interface I2CRegisterDataReader {
      * this function will only write the number of
      * bytes up to the buffers' available space.
      *</p>
+     *
      * @param register The I2C device register address to write to.
      * @param buffer   the byte buffer the read data will be copied/inserted into
      * @param offset   the offset index in the data buffer to start copying read data
@@ -353,6 +325,7 @@ public interface I2CRegisterDataReader {
      * begin writing data from the zero position up to the
      * buffer's limit.
      *</p>
+     *
      * @param register The I2C device register address to write to.
      * @param buffer   byte buffer of data where data read from the I2C device
      *                 register will be copied (from current position to limit)
@@ -514,7 +487,6 @@ public interface I2CRegisterDataReader {
      * @param charset  character set to use for byte decoding
      * @param buffer   the character array the read data will be copied/inserted into
      * @param length   the number of bytes to read
-     * @param offset   a int.
      * @return If successful, return the number of bytes (not characters) read from the I2C device register;
      * else on a read error, return a negative error code.
      */
@@ -570,7 +542,6 @@ public interface I2CRegisterDataReader {
      * @param register The I2C device register address to write to.
      * @param charset  character set to use for byte decoding
      * @param buffer   the character array the read data will be copied/inserted into
-     * @param length   a int.
      * @return If successful, return the number of bytes (not characters) read from the I2C device register;
      * else on a read error, return a negative error code.
      */
@@ -624,7 +595,6 @@ public interface I2CRegisterDataReader {
      * @param buffer   the character array the read data will be copied/inserted into
      * @param offset   the offset index in the character buffer to start copying read data
      * @param length   the number of bytes to read
-     * @param register a int.
      * @return If successful, return the number of bytes (not characters) read from the I/O device;
      * else on a read error, return a negative error code.
      */
@@ -647,7 +617,6 @@ public interface I2CRegisterDataReader {
      *
      * @param register The I2C device register address to write to.
      * @param buffer   the character array the read data will be copied/inserted into
-     * @param length   a int.
      * @return If successful, return the number of bytes (not characters) read from the I2C device register;
      * else on a read error, return a negative error code.
      */
@@ -687,7 +656,7 @@ public interface I2CRegisterDataReader {
      *
      * @param register The I2C device register address to write to.
      * @return The 8-bit byte value
-     * @throws com.pi4j.io.exception.IOReadException if any.
+     * @throws com.pi4j.io.exception.IOReadException if the underlying read returns a negative error code
      */
     default byte readRegisterByte(int register) {
         int actual = readRegister(register);
@@ -890,7 +859,6 @@ public interface I2CRegisterDataReader {
      * @param charset       character set to use for byte decoding
      * @param offset        the offset index in the raw bytes read to start from
      * @param numberOfBytes the number of bytes to read (not number of characters)
-     * @param register      a int.
      * @return a new character buffer (CharBuffer) containing the decoded character data read from the I2C device register.
      * @throws com.pi4j.io.exception.IOReadException An com.pi4j.io.exception.IOReadException is thrown if a read access error code
      *                                               is returned from the underlying read() functions.
@@ -911,7 +879,6 @@ public interface I2CRegisterDataReader {
      *
      * @param charset       character set to use for byte decoding
      * @param numberOfBytes the number of bytes to read (not number of characters)
-     * @param register      a int.
      * @return a new character buffer (CharBuffer) containing the decoded character data read from the I2C device register.
      * @throws com.pi4j.io.exception.IOReadException An com.pi4j.io.exception.IOReadException is thrown if a read access error code
      *                                               is returned from the underlying read() functions.
@@ -930,7 +897,6 @@ public interface I2CRegisterDataReader {
      *
      * @param offset        the offset index in the raw bytes read to start from
      * @param numberOfBytes the number of bytes to read (not number of characters)
-     * @param register      a int.
      * @return a new character buffer (CharBuffer) containing the decoded character data read from the I2C device register.
      * @throws com.pi4j.io.exception.IOReadException An com.pi4j.io.exception.IOReadException is thrown if a read access error code
      *                                               is returned from the underlying read() functions.
@@ -947,7 +913,6 @@ public interface I2CRegisterDataReader {
      * to decode the bytes into chars.
      *
      * @param numberOfBytes the number of bytes to read (not number of characters)
-     * @param register      a int.
      * @return a new character buffer (CharBuffer) containing the decoded character data read from the I2C device register.
      * @throws com.pi4j.io.exception.IOReadException An com.pi4j.io.exception.IOReadException is thrown if a read access error code
      *                                               is returned from the underlying read() functions.
@@ -967,7 +932,6 @@ public interface I2CRegisterDataReader {
      * @param charset       character set to use for byte decoding
      * @param offset        the offset index in the raw bytes read to start from
      * @param numberOfBytes the number of bytes to read (not number of characters)
-     * @param register      a int.
      * @return a new character buffer (CharBuffer) containing the decoded character data read from the I2C device register.
      * @throws com.pi4j.io.exception.IOReadException An com.pi4j.io.exception.IOReadException is thrown if a read access error code
      *                                               is returned from the underlying read() functions.
@@ -987,7 +951,6 @@ public interface I2CRegisterDataReader {
      *
      * @param charset       character set to use for byte decoding
      * @param numberOfBytes the number of bytes to read (not number of characters)
-     * @param register      a int.
      * @return a new character buffer (CharBuffer) containing the decoded character data read from the I2C device register.
      * @throws java.lang.IllegalArgumentException An java.lang.IllegalArgumentException is thrown if one of the
      *                                            method parameters are invalid.
@@ -1004,7 +967,6 @@ public interface I2CRegisterDataReader {
      *
      * @param offset        the offset index in the raw bytes read to start from
      * @param numberOfBytes the number of bytes to read (not number of characters)
-     * @param register      a int.
      * @return a new character buffer (CharBuffer) containing the decoded character data read from the I2C device register.
      * @throws java.lang.IllegalArgumentException An java.lang.IllegalArgumentException is thrown if one of the
      *                                            method parameters are invalid.
@@ -1019,7 +981,6 @@ public interface I2CRegisterDataReader {
      * decode the bytes into chars.
      *
      * @param numberOfBytes the number of bytes to read (not number of characters)
-     * @param register      a int.
      * @return a new character buffer (CharBuffer) containing the decoded character data read from the I2C device register.
      * @throws com.pi4j.io.exception.IOReadException An com.pi4j.io.exception.IOReadException is thrown if a read access error code
      *                                               is returned from the underlying read() functions.

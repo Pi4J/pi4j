@@ -1,88 +1,243 @@
 package com.pi4j.boardinfo.util;
 
+import com.pi4j.boardinfo.datareader.BoardCodeReader;
+import com.pi4j.boardinfo.datareader.CpuInfoReader;
+import com.pi4j.boardinfo.datareader.MemInfoReader;
 import com.pi4j.boardinfo.definition.BoardModel;
 import com.pi4j.boardinfo.model.*;
+import com.pi4j.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.util.concurrent.TimeUnit;
+import java.util.Objects;
+import java.util.Optional;
 
+import static com.pi4j.boardinfo.util.Command.*;
+import static com.pi4j.boardinfo.util.PwmChipUtil.DEFAULT_LEGACY_PWM_CHIP;
+import static com.pi4j.boardinfo.util.PwmChipUtil.DEFAULT_PWM_SYSTEM_PATH;
+import static com.pi4j.boardinfo.util.SystemProperties.*;
+import static com.pi4j.boardinfo.util.command.CommandExecutor.execute;
+
+/**
+ * The {@code BoardInfoHelper} class provides utility methods for detecting system and board information.
+ * It retrieves detailed information about the operating system, Java runtime, board model, memory, temperature,
+ * voltage, and other relevant hardware details of the Raspberry Pi or other compatible devices.
+ *
+ * <p>This class uses a singleton pattern to ensure that board information is detected only once and can be reused
+ * throughout the application. The detected board information is stored in the {@link BoardInfo} object and can
+ * be accessed via the {@link #current()} method.</p>
+ */
 public class BoardInfoHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(BoardInfoHelper.class);
 
-    private static final BoardInfoHelper instance;
     private final BoardInfo boardInfo;
 
-    static {
-        instance = new BoardInfoHelper();
-    }
-
+    /**
+     * Private constructor to initialize the board information by detecting the operating system, Java version,
+     * and board details.
+     * This method will try to detect the board info using both the board code and name.
+     */
     private BoardInfoHelper() {
-        var os = new OperatingSystem(System.getProperty("os.name"), System.getProperty("os.version"),
-            System.getProperty("os.arch"));
+        OperatingSystem os = new OperatingSystem(
+            System.getProperty(OS_NAME),
+            System.getProperty(OS_VERSION),
+            System.getProperty(OS_ARCH)
+        );
         logger.info("Detected OS: {}", os);
 
-        var java = new JavaInfo(System.getProperty("java.version"), System.getProperty("java.runtime.version"),
-            System.getProperty("java.vendor"), System.getProperty("java.vendor.version"));
+        JavaInfo java = new JavaInfo(
+            System.getProperty(JAVA_VERSION),
+            System.getProperty(JAVA_RUNTIME_VERSION),
+            System.getProperty(JAVA_VENDOR),
+            System.getProperty(JAVA_VENDOR_VERSION)
+        );
         logger.info("Detected Java: {}", java);
 
-        // Example output: c03111
-        var boardVersionCode = getBoardVersionCode();
-        var boardModelByBoardCode = BoardModel.getByBoardCode(boardVersionCode);
-        if (boardModelByBoardCode != BoardModel.UNKNOWN) {
-            logger.info("Detected board type {} by code: {}", boardModelByBoardCode.name(), boardVersionCode);
-            this.boardInfo = new BoardInfo(boardModelByBoardCode, os, java);
-            return;
-        }
-
-        // Example output: Raspberry Pi 4 Model B Rev 1.1
-        var boardName = getBoardName();
-        boardModelByBoardCode = BoardModel.getByBoardName(boardName);
-        if (boardModelByBoardCode != BoardModel.UNKNOWN) {
-            logger.info("Detected board type {} by name: {}", boardModelByBoardCode.name(), boardName);
-            this.boardInfo = new BoardInfo(boardModelByBoardCode, os, java);
-            return;
-        }
-
-        // Maybe there are other ways how a board can be detected?
-        // If so, this method can be further extended...
-        logger.warn("Sorry, could not detect the board type");
-        this.boardInfo = new BoardInfo(BoardModel.UNKNOWN, os, java);
-    }
-
-    public static BoardInfo current() {
-        return instance.boardInfo;
+        this.boardInfo = detectBoardInfo(os, java);
     }
 
     /**
-     * Flag indicating that the board is using the RP1 chip for GPIO.
-     * https://www.raspberrypi.com/documentation/microcontrollers/rp1.html
+     * Sets the model of the board. To be used when the detected board is not correct,
+     * or to force a specific model e.g. on Orange Pi, or during testing.
+     *
+     * @param boardModel the board model to use instead of the auto-detected one
      */
-    public static boolean usesRP1() {
-        return instance.boardInfo.getBoardModel() == BoardModel.MODEL_5_B;
+    public void setBoardModel(BoardModel boardModel) {
+        this.boardInfo.setBoardModel(boardModel);
     }
 
+    /**
+     * Returns the {@link BoardInfo} detected for the running system, lazily initializing the singleton
+     * on first access. This is the primary entry point for querying board, OS and Java details.
+     *
+     * @return the detected board information for the current device
+     */
+    public static BoardInfo current() {
+        return SingletonHelper.INSTANCE.boardInfo;
+    }
+
+    /**
+     * Retrieves the BCM (Broadcom) number corresponding to a given physical pin number on the board header.
+     * This method navigates through the board's header configuration to find the associated BCM number.
+     *
+     * @param value the physical pin number to search for
+     * @return an {@code Optional<Integer>} containing the BCM number if found, otherwise an empty {@code Optional}
+     */
+    public static Optional<Integer> getBcmFromPhysical(int value) {
+        return current().getBoardModel().getHeaderVersion().getHeaderTypes().stream()
+            .flatMap(headerType -> headerType.getPins().stream())
+            .filter(pin -> pin.getPinNumber() == value)
+            .map(HeaderPin::getBcmNumber)
+            .filter(Objects::nonNull)
+            .findFirst();
+    }
+
+    /**
+     * Retrieves the BCM (Broadcom) number corresponding to a given WiringPi pin number on the board header.
+     * This method navigates through the board's header configuration to find the associated BCM number.
+     *
+     * @param value the WiringPi pin number to search for
+     * @return an {@code Optional<Integer>} containing the BCM number if found, otherwise an empty {@code Optional}
+     */
+    public static Optional<Integer> getBcmFromWiringPi(int value) {
+        return current().getBoardModel().getHeaderVersion().getHeaderTypes().stream()
+            .flatMap(headerType -> headerType.getPins().stream())
+            .filter(pin -> pin.getWiringPiNumber() != null && pin.getWiringPiNumber() == value)
+            .map(HeaderPin::getBcmNumber)
+            .filter(Objects::nonNull)
+            .findFirst();
+    }
+
+    /**
+     * Reinitializes the singleton instance of {@code BoardInfoHelper}.
+     * This method is useful for testing or reloading board information in controlled scenarios.
+     *
+     * <p>Note: Frequent usage of this method is not recommended as it resets the global state.</p>
+     */
+    public static synchronized void reinitialize() {
+        logger.info("Reinitializing BoardInfoHelper singleton instance.");
+        SingletonHelper.resetInstance();
+    }
+
+    /**
+     * Inner static class responsible for holding the singleton instance of {@code BoardInfoHelper}.
+     * Implements the Bill Pugh Singleton Design, ensuring thread-safety and lazy initialization.
+     */
+    private static class SingletonHelper {
+        private static volatile BoardInfoHelper INSTANCE = new BoardInfoHelper();
+
+        /**
+         * Resets the singleton instance for reinitialization.
+         */
+        private static synchronized void resetInstance() {
+            INSTANCE = new BoardInfoHelper();
+        }
+    }
+
+    /**
+     * Detects the board information by attempting to retrieve the board version code or name.
+     * This method prioritizes detection by board version code and falls back to board name if necessary.
+     *
+     * @param os   the detected operating system information
+     * @param java the detected Java runtime information
+     * @return a {@link BoardInfo} object containing the detected board information
+     */
+    private BoardInfo detectBoardInfo(OperatingSystem os, JavaInfo java) {
+        String boardVersionCode = getBoardVersionCode();
+        try {
+            BoardModel boardModelByBoardCode = BoardModel.getByBoardCode(boardVersionCode);
+            if (boardModelByBoardCode != BoardModel.UNKNOWN) {
+                logger.info("Detected board type {} by code: {}", boardModelByBoardCode.name(), boardVersionCode);
+                return new BoardInfo(boardModelByBoardCode, os, java);
+            }
+        } catch (Exception e) {
+            logger.warn("Could not detect the board type for code {}: {}", boardVersionCode, e.getMessage());
+        }
+
+        String boardName = getBoardName();
+        BoardModel boardModelByBoardName = BoardModel.getByBoardName(boardName);
+        if (boardModelByBoardName != BoardModel.UNKNOWN) {
+            logger.info("Detected board type {} by name: {}", boardModelByBoardName.name(), boardName);
+            return new BoardInfo(boardModelByBoardName, os, java);
+        }
+
+        logger.warn("Sorry, could not detect the board type");
+        return new BoardInfo(BoardModel.UNKNOWN, os, java);
+    }
+
+    /**
+     * Indicates whether the detected board uses the RP1 I/O controller chip, which changes how
+     * peripherals such as PWM are addressed (e.g. on the Raspberry Pi 5).
+     *
+     * @return {@code true} if the detected board model uses the RP1 chip, otherwise {@code false}
+     */
+    public static boolean usesRP1() {
+        return current().getBoardModel().usesRP1();
+    }
+
+    /**
+     * Returns the PWM chip number to use for the detected board. On boards with an RP1 chip the
+     * chip is detected from the sysfs PWM filesystem, while older boards use the legacy chip
+     * {@link PwmChipUtil#DEFAULT_LEGACY_PWM_CHIP}.
+     *
+     * @return the PWM chip number (sysfs {@code pwmchip} index) appropriate for the current board
+     */
+    public static int getPwmChipAddress() {
+        if (BoardInfoHelper.usesRP1()) {
+            return PwmChipUtil.getPWMChipForRP1(DEFAULT_PWM_SYSTEM_PATH);
+        }
+        return DEFAULT_LEGACY_PWM_CHIP;
+    }
+
+    /**
+     * Checks if the application is running on a Raspberry Pi device.
+     *
+     * @return {@code true} if the board model is not {@link BoardModel#UNKNOWN}, otherwise {@code false}.
+     */
+    public static boolean runningOnRaspberryPi() {
+        return current().getBoardModel() != BoardModel.UNKNOWN;
+    }
+
+    /**
+     * Checks if the system architecture is 32-bit.
+     *
+     * @return {@code true} if the system is 32-bit, otherwise {@code false}.
+     */
     public static boolean is32bit() {
         return !is64bit();
     }
 
+    /**
+     * Checks if the system architecture is 64-bit.
+     *
+     * @return {@code true} if the system is 64-bit, otherwise {@code false}.
+     */
     public static boolean is64bit() {
-        return System.getProperty("sun.arch.data.model").equals("64");
+        return System.getProperty(ARCHITECTURE_DATA_MODEL).equals("64");
     }
 
+    /**
+     * Retrieves the board version code by reading CPU revision information.
+     *
+     * @return the board version code, or an empty string if not found
+     */
     public static String getBoardVersionCode() {
-        var output = getCommandOutput("cat /proc/cpuinfo | grep 'Revision' | awk '{print $3}'");
+        var output = CpuInfoReader.getCpuRevision();
         if (output.isSuccess()) {
             return output.getOutputMessage();
         }
         logger.error("Could not get the board version code: {}", output.getErrorMessage());
-        return "";
+        return StringUtil.EMPTY;
     }
 
+    /**
+     * Retrieves the board name by reading device tree information.
+     *
+     * @return the board name, or an empty string if not found
+     */
     public static String getBoardName() {
-        var output = getCommandOutput("cat /proc/device-tree/model");
+        var output = BoardCodeReader.getBoardCode();
         if (output.isSuccess()) {
             return output.getOutputMessage();
         }
@@ -90,98 +245,80 @@ public class BoardInfoHelper {
         return "";
     }
 
+    /**
+     * Retrieves information about the JVM memory usage.
+     *
+     * @return a {@link JvmMemory} object containing memory details
+     */
     public static JvmMemory getJvmMemory() {
         return new JvmMemory(Runtime.getRuntime());
     }
 
+    /**
+     * Retrieves a collection of readings about the board, including name, version code,
+     * temperature, uptime, core voltage, and memory total.
+     *
+     * @return a {@link BoardReading} object containing the board readings
+     */
     public static BoardReading getBoardReading() {
         return new BoardReading(
-            getCommandOutput("cat /proc/device-tree/model").getOutputMessage(),
-            // https://raspberry-projects.com/pi/command-line/detect-rpi-hardware-version
-            getCommandOutput("cat /proc/cpuinfo | grep 'Revision' | awk '{print $3}'").getOutputMessage(),
-            // https://linuxhint.com/commands-for-hardware-information-raspberry-pi/
-             getCommandOutput("vcgencmd measure_temp").getOutputMessage(),
-            getCommandOutput("uptime").getOutputMessage(),
-            // https://linuxhint.com/find-hardware-information-raspberry-pi/
-            getCommandOutput("vcgencmd measure_volts").getOutputMessage(),
-            // https://www.baeldung.com/linux/total-physical-memory
-            getCommandOutput("cat /proc/meminfo | head -n 1").getOutputMessage()
+            getBoardName(),
+            getBoardVersionCode(),
+            getTemperature(),
+            getUptime(),
+            getCoreVoltage(),
+            getMemTotal(),
+            getThrottledState()
         );
     }
 
-    private static class CommandResult {
-        private final boolean success;
-        private final String outputMessage;
-        private final String errorMessage;
-
-        public CommandResult(boolean success, String outputMessage, String errorMessage) {
-            this.success = success;
-            this.outputMessage = outputMessage;
-            this.errorMessage = errorMessage;
-        }
-
-        public boolean isSuccess() {
-            return success;
-        }
-
-        public String getOutputMessage() {
-            return outputMessage;
-        }
-
-        public String getErrorMessage() {
-            return errorMessage;
-        }
+    /**
+     * Retrieves the total memory information from the system.
+     *
+     * @return a string representing the total memory
+     */
+    private static String getMemTotal() {
+        return MemInfoReader.getMemTotal().getOutputMessage();
     }
 
-    private static CommandResult getCommandOutput(String command) {
-        boolean finished = false;
-        String outputMessage = "";
-        String errorMessage = "";
-
-        ProcessBuilder builder = new ProcessBuilder();
-        builder.command("sh", "-c", command);
-
-        try {
-            Process process = builder.start();
-
-            OutputStream outputStream = process.getOutputStream();
-            InputStream inputStream = process.getInputStream();
-            InputStream errorStream = process.getErrorStream();
-
-            outputMessage = readStream(inputStream);
-            errorMessage = readStream(errorStream);
-
-            finished = process.waitFor(30, TimeUnit.SECONDS);
-            outputStream.flush();
-            outputStream.close();
-
-            if (!finished) {
-                process.destroyForcibly();
-            }
-        } catch (IOException ex) {
-            errorMessage = "IOException: " + ex.getMessage();
-        } catch (InterruptedException ex) {
-            errorMessage = "InterruptedException: " + ex.getMessage();
-        }
-
-        if (!finished || !errorMessage.isEmpty()) {
-            logger.error("Could not execute '{}' to detect the board model: {}", command, errorMessage);
-            return new CommandResult(false, outputMessage, errorMessage);
-        }
-
-        return new CommandResult(true, outputMessage, errorMessage);
+    /**
+     * Retrieves the core voltage reading of the board.
+     *
+     * @return a string representing the core voltage
+     */
+    private static String getCoreVoltage() {
+        return execute(CORE_VOLTAGE_COMMAND).getOutputMessage();
     }
 
-    private static String readStream(InputStream inputStream) {
-        StringBuilder rt = new StringBuilder();
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                rt.append(line);
-            }
-        } catch (Exception ex) {
-            rt.append("ERROR: ").append(ex.getMessage());
-        }
-        return rt.toString();
+    /**
+     * Retrieves the system uptime.
+     *
+     * @return a string representing the uptime
+     */
+    private static String getUptime() {
+        return execute(UPTIME_COMMAND).getOutputMessage();
+    }
+
+    /**
+     * Retrieves the system temperature reading.
+     *
+     * @return a string representing the temperature
+     */
+    private static String getTemperature() {
+        return execute(TEMPERATURE_COMMAND).getOutputMessage();
+    }
+
+    /**
+     * Retrieves the throttled state of the system.
+     * <p>
+     * This command uses the `vcgencmd get_throttled` utility to check for under-voltage,
+     * throttling, or frequency capping conditions on the board.
+     * </p>
+     *
+     * @return a string representing the throttled state of the system
+     */
+    public static String getThrottledState() {
+        return execute(THROTTLED_STATE_COMMAND).getOutputMessage();
     }
 }
+

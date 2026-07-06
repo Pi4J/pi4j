@@ -1,64 +1,38 @@
 package com.pi4j.io.gpio.digital;
 
-/*-
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  DigitalBase.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import com.pi4j.context.Context;
 import com.pi4j.event.EventDelegate;
 import com.pi4j.event.EventManager;
 import com.pi4j.exception.ShutdownException;
-import com.pi4j.io.binding.Bindable;
-import com.pi4j.io.binding.BindingDelegate;
-import com.pi4j.io.binding.BindingManager;
-import com.pi4j.io.binding.DigitalBinding;
 import com.pi4j.io.gpio.GpioBase;
 
+import java.util.function.Consumer;
+
 /**
- * <p>Abstract DigitalBase class.</p>
+ * Abstract base implementation of {@link Digital}, providing the listener management and
+ * state-change event dispatch shared by all digital I/O types. Subclasses such as
+ * {@link DigitalInputBase} build on this to add their specific I/O behaviour, while the
+ * generic {@link GpioBase} supplies the common GPIO lifecycle support.
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * @param <DIGITAL_TYPE> the concrete digital I/O type, used as the self-referencing return type for fluent methods
+ * @param <CONFIG_TYPE> the {@link DigitalConfig} type describing this instance
+ * @param <PROVIDER_TYPE> the {@link DigitalProvider} type that created this instance
  */
 public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
         CONFIG_TYPE extends DigitalConfig<CONFIG_TYPE>,
         PROVIDER_TYPE extends DigitalProvider>
         extends GpioBase<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>
-        implements Digital<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
-        Bindable<DIGITAL_TYPE, DigitalBinding>
+        implements Digital<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>
 {
     // internal listeners collection
     protected final EventManager<DIGITAL_TYPE, DigitalStateChangeListener, DigitalStateChangeEvent> stateChangeEventManager;
 
-    // internal bindings collection
-    protected BindingManager<DIGITAL_TYPE, DigitalBinding, DigitalStateChangeEvent> bindings;
-
     /**
-     * <p>Constructor for DigitalBase.</p>
+     * Creates a digital I/O instance bound to the given provider and configuration, and initializes
+     * the internal event manager used to deliver {@link DigitalStateChangeEvent}s to listeners.
      *
-     * @param provider a PROVIDER_TYPE object.
-     * @param config a CONFIG_TYPE object.
+     * @param provider the {@link DigitalProvider} responsible for this instance's underlying I/O
+     * @param config the configuration describing this instance (pin, on-state, etc.)
      */
     public DigitalBase(PROVIDER_TYPE provider, CONFIG_TYPE config){
         super(provider,config);
@@ -67,67 +41,63 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
         stateChangeEventManager  = new EventManager(this,
                 (EventDelegate<DigitalStateChangeListener, DigitalStateChangeEvent>)
                         (listener, event) -> listener.onDigitalStateChange(event));
-
-        // create a binding manager for digital state change events
-        bindings = new BindingManager(this, (BindingDelegate<DigitalBinding, DigitalStateChangeEvent>)
-                (binding, event) -> binding.process(event));
     }
 
-    /** {@inheritDoc} */
+    @Override
+    public Consumer<Boolean> addConsumer(Consumer<Boolean> listener) {
+        addListener(new ConsumerAdapter(listener, config().onState() != null ? config().onState() : DigitalState.HIGH));
+        return listener;
+    }
+
+    @Override
+    public DIGITAL_TYPE removeConsumer(Consumer<Boolean> listener) {
+        stateChangeEventManager.remove(
+            (candidate) -> (candidate instanceof ConsumerAdapter)
+                && ((ConsumerAdapter) candidate).consumer == listener);
+        return (DIGITAL_TYPE) this;
+    }
+
     @Override
     public DIGITAL_TYPE addListener(DigitalStateChangeListener... listener) {
         stateChangeEventManager.add(listener);
         return (DIGITAL_TYPE)this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public DIGITAL_TYPE removeListener(DigitalStateChangeListener... listener) {
         stateChangeEventManager.remove(listener);
         return (DIGITAL_TYPE)this;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public DIGITAL_TYPE bind(DigitalBinding ... binding) {
-        return bindings.bind(binding);
-
-        //bindings.addAll(Arrays.asList(binding));
-        //return (DIGITAL_TYPE)this;
+    /**
+     * Indicates whether any state-change listeners (including consumer adapters) are currently registered.
+     *
+     * @return {@code true} if at least one listener is registered
+     */
+    public boolean hasListenersOrBindings() {
+        return stateChangeEventManager.hasListeners();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public DIGITAL_TYPE unbind(DigitalBinding ... binding) {
-        return bindings.unbind(binding);
-        //bindings.removeAll(Arrays.asList(binding));
-        //return (DIGITAL_TYPE)this;
-    }
 
     /**
-     * Dispatch DigitalChangeEvent on digital input state changes
+     * Delivers a state-change event to all registered listeners; intended to be called by subclasses
+     * when the underlying I/O reports a transition.
      *
-     * @param event DigitalChangeEvent
+     * @param event the {@link DigitalStateChangeEvent} describing the new state and its source
      */
     protected void dispatch(DigitalStateChangeEvent event){
         stateChangeEventManager.dispatch(event);
-        bindings.process(event);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public DIGITAL_TYPE shutdown(Context context) throws ShutdownException {
+    public DIGITAL_TYPE shutdownInternal(Context context) throws ShutdownException {
         // remove all listeners
         stateChangeEventManager.clear();
-
-        // remove all bindings
-        bindings.clear();
 
         // return this instance
         return (DIGITAL_TYPE) this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean isOn() {
         // the default ON state is HIGH
@@ -140,5 +110,20 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
 
         // return TRUE if the current state matches the configured ON state
         return state().equals(onState);
+    }
+
+    private static class ConsumerAdapter implements DigitalStateChangeListener {
+        private final Consumer<Boolean> consumer;
+        private final DigitalState onState;
+
+        private ConsumerAdapter(Consumer<Boolean> consumer, DigitalState onState) {
+            this.consumer = consumer;
+            this.onState = onState;
+        }
+
+        @Override
+        public void onDigitalStateChange(DigitalStateChangeEvent event) {
+            consumer.accept(event.state().equals(onState));
+        }
     }
 }

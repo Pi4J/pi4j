@@ -1,144 +1,93 @@
 package com.pi4j.context;
 
-/*-
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  ContextBuilder.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import com.pi4j.config.Builder;
 import com.pi4j.context.impl.DefaultContextBuilder;
-import com.pi4j.platform.Platform;
 import com.pi4j.provider.Provider;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.util.Map;
-import java.util.Properties;
-
 /**
- * <p>ContextBuilder interface.</p>
+ * Fluent builder used to configure and create a Pi4J {@link Context}. It accumulates settings such as
+ * the default platform, auto-detection behaviour for platforms and providers, the shutdown hook, manually
+ * added {@link Provider}s and user properties, and finally produces either a {@link ContextConfig} (via
+ * {@link #toConfig()}) or a fully initialized {@link Context} (via {@link #build()}). Obtain an instance
+ * with {@link #newInstance()}.
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * @see Context
+ * @see ContextConfig
  */
 public interface ContextBuilder extends Builder<Context> {
 
     /**
-     * <p>newInstance.</p>
+     * Creates a new, empty context builder.
      *
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     * @return a fresh {@link ContextBuilder} instance
      */
     static ContextBuilder newInstance(){
         return DefaultContextBuilder.newInstance();
     }
 
     /**
-     * <p>add.</p>
+     * Adds one or more providers to be registered in the resulting context.
      *
-     * @param platform a {@link com.pi4j.platform.Platform} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    ContextBuilder add(Platform ... platform);
-
-    /**
-     * <p>add.</p>
-     *
-     * @param provider a {@link com.pi4j.provider.Provider} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     * @param provider the providers to add
+     * @return this builder instance for method chaining
      */
     ContextBuilder add(Provider ... provider);
 
     /**
-     * <p>defaultPlatform.</p>
+     * Enables auto-detection of mock plugins on the classpath, primarily useful for testing without real
+     * hardware.
      *
-     * @return a {@link java.lang.String} object.
-     */
-    String defaultPlatform();
-
-    /**
-     * <p>defaultPlatform.</p>
-     *
-     * @param platformId a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    ContextBuilder defaultPlatform(String platformId);
-
-    /**
-     * <p>autoDetectMockPlugins.</p>
-     *
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     * @return this builder instance for method chaining
      */
     ContextBuilder autoDetectMockPlugins();
 
     /**
-     * <p>autoDetectPlatforms.</p>
+     * Enables auto-detection of platform implementations available on the classpath.
      *
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     * @return this builder instance for method chaining
      */
     ContextBuilder autoDetectPlatforms();
 
     /**
-     * <p>noAutoDetectPlatforms.</p>
+     * Disables auto-detection of platform implementations on the classpath.
      *
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     * @return this builder instance for method chaining
      */
     ContextBuilder noAutoDetectPlatforms();
 
     /**
-     * <p>autoDetectProviders.</p>
+     * Enables auto-detection of provider implementations available on the classpath.
      *
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     * @return this builder instance for method chaining
      */
     ContextBuilder autoDetectProviders();
 
     /**
-     * <p>noAutoDetectProviders.</p>
+     * Disables auto-detection of provider implementations on the classpath.
      *
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     * @return this builder instance for method chaining
      */
     ContextBuilder noAutoDetectProviders();
 
     /**
-     * <p>autoInject.</p>
+     * Enables automatic injection of Pi4J dependencies into annotated members of registered objects.
      *
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     * @return this builder instance for method chaining
      */
     ContextBuilder autoInject();
 
     /**
-     * <p>noAutoInject.</p>
+     * Disables automatic injection of Pi4J dependencies.
      *
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     * @return this builder instance for method chaining
      */
     ContextBuilder noAutoInject();
 
     /**
-     * <p>setAutoInject.</p>
+     * Enables or disables automatic dependency injection depending on the given flag.
      *
-     * @param autoInject a boolean.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     * @param autoInject {@code true} to enable auto-injection, {@code false} to disable it
+     * @return this builder instance for method chaining
      */
     default ContextBuilder setAutoInject(boolean autoInject){
         if(autoInject)
@@ -148,17 +97,46 @@ public interface ContextBuilder extends Builder<Context> {
     }
 
     /**
-     * <p>toConfig.</p>
+     * Enables registration of a JVM shutdown hook that automatically shuts the context down when the JVM
+     * terminates.
      *
-     * @return a {@link com.pi4j.context.ContextConfig} object.
+     * @return this builder instance for method chaining
+     */
+    ContextBuilder enableShutdownHook();
+
+    /**
+     * Disables registration of the JVM shutdown hook, leaving the caller responsible for shutting the
+     * context down explicitly.
+     *
+     * @return this builder instance for method chaining
+     */
+    ContextBuilder disableShutdownHook();
+
+    /**
+     * Enables or disables the JVM shutdown hook depending on the given flag.
+     *
+     * @param enableShutdownHook {@code true} to register the shutdown hook, {@code false} to skip it
+     * @return this builder instance for method chaining
+     */
+    default ContextBuilder setShutdownHook(boolean enableShutdownHook) {
+        if (enableShutdownHook)
+            return enableShutdownHook();
+        else
+            return disableShutdownHook();
+    }
+
+    /**
+     * Builds an immutable configuration snapshot from the current builder state, without creating a context.
+     *
+     * @return a {@link ContextConfig} reflecting this builder's settings
      */
     ContextConfig toConfig();
 
     /**
-     * <p>setAutoDetect.</p>
+     * Enables or disables auto-detection of both platforms and providers depending on the given flag.
      *
-     * @param autoDetect a boolean.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     * @param autoDetect {@code true} to enable auto-detection, {@code false} to disable it
+     * @return this builder instance for method chaining
      */
     default ContextBuilder setAutoDetect(boolean autoDetect){
         if(autoDetect)
@@ -168,9 +146,9 @@ public interface ContextBuilder extends Builder<Context> {
     }
 
     /**
-     * <p>autoDetect.</p>
+     * Enables auto-detection of all extensibility modules (platforms and providers) on the classpath.
      *
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     * @return this builder instance for method chaining
      */
     default ContextBuilder autoDetect(){
         // auto detect all extensibility modules in the classpath
@@ -179,9 +157,9 @@ public interface ContextBuilder extends Builder<Context> {
     }
 
     /**
-     * <p>noAutoDetect.</p>
+     * Disables auto-detection of all extensibility modules (platforms and providers) on the classpath.
      *
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     * @return this builder instance for method chaining
      */
     default ContextBuilder noAutoDetect(){
         // do not auto detect all extensibility modules in the classpath
@@ -190,331 +168,10 @@ public interface ContextBuilder extends Builder<Context> {
     }
 
     /**
-     * <p>addPlatform.</p>
+     * Sets the GPIO chip name to be used by the resulting context.
      *
-     * @param platform a {@link com.pi4j.platform.Platform} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
+     * @param chipName the name of the GPIO chip (e.g., "gpiochip0")
+     * @return this builder instance for method chaining
      */
-    default ContextBuilder addPlatform(Platform ... platform){
-        return add(platform);
-    }
-
-    /**
-     * <p>addPlatform.</p>
-     *
-     * @param provider a {@link com.pi4j.provider.Provider} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder addPlatform(Provider ... provider){
-        return add(provider);
-    }
-
-    /**
-     * <p>addDefaultPlatform.</p>
-     *
-     * @param platform a {@link com.pi4j.platform.Platform} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder addDefaultPlatform(Platform platform){
-        return this.add(platform).defaultPlatform(platform.id());
-    }
-
-    /**
-     * <p>defaultPlatform.</p>
-     *
-     * @param platform a {@link com.pi4j.platform.Platform} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder defaultPlatform(Platform platform){
-        return defaultPlatform(platform.id());
-    }
-
-    /**
-     * <p>setDefaultPlatform.</p>
-     *
-     * @param platformId a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder setDefaultPlatform(String platformId){
-        return defaultPlatform(platformId);
-    }
-
-    /**
-     * <p>setDefaultPlatform.</p>
-     *
-     * @param platform a {@link com.pi4j.platform.Platform} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder setDefaultPlatform(Platform platform){
-        return defaultPlatform(platform);
-    }
-
-    /**
-     * <p>property.</p>
-     *
-     * @param key a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    ContextBuilder property(String key, String value);
-
-    /**
-     * <p>property.</p>
-     *
-     * @param value a {@link java.util.Map.Entry} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    ContextBuilder property(Map.Entry<String,String> ... value);
-
-    /**
-     * <p>properties.</p>
-     *
-     * @param values a {@link java.util.Map} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    ContextBuilder properties(Map<String,String> values);
-
-    /**
-     * <p>properties.</p>
-     *
-     * @param properties a {@link java.util.Map} object.
-     * @param prefixFilter a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    ContextBuilder properties(Map<String,String> properties, String prefixFilter);
-
-    /**
-     * <p>properties.</p>
-     *
-     * @param properties a {@link java.util.Properties} object.
-     * @param prefixFilter a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    ContextBuilder properties(Properties properties, String prefixFilter);
-
-    /**
-     * <p>properties.</p>
-     *
-     * @param stream a {@link java.io.InputStream} object.
-     * @param prefixFilter a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     * @throws java.io.IOException if an error occurs accessing {@code stream}.
-     */
-    ContextBuilder properties(InputStream stream, String prefixFilter) throws IOException;
-
-    /**
-     * <p>properties.</p>
-     *
-     * @param reader a {@link java.io.Reader} object.
-     * @param prefixFilter a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     * @throws java.io.IOException if an error occurs accessing {@code reader}.
-     */
-    ContextBuilder properties(Reader reader, String prefixFilter) throws IOException;
-
-    /**
-     * <p>properties.</p>
-     *
-     * @param file a {@link java.io.File} object.
-     * @param prefixFilter a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     * @throws java.io.IOException if an error occurs accessing {@code file}.
-     */
-    ContextBuilder properties(File file, String prefixFilter) throws IOException;
-
-    /**
-     * <p>properties.</p>
-     *
-     * @param properties a {@link java.util.Properties} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder properties(Properties properties){
-        return properties(properties, null);
-    }
-
-    /**
-     * <p>properties.</p>
-     *
-     * @param stream a {@link java.io.InputStream} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     * @throws java.io.IOException if an error occurs accessing {@code stream}.
-     */
-    default ContextBuilder properties(InputStream stream) throws IOException {
-        return properties(stream, null);
-    }
-
-    /**
-     * <p>properties.</p>
-     *
-     * @param reader a {@link java.io.Reader} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     * @throws java.io.IOException if an error occurs accessing {@code reader}.
-     */
-    default ContextBuilder properties(Reader reader) throws IOException {
-        return properties(reader, null);
-    }
-
-    /**
-     * <p>properties.</p>
-     *
-     * @param file a {@link java.io.File} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     * @throws java.io.IOException if an error occurs accessing {@code file}.
-     */
-    default ContextBuilder properties(File file) throws IOException {
-        return properties(file, null);
-    }
-
-    /**
-     * <p>addProperty.</p>
-     *
-     * @param key a {@link java.lang.String} object.
-     * @param value a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder addProperty(String key, String value){
-        return property(key, value);
-    }
-
-    /**
-     * <p>addProperty.</p>
-     *
-     * @param value a {@link java.util.Map.Entry} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder addProperty(Map.Entry<String,String> ... value){
-        return property(value);
-    }
-
-    /**
-     * <p>addProperties.</p>
-     *
-     * @param properties a {@link java.util.Properties} object.
-     * @param prefixFilter a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder addProperties(Properties properties, String prefixFilter){
-        return properties(properties, prefixFilter);
-    }
-
-    /**
-     * <p>addProperties.</p>
-     *
-     * @param properties a {@link java.util.Properties} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder addProperties(Properties properties){
-        return properties(properties, null);
-    }
-
-    /**
-     * <p>addProperties.</p>
-     *
-     * @param properties a {@link java.util.Map} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder addProperties(Map<String,String> properties){
-        return properties(properties, null);
-    }
-
-    /**
-     * <p>addProperties.</p>
-     *
-     * @param properties a {@link java.util.Map} object.
-     * @param prefixFilter a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder addProperties(Map<String, String> properties, String prefixFilter){
-        return properties(properties, prefixFilter);
-    }
-
-    /**
-     * <p>addProperties.</p>
-     *
-     * @param stream a {@link java.io.InputStream} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     * @throws java.io.IOException if an error occurs accessing {@code stream}.
-     */
-    default ContextBuilder addProperties(InputStream stream) throws IOException{
-        return properties(stream, null);
-    }
-
-    /**
-     * <p>addProperties.</p>
-     *
-     * @param stream a {@link java.io.InputStream} object.
-     * @param prefixFilter a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     * @throws java.io.IOException if an error occurs accessing {@code stream}.
-     */
-    default ContextBuilder addProperties(InputStream stream, String prefixFilter) throws IOException{
-        return properties(stream, prefixFilter);
-    }
-
-    /**
-     * <p>addProperties.</p>
-     *
-     * @param reader a {@link java.io.Reader} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     * @throws java.io.IOException if an error occurs accessing {@code reader}.
-     */
-    default ContextBuilder addProperties(Reader reader) throws IOException{
-        return properties(reader, null);
-    }
-
-    /**
-     * <p>addProperties.</p>
-     *
-     * @param reader a {@link java.io.Reader} object.
-     * @param prefixFilter a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     * @throws java.io.IOException if an error occurs accessing {@code reader}.
-     */
-    default ContextBuilder addProperties(Reader reader, String prefixFilter) throws IOException{
-        return properties(reader, prefixFilter);
-    }
-
-    /**
-     * <p>addProperties.</p>
-     *
-     * @param file a {@link java.io.File} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     * @throws java.io.IOException if an error occurs accessing {@code file}.
-     */
-    default ContextBuilder addProperties(File file) throws IOException{
-        return properties(file, null);
-    }
-
-    /**
-     * <p>addProperties.</p>
-     *
-     * @param file a {@link java.io.File} object.
-     * @param prefixFilter a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     * @throws java.io.IOException if an error occurs accessing {@code file}.
-     */
-    default ContextBuilder addProperties(File file, String prefixFilter) throws IOException{
-        return properties(file, prefixFilter);
-    }
-
-    /**
-     * <p>add.</p>
-     *
-     * @param properties a {@link java.util.Properties} object.
-     * @param prefixFilter a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder add(Properties properties, String prefixFilter){
-        return properties(properties, prefixFilter);
-    }
-
-    /**
-     * <p>add.</p>
-     *
-     * @param properties a {@link java.util.Properties} object.
-     * @return a {@link com.pi4j.context.ContextBuilder} object.
-     */
-    default ContextBuilder add(Properties properties){
-        return properties(properties, null);
-    }
+    ContextBuilder setGpioChipName(String chipName);
 }

@@ -1,118 +1,122 @@
 package com.pi4j.io.spi;
 
-/*-
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  SpiConfigBuilder.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import com.pi4j.context.Context;
-import com.pi4j.io.IOAddressConfigBuilder;
+import com.pi4j.io.IOBcmConfigBuilder;
 import com.pi4j.io.spi.impl.DefaultSpiConfigBuilder;
 
 /**
- * <p>SpiConfigBuilder interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * Fluent builder for assembling an {@link SpiConfig}. Set the desired bus, channel/chip-select,
+ * clock mode, baud rate, and bit-ordering, then call {@code build()} (inherited from
+ * {@link IOBcmConfigBuilder}) to obtain an immutable configuration for use with a {@link SpiProvider}.
  */
 public interface SpiConfigBuilder extends
-        IOAddressConfigBuilder<SpiConfigBuilder, SpiConfig> {
+    IOBcmConfigBuilder<SpiConfigBuilder, SpiConfig> {
     /**
-     * <p>newInstance.</p>
+     * Creates a new {@code SpiConfigBuilder} instance.
      *
-     * @param context {@link Context}
-     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
+     * @param context the Pi4J runtime context
+     * @return a new builder instance
+     * @deprecated use {@link #newInstance()} instead.
      */
-    static SpiConfigBuilder newInstance(Context context)  {
+    @Deprecated
+    static SpiConfigBuilder newInstance(Context context) {
         return DefaultSpiConfigBuilder.newInstance(context);
     }
 
     /**
-     * <p>baud.</p>
+     * Creates a new {@code SpiConfigBuilder} instance.
      *
-     * @param rate a {@link java.lang.Integer} object.
-     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
+     * @return a new builder instance
+     */
+    static SpiConfigBuilder newInstance() {
+        return DefaultSpiConfigBuilder.newInstance();
+    }
+
+    /**
+     * Sets the bit order for read operations.
+     *
+     * @param shift {@code 0} to shift the least significant bit first, {@code 1} to shift the most significant bit first
+     * @return this builder instance for method chaining
+     */
+    SpiConfigBuilder readLsbFirst(Integer shift);
+
+    /**
+     * Sets the bit order for write operations.
+     *
+     * @param shift {@code 0} to shift the least significant bit first, {@code 1} to shift the most significant bit first
+     * @return this builder instance for method chaining
+     */
+    SpiConfigBuilder writeLsbFirst(Integer shift);
+
+
+    /**
+     * Sets the SPI clock (baud) rate.
+     *
+     * @param rate the clock rate in Hz (typically 500&nbsp;kHz to 32&nbsp;MHz)
+     * @return this builder instance for method chaining
      */
     SpiConfigBuilder baud(Integer rate);
 
+
     /**
-     * <p>bus.</p>
-     * <p>If the Bus value is configured, that SpiBus
-     * value will be set in the flags {@link #flags(Long)}   bit 'A' 8
-     * </p>
-     * @param bus a {@link com.pi4j.io.spi.SpiBus} object.
-     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
+     * Sets the SPI bus this device communicates over.
+     *
+     * @param bus the {@link SpiBus} to use
+     * @return this builder instance for method chaining
      */
     SpiConfigBuilder bus(SpiBus bus);
 
     /**
-     * <p>bus.</p>
+     * Sets the SPI bus by its numeric index.
      *
-     * @param bus a {@link java.lang.Integer} object.
-     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
+     * @param bus the SPI bus number, resolved via {@link SpiBus#getByNumber(int)}
+     * @return this builder instance for method chaining
      */
-    default SpiConfigBuilder bus(Integer bus){ return bus(SpiBus.getByNumber(bus)); }
+    default SpiConfigBuilder bus(Integer bus) {
+        return bus(SpiBus.getByNumber(bus));
+    }
 
     /**
-     * <p>mode.</p>
-     *<p>If the Mode value is configured, that SpiMode
-     * value will be set in the flags  {@link #flags(Long)}  bit 'm m' 1:0
-     * </p>
+     * Sets the SPI clock mode (clock polarity and phase).
      *
-     * @param mode a {@link com.pi4j.io.spi.SpiMode} object.
-     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
+     * @param mode the {@link SpiMode} to use
+     * @return this builder instance for method chaining
      */
     SpiConfigBuilder mode(SpiMode mode);
 
     /**
-     * <p>mode.</p>
+     * Sets the SPI clock mode by its numeric value.
      *
-     * @param mode a {@link java.lang.Integer} object.
-     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
+     * @param mode the mode number (0&ndash;3), resolved via {@link SpiMode#getByNumber(int)}
+     * @return this builder instance for method chaining
      */
-    default SpiConfigBuilder mode(Integer mode){ return mode(SpiMode.getByNumber(mode)); }
+    default SpiConfigBuilder mode(Integer mode) {
+        return mode(SpiMode.getByNumber(mode));
+    }
 
     /**
-     * <p>flags.</p>
+     * Sets the raw provider flags value directly, overriding the encoding derived from mode, bus, and
+     * bit-order settings.
      *
-     * @param flags a {@link java.lang.Long} value.
-     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
+     * @param flags the encoded provider flags
+     * @return this builder instance for method chaining
      */
     SpiConfigBuilder flags(Long flags);
 
     /**
-     * <p>channel. (ALIAS for 'address')</p>
+     * Sets the SPI channel (chip-select line) this device is addressed on. This is an alias for the
+     * underlying channel/address value.
      *
-     * @param channel a {@link java.lang.Integer} value.
-     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
+     * @param channel the channel number
+     * @return this builder instance for method chaining
      */
     SpiConfigBuilder channel(Integer channel);
 
     /**
-     * <p>chipSelect. (ALIAS for 'address')</p>
+     * Sets the chip-select line for this device.
      *
-     * @param chipSelect a {@link com.pi4j.io.spi.SpiChipSelect} value.
-     * @return a {@link com.pi4j.io.spi.SpiConfigBuilder} object.
+     * @param chipSelect the {@link SpiChipSelect} to use
+     * @return this builder instance for method chaining
      */
     SpiConfigBuilder chipSelect(SpiChipSelect chipSelect);
 }

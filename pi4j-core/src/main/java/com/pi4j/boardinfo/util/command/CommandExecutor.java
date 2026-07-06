@@ -1,0 +1,120 @@
+package com.pi4j.boardinfo.util.command;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
+
+import static com.pi4j.boardinfo.util.command.CommandResult.failure;
+import static com.pi4j.boardinfo.util.command.CommandResult.success;
+
+/**
+ * Utility for running external system commands and capturing their output as a {@link CommandResult}.
+ * Used by Pi4J board-detection code to query the host operating system (for example reading
+ * Raspberry Pi model and revision details) without depending on a shell.
+ *
+ * <p>The command is run directly, not through {@code sh -c}, so shell features such as pipes,
+ * redirection, globbing, environment-variable expansion and command chaining are not supported.
+ * Provide a single executable followed by literal arguments only.</p>
+ */
+public class CommandExecutor {
+    private static final Logger logger = LoggerFactory.getLogger(CommandExecutor.class);
+    private static final int COMMAND_TIMEOUT_SECONDS = 30;
+
+    /**
+     * Runs the given command, waits up to 30 seconds for it to finish, and returns the captured result.
+     * The command is split on runs of whitespace into the executable and its arguments and started
+     * directly, so it must not rely on shell features such as pipes or redirection. Leading and trailing
+     * whitespace is ignored and runs of spaces or tabs are treated as a single separator. On timeout the
+     * process is forcibly destroyed and a failure result is returned; an empty error stream together with
+     * normal termination is treated as success.
+     *
+     * @param command the executable to run followed by whitespace-separated literal arguments, without any
+     *                shell metacharacters; a {@code null} or blank command yields a failure result
+     * @return a successful {@link CommandResult} carrying the captured standard output, or a failure
+     *         result whose error message describes the blank input, timeout, non-empty error stream, or
+     *         exception
+     */
+    public static CommandResult execute(String command) {
+        if (command == null || command.isBlank()) {
+            String errorMessage = "No command provided to execute";
+            logger.error(errorMessage);
+            return failure(errorMessage);
+        }
+
+        boolean finished = false;
+        String outputMessage = "";
+        String errorMessage = "";
+
+        // Configure the process builder with the command (no shell involved).
+        ProcessBuilder builder = new ProcessBuilder(splitCommand(command));
+
+        try {
+            Process process = builder.start();
+
+            outputMessage = readStream(process.getInputStream());
+            errorMessage = readStream(process.getErrorStream());
+
+            finished = process.waitFor(COMMAND_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+
+            if (!finished) {
+                process.destroyForcibly();
+                errorMessage = "Process timeout after " + COMMAND_TIMEOUT_SECONDS + " seconds.";
+            }
+
+        } catch (IOException ex) {
+            errorMessage = "IOException while executing command: " + ex.getMessage();
+            logger.error("IOException during command execution '{}': {}", command, ex.getMessage(), ex);
+        } catch (InterruptedException ex) {
+            errorMessage = "InterruptedException during command execution: " + ex.getMessage();
+            Thread.currentThread().interrupt(); // Restore the interrupted status.
+            logger.error("InterruptedException during command execution '{}': {}", command, ex.getMessage(), ex);
+        }
+
+        if (!finished || !errorMessage.isEmpty()) {
+            logger.error("Failed to execute command '{}': {}", command, errorMessage);
+            return failure(errorMessage);
+        }
+
+        return success(outputMessage);
+    }
+
+    /**
+     * Splits a command line into its executable and argument tokens. The command is stripped and split on
+     * runs of whitespace ({@code \s+}), so leading or trailing whitespace is ignored and consecutive
+     * spaces or tabs do not produce empty tokens. {@link String#strip()} is used rather than
+     * {@link String#trim()} so that Unicode whitespace is removed consistently with the blank-input check
+     * in {@link #execute(String)} (which relies on {@link String#isBlank()}); otherwise a command starting
+     * with a Unicode space above {@code U+0020} could leave that character attached to the executable name.
+     *
+     * @param command the command line to split; must not be {@code null} or blank
+     * @return the command broken into its whitespace-separated tokens, with the executable first
+     */
+    static String[] splitCommand(String command) {
+        return command.strip().split("\\s+");
+    }
+
+    /**
+     * Reads the content of an InputStream and returns it as a string.
+     *
+     * @param inputStream The InputStream to read.
+     * @return The content of the InputStream as a string.
+     */
+    private static String readStream(InputStream inputStream) {
+        StringBuilder content = new StringBuilder();
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                content.append(line).append(System.lineSeparator());
+            }
+        } catch (IOException ex) {
+            content.append("ERROR: ").append(ex.getMessage());
+            logger.error("Error reading stream: {}", ex.getMessage(), ex);
+        }
+        return content.toString().trim(); // Trim trailing line separator.
+    }
+}

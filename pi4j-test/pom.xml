@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.1.0 https://maven.apache.org/xsd/maven-4.1.0.xsd">
+    <modelVersion>4.1.0</modelVersion>
+
+    <!-- MAVEN PARENT POM -->
     <parent>
         <artifactId>pi4j-parent</artifactId>
         <groupId>com.pi4j</groupId>
-        <version>2.7.0-SNAPSHOT</version>
+        <version>5.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>pi4j-test</artifactId>
-    <name>Pi4J :: TESTING  :: Unit/Integration Tests</name>
+    <name>Pi4J :: TESTING :: Unit/Integration Tests</name>
     <description>Pi4J Unit and Integration Tests</description>
 
     <dependencies>
@@ -31,85 +31,11 @@
             <artifactId>pi4j-plugin-mock</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <!-- include Pi4J Plugins (Platforms and I/O Providers) -->
         <dependency>
             <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-pigpio</artifactId>
+            <artifactId>pi4j-plugin-ffm</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-linuxfs</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-gpiod</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <!--
-            include Pi4J native libraries
-        -->
-        <!-- pigpio -->
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-pigpio</artifactId>
-            <version>${project.version}</version>
-            <classifier>armhf</classifier>
-            <type>so</type>
-        </dependency>
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-pigpio</artifactId>
-            <version>${project.version}</version>
-            <classifier>aarch64</classifier>
-            <type>so</type>
-        </dependency>
-
-        <!-- linuxfs -->
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-linuxfs</artifactId>
-            <version>${project.version}</version>
-            <classifier>armhf</classifier>
-            <type>so</type>
-        </dependency>
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-linuxfs</artifactId>
-            <version>${project.version}</version>
-            <classifier>aarch64</classifier>
-            <type>so</type>
-        </dependency>
-
-        <!-- gpiod -->
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-gpiod</artifactId>
-            <version>${project.version}</version>
-            <classifier>armhf</classifier>
-            <type>so</type>
-        </dependency>
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-library-gpiod</artifactId>
-            <version>${project.version}</version>
-            <classifier>aarch64</classifier>
-            <type>so</type>
-        </dependency>
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-plugin-gpiod</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.pi4j</groupId>
-            <artifactId>pi4j-plugin-linuxfs</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -144,14 +70,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>
-                        --illegal-access=permit
-                        --add-opens com.pi4j.test/com.pi4j.test=com.pi4j,ALL-UNNAMED
-                        --add-opens com.pi4j.test/com.pi4j.test.context=com.pi4j,ALL-UNNAMED
-                        --add-opens com.pi4j.test/com.pi4j.test.io.i2c=com.pi4j,ALL-UNNAMED
-                        --add-opens com.pi4j.test/com.pi4j.test.io.serial=com.pi4j,ALL-UNNAMED
-                        --add-opens com.pi4j.test/com.pi4j.test.platform=com.pi4j,ALL-UNNAMED
-                        --add-opens com.pi4j.test/com.pi4j.test.provider=com.pi4j,ALL-UNNAMED
-                        --add-opens com.pi4j.test/com.pi4j.test.registry=com.pi4j,ALL-UNNAMED
+                        --enable-native-access=ALL-UNNAMED
                     </argLine>
                 </configuration>
             </plugin>
@@ -185,6 +104,55 @@
                     <arguments>
                     </arguments>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>${maven-antrun-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy-assetsPYSH</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.directory}/distribution"/>
+                                <copy todir="${project.build.directory}/distribution" overwrite="true" flatten="true">
+                                    <fileset dir="assets" includes="*.py"> </fileset>
+                                </copy>
+                                <copy todir="${project.build.directory}/distribution" overwrite="true" flatten="true">
+                                    <fileset dir="assets" includes="*.sh"> </fileset>
+                                </copy>
+                                <chmod dir="${project.build.directory}/distribution" perm="ugo+rx" includes="**/*.py"/>
+                                <chmod dir="${project.build.directory}/distribution" perm="ugo+rx" includes="**/*.sh"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>${maven-dependency-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/distribution</outputDirectory>
+                            <includeScope>runtime</includeScope>
+                            <excludeTransitive>false</excludeTransitive>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -241,7 +209,8 @@
                                     <target>
                                         <!-- Stop all running Java processes -->
                                         <sshexec host="${raspberrypi.ipnumber}" port="${raspberrypi.port}"
-                                                 username="${raspberrypi.username}" password="${raspberrypi.password}" trust="true"
+                                                 username="${raspberrypi.username}" password="${raspberrypi.password}"
+                                                 trust="true"
                                                  failonerror="false" usepty="true" useSystemIn="false"
                                                  suppresssystemerr="true" suppresssystemout="true"
                                                  command="sudo killall -9 java"/>
@@ -249,7 +218,8 @@
                                         <!-- Ensure target directory exists on raspberrypi -->
                                         <sshexec host="${raspberrypi.ipnumber}" port="${raspberrypi.port}"
                                                  username="${raspberrypi.username}" password="${raspberrypi.password}"
-                                                 trust="true" command="mkdir --parents ${raspberrypi.deploydirectory}; rm -f ${raspberrypi.deploydirectory}/*"/>
+                                                 trust="true"
+                                                 command="mkdir --parents ${raspberrypi.deploydirectory}; rm -f ${raspberrypi.deploydirectory}/*"/>
 
                                         <!-- Transfer distribution folder to raspberrypi via SCP -->
                                         <scp trust="true"
@@ -260,7 +230,8 @@
 
                                         <!-- Run application on Raspberry Pi -->
                                         <sshexec host="${raspberrypi.ipnumber}" port="${raspberrypi.port}"
-                                                 username="${raspberrypi.username}" password="${raspberrypi.password}" trust="true"
+                                                 username="${raspberrypi.username}" password="${raspberrypi.password}"
+                                                 trust="true"
                                                  failonerror="false" usepty="true" useSystemIn="true"
                                                  command="sudo java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 --module-path ${raspberrypi.deploydirectory} --module ${launcher.class} ${launcher.args}"/>
                                     </target>

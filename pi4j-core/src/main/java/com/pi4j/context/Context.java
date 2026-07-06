@@ -1,38 +1,11 @@
 package com.pi4j.context;
 
-/*-
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  Context.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import com.pi4j.boardinfo.definition.BoardModel;
 import com.pi4j.boardinfo.model.BoardInfo;
 import com.pi4j.boardinfo.model.JavaInfo;
 import com.pi4j.boardinfo.model.OperatingSystem;
 import com.pi4j.common.Describable;
 import com.pi4j.common.Descriptor;
-import com.pi4j.config.Config;
-import com.pi4j.config.ConfigBuilder;
 import com.pi4j.event.InitializedEventProducer;
 import com.pi4j.event.ShutdownEventProducer;
 import com.pi4j.exception.ShutdownException;
@@ -45,223 +18,123 @@ import com.pi4j.io.exception.IOException;
 import com.pi4j.io.exception.IOInvalidIDException;
 import com.pi4j.io.exception.IONotFoundException;
 import com.pi4j.io.exception.IOShutdownException;
-import com.pi4j.platform.Platform;
-import com.pi4j.platform.Platforms;
-import com.pi4j.platform.exception.PlatformNotFoundException;
 import com.pi4j.provider.Provider;
 import com.pi4j.provider.Providers;
 import com.pi4j.provider.exception.ProviderInterfaceException;
 import com.pi4j.provider.exception.ProviderNotFoundException;
 import com.pi4j.registry.Registry;
-import com.pi4j.util.PropertiesUtil;
 import com.pi4j.util.StringUtil;
 
-import java.util.Map;
 import java.util.concurrent.Future;
 
 /**
- * <p>Context interface.</p>
+ * Central runtime state of a Pi4J application. The {@code Context} is created once (typically via
+ * {@code Pi4J.newContext()} or a {@link ContextBuilder}) and owns the {@link Registry} of created I/O
+ * instances, the set of available {@link Providers}, and the immutable {@link ContextConfig} that was
+ * used to build it. Callers use it to look up providers, create and access I/O instances, query board
+ * information, and to shut everything down cleanly.
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * @see ContextBuilder
+ * @see ContextConfig
  */
 public interface Context extends Describable, IOCreator, ProviderProvider, InitializedEventProducer<Context>,
     ShutdownEventProducer<Context> {
 
     /**
-     * <p>config.</p>
+     * Returns the immutable configuration that this context was created from, capturing auto-detection
+     * settings, the default platform, registered providers and user properties.
      *
-     * @return a {@link com.pi4j.context.ContextConfig} object.
+     * @return the {@link ContextConfig} backing this context
      */
     ContextConfig config();
 
     /**
-     * <p>properties.</p>
+     * Returns the collection of providers available in this context, used to resolve a {@link Provider}
+     * for a given I/O type or provider id when creating I/O instances.
      *
-     * @return a {@link com.pi4j.context.ContextProperties} object.
-     */
-    ContextProperties properties();
-
-    /**
-     * <p>providers.</p>
-     *
-     * @return a {@link com.pi4j.provider.Providers} object.
+     * @return the {@link Providers} repository for this context
      */
     Providers providers();
 
     /**
-     * <p>registry.</p>
+     * Returns the registry tracking every I/O instance that has been created and registered within this
+     * context, keyed by its unique id.
      *
-     * @return a {@link com.pi4j.registry.Registry} object.
+     * @return the {@link Registry} for this context
      */
     Registry registry();
-
-    /**
-     * <p>platforms.</p>
-     *
-     * @return a {@link com.pi4j.platform.Platforms} object.
-     */
-    Platforms platforms();
 
     /**
      * Submits the given task for async execution
      *
      * @param task the task to execute asynchronously
-     *
      * @return the task to cancel later
      */
     Future<?> submitTask(Runnable task);
 
     /**
-     * <p>shutdown.</p>
+     * Shuts down this context synchronously, shutting down and unregistering all I/O instances and
+     * releasing the runtime resources held by its providers and registry.
      *
-     * @return a {@link com.pi4j.context.Context} object.
+     * @return this context instance, now in the shutdown state
      * @throws com.pi4j.exception.ShutdownException if an error occurs during shutdown.
      */
     Context shutdown() throws ShutdownException;
 
     /**
+     * Initiates an asynchronous shutdown of this context, performing the same work as {@link #shutdown()}
+     * on a background task.
      *
-     * @return {@link Future} of {@link Context}
+     * @return a {@link Future} that completes with this context once shutdown has finished
      */
     Future<Context> asyncShutdown();
 
     /**
+     * Indicates whether this context has already been shut down and can no longer be used to create or
+     * access I/O instances.
      *
-     * @return Flag indicating if the context has been shutdown
+     * @return {@code true} if the context has been shut down, {@code false} otherwise
      */
     boolean isShutdown();
-
-    // ------------------------------------------------------------------------
-    // PLATFORM ACCESSOR METHODS
-    // ------------------------------------------------------------------------
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param <P> a P object.
-     * @return a P object.
-     */
-    default <P extends Platform> P platform() {
-        return platforms().getDefault();
-    }
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param <P> a P object.
-     * @return a P object.
-     */
-    default <P extends Platform> P getPlatform() {
-        return this.platform();
-    }
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param <P> a P object.
-     * @return a P object.
-     */
-    default <P extends Platform> P getDefaultPlatform() {
-        return this.platform();
-    }
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param <P> a P object.
-     * @return a P object.
-     */
-    default <P extends Platform> P defaultPlatform() {
-        return this.platform();
-    }
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param id  Id of the platform.
-     * @param <P> the platform type
-     * @return a P object.
-     * @throws PlatformNotFoundException if platform specified by {@code id} is not found.
-     */
-    default <P extends Platform> P platform(String id) throws PlatformNotFoundException {
-        return (P) this.platforms().get(id);
-    }
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param id  Id of the platform.
-     * @param <P> the platform type
-     * @return a P object.
-     * @throws PlatformNotFoundException if platform specified by {@code id} is not found.
-     */
-    default <P extends Platform> P getPlatform(String id) throws PlatformNotFoundException {
-        return this.platform(id);
-    }
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param id Id of the platform.
-     * @return a P object.
-     * @throws PlatformNotFoundException if platform specified by {@code id} is not found.
-     */
-    default boolean hasPlatform(String id) throws PlatformNotFoundException {
-        return this.platforms().exists(id);
-    }
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param platformClass a P object.
-     * @param <P> the platform type
-     * @return a P object.
-     * @throws PlatformNotFoundException if platform specified by {@code platformClass} is not found.
-     */
-    default <P extends Platform> P platform(Class<P> platformClass) throws PlatformNotFoundException {
-        return (P) this.platforms().get(platformClass);
-    }
-
-    /**
-     * <p>platform.</p>
-     *
-     * @param platformClass a P object.
-     * @param <P> the platform type
-     * @return a P object.
-     * @throws PlatformNotFoundException if platform specified by {@code platformClass} is not found.
-     */
-    default <P extends Platform> P getPlatform(Class<P> platformClass) throws PlatformNotFoundException {
-        return platform(platformClass);
-    }
-
-    /**
-     * <p>Has platforms.</p>
-     *
-     * @param platformClass a P object.
-     * @return {@link boolean}
-     * @throws PlatformNotFoundException if platform specified by {@code platformClass} is not found.
-     */
-    default boolean hasPlatform(Class<? extends Platform> platformClass) throws PlatformNotFoundException {
-        return platforms().exists(platformClass);
-    }
 
     // ------------------------------------------------------------------------
     // PROVIDER ACCESSOR METHODS
     // ------------------------------------------------------------------------
 
-    /** {@inheritDoc} */
+    /**
+     * Returns the provider registered under the given id.
+     *
+     * @param <T>        the expected {@link Provider} subtype
+     * @param providerId the unique id of the provider to look up
+     * @return the matching provider instance
+     * @throws ProviderNotFoundException if no provider is registered under the given id
+     */
     default <T extends Provider> T provider(String providerId) throws ProviderNotFoundException {
         return (T) providers().get(providerId);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Returns the provider registered under the given id, with the expected provider class supplied to
+     * drive the generic return type.
+     *
+     * @param <T>           the expected {@link Provider} subtype
+     * @param providerId    the unique id of the provider to look up
+     * @param providerClass the expected provider class
+     * @return the matching provider instance
+     * @throws ProviderNotFoundException if no provider is registered under the given id
+     */
     default <T extends Provider> T provider(String providerId, Class<T> providerClass)
         throws ProviderNotFoundException {
         return (T) providers().get(providerId);
     }
 
-    /** {@inheritDoc} */
+
+    /**
+     * Indicates whether a provider is registered under the given id.
+     *
+     * @param providerId the provider id to test for
+     * @return {@code true} if a provider with this id exists, {@code false} otherwise
+     */
     default boolean hasProvider(String providerId) {
         try {
             return providers().exists(providerId);
@@ -270,22 +143,41 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         }
     }
 
-    /** {@inheritDoc} */
+
+    /**
+     * Indicates whether at least one provider is registered for the given I/O type.
+     *
+     * @param <T>    the {@link Provider} subtype
+     * @param ioType the {@link IOType} to test for
+     * @return {@code true} if a provider for this I/O type exists, {@code false} otherwise
+     */
     default <T extends Provider> boolean hasProvider(IOType ioType) {
         return providers().exists(ioType);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Indicates whether a provider assignable to the given provider class is registered.
+     *
+     * @param <T>           the {@link Provider} subtype
+     * @param providerClass the provider class to test for
+     * @return {@code true} if a matching provider exists, {@code false} otherwise
+     */
     default <T extends Provider> boolean hasProvider(Class<T> providerClass) {
         return providers().exists(providerClass);
     }
 
-    /** {@inheritDoc} */
+
+    /**
+     * Returns the default provider matching the given provider class.
+     *
+     * @param <T>           the expected {@link Provider} subtype
+     * @param providerClass the provider class to resolve
+     * @return the matching provider instance
+     * @throws ProviderNotFoundException  if no provider matching the class is registered
+     * @throws ProviderInterfaceException if the resolved provider does not implement the expected interface
+     */
     default <T extends Provider> T provider(Class<T> providerClass)
         throws ProviderNotFoundException, ProviderInterfaceException {
-        // return the default provider for this type from the default platform
-        if (platform() != null && platform().hasProvider(providerClass))
-            return platform().provider(providerClass);
 
         // return the default provider for this type (outside of default platform)
         if (providers().exists(providerClass))
@@ -295,12 +187,17 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         throw new ProviderNotFoundException(providerClass);
     }
 
-    /** {@inheritDoc} */
-    default <T extends Provider> T provider(IOType ioType) throws ProviderNotFoundException {
-        // return the default provider for this type from the default platform
-        if (platform() != null && platform().hasProvider(ioType))
-            return platform().provider(ioType);
 
+    /**
+     * Returns the default provider for the given I/O type, used to create I/O instances when no explicit
+     * provider id is configured.
+     *
+     * @param <T>    the expected {@link Provider} subtype
+     * @param ioType the {@link IOType} to resolve a provider for
+     * @return the default provider for this I/O type
+     * @throws ProviderNotFoundException if no provider for this I/O type is registered
+     */
+    default <T extends Provider> T provider(IOType ioType) throws ProviderNotFoundException {
         // return the default provider for this type (outside of default platform)
         if (providers().exists(ioType))
             return providers().get(ioType);
@@ -314,10 +211,10 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     // ------------------------------------------------------------------------
 
     /**
-     * Return the BoardInfo containing more info about the
-     * {@link BoardModel}, {@link OperatingSystem}, and {@link JavaInfo}.
+     * Returns information about the board and runtime environment Pi4J is executing on, including the
+     * detected {@link BoardModel}, {@link OperatingSystem}, and {@link JavaInfo}.
      *
-     * @return {@link BoardInfo}
+     * @return the {@link BoardInfo} describing the current board and environment
      */
     BoardInfo boardInfo();
 
@@ -327,15 +224,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
 
     @Override
     default <I extends IO> I create(IOConfig config, IOType ioType) {
-
-        // create by explicitly configured IO <PLATFORM> from IO config
-        String platformId = config.platform();
-        if (StringUtil.isNotNullOrEmpty(platformId)) {
-            // resolve the platform and use it to create the IO instance
-            Platform platform = this.platforms().get(platformId);
-            return platform.create(config, ioType);
-        }
-
         // create by explicitly configured IO <PROVIDER> from IO config
         String providerId = config.provider();
         if (StringUtil.isNotNullOrEmpty(providerId)) {
@@ -356,94 +244,6 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
         throw new IOException("This IO instance [" + config.id() + "] could not be created because it does not define one of the following: 'PLATFORM', 'PROVIDER', or 'I/O TYPE'.");
     }
 
-    @Override
-    default <T extends IO> T create(String id) {
-        Provider provider = null;
-
-        // resolve inheritable properties from the context based on the provided 'id' for this IO instance
-        Map<String, String> inheritedProperties = PropertiesUtil.subProperties(this.properties().all(), id);
-
-        // create by explicitly configured IO <PLATFORM> from IO inheritable properties
-        if (inheritedProperties.containsKey("platform")) {
-            // resolve the platform and use it to create the IO instance
-            String platformId = inheritedProperties.get("platform");
-            Platform platform = this.platforms().get(platformId);
-            return platform.create(id);
-        }
-
-        // create by explicitly configured IO <PROVIDER> from IO config
-        if (inheritedProperties.containsKey("provider")) {
-            String providerId = inheritedProperties.get("provider");
-            // resolve the provider and use it to create the IO instance
-            provider = this.providers().get(providerId);
-        }
-
-        // create by IO TYPE
-        // (use platform provider if one if available for this IO type)
-        if (provider == null && inheritedProperties.containsKey("type")) {
-            IOType ioType = IOType.parse(inheritedProperties.get("type"));
-            provider = provider(ioType);
-        }
-
-        // validate resolved provider
-        if (provider == null) {
-            // unable to resolve the IO type and thus unable to create I/O instance
-            throw new IOException("This IO instance [" + id +
-                    "] could not be created because it does not define one of the following: 'PLATFORM', 'PROVIDER', or 'I/O TYPE'.");
-        }
-
-        // create IO instance using the provided ID and resolved inherited properties
-        ConfigBuilder builder = provider.type().newConfigBuilder(this);
-        builder.id(id);
-        builder.load(inheritedProperties);
-        return (T) provider.create((Config) builder.build());
-    }
-
-    @Override
-    default <T extends IO> T create(String id, IOType ioType) {
-        Provider provider = null;
-
-        // resolve inheritable properties from the context based on the provided 'id' for this IO instance
-        Map<String, String> inheritedProperties = PropertiesUtil.subProperties(this.properties().all(), id);
-
-        // create by explicitly configured IO <PLATFORM> from IO inheritable properties
-        if (inheritedProperties.containsKey("platform")) {
-            // resolve the platform and use it to create the IO instance
-            String platformId = inheritedProperties.get("platform");
-            Platform platform = this.platforms().get(platformId);
-            return platform.create(id, ioType);
-        }
-
-        // create by explicitly configured IO <PROVIDER> from IO config
-        if (inheritedProperties.containsKey("provider")) {
-            String providerId = inheritedProperties.get("provider");
-            // resolve the provider and use it to create the IO instance
-            provider = this.providers().get(providerId, ioType);
-
-            // validate IO type from resolved provider
-            if (!ioType.isType(provider.type())) {
-                throw new IOException("This IO instance [" + id +
-                        "] could not be created because the resolved provider [" + providerId +
-                        "] does not match the required I/O TYPE [" + ioType.name() + "]");
-            }
-        }
-
-        // create by IO TYPE
-        // (use platform provider if one if available for this IO type)
-        provider = provider(ioType);
-
-        // validate resolved provider
-        if (provider == null) {
-            throw new ProviderNotFoundException(ioType);
-        }
-
-        // create IO instance
-        ConfigBuilder builder = provider.type().newConfigBuilder(this);
-        builder.id(id);
-        builder.load(inheritedProperties);
-        return (T) provider.create((Config) builder.build());
-    }
-
     /**
      * shutdown and unregister a created IO.
      *
@@ -456,26 +256,85 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      */
     <T extends IO> T shutdown(String id) throws IOInvalidIDException, IONotFoundException, IOShutdownException;
 
+    /**
+     * shutdown and unregister a created IO.
+     *
+     * @param <T>      the IO Type
+     * @param instance the IO to shutdown and unregister
+     * @throws IONotFoundException  if the IO was not registered
+     * @throws IOInvalidIDException if the ID is invalid
+     * @throws IOShutdownException  if an error occured while shuting down the IO
+     */
+    <T extends IO> void shutdown(T instance) throws IOInvalidIDException, IONotFoundException, IOShutdownException;
+
     // ------------------------------------------------------------------------
     // I/O INSTANCE ACCESSORS
     // ------------------------------------------------------------------------
 
+    /**
+     * Indicates whether an I/O instance with the given id has been created and registered in this context.
+     *
+     * @param id the unique id of the I/O instance to test for
+     * @return {@code true} if an I/O instance with this id is registered, {@code false} otherwise
+     * @throws IOInvalidIDException if the id is invalid
+     * @throws IONotFoundException  if the id cannot be resolved
+     */
     default boolean hasIO(String id) throws IOInvalidIDException, IONotFoundException {
         return registry().exists(id);
     }
 
+    /**
+     * Returns the previously created I/O instance registered under the given id.
+     *
+     * @param <T> the expected {@link IO} subtype
+     * @param id  the unique id of the I/O instance to retrieve
+     * @return the registered I/O instance
+     * @throws IOInvalidIDException if the id is invalid
+     * @throws IONotFoundException  if no I/O instance with this id is registered
+     */
     default <T extends IO> T io(String id) throws IOInvalidIDException, IONotFoundException {
         return registry().get(id);
     }
 
+    /**
+     * Returns the previously created I/O instance registered under the given id, cast to the supplied
+     * I/O class.
+     *
+     * @param <T>     the expected {@link IO} subtype
+     * @param id      the unique id of the I/O instance to retrieve
+     * @param ioClass the expected I/O class
+     * @return the registered I/O instance
+     * @throws IOInvalidIDException if the id is invalid
+     * @throws IONotFoundException  if no I/O instance with this id is registered
+     */
     default <T extends IO> T io(String id, Class<T> ioClass) throws IOInvalidIDException, IONotFoundException {
         return registry().get(id, ioClass);
     }
 
+    /**
+     * Returns the previously created I/O instance registered under the given id. Alias for {@link #io(String)}.
+     *
+     * @param <T> the expected {@link IO} subtype
+     * @param id  the unique id of the I/O instance to retrieve
+     * @return the registered I/O instance
+     * @throws IOInvalidIDException if the id is invalid
+     * @throws IONotFoundException  if no I/O instance with this id is registered
+     */
     default <T extends IO> T getIO(String id) throws IOInvalidIDException, IONotFoundException {
         return io(id);
     }
 
+    /**
+     * Returns the previously created I/O instance registered under the given id, cast to the supplied
+     * I/O class. Alias for {@link #io(String, Class)}.
+     *
+     * @param <T>     the expected {@link IO} subtype
+     * @param id      the unique id of the I/O instance to retrieve
+     * @param ioClass the expected I/O class
+     * @return the registered I/O instance
+     * @throws IOInvalidIDException if the id is invalid
+     * @throws IONotFoundException  if no I/O instance with this id is registered
+     */
     default <T extends IO> T getIO(String id, Class<T> ioClass) throws IOInvalidIDException, IONotFoundException {
         return io(id, ioClass);
     }
@@ -484,18 +343,19 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     // DESCRIPTOR
     // ------------------------------------------------------------------------
 
-    /**
-     * <p>describe.</p>
-     *
-     * @return a {@link com.pi4j.common.Descriptor} object.
-     */
     default Descriptor describe() {
         Descriptor descriptor = Descriptor.create().category("CONTEXT").name("Runtime Context").type(this.getClass());
 
         descriptor.add(registry().describe());
-        descriptor.add(platforms().describe());
         descriptor.add(providers().describe());
-        descriptor.add(properties().describe());
         return descriptor;
     }
+
+    /**
+     * Registers an already-constructed I/O instance directly in the {@link Registry}, bypassing the normal
+     * provider-based {@link #create(IOConfig, IOType)} flow. Intended primarily for testing.
+     *
+     * @param instance the I/O instance to register
+     */
+    void register(IO instance);
 }

@@ -1,169 +1,150 @@
 package com.pi4j.io.i2c;
 
-/*
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  I2C.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import com.pi4j.context.Context;
 import com.pi4j.io.IO;
 import com.pi4j.io.IODataReader;
 import com.pi4j.io.IODataWriter;
+import com.pi4j.io.SerialCircuitIO;
 
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 /**
- * I2C I/O Interface for Pi4J I2C Bus/Device Communications
- *
- * @author Robert Savage
- * <p>
- * Based on previous contributions from: Daniel Sendula,
- * <a href="http://raspelikan.blogspot.co.at">RasPelikan</a>
- * @version $Id: $Id
+ * Represents a single I2C device on an I2C bus and is the primary handle through which application code reads and
+ * writes data, both as raw byte streams and via device registers. Instances are created by an {@link I2CProvider}
+ * from an {@link I2CConfig}; register-level access is obtained through {@link #getRegister(int)} and atomic
+ * bus operations through {@link #execute(Callable)}.
  */
 public interface I2C
-    extends IO<I2C, I2CConfig, I2CProvider>, IODataWriter, IODataReader, I2CRegisterDataReaderWriter, AutoCloseable {
+    extends IO<I2C, I2CConfig, I2CProvider>, IODataWriter, IODataReader, I2CRegisterDataReaderWriter, SerialCircuitIO, AutoCloseable {
 
-    /**
-     * <p>close.</p>
-     */
     // Override to remove checked exception declaration
     @Override
     void close();
 
     /**
-     * <p>newConfigBuilder.</p>
+     * Creates a new configuration builder for an I2C device.
      *
-     * @param context {@link Context}
-     *
-     * @return a {@link com.pi4j.io.i2c.I2CConfigBuilder} object.
+     * @param context the Pi4J runtime context (unused by the current implementation)
+     * @return a new {@link I2CConfigBuilder} instance
      */
     static I2CConfigBuilder newConfigBuilder(Context context) {
-        return I2CConfigBuilder.newInstance(context);
+        return I2CConfigBuilder.newInstance();
     }
 
     /**
-     * I2C Device Address
+     * Returns the device (slave) address this instance communicates with.
      *
-     * @return The I2C device address for which this instance is constructed for.
+     * @return the I2C device address taken from this instance's configuration
      */
     default int device() {
         return config().device();
     }
 
     /**
-     * I2C Bus Address
+     * Returns the bus number this device is attached to.
      *
-     * @return The I2C bus address for which this instance is constructed for.
+     * @return the I2C bus number taken from this instance's configuration
      */
     default int bus() {
         return config().bus();
     }
 
     /**
-     * I2C Device Communication State is OPEN
+     * Indicates whether this device is currently open for communication.
      *
-     * @return The I2C device communication state
+     * @return {@code true} while the device is open, {@code false} once it has been closed
      */
     boolean isOpen();
 
     /**
-     * I2C Bus Address
+     * Returns the bus number this device is attached to.
      *
-     * @return The I2C bus address for which this instance is constructed for.
+     * @return the I2C bus number taken from this instance's configuration
      */
     default int getBus() {
         return bus();
     }
 
     /**
-     * I2C Device Address
+     * Returns the device (slave) address this instance communicates with.
      *
-     * @return The I2C device address for which this instance is constructed for.
+     * @return the I2C device address taken from this instance's configuration
      */
     default int getDevice() {
         return device();
     }
 
     /**
-     * Method to perform a write of the given buffer, and then a read into the given buffer
+     * Method to write the writeBuffer, and then a read into the readBuffer
+     * in a single atomic operation.
      *
-     * @param writeBuffer the buffer to write
-     * @param readBuffer  the buffer to read into
-     *
-     * @return the number of bytes read
+     * @param writeBuffer    the buffer to write respecting the given length and offset
+     * @param writeOffset    the offset of the array to write
+     * @param writeSize      the number of bytes to write
+     * @param readDelayNanos delay after writing before reading; currently ignored for i2c.
+     * @param readBuffer     the buffer into which to read the bytes
+     * @param readOffset     the offset in the read buffer at which to insert the read bytes
+     * @param readSize       the number of bytes to read
      */
-    default int writeRead(byte[] writeBuffer, byte[] readBuffer) {
-        return writeRead(writeBuffer, writeBuffer.length, 0, readBuffer, readBuffer.length, 0);
+    default void writeThenRead(byte[] writeBuffer, int writeOffset, int writeSize, int readDelayNanos, byte[] readBuffer, int readOffset, int readSize) {
+        // Ideally, new implementations support this call directly.
+        // however, we can emulate it using the multi-byte register call
+        if (writeSize != writeBuffer.length) {
+            writeBuffer = Arrays.copyOfRange(writeBuffer, writeOffset, writeOffset + writeSize);
+        }
+        readRegister(writeBuffer, readBuffer, readOffset, readSize);
+    }
+
+    // --------------------
+    // Disambiguation
+    // ---------------------
+
+    @Override
+    default int read(byte[] data) {
+        return SerialCircuitIO.super.read(data);
+    }
+
+    @Override
+    default int read(byte[] data, int offset, int length) {
+        return SerialCircuitIO.super.read(data, offset, length);
+    }
+
+    @Override
+    default int write(byte... data) {
+        return SerialCircuitIO.super.write(data);
+    }
+
+    @Override
+    default int write(byte[] data, int offset, int length) {
+        return SerialCircuitIO.super.write(data, offset, length);
     }
 
     /**
-     * Method to perform a write of the given buffer, and then a read into the given buffer
+     * Returns a handle for reading from and writing to a specific register of this I2C device.
      *
-     * @param writeSize   the number of bytes to write
-     * @param writeOffset the offset of the array to write
-     * @param writeBuffer the buffer to write respecting the given length and offset
-     * @param readSize    the number of bytes to read
-     * @param readOffset  the offset in the read buffer at which to insert the read bytes
-     * @param readBuffer  the buffer into which to read the bytes
-     *
-     * @return the number of bytes read
-     */
-    default int writeRead(byte[] writeBuffer, int writeSize, int writeOffset, byte[] readBuffer, int readSize,
-        int readOffset) {
-        return execute(() -> {
-            int written = write(writeBuffer, writeOffset, writeSize);
-            if (written != writeOffset)
-                throw new IllegalStateException(
-                    "Expected to write " + writeOffset + " bytes but only wrote " + written + " bytes");
-            return read(readBuffer, readOffset, readSize);
-        });
-    }
-
-    /**
-     * Get an encapsulated interface for reading and writing to a specific I2C device register
-     *
-     * @param address a int.
-     *
-     * @return a {@link com.pi4j.io.i2c.I2CRegister} object.
+     * @param address the device register address
+     * @return an {@link I2CRegister} bound to the given register address
      */
     I2CRegister getRegister(int address);
 
     /**
-     * I2C Device Register Get an encapsulated interface for reading and writing to a specific I2C device register
+     * Returns a handle for reading from and writing to a specific register of this I2C device.
      *
-     * @param address the (16-bit) device register address
-     *
-     * @return an instance of I2CRegister for the provided register address
+     * @param address the device register address
+     * @return an {@link I2CRegister} bound to the given register address
      */
     default I2CRegister register(int address) {
         return getRegister(address);
     }
 
     /**
-     * Executes the given runnable on the I2C bus, locking the bus for the duration of the given task
+     * Executes the given action while holding an exclusive lock on this device's I2C bus, allowing several
+     * reads and/or writes to be performed as one uninterrupted unit relative to other devices on the bus.
      *
-     * @param action the action to perform, returning a value
+     * @param action the work to perform while the bus is locked
+     * @param <T>    the result type produced by the action
+     * @return the value returned by the action
      */
     <T> T execute(Callable<T> action);
 }

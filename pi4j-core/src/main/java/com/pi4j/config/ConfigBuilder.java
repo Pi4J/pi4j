@@ -1,30 +1,5 @@
 package com.pi4j.config;
 
-/*-
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  ConfigBuilder.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,141 +8,138 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * <p>ConfigBuilder interface.</p>
+ * Builder contract for assembling a {@link Config} instance. It provides setters for the common
+ * identity properties and a family of {@code load} overloads that bulk-import configuration from
+ * maps, {@link Properties} objects, streams, readers or files, optionally filtered by a key prefix.
+ * It is the common super-interface of the I/O-specific configuration builders.
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * @param <BUILDER_TYPE> the concrete builder sub-type, returned by setters to enable type-safe chaining
+ * @param <CONFIG_TYPE> the configuration type produced by {@link #build()}
  */
 public interface ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends Builder<CONFIG_TYPE> {
     /**
-     * <p>id.</p>
+     * Sets the unique identifier for the configuration being built.
      *
-     * @param id a {@link java.lang.String} object.
-     * @return a BUILDER_TYPE object.
+     * @param id the configuration identifier
+     * @return this builder instance for method chaining
      */
     BUILDER_TYPE id(String id);
 
+    /**
+     * Returns the identifier currently set on this builder.
+     *
+     * @return the configuration identifier, or {@code null} if none has been set
+     */
     String id();
 
     /**
-     * <p>name.</p>
+     * Sets the human-readable name for the configuration being built.
      *
-     * @param name a {@link java.lang.String} object.
-     * @return a BUILDER_TYPE object.
+     * @param name the configuration name
+     * @return this builder instance for method chaining
      */
     BUILDER_TYPE name(String name);
+
     /**
-     * <p>description.</p>
+     * Sets the human-readable description for the configuration being built.
      *
-     * @param description a {@link java.lang.String} object.
-     * @return a BUILDER_TYPE object.
+     * @param description the configuration description
+     * @return this builder instance for method chaining
      */
     BUILDER_TYPE description(String description);
 
     /**
-     * <p>inheritProperties.</p>
+     * Imports configuration values from the given key/value map.
      *
-     * @param allow a {@link java.lang.Boolean} object.
-     * @return a BUILDER_TYPE object.
-     */
-    BUILDER_TYPE inheritProperties(Boolean allow);
-
-    /**
-     * <p>allowInheritProperties.</p>
-     *
-     * @return a BUILDER_TYPE object.
-     */
-    default BUILDER_TYPE allowInheritProperties(){
-        return inheritProperties(true);
-    }
-
-    /**
-     * <p>disallowInheritProperties.</p>
-     *
-     * @return a BUILDER_TYPE object.
-     */
-    default BUILDER_TYPE disallowInheritProperties(){
-        return inheritProperties(false);
-    }
-
-    /**
-     * <p>load.</p>
-     *
-     * @param properties a {@link java.util.Map} object.
-     * @return a BUILDER_TYPE object.
+     * @param properties the property entries to load
+     * @return this builder instance for method chaining
      */
     BUILDER_TYPE load(Map<String, String> properties);
+
     /**
-     * <p>load.</p>
+     * Imports configuration values from the given {@link Properties} object.
      *
-     * @param properties a {@link java.util.Properties} object.
-     * @return a BUILDER_TYPE object.
+     * @param properties the properties to load
+     * @return this builder instance for method chaining
      */
     BUILDER_TYPE load(Properties properties);
+
     /**
-     * <p>load.</p>
+     * Imports configuration values from the given key/value map, keeping only entries whose key
+     * begins with the supplied prefix (with the prefix stripped).
      *
-     * @param properties a {@link java.util.Map} object.
-     * @param prefixFilter a {@link java.lang.String} object.
-     * @return a BUILDER_TYPE object.
+     * @param properties the property entries to load
+     * @param prefixFilter the key prefix that entries must start with to be included
+     * @return this builder instance for method chaining
      */
     BUILDER_TYPE load(Map<String, String> properties, String prefixFilter);
+
     /**
-     * <p>load.</p>
+     * Imports configuration values from the given {@link Properties} object, keeping only entries
+     * whose key begins with the supplied prefix (with the prefix stripped).
      *
-     * @param properties a {@link java.util.Properties} object.
-     * @param prefixFilter a {@link java.lang.String} object.
-     * @return a BUILDER_TYPE object.
+     * @param properties the properties to load
+     * @param prefixFilter the key prefix that entries must start with to be included
+     * @return this builder instance for method chaining
      */
     BUILDER_TYPE load(Properties properties, String prefixFilter);
+
     /**
-     * <p>load.</p>
+     * Imports configuration values by reading {@code .properties}-formatted data from the given stream.
      *
-     * @param stream a {@link java.io.InputStream} object.
-     * @return a BUILDER_TYPE object.
+     * @param stream the input stream to read property data from
+     * @return this builder instance for method chaining
      * @throws java.io.IOException if an error occurs accessing {@code stream}.
      */
     BUILDER_TYPE load(InputStream stream) throws IOException;
+
     /**
-     * <p>load.</p>
+     * Imports configuration values by reading {@code .properties}-formatted data from the given stream,
+     * keeping only entries whose key begins with the supplied prefix (with the prefix stripped).
      *
-     * @param stream a {@link java.io.InputStream} object.
-     * @param prefixFilter a {@link java.lang.String} object.
-     * @return a BUILDER_TYPE object.
+     * @param stream the input stream to read property data from
+     * @param prefixFilter the key prefix that entries must start with to be included
+     * @return this builder instance for method chaining
      * @throws java.io.IOException if an error occurs accessing {@code stream}.
      */
     BUILDER_TYPE load(InputStream stream, String prefixFilter) throws IOException;
+
     /**
-     * <p>load.</p>
+     * Imports configuration values by reading {@code .properties}-formatted data from the given reader.
      *
-     * @param reader a {@link java.io.Reader} object.
-     * @return a BUILDER_TYPE object.
+     * @param reader the reader to read property data from
+     * @return this builder instance for method chaining
      * @throws java.io.IOException if an error occurs accessing {@code reader}.
      */
     BUILDER_TYPE load(Reader reader) throws IOException;
+
     /**
-     * <p>load.</p>
+     * Imports configuration values by reading {@code .properties}-formatted data from the given reader,
+     * keeping only entries whose key begins with the supplied prefix (with the prefix stripped).
      *
-     * @param reader a {@link java.io.Reader} object.
-     * @param prefixFilter a {@link java.lang.String} object.
-     * @return a BUILDER_TYPE object.
+     * @param reader the reader to read property data from
+     * @param prefixFilter the key prefix that entries must start with to be included
+     * @return this builder instance for method chaining
      * @throws java.io.IOException if an error occurs accessing {@code reader}.
      */
     BUILDER_TYPE load(Reader reader, String prefixFilter) throws IOException;
+
     /**
-     * <p>load.</p>
+     * Imports configuration values by reading {@code .properties}-formatted data from the given file.
      *
-     * @param file a {@link java.io.File} object.
-     * @return a BUILDER_TYPE object.
+     * @param file the file to read property data from
+     * @return this builder instance for method chaining
      * @throws java.io.IOException if an error occurs accessing {@code file}.
      */
     BUILDER_TYPE load(File file) throws IOException;
+
     /**
-     * <p>load.</p>
+     * Imports configuration values by reading {@code .properties}-formatted data from the given file,
+     * keeping only entries whose key begins with the supplied prefix (with the prefix stripped).
      *
-     * @param file a {@link java.io.File} object.
-     * @param prefixFilter a {@link java.lang.String} object.
-     * @return a BUILDER_TYPE object.
+     * @param file the file to read property data from
+     * @param prefixFilter the key prefix that entries must start with to be included
+     * @return this builder instance for method chaining
      * @throws java.io.IOException if an error occurs accessing {@code file}.
      */
     BUILDER_TYPE load(File file, String prefixFilter) throws IOException;

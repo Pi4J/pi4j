@@ -1,38 +1,19 @@
 package com.pi4j.io.spi;
 
-/*
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  SpiMode.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 /**
- * <p>SpiMode class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * Defines the four standard SPI clock modes, which combine clock polarity (CPOL) and clock phase (CPHA)
+ * to determine the idle clock level and the edge on which data is sampled. The selected mode is carried
+ * in an {@link SpiConfig} and must match the connected device.
  */
 public enum SpiMode {
-    MODE_0(0), MODE_1(1), MODE_2(2), MODE_3(3);
+    /** CPOL=0, CPHA=0: clock idles low, data sampled on the rising (leading) edge. */
+    MODE_0(0),
+    /** CPOL=0, CPHA=1: clock idles low, data sampled on the falling (trailing) edge. */
+    MODE_1(1),
+    /** CPOL=1, CPHA=0: clock idles high, data sampled on the falling (leading) edge. */
+    MODE_2(2),
+    /** CPOL=1, CPHA=1: clock idles high, data sampled on the rising (trailing) edge. */
+    MODE_3(3);
 
     private final int mode;
 
@@ -41,29 +22,29 @@ public enum SpiMode {
     }
 
     /**
-     * <p>Getter for the field <code>mode</code>.</p>
+     * Returns the numeric mode value represented by this constant.
      *
-     * @return a int.
+     * @return the SPI mode number (0&ndash;3)
      */
     public int getMode() {
         return mode;
     }
 
     /**
-     * <p>getByNumber.</p>
+     * Returns the {@code SpiMode} constant matching the given mode number.
      *
-     * @param modeNumber a short.
-     * @return a {@link com.pi4j.io.spi.SpiMode} object.
+     * @param modeNumber the SPI mode number to look up
+     * @return the matching {@code SpiMode}, or {@code null} if no constant has that number
      */
     public static SpiMode getByNumber(short modeNumber){
         return getByNumber((int)modeNumber);
     }
 
     /**
-     * <p>getByNumber.</p>
+     * Returns the {@code SpiMode} constant matching the given mode number.
      *
-     * @param modeNumber a int.
-     * @return a {@link com.pi4j.io.spi.SpiMode} object.
+     * @param modeNumber the SPI mode number to look up
+     * @return the matching {@code SpiMode}, or {@code null} if no constant has that number
      */
     public static SpiMode getByNumber(int modeNumber){
         for(var item : SpiMode.values()){
@@ -75,10 +56,10 @@ public enum SpiMode {
     }
 
     /**
-     * <p>parse.</p>
+     * Parses a textual mode number into the corresponding {@code SpiMode} constant.
      *
-     * @param mode a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.io.spi.SpiMode} object.
+     * @param mode the mode number as a string ("0" through "3")
+     * @return the matching {@code SpiMode}, or {@link Spi#DEFAULT_MODE} if the value is not recognized
      */
     public static SpiMode parse(String mode) {
         if(mode.equalsIgnoreCase("0")) return SpiMode.MODE_0;

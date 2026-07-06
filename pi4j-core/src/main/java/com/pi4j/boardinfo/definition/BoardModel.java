@@ -6,169 +6,207 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.pi4j.boardinfo.definition.BoardType.*;
 
 /**
- * Partially based on:
+ * Catalog of known Raspberry Pi board models together with their hardware specifications, such as the
+ * {@link BoardType}, {@link PiModel}, {@link Soc}, {@link Cpu}, {@link HeaderVersion}, release date, clock
+ * speeds and memory options. Pi4J uses this catalog to identify the running board (by revision code or name)
+ * and to expose its capabilities through the Board Information API.
  *
- * <ul>
- *      <li>Board codes: <a href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#new-style-revision-codes-in-use">raspberrypi.com/documentation/computers/raspberry-pi.html#new-style-revision-codes-in-use</a></li>
- *      <li><a href="https://en.wikipedia.org/wiki/Raspberry_Pi#Specifications">en.wikipedia.org/wiki/Raspberry_Pi</a></li>
- *      <li><a href="https://oastic.com/posts/how-to-know-which-raspberry-do-you-have/">oastic.com/posts/how-to-know-which-raspberry-do-you-have</a></li>
- *      <li><a href="https://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/">raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/</a></li>
- * </ul>
+ * <p>This data is partially based on resources such as Raspberry Pi documentation, GitHub, and other online references.</p>
+ *
+ * @see <a href="https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#new-style-revision-codes-in-use">Board Codes</a>
+ * @see <a href="https://community.volumio.com/t/guide-identifying-your-raspberry-pi-board-on-volumio-a-comprehensive-guide-to-revision-codes/71350">Identifying Your Raspberry Pi Board</a>
+ * @see <a href="https://github.com/raspberrypi/documentation/blob/develop/documentation/asciidoc/computers/raspberry-pi/revision-codes.adoc">Old-style Revision Codes</a>
+ * @see <a href="https://en.wikipedia.org/wiki/Raspberry_Pi#Specifications">Raspberry Pi Specifications</a>
+ * @see <a href="https://oastic.com/posts/how-to-know-which-raspberry-do-you-have/">How to Identify Your Raspberry Pi</a>
+ * @see <a href="https://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/">Checking Your Raspberry Pi Board Version</a>
  */
 public enum BoardModel {
     MODEL_1_A("Raspberry Pi 1 Model A", SINGLE_BOARD_COMPUTER,
-            new ArrayList<>(),
-            PiModel.MODEL_A,
-            HeaderVersion.TYPE_1,
-            LocalDate.of(2013, 2, 1),
-            Soc.BCM2835,
-            Cpu.ARM1176JZF_S, 1,
-            Collections.singletonList(700),
-            Collections.singletonList(256 * 1024)),
+        List.of("0007", "0008", "0009"),
+        PiModel.MODEL_A,
+        HeaderVersion.TYPE_1,
+        LocalDate.of(2013, 2, 1),
+        Soc.BCM2835,
+        Cpu.ARM1176JZF_S, 1,
+        List.of(700),
+        List.of(256 * 1024)),
     MODEL_1_A_PLUS("Raspberry Pi 1 Model A+", SINGLE_BOARD_COMPUTER,
-            Collections.singletonList("900021"),
-            PiModel.MODEL_A,
-            HeaderVersion.TYPE_1,
-            LocalDate.of(2014, 11, 1),
-            Soc.BCM2835,
-            Cpu.ARM1176JZF_S, 1,
-            Collections.singletonList(700),
-            Arrays.asList(256 * 1024, 512 * 1024),
-            Collections.singletonList("Amount of memory changed to 512Mb on 20160810")),
+        List.of("0012", "0015", "900021"),
+        PiModel.MODEL_A,
+        HeaderVersion.TYPE_1,
+        LocalDate.of(2014, 11, 1),
+        Soc.BCM2835,
+        Cpu.ARM1176JZF_S, 1,
+        List.of(700),
+        List.of(256 * 1024, 512 * 1024),
+        List.of("Amount of memory changed to 512Mb on 20160810"),
+        false),
     MODEL_3_A_PLUS("Raspberry Pi 3 Model A+", SINGLE_BOARD_COMPUTER,
-            Collections.singletonList("9020e0"),
-            PiModel.MODEL_A,
-            HeaderVersion.TYPE_3,
-            LocalDate.of(2018, 11, 1),
-            Soc.BCM2837B0,
-            Cpu.CORTEX_A53, 4,
-            Collections.singletonList(1400),
-            Collections.singletonList(512 * 1024)),
+        List.of("9020e0", "9020e1"),
+        PiModel.MODEL_A,
+        HeaderVersion.TYPE_3,
+        LocalDate.of(2018, 11, 1),
+        Soc.BCM2837B0,
+        Cpu.CORTEX_A53, 4,
+        List.of(1400),
+        List.of(512 * 1024),
+        new ArrayList<>(),
+        false),
     MODEL_1_B("Raspberry Pi 1 Model B", SINGLE_BOARD_COMPUTER,
-            new ArrayList<>(),
-            PiModel.MODEL_B,
-            HeaderVersion.TYPE_1,
-            LocalDate.of(2012, 4, 1),
-            Soc.BCM2835,
-            Cpu.ARM1176JZF_S, 1,
-            Collections.singletonList(700),
-            Arrays.asList(256 * 1024, 512 * 1024),
-            Collections.singletonList("Amount of memory changed to 512Mb on 20121015")),
+        List.of("0002", "0003", "0004", "0005", "0006", "000d", "000e", "000f"),
+        PiModel.MODEL_B,
+        HeaderVersion.TYPE_1,
+        LocalDate.of(2012, 4, 1),
+        Soc.BCM2835,
+        Cpu.ARM1176JZF_S, 1,
+        List.of(700),
+        List.of(256 * 1024, 512 * 1024),
+        List.of("Amount of memory changed to 512Mb on 20121015"),
+        false),
     MODEL_1_B_PLUS("Raspberry Pi 1 Model B+", SINGLE_BOARD_COMPUTER,
-            Collections.singletonList("900032"),
-            PiModel.MODEL_B,
-            HeaderVersion.TYPE_1,
-            LocalDate.of(2014, 7, 1),
-            Soc.BCM2835,
-            Cpu.ARM1176JZF_S, 1,
-            Collections.singletonList(700),
-            Collections.singletonList(512 * 1024)),
+        List.of("0010", "0013", "900032"),
+        PiModel.MODEL_B,
+        HeaderVersion.TYPE_1,
+        LocalDate.of(2014, 7, 1),
+        Soc.BCM2835,
+        Cpu.ARM1176JZF_S, 1,
+        List.of(700),
+        List.of(512 * 1024)),
     MODEL_2_B("Raspberry Pi 2 Model B", SINGLE_BOARD_COMPUTER,
-            Arrays.asList("a01040", "a01041", "a21041"),
-            PiModel.MODEL_B,
-            HeaderVersion.TYPE_2,
-            LocalDate.of(2015, 2, 1),
-            Soc.BCM2836,
-            Cpu.CORTEX_A7, 4,
-            Collections.singletonList(900),
-            Collections.singletonList(1024 * 1024)),
+        List.of("a01040", "a01041", "a21041"),
+        PiModel.MODEL_B,
+        HeaderVersion.TYPE_2,
+        LocalDate.of(2015, 2, 1),
+        Soc.BCM2836,
+        Cpu.CORTEX_A7, 4,
+        List.of(900),
+        List.of(1024 * 1024)),
     MODEL_2_B_V1_2("Raspberry Pi 2 Model B V1.2", SINGLE_BOARD_COMPUTER,
-            Arrays.asList("a02042", "a22042"),
-            PiModel.MODEL_B,
-            HeaderVersion.TYPE_2,
-            LocalDate.of(2016, 10, 1),
-            Soc.BCM2837,
-            Cpu.CORTEX_A53, 4,
-            Collections.singletonList(900),
-            Collections.singletonList(1024 * 1024)),
+        List.of("a02042", "a22042"),
+        PiModel.MODEL_B,
+        HeaderVersion.TYPE_2,
+        LocalDate.of(2016, 10, 1),
+        Soc.BCM2837,
+        Cpu.CORTEX_A53, 4,
+        List.of(900),
+        List.of(1024 * 1024)),
     MODEL_3_B("Raspberry Pi 3 Model B", SINGLE_BOARD_COMPUTER,
-            Arrays.asList("a02082", "a22082", "a32082", "a52082", "a22083"),
-            PiModel.MODEL_B,
-            HeaderVersion.TYPE_3,
-            LocalDate.of(2016, 2, 1),
-            Soc.BCM2837,
-            Cpu.CORTEX_A53, 4,
-            Collections.singletonList(1200),
-            Collections.singletonList(1024 * 1024)),
+        List.of("a02082", "a22082", "a32082", "a52082", "a22083"),
+        PiModel.MODEL_B,
+        HeaderVersion.TYPE_3,
+        LocalDate.of(2016, 2, 1),
+        Soc.BCM2837,
+        Cpu.CORTEX_A53, 4,
+        List.of(1200),
+        List.of(1024 * 1024)),
     MODEL_3_B_PLUS("Raspberry Pi 3 Model B+", SINGLE_BOARD_COMPUTER,
-            Collections.singletonList("a020d3"),
-            PiModel.MODEL_B,
-            HeaderVersion.TYPE_3,
-            LocalDate.of(2018, 3, 14),
-            Soc.BCM2837B0,
-            Cpu.CORTEX_A53, 4,
-            Collections.singletonList(1400),
-            Collections.singletonList(1024 * 1024)),
+        List.of("a020d3", "a020d4"),
+        PiModel.MODEL_B,
+        HeaderVersion.TYPE_3,
+        LocalDate.of(2018, 3, 14),
+        Soc.BCM2837B0,
+        Cpu.CORTEX_A53, 4,
+        List.of(1400),
+        List.of(1024 * 1024)),
     MODEL_4_B("Raspberry Pi 4 Model B", SINGLE_BOARD_COMPUTER,
-            Arrays.asList("a03111", "b03111", "b03112", "b03114", "b03115", "c03111", "c03112", "c03114", "c03115", "d03114", "d03115"),
-            PiModel.MODEL_B,
-            HeaderVersion.TYPE_3,
-            LocalDate.of(2019, 6, 24),
-            Soc.BCM2711,
-            Cpu.CORTEX_A72, 4,
-            Arrays.asList(1500, 1800),
-            Arrays.asList(1024 * 1024, 2048 * 1024, 4096 * 1024, 8192 * 1024)),
+        List.of("a03111", "b03111", "b03112", "b03114", "b03115", "c03111", "c03112", "c03114", "c03115", "d03114", "d03115"),
+        PiModel.MODEL_B,
+        HeaderVersion.TYPE_3,
+        LocalDate.of(2019, 6, 24),
+        Soc.BCM2711,
+        Cpu.CORTEX_A72, 4,
+        List.of(1500, 1800),
+        List.of(1024 * 1024, 2048 * 1024, 4096 * 1024, 8192 * 1024)),
     MODEL_400("Raspberry Pi 400", ALL_IN_ONE_COMPUTER,
-            Collections.singletonList("c03130"),
-            PiModel.MODEL_B,
-            HeaderVersion.TYPE_3,
-            LocalDate.of(2020, 11, 2),
-            Soc.BCM2711C0,
-            Cpu.CORTEX_A72, 4,
-            Collections.singletonList(1800),
-            Collections.singletonList(4096 * 1024)),
+        List.of("c03130"),
+        PiModel.MODEL_B,
+        HeaderVersion.TYPE_3,
+        LocalDate.of(2020, 11, 2),
+        Soc.BCM2711C0,
+        Cpu.CORTEX_A72, 4,
+        List.of(1800),
+        List.of(4096 * 1024)),
     MODEL_5_B("Raspberry Pi 5 Model B", SINGLE_BOARD_COMPUTER,
-            Arrays.asList("c04170", "d04170"),
-            PiModel.MODEL_B,
-            HeaderVersion.TYPE_3,
-            LocalDate.of(2023, 9, 28),
-            Soc.BCM2712,
-            Cpu.CORTEX_A76, 4,
-            Collections.singletonList(2400),
-            Arrays.asList(4096 * 1024, 8192 * 1024)),
+        List.of("b04170", "c04170", "d04170", "e04171"),
+        PiModel.MODEL_B,
+        HeaderVersion.TYPE_3,
+        LocalDate.of(2023, 9, 28),
+        Soc.BCM2712,
+        Cpu.CORTEX_A76, 4,
+        List.of(2400),
+        List.of(2048 * 1024, 4096 * 1024, 8192 * 1024, 16384 * 1024),
+        new ArrayList<>(),
+        true),
+    MODEL_500("Raspberry Pi 500", ALL_IN_ONE_COMPUTER,
+        List.of("d04190"),
+        PiModel.MODEL_B,
+        HeaderVersion.TYPE_3,
+        LocalDate.of(2024, 12, 9),
+        Soc.BCM2712,
+        Cpu.CORTEX_A76, 4,
+        List.of(2400),
+        List.of(8192 * 1024),
+        List.of(
+            "20241209: Confirmed by Jeff Geerling who has evaluation version: d04190."
+        ),
+        true),
+    MODEL_500_PLUS("Raspberry Pi 500+", ALL_IN_ONE_COMPUTER,
+        List.of("e04190"),
+        PiModel.MODEL_B,
+        HeaderVersion.TYPE_3,
+        LocalDate.of(2025, 9, 25),
+        Soc.BCM2712,
+        Cpu.CORTEX_A76, 4,
+        List.of(2400),
+        List.of(16384 * 1024),
+        List.of(
+            "20250925: Confirmed by Jeff Geerling who has evaluation version: e04190.",
+            "Internal 256GB Raspberry Pi SSD.",
+            "Support for M.2 NVMe SSDs up to 2280 form factor."
+        ),
+        true),
     COMPUTE_1("Compute Module 1", STACK_ON_COMPUTER,
-            Collections.singletonList("900061"),
-            PiModel.COMPUTE,
-            HeaderVersion.COMPUTE,
-            LocalDate.of(2014, 4, 1),
-            Soc.BCM2835,
-            Cpu.ARM1176JZF_S, 1,
-            Collections.singletonList(700),
-            Collections.singletonList(512 * 1024)),
+        List.of("0011", "0014", "900061"),
+        PiModel.COMPUTE,
+        HeaderVersion.COMPUTE,
+        LocalDate.of(2014, 4, 1),
+        Soc.BCM2835,
+        Cpu.ARM1176JZF_S, 1,
+        List.of(700),
+        List.of(512 * 1024)),
     COMPUTE_3("Compute Module 3", STACK_ON_COMPUTER,
-            Arrays.asList("a020a0", "a220a0"),
-            PiModel.COMPUTE,
-            HeaderVersion.COMPUTE,
-            LocalDate.of(2017, 1, 1),
-            Soc.BCM2837,
-            Cpu.CORTEX_A53, 4,
-            Collections.singletonList(1200),
-            Collections.singletonList(1024 * 1024)),
+        List.of("a020a0", "a220a0"),
+        PiModel.COMPUTE,
+        HeaderVersion.COMPUTE,
+        LocalDate.of(2017, 1, 1),
+        Soc.BCM2837,
+        Cpu.CORTEX_A53, 4,
+        List.of(1200),
+        List.of(1024 * 1024)),
     COMPUTE_3_PLUS("Compute Module 3+", STACK_ON_COMPUTER,
-            Collections.singletonList("a02100"),
-            PiModel.COMPUTE,
-            HeaderVersion.COMPUTE,
-            LocalDate.of(2019, 1, 1),
-            Soc.BCM2837B0,
-            Cpu.CORTEX_A53, 4,
-            Collections.singletonList(1200),
-            Collections.singletonList(1024 * 1024)),
+        List.of("a02100"),
+        PiModel.COMPUTE,
+        HeaderVersion.COMPUTE,
+        LocalDate.of(2019, 1, 1),
+        Soc.BCM2837B0,
+        Cpu.CORTEX_A53, 4,
+        List.of(1200),
+        List.of(1024 * 1024)),
     COMPUTE_4("Compute Module 4", STACK_ON_COMPUTER,
-            Arrays.asList("a03140", "b03140", "c03140", "d03140"),
-            PiModel.COMPUTE,
-            HeaderVersion.COMPUTE,
-            LocalDate.of(2020, 10, 1),
-            Soc.BCM2711,
-            Cpu.CORTEX_A72, 4,
-            Collections.singletonList(1500),
-            Arrays.asList(1024 * 1024, 2048 * 1024, 4096 * 1024, 8192 * 1024)),
+        List.of("a03140", "b03140", "c03140", "d03140", "a03141", "b03141", "c03141", "d03141"),
+        PiModel.COMPUTE,
+        HeaderVersion.COMPUTE,
+        LocalDate.of(2020, 10, 1),
+        Soc.BCM2711,
+        Cpu.CORTEX_A72, 4,
+        List.of(1500),
+        List.of(1024 * 1024, 2048 * 1024, 4096 * 1024, 8192 * 1024)),
     // https://datasheets.raspberrypi.com/cm4s/cm4s-datasheet.pdf
     COMPUTE_4_SODIMM("Compute Module 4 SODIMM", STACK_ON_COMPUTER,
         new ArrayList<>(), // Not known yet
@@ -177,72 +215,132 @@ public enum BoardModel {
         LocalDate.of(2020, 10, 1),
         Soc.BCM2711,
         Cpu.CORTEX_A72, 4,
-        Collections.singletonList(1500),
-        Arrays.asList(1024 * 1024, 2048 * 1024, 4096 * 1024, 8192 * 1024)),
+        List.of(1500),
+        List.of(1024 * 1024, 2048 * 1024, 4096 * 1024, 8192 * 1024)),
+    // https://www-cnx--software-com.cdn.ampproject.org/c/s/www.cnx-software.com/2024/11/27/raspberry-pi-cm5-broadcom-bcm2712-soc-16gb-lpddr4-ecc-memory/?amp=1
+    COMPUTE_5("Compute Module 5", STACK_ON_COMPUTER,
+        List.of("b04180", "c04180", "d04180", "e04180", "b041a0", "c041a0", "d041a0", "e041a0"),
+        PiModel.COMPUTE,
+        HeaderVersion.COMPUTE,
+        LocalDate.of(2024, 11, 27),
+        Soc.BCM2712,
+        Cpu.CORTEX_A76, 4,
+        List.of(2400),
+        List.of(2048 * 1024, 4096 * 1024, 8192 * 1024, 16384 * 1024),
+        List.of(
+            "20241127: The board codes are not documented yet with the Compute 5 announcement.",
+            "20241129: Confirmed by Jeff Geerling who has evaluation version: c04180 for the 4Gb version.",
+            "When compared with Compute 4, we can assume the other boards should have be a, b, d.",
+            "Will be further completed or modified when more info is available.",
+            "20260619: CM5 board codes documented at https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#new-style-revision-codes-in-use"
+        ),
+        true),
     ZERO_PCB_1_2("Raspberry Pi Zero PCB V1.2", SINGLE_BOARD_COMPUTER,
-            Arrays.asList("900092", "920092"),
-            PiModel.ZERO,
-            HeaderVersion.TYPE_3,
-            LocalDate.of(2015, 11, 1),
-            Soc.BCM2835,
-            Cpu.ARM1176JZF_S, 1,
-            Collections.singletonList(1000),
-            Collections.singletonList(512 * 1024)),
+        List.of("900092", "920092"),
+        PiModel.ZERO,
+        HeaderVersion.TYPE_3,
+        LocalDate.of(2015, 11, 1),
+        Soc.BCM2835,
+        Cpu.ARM1176JZF_S, 1,
+        List.of(1000),
+        List.of(512 * 1024)),
     ZERO_PCB_1_3("Raspberry Pi Zero PCB V1.3", SINGLE_BOARD_COMPUTER,
-            Arrays.asList("900093", "920093"),
-            PiModel.ZERO,
-            HeaderVersion.TYPE_3,
-            LocalDate.of(2016, 5, 1),
-            Soc.BCM2835,
-            Cpu.ARM1176JZF_S, 1,
-            Collections.singletonList(1000),
-            Collections.singletonList(512 * 1024)),
+        List.of("900093", "920093"),
+        PiModel.ZERO,
+        HeaderVersion.TYPE_3,
+        LocalDate.of(2016, 5, 1),
+        Soc.BCM2835,
+        Cpu.ARM1176JZF_S, 1,
+        List.of(1000),
+        List.of(512 * 1024)),
     ZERO_W("Raspberry Pi Zero W", SINGLE_BOARD_COMPUTER,
-            Collections.singletonList("9000c1"),
-            PiModel.ZERO,
-            HeaderVersion.TYPE_3,
-            LocalDate.of(2017, 2, 28),
-            Soc.BCM2835,
-            Cpu.ARM1176JZF_S, 1,
-            Collections.singletonList(1000),
-            Collections.singletonList(512 * 1024)),
+        List.of("9000c1"),
+        PiModel.ZERO,
+        HeaderVersion.TYPE_3,
+        LocalDate.of(2017, 2, 28),
+        Soc.BCM2835,
+        Cpu.ARM1176JZF_S, 1,
+        List.of(1000),
+        List.of(512 * 1024)),
     ZERO_V2("Raspberry Pi Zero V2", SINGLE_BOARD_COMPUTER,
-            Collections.singletonList("902120"),
-            PiModel.ZERO,
-            HeaderVersion.TYPE_3,
-            LocalDate.of(2021, 10, 28),
-            Soc.BCM2710A1,
-            Cpu.CORTEX_A53, 4,
-            Collections.singletonList(1000),
-            Collections.singletonList(512 * 1024)),
+        List.of("902120"),
+        PiModel.ZERO,
+        HeaderVersion.TYPE_3,
+        LocalDate.of(2021, 10, 28),
+        Soc.BCM2710A1,
+        Cpu.CORTEX_A53, 4,
+        List.of(1000),
+        List.of(512 * 1024)),
     PICO("Raspberry Pi Pico", MICROCONTROLLER,
-            new ArrayList<>(),
-            PiModel.PICO,
-            HeaderVersion.PICO,
-            LocalDate.of(2021, 1, 1),
-            Soc.RP2040,
-            Cpu.CORTEX_MO_PLUS, 1,
-            Collections.singletonList(1000),
-            Collections.singletonList(264 + 2048)),
+        new ArrayList<>(),
+        PiModel.PICO,
+        HeaderVersion.PICO,
+        LocalDate.of(2021, 1, 1),
+        Soc.RP2040,
+        Cpu.CORTEX_MO_PLUS, 1,
+        List.of(133),
+        List.of(264 + 2048)),
     PICO_W("Raspberry Pi Pico W", MICROCONTROLLER,
-            new ArrayList<>(),
-            PiModel.PICO,
-            HeaderVersion.PICO,
-            LocalDate.of(2022, 6, 1),
-            Soc.RP2040,
-            Cpu.CORTEX_MO_PLUS, 1,
-            Collections.singletonList(1000),
-            Collections.singletonList(264 + 2048),
-            Collections.singletonList("Same form factor as PICO but with Wi-Fi")),
+        new ArrayList<>(),
+        PiModel.PICO,
+        HeaderVersion.PICO,
+        LocalDate.of(2022, 6, 1),
+        Soc.RP2040,
+        Cpu.CORTEX_MO_PLUS, 1,
+        List.of(133),
+        List.of(264 + 2048),
+        List.of("Same form factor as PICO but with Wi-Fi"),
+        false),
+    PICO_2("Raspberry Pi Pico 2", MICROCONTROLLER,
+        new ArrayList<>(),
+        PiModel.PICO,
+        HeaderVersion.PICO,
+        LocalDate.of(2024, 8, 8),
+        Soc.RP2350,
+        Cpu.CORTEX_M33, 1,
+        List.of(150),
+        List.of(520 + 4096)),
+    PICO_2_W("Raspberry Pi Pico 2 W", MICROCONTROLLER,
+        new ArrayList<>(),
+        PiModel.PICO,
+        HeaderVersion.PICO,
+        LocalDate.of(2024, 8, 8),
+        Soc.RP2350,
+        Cpu.CORTEX_M33, 1,
+        List.of(150),
+        List.of(520 + 4096)),
+    // Generic model, this can be used to force the library
+    // to load Raspberry Pi plugins on other board types
+    GENERIC("Generic board compatible with Raspberry Pi 4", SINGLE_BOARD_COMPUTER,
+        new ArrayList<>(),
+        PiModel.MODEL_B,
+        HeaderVersion.TYPE_3,
+        LocalDate.now(),
+        Soc.UNKNOWN,
+        Cpu.UNKNOWN, 4,
+        new ArrayList<>(),
+        new ArrayList<>()),
+    GENERIC_RP1("Generic board compatible with Raspberry Pi 5", SINGLE_BOARD_COMPUTER,
+        new ArrayList<>(),
+        PiModel.MODEL_B,
+        HeaderVersion.TYPE_3,
+        LocalDate.now(),
+        Soc.UNKNOWN,
+        Cpu.UNKNOWN, 4,
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        true),
+    // Unknown model
     UNKNOWN("Unknown", BoardType.UNKNOWN,
-            new ArrayList<>(),
-            PiModel.UNKNOWN,
-            HeaderVersion.UNKNOWN,
-            null,
-            Soc.UNKNOWN,
-            Cpu.UNKNOWN, 0,
-            new ArrayList<>(),
-            new ArrayList<>());
+        new ArrayList<>(),
+        PiModel.UNKNOWN,
+        HeaderVersion.UNKNOWN,
+        null,
+        Soc.UNKNOWN,
+        Cpu.UNKNOWN, 0,
+        new ArrayList<>(),
+        new ArrayList<>());
 
     private static final Logger logger = LoggerFactory.getLogger(BoardModel.class);
 
@@ -258,20 +356,54 @@ public enum BoardModel {
     private final List<Integer> versionsProcessorSpeedInMhz;
     private final List<Integer> versionsMemoryInKb;
     private final List<String> remarks;
+    private final Boolean usesRP1;
 
+    /**
+     * Constructor for creating a {@code BoardModel} without remarks.
+     *
+     * @param label                       the descriptive name of the board
+     * @param boardType                   the type of the board
+     * @param boardCodes                  a list of unique codes identifying this board
+     * @param model                       the Pi model of the board
+     * @param headerVersion               the header version
+     * @param releaseDate                 the release date of the board
+     * @param soc                         the system-on-chip used
+     * @param cpu                         the CPU type
+     * @param numberOfCpu                 the number of CPU cores
+     * @param versionsProcessorSpeedInMhz list of processor speeds in MHz
+     * @param versionsMemoryInKb          list of memory sizes in KB
+     */
     BoardModel(String label, BoardType boardType, List<String> boardCodes,
                PiModel model, HeaderVersion headerVersion, LocalDate releaseDate,
                Soc soc, Cpu cpu, Integer numberOfCpu,
                List<Integer> versionsProcessorSpeedInMhz, List<Integer> versionsMemoryInKb) {
-        this(label, boardType, boardCodes, model, headerVersion, releaseDate, soc, cpu, numberOfCpu, versionsProcessorSpeedInMhz,
-                versionsMemoryInKb, new ArrayList<>());
+        this(label, boardType, boardCodes, model, headerVersion, releaseDate, soc, cpu, numberOfCpu,
+            versionsProcessorSpeedInMhz, versionsMemoryInKb, new ArrayList<>(), false);
     }
 
+    /**
+     * Constructor for creating a {@code BoardModel}.
+     *
+     * @param label                       the descriptive name of the board
+     * @param boardType                   the type of the board
+     * @param boardCodes                  a list of unique codes identifying this board
+     * @param model                       the Pi model of the board
+     * @param headerVersion               the header version
+     * @param releaseDate                 the release date of the board
+     * @param soc                         the system-on-chip used
+     * @param cpu                         the CPU type
+     * @param numberOfCpu                 the number of CPU cores
+     * @param versionsProcessorSpeedInMhz list of processor speeds in MHz
+     * @param versionsMemoryInKb          list of memory sizes in KB
+     * @param remarks                     any remarks or notes about the board
+     * @param usesRP1                     board contains the RP1 chip to control GPIOs
+     */
     BoardModel(String label, BoardType boardType, List<String> boardCodes,
                PiModel model, HeaderVersion headerVersion, LocalDate releaseDate,
                Soc soc, Cpu cpu, Integer numberOfCpu,
                List<Integer> versionsProcessorSpeedInMhz, List<Integer> versionsMemoryInKb,
-               List<String> remarks) {
+               List<String> remarks,
+               Boolean usesRP1) {
         this.label = label;
         this.boardType = boardType;
         this.boardCodes = boardCodes;
@@ -284,24 +416,123 @@ public enum BoardModel {
         this.versionsProcessorSpeedInMhz = versionsProcessorSpeedInMhz;
         this.versionsMemoryInKb = versionsMemoryInKb;
         this.remarks = remarks;
+        this.usesRP1 = usesRP1;
     }
 
-    public static BoardModel getByBoardCode(String boardCode) {
+    /**
+     * Returns the {@link BoardModel} corresponding to the given {@link RevisionCode} by matching on the board type and,
+     * where necessary, the PCB revision or memory size.
+     *
+     * @param revisionCode the parsed revision code to identify
+     * @return the matching {@code BoardModel}, or {@code UNKNOWN} if the type is not recognized
+     */
+    public static BoardModel getByRevisionCode(RevisionCode revisionCode) {
+        switch (revisionCode.type()) {
+            case RPI_A:
+                return BoardModel.MODEL_1_A;
+            case RPI_B:
+            case RPI_ALPHA:
+                return BoardModel.MODEL_1_B;
+            case RPI_A_PLUS:
+                return BoardModel.MODEL_1_A_PLUS;
+            case RPI_B_PLUS:
+                return BoardModel.MODEL_1_B_PLUS;
+            case RPI_2B:
+                if (revisionCode.revision() < 2) {
+                    return BoardModel.MODEL_2_B;
+                } else {
+                    return BoardModel.MODEL_2_B_V1_2;
+                }
+            case RPI_CM1:
+                return BoardModel.COMPUTE_1;
+            case RPI_3B:
+                return BoardModel.MODEL_3_B;
+            case RPI_ZERO:
+                if (revisionCode.revision() < 3) {
+                    return BoardModel.ZERO_PCB_1_2;
+                } else {
+                    return BoardModel.ZERO_PCB_1_3;
+                }
+            case RPI_CM3:
+                return BoardModel.COMPUTE_3;
+            case RPI_ZERO_W:
+                return BoardModel.ZERO_W;
+            case RPI_3B_PLUS:
+                return BoardModel.MODEL_3_B_PLUS;
+            case RPI_3A_PLUS:
+                return BoardModel.MODEL_3_A_PLUS;
+            case RPI_CM3_PLUS:
+                return BoardModel.COMPUTE_3_PLUS;
+            case RPI_4B:
+                return BoardModel.MODEL_4_B;
+            case RPI_ZERO_2_W:
+            case RPI_CM0:
+                return BoardModel.ZERO_V2;
+            case RPI_400:
+                return BoardModel.MODEL_400;
+            case RPI_CM4:
+                return BoardModel.COMPUTE_4;
+            case RPI_CM4S:
+                return BoardModel.COMPUTE_4_SODIMM;
+            case RPI_5:
+                return BoardModel.MODEL_5_B;
+            case RPI_CM5:
+            case RPI_CM5_LITE:
+                return BoardModel.COMPUTE_5;
+            case RPI_500_500_PLUS:
+                if (RevisionCode.MemorySize.GB_16.equals(revisionCode.memorySize())) {
+                    return BoardModel.MODEL_500_PLUS;
+                } else {
+                    return BoardModel.MODEL_500;
+                }
+            default:
+                return UNKNOWN;
+        }
+    }
+
+    /**
+     * Retrieves the board model corresponding to the given board code.
+     *
+     * <p>Where possible, identification is performed by decoding the structured fields of the revision code per the
+     * Raspberry Pi revision code specification. If the revision code cannot be parsed, falls back to direct string
+     * matching against known board codes.</p>
+     *
+     * @param boardCode the board code to look up
+     * @return the matching {@code BoardModel} or {@code UNKNOWN} if no match is found
+     * @throws Exception if multiple matches are found
+     */
+    public static BoardModel getByBoardCode(String boardCode) throws Exception {
+        try {
+            RevisionCode revisionCode = RevisionCode.of(boardCode);
+            BoardModel result = getByRevisionCode(revisionCode);
+            if (result != UNKNOWN) {
+                return result;
+            }
+        } catch (IllegalArgumentException e) {
+            // Not a valid revision code, fall through to legacy lookup.
+        }
+
         var matches = Arrays.stream(BoardModel.values())
-                .filter(bm -> bm.boardCodes.contains(boardCode))
-                .collect(Collectors.toList());
+            .filter(bm -> bm.boardCodes.contains(boardCode))
+            .collect(Collectors.toList());
         if (matches.isEmpty()) {
             return BoardModel.UNKNOWN;
         } else if (matches.size() > 1) {
-            logger.error("Too many matching models found for code {}, probably an error in the definitions", boardCode);
+            throw new Exception("Too many matching models found for code " + boardCode);
         }
         return matches.get(0);
     }
 
+    /**
+     * Retrieves the board model corresponding to the given board name.
+     *
+     * @param boardName the name of the board
+     * @return the matching {@code BoardModel} or {@code UNKNOWN} if no match is found
+     */
     public static BoardModel getByBoardName(String boardName) {
         var matches = Arrays.stream(BoardModel.values())
-                .filter(bm -> boardName.toLowerCase().startsWith(bm.label.toLowerCase()))
-                .collect(Collectors.toList());
+            .filter(bm -> boardName.toLowerCase().startsWith(bm.label.toLowerCase()))
+            .collect(Collectors.toList());
         if (matches.isEmpty()) {
             return BoardModel.UNKNOWN;
         } else if (matches.size() > 1) {
@@ -310,63 +541,159 @@ public enum BoardModel {
         return matches.get(0);
     }
 
+    /**
+     * Retrieves all unique board codes from all models.
+     *
+     * @return a list of all board codes
+     */
+    public static List<String> getAllBoardCodes() {
+        return Arrays.stream(BoardModel.values())
+            .flatMap(b -> b.boardCodes.stream())
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns the programmatic identifier of this board model, which is the name of the enum constant.
+     *
+     * @return the enum constant name, e.g. {@code "MODEL_4_B"}
+     */
     public String getName() {
         return name();
     }
 
+    /**
+     * Returns the human-readable name of the board.
+     *
+     * @return the descriptive label, e.g. {@code "Raspberry Pi 4 Model B"}
+     */
     public String getLabel() {
         return label;
     }
 
+    /**
+     * Returns the category this board belongs to.
+     *
+     * @return the {@link BoardType} (single-board computer, microcontroller, etc.)
+     */
     public BoardType getBoardType() {
         return boardType;
     }
 
+    /**
+     * Returns the revision codes that identify this board in the {@code /proc/cpuinfo} revision field.
+     *
+     * @return the list of board revision codes, possibly empty when no codes are known
+     */
     public List<String> getBoardCodes() {
         return boardCodes;
     }
 
+    /**
+     * Returns the Raspberry Pi model family of this board.
+     *
+     * @return the {@link PiModel}, e.g. Model A, Model B, Zero, Compute or Pico
+     */
     public PiModel getModel() {
         return model;
     }
 
+    /**
+     * Returns the GPIO header layout used by this board.
+     *
+     * @return the {@link HeaderVersion} describing the available header(s)
+     */
     public HeaderVersion getHeaderVersion() {
         return headerVersion;
     }
 
+    /**
+     * Returns the date on which this board was released.
+     *
+     * @return the release date, or {@code null} when the date is unknown
+     */
     public LocalDate getReleaseDate() {
         return releaseDate;
     }
 
+    /**
+     * Returns the system-on-chip that powers this board.
+     *
+     * @return the {@link Soc} of the board
+     */
     public Soc getSoc() {
         return soc;
     }
 
+    /**
+     * Returns the CPU core type of this board.
+     *
+     * @return the {@link Cpu} of the board
+     */
     public Cpu getCpu() {
         return cpu;
     }
 
+    /**
+     * Returns the number of CPU cores on this board.
+     *
+     * @return the core count
+     */
     public Integer getNumberOfCpu() {
         return numberOfCpu;
     }
 
+    /**
+     * Returns the clock speeds at which this board's processor has shipped across its hardware revisions.
+     *
+     * @return the processor speeds in MHz, one entry per known variant
+     */
     public List<Integer> getVersionsProcessorSpeedInMhz() {
         return versionsProcessorSpeedInMhz;
     }
 
+    /**
+     * Returns the memory sizes in which this board has shipped, expressed in kilobytes.
+     *
+     * @return the memory options in KB, one entry per known variant
+     */
     public List<Integer> getVersionsMemoryInKb() {
         return versionsMemoryInKb;
     }
 
+    /**
+     * Returns the memory options of this board converted from kilobytes to megabytes.
+     *
+     * @return the memory options in MB, one entry per known variant
+     */
     public List<Float> getVersionsMemoryInMb() {
         return versionsMemoryInKb.stream().map(m -> m / 1024F).collect(Collectors.toList());
     }
 
+    /**
+     * Returns the memory options of this board converted from kilobytes to gigabytes.
+     *
+     * @return the memory options in GB, one entry per known variant
+     */
     public List<Float> getVersionsMemoryInGb() {
         return versionsMemoryInKb.stream().map(m -> m / 1024F / 1024F).collect(Collectors.toList());
     }
 
+    /**
+     * Returns free-form notes about this board, for example revision history or sourcing details.
+     *
+     * @return the remarks, possibly empty
+     */
     public List<String> getRemarks() {
         return remarks;
+    }
+
+    /**
+     * Indicates whether this board routes its GPIO through the RP1 I/O controller, as used on the
+     * Raspberry Pi 5 family. Pi4J relies on this to select the appropriate GPIO access path.
+     *
+     * @return {@code true} if the board uses the RP1 chip to control its GPIOs
+     */
+    public boolean usesRP1() {
+        return usesRP1;
     }
 }

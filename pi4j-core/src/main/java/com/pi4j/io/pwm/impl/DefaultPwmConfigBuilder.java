@@ -1,133 +1,126 @@
 package com.pi4j.io.pwm.impl;
 
-/*-
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  DefaultPwmConfigBuilder.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import com.pi4j.context.Context;
-import com.pi4j.io.impl.IOAddressConfigBuilderBase;
+import com.pi4j.io.impl.IOBcmConfigBuilderBase;
 import com.pi4j.io.pwm.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * <p>DefaultPwmConfigBuilder class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
- */
 public class DefaultPwmConfigBuilder
-        extends IOAddressConfigBuilderBase<PwmConfigBuilder, PwmConfig>
-        implements PwmConfigBuilder {
+    extends IOBcmConfigBuilderBase<PwmConfigBuilder, PwmConfig>
+    implements PwmConfigBuilder {
 
     protected List<PwmPreset> presets = new ArrayList<>();
 
     /**
      * PRIVATE CONSTRUCTOR
      */
-    protected DefaultPwmConfigBuilder(Context context){
-        super(context);
+    protected DefaultPwmConfigBuilder() {
     }
 
     /**
-     * <p>newInstance.</p>
-     *
-     * @return a {@link com.pi4j.io.pwm.PwmConfigBuilder} object.
+     * @param context
      */
+    @Deprecated
     public static PwmConfigBuilder newInstance(Context context) {
-        return new DefaultPwmConfigBuilder(context);
+        return newInstance();
     }
 
-    /** {@inheritDoc} */
+
+    public static PwmConfigBuilder newInstance() {
+        return new DefaultPwmConfigBuilder();
+    }
+
+    /**
+     * @deprecated use {@link #channel(Integer)} instead.
+     * <p>
+     * {@inheritDoc}
+     */
     @Override
-    public PwmConfigBuilder frequency(Integer frequency) {
+    @Deprecated(forRemoval = true)
+    public PwmConfigBuilder address(Integer address) {
+        this.properties.put(PwmConfig.PWM_ADDRESS, address.toString());
+        return this;
+    }
+
+    @Override
+    public PwmConfigBuilder chip(Integer chip) {
+        this.properties.put(PwmConfig.PWM_CHIP, chip.toString());
+        return this;
+    }
+
+    @Override
+    public PwmConfigBuilder channel(Integer channel) {
+        this.properties.put(PwmConfig.PWM_CHANNEL, channel.toString());
+        return this;
+    }
+
+    @Override
+    public PwmConfigBuilder bcm(Integer bcm) {
+        this.properties.put(PwmConfig.PWM_BCM, bcm.toString());
+        return this;
+    }
+
+    @Override
+    public PwmConfigBuilder frequency(Double frequency) {
         this.properties.put(PwmConfig.FREQUENCY_KEY, frequency.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public PwmConfigBuilder dutyCycle(Number dutyCycle) {
+    public PwmConfigBuilder dutyCycle(Double dutyCycle) {
         // bounds check the duty-cycle value
-        float dc = dutyCycle.floatValue();
-        if(dc < 0) dc = 0;
-        if(dc > 100) dc = 100;
+        double dc = dutyCycle;
+        if (dc < 0) dc = 0;
+        if (dc > 100) dc = 100;
 
-        this.properties.put(PwmConfig.DUTY_CYCLE_KEY, Float.toString(dc));
+        this.properties.put(PwmConfig.DUTY_CYCLE_KEY, Double.toString(dc));
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public PwmConfigBuilder pwmType(PwmType pwmType) {
         this.properties.put(PwmConfig.PWM_TYPE_KEY, pwmType.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public PwmConfigBuilder polarity(PwmPolarity polarity) {
         this.properties.put(PwmConfig.POLARITY_KEY, polarity.toString());
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public PwmConfigBuilder shutdown(Number dutyCycle) {
+    public PwmConfigBuilder shutdown(Double dutyCycle) {
         // bounds check the duty-cycle value
-        float dc = dutyCycle.floatValue();
-        if(dc < 0) dc = 0;
-        if(dc > 100) dc = 100;
+        Double dc = dutyCycle;
+        if (dc < 0) dc = 0.0;
+        if (dc > 100) dc = 100.0;
 
-        this.properties.put(PwmConfig.SHUTDOWN_VALUE_KEY, Float.toString(dc));
+        this.properties.put(PwmConfig.SHUTDOWN_VALUE_KEY, Double.toString(dc));
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public PwmConfigBuilder initial(Number dutyCycle) {
-
+    public PwmConfigBuilder initial(Double dutyCycle) {
         // bounds check the duty-cycle value
-        float dc = dutyCycle.floatValue();
-        if(dc < 0) dc = 0;
-        if(dc > 100) dc = 100;
+        Double dc = dutyCycle;
+        if (dc < 0) dc = 0.0;
+        if (dc > 100) dc = 100.0;
 
-        this.properties.put(PwmConfig.INITIAL_VALUE_KEY, Float.toString(dc));
+        this.properties.put(PwmConfig.INITIAL_VALUE_KEY, Double.toString(dc));
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public PwmConfigBuilder preset(PwmPreset ... preset){
-        for(PwmPreset p : preset) {
+    public PwmConfigBuilder preset(PwmPreset... preset) {
+        for (PwmPreset p : preset) {
             this.presets.add(p);
         }
         return this;
     }
 
-    /** {@inheritDoc} */
     @Override
     public PwmConfig build() {
         PwmConfig config = new DefaultPwmConfig(getResolvedProperties(), this.presets);

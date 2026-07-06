@@ -1,0 +1,112 @@
+package com.pi4j.test.smoketest;
+
+import com.pi4j.io.gpio.digital.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class DigitalInputDebounceCountTestCase extends TestCase {
+
+    private static final Logger logger = LoggerFactory.getLogger(DigitalInputDebounceCountTestCase.class);
+
+    private static final String TEST_NAME = "Digital Debounce Count";
+
+    public static TestResult run(ProviderContext providerContext) {
+        logger.info("Starting Digital Debounce Count test");
+
+        DigitalOutput gpioOutTest = null;
+        DigitalInput gpioInMonitor = null;
+
+        try {
+            // Initialize output
+            gpioOutTest = createDigitalOutput(providerContext.getContext(), 22, DigitalState.LOW, DigitalState.LOW);
+            Thread.sleep(100);
+            if (gpioOutTest.state() != DigitalState.LOW) {
+                return new TestResult(TEST_NAME, false, "Output has not the correct initial state");
+            }
+
+            // Initialize input
+            gpioInMonitor = createDigitalInput(providerContext.getContext(), 27, PullResistance.PULL_DOWN, 100_000L);
+            Thread.sleep(100);
+            DigitalInputDebounceCountTestCase.DataInGpioListener listener = new DigitalInputDebounceCountTestCase.DataInGpioListener();
+            gpioInMonitor.addListener(listener);
+
+            if (gpioInMonitor.state() != DigitalState.LOW) {
+                return new TestResult(TEST_NAME, false, "Input has not the correct initial state");
+            }
+
+            // Debounce is in microseconds, sleep in milliseconds
+
+            // Change the output within debounce time should not be counted
+            gpioOutTest.high();
+            Thread.sleep(50);
+            gpioOutTest.low();
+            Thread.sleep(50);
+            gpioOutTest.high();
+
+            // We should now have high 1 low 0
+            Thread.sleep(200);
+            logger.info("Step 1: {}/{}", listener.getCountsHigh(), listener.getCountsLow());
+
+            // Wait longer then debounce and set low
+            Thread.sleep(200);
+            gpioOutTest.low();
+
+            // We should now have high 1 low 1
+            Thread.sleep(200);
+            logger.info("Step 2: {}/{}", listener.getCountsHigh(), listener.getCountsLow());
+
+            // Wait longer then debounce and set high
+            Thread.sleep(200);
+            gpioOutTest.high();
+
+            // We should now have high 2 low 1     
+            Thread.sleep(200);
+            logger.info("Step 3: {}/{}", listener.getCountsHigh(), listener.getCountsLow());
+
+            // Check the results
+            var highs = listener.getCountsHigh();
+            var lows = listener.getCountsLow();
+            if (lows == 1 && highs == 2) {
+                return new TestResult(TEST_NAME, true, "Correct state change counts detected");
+            } else {
+                return new TestResult(TEST_NAME, false, "Incorrect state change counts detected, expected high and low 2/1, but got " + highs + "/" + lows);
+            }
+        } catch (Exception e) {
+            logger.error("Test failure", e);
+            return new TestResult(TEST_NAME, false, "Test failure: " + e.getMessage());
+        } finally {
+            if (gpioInMonitor != null) {
+                gpioInMonitor.close();
+            }
+            if (gpioOutTest != null) {
+                gpioOutTest.close();
+            }
+        }
+    }
+
+    // Counts the changes in the input to low and high
+    private static class DataInGpioListener implements DigitalStateChangeListener {
+        AtomicInteger counterHigh = new AtomicInteger(0);
+        AtomicInteger counterLow = new AtomicInteger(0);
+
+        @Override
+        public void onDigitalStateChange(DigitalStateChangeEvent event) {
+            if (event.state() == DigitalState.HIGH) {
+                counterHigh.getAndIncrement();
+            }
+            if (event.state() == DigitalState.LOW) {
+                counterLow.getAndIncrement();
+            }
+        }
+
+        public int getCountsHigh() {
+            return counterHigh.get();
+        }
+
+        public int getCountsLow() {
+            return counterLow.get();
+        }
+    }
+}

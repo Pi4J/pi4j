@@ -1,30 +1,5 @@
 package com.pi4j.io.i2c;
 
-/*-
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  I2CBase.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import com.pi4j.context.Context;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.IOBase;
@@ -33,10 +8,11 @@ import com.pi4j.io.i2c.impl.DefaultI2CRegister;
 import java.util.concurrent.Callable;
 
 /**
- * <p>Abstract I2CBase class.</p>
+ * Base class for {@link I2C} device implementations, tracking the open/closed state and delegating bus-level
+ * serialization to its associated {@link I2CBus}. Concrete providers extend this to add the actual read/write
+ * transport for a specific platform.
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * @param <T> the concrete {@link I2CBus} type this device communicates over
  */
 public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig, I2CProvider> implements I2C {
 
@@ -44,11 +20,11 @@ public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig, I
     protected final T i2CBus;
 
     /**
-     * <p>Constructor for I2CBase.</p>
+     * Creates an I2C device bound to the given provider, configuration and bus, marking it as open.
      *
-     * @param provider a {@link I2CProvider} object.
-     * @param config   a {@link I2CConfig} object.
-     * @param i2CBus   a {@link I2CBus} object.
+     * @param provider the provider that created this device
+     * @param config   the configuration describing the bus and device address
+     * @param i2CBus   the bus instance used to serialize access for this device
      */
     public I2CBase(I2CProvider provider, I2CConfig config, T i2CBus) {
         super(provider, config);
@@ -56,27 +32,20 @@ public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig, I
         this.i2CBus = i2CBus;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean isOpen() {
         return this.isOpen;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void close() {
-        this.isOpen = false;
+        if (isOpen) {
+            super.close();
+            this.isOpen = false;
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Get an encapsulated interface for reading and writing to a specific I2C device register
-     */
+    @Override
     public I2CRegister getRegister(int address) {
         return new DefaultI2CRegister(this, address);
     }
@@ -88,11 +57,8 @@ public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig, I
         return this.i2CBus.execute(this, action);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public I2C shutdown(Context context) throws ShutdownException {
+    public I2C shutdownInternal(Context context) throws ShutdownException {
         // if this I2C device is still open, then we need to close it since we are shutting down
         if (this.isOpen()) {
             try {

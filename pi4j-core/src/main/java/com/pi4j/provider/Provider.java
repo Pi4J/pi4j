@@ -1,30 +1,5 @@
 package com.pi4j.provider;
 
-/*
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  Provider.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import com.pi4j.common.Descriptor;
 import com.pi4j.config.Config;
 import com.pi4j.config.ConfigBuilder;
@@ -33,59 +8,75 @@ import com.pi4j.extension.Extension;
 import com.pi4j.io.IO;
 import com.pi4j.io.IOType;
 import com.pi4j.io.exception.IOException;
-import com.pi4j.util.PropertiesUtil;
-
-import java.util.Map;
 
 /**
- * <p>Provider interface.</p>
+ * A platform-specific factory for a single category of I/O. A provider is an {@link Extension}
+ * that knows how to create concrete {@link IO} instances (for example digital, PWM, I2C or SPI)
+ * from a {@link Config} for the underlying hardware or operating-system interface it represents.
+ * Providers are registered with and resolved through {@link Providers}, and grouped by their
+ * {@link IOType} via {@link ProviderGroup}.
  *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * @param <PROVIDER_TYPE> the concrete provider self-type, returned by lifecycle methods for fluent chaining
+ * @param <IO_TYPE>       the type of {@link IO} instance this provider creates
+ * @param <CONFIG_TYPE>   the {@link Config} type consumed when creating an I/O instance
  */
 public interface Provider<PROVIDER_TYPE extends Provider, IO_TYPE extends IO, CONFIG_TYPE extends Config> extends Extension<PROVIDER_TYPE> {
 
+    /**
+     * Returns the Pi4J {@link Context} this provider was initialized with, or {@code null} if it
+     * has not yet been initialized.
+     *
+     * @return the runtime context bound to this provider
+     */
     Context context();
 
     /**
-     * <p>create.</p>
+     * Creates and returns a new I/O instance configured by the supplied configuration.
      *
-     * @param config a CONFIG_TYPE object.
-     * @return a IO_TYPE object.
+     * @param config the configuration describing the I/O instance to create (address, id, options, etc.)
+     * @return the newly created I/O instance
      */
     IO_TYPE create(CONFIG_TYPE config);
 
     /**
-     * <p>type.</p>
+     * Returns the {@link IOType} this provider supplies, derived from its provider class.
      *
-     * @return a {@link com.pi4j.io.IOType} object.
+     * @return the I/O type (digital input/output, PWM, I2C, SPI, etc.) handled by this provider
      */
     default IOType type() { return IOType.getByProviderClass(this.getClass()); }
+
     /**
-     * <p>getType.</p>
+     * Returns the {@link IOType} this provider supplies.
      *
-     * @return a {@link com.pi4j.io.IOType} object.
+     * @return the I/O type handled by this provider
+     * @see #type()
      */
     default IOType getType() { return type(); }
 
     /**
-     * Returns the priority for this provider, defaults to 0
+     * Returns the selection priority for this provider. When multiple providers are available for
+     * the same {@link IOType}, a higher priority is preferred when choosing a default. Defaults to 0.
      *
-     * @return an integer
+     * @return the provider priority; higher values take precedence
      */
     default int getPriority() {
         return 0;
     }
 
     /**
-     * <p>isType.</p>
+     * Indicates whether this provider supplies the given I/O type.
      *
-     * @param type a {@link com.pi4j.io.IOType} object.
-     * @return a boolean.
+     * @param type the I/O type to test against this provider's own type
+     * @return {@code true} if this provider's {@link #type()} matches the given type
      */
     default boolean isType(IOType type) { return this.type().isType(type); }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The returned descriptor is categorized as {@code "PROVIDER"} rather than the generic
+     * extension category.
+     */
     @Override
     default Descriptor describe() {
         Descriptor descriptor = Extension.super.describe();
@@ -94,17 +85,21 @@ public interface Provider<PROVIDER_TYPE extends Provider, IO_TYPE extends IO, CO
         return descriptor;
     }
 
+    /**
+     * Creates a new I/O instance with the given id, using a default configuration built from this
+     * provider's {@link IOType} and the bound {@link Context}.
+     *
+     * @param id the unique identifier to assign to the new I/O instance
+     * @return the newly created I/O instance
+     * @throws IOException if this provider has not been initialized with a Pi4J context
+     */
     default IO_TYPE create(String id) {
         // validate context
         if(context() == null) throw new IOException("Unable to create IO instance; this provider has not been 'initialized()' with a Pi4J context.");
 
-        // resolve inheritable properties from the context based on the provided 'id' for this IO instance
-        Map<String,String> inheritedProperties = PropertiesUtil.subProperties(context().properties().all(), id);
-
         // create IO instance
         ConfigBuilder builder = type().newConfigBuilder(context());
         builder.id(id);
-        builder.load(inheritedProperties);
         return (IO_TYPE)create((CONFIG_TYPE) builder.build());
     }
 }

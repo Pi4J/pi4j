@@ -1,83 +1,57 @@
 package com.pi4j.util;
 
-/*
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  Console.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>Console class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * Convenience helper used by Pi4J examples and applications to produce formatted, decorated text output
+ * (titles, boxes, separator lines, screen control) via SLF4J. All write methods route through the logger and
+ * return this instance for fluent chaining. Layout helpers delegate to {@link StringUtil}.
  */
 public class Console {
 
     private static final Logger logger = LoggerFactory.getLogger(Console.class);
 
     private static final int LINE_WIDTH = 60;
-    /** Constant <code>CLEAR_SCREEN_ESCAPE_SEQUENCE="\033[2J\033[1;1H"</code> */
+    /** ANSI escape sequence that clears the terminal screen and moves the cursor to the home position. */
     public static final String CLEAR_SCREEN_ESCAPE_SEQUENCE = "\033[2J\033[1;1H";
-    /** Constant <code>ERASE_LINE_ESCAPE_SEQUENCE="\033[K"</code> */
+    /** ANSI escape sequence that erases the current terminal line. */
     public static final String ERASE_LINE_ESCAPE_SEQUENCE = "\033[K";
 
-    /** Constant <code>LINE_SEPARATOR_CHAR='*'</code> */
+    /** Character used to draw separator lines and title borders. */
     public static final char LINE_SEPARATOR_CHAR = '*';
-    /** Constant <code>LINE_SEPARATOR="StringUtil.repeat(LINE_SEPARATOR_CHAR, "{trunked}</code> */
+    /** A full-width separator line composed of {@link #LINE_SEPARATOR_CHAR} characters. */
     public static final String LINE_SEPARATOR = StringUtil.repeat(LINE_SEPARATOR_CHAR, LINE_WIDTH);
 
     protected boolean exiting = false;
 
     /**
-     * <p>println.</p>
+     * Formats the given arguments and prints the result followed by a line break.
      *
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     * @return a {@link com.pi4j.util.Console} object.
+     * @param format a {@link String#format(String, Object...)} format string
+     * @param args   the arguments referenced by the format specifiers
+     * @return this instance for method chaining
      */
     public synchronized Console println(String format, Object ... args){
         return println(String.format(format, args));
     }
 
     /**
-     * <p>print.</p>
+     * Formats the given arguments and prints the result without a trailing line break.
      *
-     * @param format a {@link java.lang.String} object.
-     * @param args a {@link java.lang.Object} object.
-     * @return a {@link com.pi4j.util.Console} object.
+     * @param format a {@link String#format(String, Object...)} format string
+     * @param args   the arguments referenced by the format specifiers
+     * @return this instance for method chaining
      */
     public synchronized Console print(String format, Object ... args){
         return print(String.format(format, args));
     }
 
     /**
-     * <p>println.</p>
+     * Prints a single line of text.
      *
-     * @param line a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.util.Console} object.
+     * @param line the text to print
+     * @return this instance for method chaining
      */
     public synchronized Console println(String line){
         logger.info(line);
@@ -85,10 +59,10 @@ public class Console {
     }
 
     /**
-     * <p>println.</p>
+     * Prints the {@link Object#toString()} representation of the given object as a single line.
      *
-     * @param line a {@link java.lang.Object} object.
-     * @return a {@link com.pi4j.util.Console} object.
+     * @param line the object whose string representation is printed
+     * @return this instance for method chaining
      */
     public synchronized Console println(Object line){
         logger.info(line.toString());
@@ -96,19 +70,19 @@ public class Console {
     }
 
     /**
-     * <p>println.</p>
+     * Prints an empty line.
      *
-     * @return a {@link com.pi4j.util.Console} object.
+     * @return this instance for method chaining
      */
     public synchronized Console println(){
         return println("");
     }
 
     /**
-     * <p>print.</p>
+     * Prints the {@link Object#toString()} representation of the given object.
      *
-     * @param data a {@link java.lang.Object} object.
-     * @return a {@link com.pi4j.util.Console} object.
+     * @param data the object whose string representation is printed
+     * @return this instance for method chaining
      */
     public synchronized Console print(Object data){
         logger.info(data.toString());
@@ -116,10 +90,10 @@ public class Console {
     }
 
     /**
-     * <p>print.</p>
+     * Prints the given text.
      *
-     * @param data a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.util.Console} object.
+     * @param data the text to print
+     * @return this instance for method chaining
      */
     public synchronized Console print(String data){
         logger.info(data);
@@ -127,30 +101,30 @@ public class Console {
     }
 
     /**
-     * <p>println.</p>
+     * Prints a line consisting of the given character repeated a number of times.
      *
-     * @param character a char.
-     * @param repeat a int.
-     * @return a {@link com.pi4j.util.Console} object.
+     * @param character the character to repeat
+     * @param repeat    the number of times to repeat the character
+     * @return this instance for method chaining
      */
     public synchronized Console println(char character, int repeat){
         return println(StringUtil.repeat(character, repeat));
     }
 
     /**
-     * <p>emptyLine.</p>
+     * Prints a single empty line.
      *
-     * @return a {@link com.pi4j.util.Console} object.
+     * @return this instance for method chaining
      */
     public synchronized Console emptyLine(){
         return emptyLine(1);
     }
 
     /**
-     * <p>emptyLine.</p>
+     * Prints the requested number of empty lines.
      *
-     * @param number a int.
-     * @return a {@link com.pi4j.util.Console} object.
+     * @param number the number of empty lines to print
+     * @return this instance for method chaining
      */
     public synchronized Console emptyLine(int number){
         for(var index = 0; index < number; index++){
@@ -160,40 +134,41 @@ public class Console {
     }
 
     /**
-     * <p>separatorLine.</p>
+     * Prints a full-width separator line using the default {@link #LINE_SEPARATOR}.
      *
-     * @return a {@link com.pi4j.util.Console} object.
+     * @return this instance for method chaining
      */
     public synchronized Console separatorLine(){
         return println(LINE_SEPARATOR);
     }
 
     /**
-     * <p>separatorLine.</p>
+     * Prints a full-width separator line composed of the given character.
      *
-     * @param character a char.
-     * @return a {@link com.pi4j.util.Console} object.
+     * @param character the character used to draw the line
+     * @return this instance for method chaining
      */
     public synchronized Console separatorLine(char character){
         return separatorLine(character, LINE_WIDTH);
     }
 
     /**
-     * <p>separatorLine.</p>
+     * Prints a separator line of the given length composed of the given character.
      *
-     * @param character a char.
-     * @param length a int.
-     * @return a {@link com.pi4j.util.Console} object.
+     * @param character the character used to draw the line
+     * @param length    the number of characters in the line
+     * @return this instance for method chaining
      */
     public synchronized Console separatorLine(char character, int length){
         return println(StringUtil.repeat(character, length));
     }
 
     /**
-     * <p>title.</p>
+     * Clears the screen and prints the given lines centered between double separator borders, producing a
+     * banner-style title block.
      *
-     * @param title a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.util.Console} object.
+     * @param title one or more lines of title text, each centered on its own line
+     * @return this instance for method chaining
      */
     public synchronized Console title(String ... title){
         clearScreen().separatorLine().separatorLine().emptyLine();
@@ -205,21 +180,21 @@ public class Console {
     }
 
     /**
-     * <p>box.</p>
+     * Prints the given lines enclosed in a bordered box using the default padding.
      *
-     * @param lines a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.util.Console} object.
+     * @param lines the lines of text to render inside the box
+     * @return this instance for method chaining
      */
     public synchronized Console box(String ... lines) {
         return box(2, lines);
     }
 
     /**
-     * <p>box.</p>
+     * Prints the given lines enclosed in a bordered box with the requested horizontal padding around the text.
      *
-     * @param padding a int.
-     * @param lines a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.util.Console} object.
+     * @param padding the number of padding characters between the box border and the text on each side
+     * @param lines   the lines of text to render inside the box
+     * @return this instance for method chaining
      */
     public synchronized Console box(int padding, String ... lines) {
         int max_length = 0;
@@ -239,9 +214,9 @@ public class Console {
     }
 
     /**
-     * <p>goodbye.</p>
+     * Prints a "GOODBYE" banner, typically used when an application is shutting down.
      *
-     * @return a {@link com.pi4j.util.Console} object.
+     * @return this instance for method chaining
      */
     public synchronized Console goodbye() {
         emptyLine();
@@ -253,27 +228,29 @@ public class Console {
     }
 
     /**
-     * <p>clearScreen.</p>
+     * Clears the terminal screen by emitting {@link #CLEAR_SCREEN_ESCAPE_SEQUENCE}.
      *
-     * @return a {@link com.pi4j.util.Console} object.
+     * @return this instance for method chaining
      */
     public synchronized Console clearScreen(){
         return print(CLEAR_SCREEN_ESCAPE_SEQUENCE);
     }
 
     /**
-     * <p>eraseLine.</p>
+     * Erases the current terminal line by emitting {@link #ERASE_LINE_ESCAPE_SEQUENCE}.
      *
-     * @return a {@link com.pi4j.util.Console} object.
+     * @return this instance for method chaining
      */
     public synchronized Console eraseLine(){
         return print(ERASE_LINE_ESCAPE_SEQUENCE);
     }
 
     /**
-     * <p>promptForExit.</p>
+     * Displays a "PRESS CTRL-C TO EXIT" prompt and registers a JVM shutdown hook that marks this console as
+     * exiting and prints a goodbye banner. Use together with {@link #waitForExit()} to keep an example program
+     * running until the user terminates it.
      *
-     * @return a {@link com.pi4j.util.Console} object.
+     * @return this instance for method chaining
      */
     public synchronized Console promptForExit(){
         box(4, "PRESS CTRL-C TO EXIT");
@@ -290,9 +267,10 @@ public class Console {
     }
 
     /**
-     * <p>waitForExit.</p>
+     * Blocks the calling thread until this console has been flagged as exiting, polling periodically. Typically
+     * called after {@link #promptForExit()} to keep the program alive until shutdown is requested.
      *
-     * @throws java.lang.InterruptedException if any.
+     * @throws InterruptedException if the calling thread is interrupted while waiting
      */
     public void waitForExit() throws InterruptedException {
         while(!exiting){
@@ -301,17 +279,18 @@ public class Console {
     }
 
     /**
-     * <p>exiting.</p>
+     * Returns whether this console has been flagged as exiting (for example, after the shutdown hook fired).
      *
-     * @return a boolean.
+     * @return {@code true} if exit has been requested, otherwise {@code false}
      */
     public synchronized boolean exiting(){
         return exiting;
     }
+
     /**
-     * <p>isRunning.</p>
+     * Returns whether this console is still running, i.e. has not yet been flagged as exiting.
      *
-     * @return a boolean.
+     * @return {@code true} while exit has not been requested, otherwise {@code false}
      */
     public synchronized boolean isRunning(){
         return !exiting;

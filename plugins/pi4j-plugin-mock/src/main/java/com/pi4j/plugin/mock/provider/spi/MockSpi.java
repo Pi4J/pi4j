@@ -1,32 +1,5 @@
 package com.pi4j.plugin.mock.provider.spi;
 
-/*-
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: PLUGIN   :: Mock Platform & Providers
- * FILENAME      :  MockSpi.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Lesser Public License for more details.
- *
- * You should have received a copy of the GNU General Lesser Public
- * License along with this program.  If not, see
- * <http://www.gnu.org/licenses/lgpl-3.0.html>.
- * #L%
- */
-
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBase;
 import com.pi4j.io.spi.SpiConfig;
@@ -41,37 +14,42 @@ import java.util.ArrayDeque;
 import java.util.Objects;
 
 /**
- * <p>MockSpi class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * Mock, in-memory implementation of the pi4j-core {@link Spi} contract, extending {@link SpiBase}.
+ * Instead of communicating over a real SPI bus it keeps a single in-memory FIFO buffer: bytes
+ * written by {@code write(...)} (or supplied to {@code transfer(...)}) are appended to the buffer,
+ * and {@code read(...)} / {@code transfer(...)} consume bytes from the front of that same buffer.
+ * This lets tests prime mock responses and later verify what was written.
  */
 public class MockSpi extends SpiBase implements Spi {
 
     private static final Logger logger = LoggerFactory.getLogger(MockSpi.class);
     private final String logPreamble;
 
+    /** In-memory FIFO buffer holding bytes written to (and read from) this mock SPI device. */
     protected ArrayDeque<Byte> raw = new ArrayDeque<>();
 
     /**
-     * <p>Constructor for MockSpi.</p>
+     * Creates a mock SPI instance for the given provider and configuration, logging the simulated
+     * open with the configured channel and baud rate.
      *
-     * @param provider a {@link com.pi4j.io.spi.SpiProvider} object.
-     * @param config   a {@link com.pi4j.io.spi.SpiConfig} object.
+     * @param provider the {@link SpiProvider} that created this instance
+     * @param config   the {@link SpiConfig} describing the SPI channel and baud rate
      */
     public MockSpi(SpiProvider provider, SpiConfig config) {
         super(provider, config);
         logPreamble = "[" + Mock.SPI_PROVIDER_NAME + "::" + this.id + "] ::";
-        logger.info("{} OPEN(CHANNEL={}; BAUD={})", logPreamble, config.address(), config.baud());
+        logger.info("{} OPEN(CHANNEL={}; BAUD={})", logPreamble, config.channel(), config.baud());
     }
 
     /**
-     * <p>Lets the tester read all the data in this mocks raw buffer.</p>
+     * Test helper that drains and returns the entire contents of this mock's in-memory buffer.
      * <p>
-     * It returns all the data that has been accumulated by write() or transfer() calls
-     * and not yet been consumed by read() or transfer() calls.
+     * It returns all bytes accumulated by {@code write(...)} or {@code transfer(...)} calls that
+     * have not yet been consumed by {@code read(...)} or {@code transfer(...)} calls. The buffer is
+     * emptied as a side effect, allowing a test to assert exactly what was written to the device.
      *
-     * @return the bytes in the buffer
+     * @return the remaining buffered bytes, in the order they were written (oldest first); an empty
+     *         array if the buffer is empty
      */
     public byte[] readEntireMockBuffer() {
         var bytes = new byte[raw.size()];
@@ -82,17 +60,19 @@ public class MockSpi extends SpiBase implements Spi {
         return bytes;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void close() {
-        logger.info("{} CLOSE(CHANNEL={}; BAUD={})", logPreamble, config.address(), config.baud());
+        logger.info("{} CLOSE(CHANNEL={}; BAUD={})", logPreamble, config.channel(), config.baud());
         super.close();
     }
 
     /**
      * {@inheritDoc}
+     * <p>
+     * Simulates a full-duplex SPI transfer against the in-memory buffer: it first pops up to
+     * {@code numberOfBytes} previously buffered ("prepared") bytes into the {@code read} buffer,
+     * then appends the supplied {@code write} bytes to the buffer for later verification. Always
+     * reports success.
      */
     @Override
     public int transfer(byte[] write, int writeOffset, byte[] read, int readOffset, int numberOfBytes) {
@@ -113,9 +93,6 @@ public class MockSpi extends SpiBase implements Spi {
         return 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int write(byte b) {
         raw.add(b);
@@ -123,9 +100,6 @@ public class MockSpi extends SpiBase implements Spi {
         return 0;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int write(byte[] data, int offset, int length) {
         writeNoLogging(data, offset, length);
@@ -140,9 +114,6 @@ public class MockSpi extends SpiBase implements Spi {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int write(Charset charset, CharSequence data) {
         byte[] buffer = data.toString().getBytes(charset);
@@ -153,9 +124,6 @@ public class MockSpi extends SpiBase implements Spi {
         return data.length();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int read() {
         if (raw.isEmpty()) return -1;
@@ -164,9 +132,6 @@ public class MockSpi extends SpiBase implements Spi {
         return b;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int read(byte[] buffer, int offset, int length) {
         Integer counter = readNoLogging(buffer, offset, length);

@@ -1,113 +1,88 @@
 package com.pi4j.io.gpio.digital;
 
-/*
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  DigitalOutputProvider.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
 /**
- * <p>DigitalOutputProvider interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * Provider responsible for creating and managing {@link DigitalOutput} instances for a particular hardware
+ * platform or device. It specializes {@link DigitalProvider} for the output direction and adds convenience
+ * factory methods that build the {@link DigitalOutputConfig} from a BCM pin number and optional identity.
  */
 public interface DigitalOutputProvider extends DigitalProvider<DigitalOutputProvider, DigitalOutput, DigitalOutputConfig> {
 
     /**
-     * <p>create.</p>
+     * Creates a digital output from a pre-populated configuration builder.
      *
-     * @param builder a {@link com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder} object.
-     * @param <T> a T object.
-     * @return a T object.
+     * @param builder the configuration builder describing the output
+     * @param <T>     the concrete {@link DigitalOutput} type returned by this provider
+     * @return the new digital output instance
      */
     default <T extends DigitalOutput> T create(DigitalOutputConfigBuilder builder) {
-        return (T)create(builder.build());
+        return (T) create(builder.build());
     }
 
     /**
-     * <p>create.</p>
+     * Creates a digital output for the given BCM pin using default settings.
      *
-     * @param address a {@link java.lang.Integer} object.
-     * @param <T> a T object.
-     * @return a T object.
+     * @param bcm the Broadcom GPIO pin number
+     * @param <T> the concrete {@link DigitalOutput} type returned by this provider
+     * @return the new digital output instance
      */
-    default <T extends DigitalOutput> T create(Integer address) {
-        var config = DigitalOutput.newConfigBuilder(context())
-                .address(address)
-                .build();
-        return (T)create(config);
+    default <T extends DigitalOutput> T create(Integer bcm) {
+        var config = DigitalOutput.newConfigBuilder()
+            .bcm(bcm)
+            .build();
+        return (T) create(config);
     }
 
     /**
-     * <p>create.</p>
+     * Creates a digital output for the given BCM pin with the supplied identifier.
      *
-     * @param address a {@link java.lang.Integer} object.
-     * @param id a {@link java.lang.String} object.
-     * @param <T> a T object.
-     * @return a T object.
+     * @param bcm the Broadcom GPIO pin number
+     * @param id  the unique I/O identifier
+     * @param <T> the concrete {@link DigitalOutput} type returned by this provider
+     * @return the new digital output instance
      */
-    default <T extends DigitalOutput> T create(Integer address, String id) {
-        var config = DigitalOutput.newConfigBuilder(context())
-                .id(id)
-                .address(address)
-                .build();
-        return (T)create(config);
+    default <T extends DigitalOutput> T create(Integer bcm, String id) {
+        var config = DigitalOutput.newConfigBuilder()
+            .id(id)
+            .bcm(bcm)
+            .build();
+        return (T) create(config);
     }
 
     /**
-     * <p>create.</p>
+     * Creates a digital output for the given BCM pin with the supplied identifier and name.
      *
-     * @param address a {@link java.lang.Integer} object.
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     * @param <T> a T object.
-     * @return a T object.
+     * @param bcm  the Broadcom GPIO pin number
+     * @param id   the unique I/O identifier
+     * @param name the human-readable name
+     * @param <T>  the concrete {@link DigitalOutput} type returned by this provider
+     * @return the new digital output instance
      */
-    default <T extends DigitalOutput> T create(Integer address, String id, String name) {
-        var config = DigitalOutput.newConfigBuilder(context())
-                .address(address)
-                .id(id)
-                .name(name)
-                .build();
-        return (T)create(config);
+    default <T extends DigitalOutput> T create(Integer bcm, String id, String name) {
+        var config = DigitalOutput.newConfigBuilder()
+            .bcm(bcm)
+            .id(id)
+            .name(name)
+            .build();
+        return (T) create(config);
     }
 
     /**
-     * <p>create.</p>
+     * Creates a digital output for the given BCM pin with the supplied identifier, name and description.
      *
-     * @param address a {@link java.lang.Integer} object.
-     * @param id a {@link java.lang.String} object.
-     * @param name a {@link java.lang.String} object.
-     * @param description a {@link java.lang.String} object.
-     * @param <T> a T object.
-     * @return a T object.
+     * @param bcm         the Broadcom GPIO pin number
+     * @param id          the unique I/O identifier
+     * @param name        the human-readable name
+     * @param description the free-form description
+     * @param <T>         the concrete {@link DigitalOutput} type returned by this provider
+     * @return the new digital output instance
      */
-    default <T extends DigitalOutput> T create(Integer address, String id, String name, String description) {
-        var config = DigitalOutput.newConfigBuilder(context())
-                .address(address)
-                .id(id)
-                .name(name)
-                .description(description)
-                .build();
-        return (T)create(config);
+    default <T extends DigitalOutput> T create(Integer bcm, String id, String name, String description) {
+        var config = DigitalOutput.newConfigBuilder()
+            .bcm(bcm)
+            .id(id)
+            .name(name)
+            .description(description)
+            .build();
+        return (T) create(config);
     }
 }

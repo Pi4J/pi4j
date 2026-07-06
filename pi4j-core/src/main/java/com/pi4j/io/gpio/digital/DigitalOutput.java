@@ -1,30 +1,5 @@
 package com.pi4j.io.gpio.digital;
 
-/*-
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  DigitalOutput.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import com.pi4j.context.Context;
 import com.pi4j.io.OnOff;
 import com.pi4j.io.Output;
@@ -35,341 +10,361 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 /**
- * <p>DigitalOutput interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * Represents a digital output I/O instance, typically a single GPIO pin driven {@link DigitalState#HIGH} or
+ * {@link DigitalState#LOW}. In addition to the basic {@code state(...)} operations it offers higher-level
+ * convenience operations such as {@link #toggle()}, timed {@link #pulse(int, TimeUnit)} and repeating
+ * {@link #blink(int, TimeUnit)}, each with blocking and asynchronous variants. Instances are obtained from a
+ * {@link DigitalOutputProvider} and configured via {@link DigitalOutputConfig}.
  */
 public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfig, DigitalOutputProvider>,
         Output,
         OnOff<DigitalOutput> {
 
     /**
-     * <p>newConfigBuilder.</p>
+     * Creates a new {@link DigitalOutputConfigBuilder} for assembling a {@link DigitalOutputConfig}.
      *
-     * @param context {@link Context}
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder} object.
+     * @param context the Pi4J runtime context the configuration will be associated with
+     * @return a new configuration builder instance
+     * @deprecated the context argument is no longer required; use {@link #newConfigBuilder()} instead
      */
+    @Deprecated
     static DigitalOutputConfigBuilder newConfigBuilder(Context context){
         return DigitalOutputConfigBuilder.newInstance(context);
     }
+
     /**
-     * <p>newBuilder.</p>
+     * Creates a new {@link DigitalOutputConfigBuilder} for assembling a {@link DigitalOutputConfig}.
      *
-     * @param context a {@link com.pi4j.context.Context} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutputBuilder} object.
+     * @return a new configuration builder instance
+     */
+    static DigitalOutputConfigBuilder newConfigBuilder(){
+        return DigitalOutputConfigBuilder.newInstance();
+    }
+
+    /**
+     * Creates a new {@link DigitalOutputBuilder} that resolves a provider and builds a ready-to-use
+     * {@link DigitalOutput} instance.
+     *
+     * @param context the Pi4J runtime context used to resolve the provider and register the instance
+     * @return a new digital output builder instance
      */
     static DigitalOutputBuilder newBuilder(Context context){
         return DigitalOutputBuilder.newInstance(context);
     }
 
+
     /**
-     * <p>state.</p>
+     * Sets the output to the given digital state, driving the underlying pin accordingly.
      *
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws IOException if any.
+     * @param state the digital state to drive the output to
+     * @return this instance for method chaining
+     * @throws IOException if the underlying hardware cannot be written
      */
     DigitalOutput state(DigitalState state) throws IOException;
     /**
-     * <p>pulse.</p>
+     * Drives the output to the given state for the specified duration, then drives it to the inverse state,
+     * blocking the calling thread for the duration and finally invoking the optional callback.
      *
-     * @param interval a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @param callback a {@link java.util.concurrent.Callable} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws IOException if any.
+     * @param interval the pulse duration; must be greater than zero
+     * @param unit     the time unit of {@code interval}
+     * @param state    the state to hold during the pulse
+     * @param callback an optional task invoked once the pulse completes, or {@code null} for none
+     * @return this instance for method chaining
+     * @throws IOException if the underlying hardware cannot be written
      */
     DigitalOutput pulse(int interval, TimeUnit unit, DigitalState state, Callable<Void> callback) throws IOException;
     /**
-     * <p>pulseAsync.</p>
+     * Performs the same operation as {@link #pulse(int, TimeUnit, DigitalState, Callable)} but on a background
+     * thread without blocking the caller.
      *
-     * @param interval a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @param callback a {@link java.util.concurrent.Callable} object.
-     * @return a {@link java.util.concurrent.Future} object.
+     * @param interval the pulse duration; must be greater than zero
+     * @param unit     the time unit of {@code interval}
+     * @param state    the state to hold during the pulse
+     * @param callback an optional task invoked once the pulse completes, or {@code null} for none
+     * @return a {@link Future} that can be used to cancel or await completion of the pulse
      */
     Future<?> pulseAsync(int interval, TimeUnit unit, DigitalState state, Callable<Void> callback);
     /**
-     * <p>blink.</p>
+     * Drives the output to the given initial state and then toggles it repeatedly, producing a square wave,
+     * blocking the calling thread until the requested number of toggles completes.
      *
-     * @param delay a int.
-     * @param duration a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @param callback a {@link java.util.concurrent.Callable} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
+     * @param delay    the time each state is held before toggling
+     * @param duration the number of on/off cycles to perform
+     * @param unit     the time unit of {@code delay}
+     * @param state    the initial state before toggling begins
+     * @param callback an optional task invoked once the blinking completes, or {@code null} for none
+     * @return this instance for method chaining
      */
     DigitalOutput blink(int delay, int duration, TimeUnit unit, DigitalState state, Callable<Void> callback);
     /**
-     * <p>blinkAsync.</p>
+     * Performs the same operation as {@link #blink(int, int, TimeUnit, DigitalState, Callable)} but on a
+     * background thread without blocking the caller.
      *
-     * @param delay a int.
-     * @param duration a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @param callback a {@link java.util.concurrent.Callable} object.
-     * @return a {@link java.util.concurrent.Future} object.
+     * @param delay    the time each state is held before toggling
+     * @param duration the number of on/off cycles to perform
+     * @param unit     the time unit of {@code delay}
+     * @param state    the initial state before toggling begins
+     * @param callback an optional task invoked once the blinking completes, or {@code null} for none
+     * @return a {@link Future} that can be used to cancel or await completion of the blink
      */
     Future<?> blinkAsync(int delay, int duration, TimeUnit unit, DigitalState state, Callable<Void> callback);
 
     /**
-     * <p>setState.</p>
+     * Sets the output state from a numeric value, mapping it to a {@link DigitalState} via
+     * {@link DigitalState#getState(Number)}.
      *
-     * @param state a boolean.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws IOException if any.
-     */
-    default DigitalOutput setState(boolean state) throws IOException {
-        return this.state(DigitalState.getState(state));
-    }
-    /**
-     * <p>setState.</p>
-     *
-     * @param state a byte.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws IOException if any.
+     * @param state {@code 0} for {@link DigitalState#LOW}, otherwise {@link DigitalState#HIGH}
+     * @return this instance for method chaining
+     * @throws IOException if the underlying hardware cannot be written
      */
     default DigitalOutput setState(byte state) throws IOException {
         return this.state(DigitalState.getState(state));
     }
     /**
-     * <p>setState.</p>
+     * Sets the output state from a numeric value, mapping it to a {@link DigitalState} via
+     * {@link DigitalState#getState(Number)}.
      *
-     * @param state a short.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws IOException if any.
+     * @param state {@code 0} for {@link DigitalState#LOW}, otherwise {@link DigitalState#HIGH}
+     * @return this instance for method chaining
+     * @throws IOException if the underlying hardware cannot be written
      */
     default DigitalOutput setState(short state) throws IOException {
         return this.state(DigitalState.getState(state));
     }
     /**
-     * <p>setState.</p>
+     * Sets the output state from a numeric value, mapping it to a {@link DigitalState} via
+     * {@link DigitalState#getState(Number)}.
      *
-     * @param state a int.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws IOException if any.
+     * @param state {@code 0} for {@link DigitalState#LOW}, otherwise {@link DigitalState#HIGH}
+     * @return this instance for method chaining
+     * @throws IOException if the underlying hardware cannot be written
      */
     default DigitalOutput setState(int state) throws IOException {
         return this.state(DigitalState.getState(state));
     }
     /**
-     * <p>setState.</p>
+     * Sets the output state from a numeric value, mapping it to a {@link DigitalState} via
+     * {@link DigitalState#getState(Number)}.
      *
-     * @param state a long.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws IOException if any.
+     * @param state {@code 0} for {@link DigitalState#LOW}, otherwise {@link DigitalState#HIGH}
+     * @return this instance for method chaining
+     * @throws IOException if the underlying hardware cannot be written
      */
     default DigitalOutput setState(long state) throws IOException {
         return this.state(DigitalState.getState(state));
     }
     /**
-     * <p>setState.</p>
+     * Sets the output state from a numeric value, mapping it to a {@link DigitalState} via
+     * {@link DigitalState#getState(Number)}.
      *
-     * @param state a float.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws IOException if any.
+     * @param state {@code 0} for {@link DigitalState#LOW}, otherwise {@link DigitalState#HIGH}
+     * @return this instance for method chaining
+     * @throws IOException if the underlying hardware cannot be written
      */
     default DigitalOutput setState(float state) throws IOException {
         return this.state(DigitalState.getState(state));
     }
     /**
-     * <p>setState.</p>
+     * Sets the output state from a numeric value, mapping it to a {@link DigitalState} via
+     * {@link DigitalState#getState(Number)}.
      *
-     * @param state a double.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws IOException if any.
+     * @param state {@code 0} for {@link DigitalState#LOW}, otherwise {@link DigitalState#HIGH}
+     * @return this instance for method chaining
+     * @throws IOException if the underlying hardware cannot be written
      */
     default DigitalOutput setState(double state) throws IOException {
         return this.state(DigitalState.getState(state));
     }
     /**
-     * <p>high.</p>
+     * Drives the output to {@link DigitalState#HIGH}.
      *
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws IOException if any.
+     * @return this instance for method chaining
+     * @throws IOException if the underlying hardware cannot be written
      */
     default DigitalOutput high() throws IOException {
         return this.state(DigitalState.HIGH);
     }
     /**
-     * <p>low.</p>
+     * Drives the output to {@link DigitalState#LOW}.
      *
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws IOException if any.
+     * @return this instance for method chaining
+     * @throws IOException if the underlying hardware cannot be written
      */
     default DigitalOutput low() throws IOException {
         return this.state(DigitalState.LOW);
     }
     /**
-     * <p>toggle.</p>
+     * Inverts the current output state, switching {@link DigitalState#HIGH} to {@link DigitalState#LOW} and
+     * vice versa.
      *
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws IOException if any.
+     * @return this instance for method chaining
+     * @throws IOException if the underlying hardware cannot be written
      */
     default DigitalOutput toggle() throws IOException {
         return this.state(DigitalState.getInverseState(this.state()));
     }
 
-
     /**
-     * <p>pulseHigh.</p>
+     * Pulses the output to {@link DigitalState#HIGH} for the given duration, then returns it to
+     * {@link DigitalState#LOW}.
      *
-     * @param interval a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws IOException if any.
+     * @param interval the pulse duration; must be greater than zero
+     * @param unit     the time unit of {@code interval}
+     * @return this instance for method chaining
+     * @throws IOException if the underlying hardware cannot be written
      */
     default DigitalOutput pulseHigh(int interval, TimeUnit unit) throws IOException {
         return pulse(interval, unit, DigitalState.HIGH);
     }
     /**
-     * <p>pulseLow.</p>
+     * Pulses the output to {@link DigitalState#LOW} for the given duration, then returns it to
+     * {@link DigitalState#HIGH}.
      *
-     * @param interval a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws com.pi4j.io.exception.IOException if any.
+     * @param interval the pulse duration; must be greater than zero
+     * @param unit     the time unit of {@code interval}
+     * @return this instance for method chaining
+     * @throws com.pi4j.io.exception.IOException if the underlying hardware cannot be written
      */
     default DigitalOutput pulseLow(int interval, TimeUnit unit) throws IOException {
         return pulse(interval, unit, DigitalState.LOW);
     }
 
     /**
-     * <p>pulseHighAsync.</p>
+     * Asynchronously pulses the output to {@link DigitalState#HIGH} for the given duration.
      *
-     * @param interval a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @param callback a {@link java.util.concurrent.Callable} object.
-     * @return a {@link java.util.concurrent.Future} object.
+     * @param interval the pulse duration; must be greater than zero
+     * @param unit     the time unit of {@code interval}
+     * @param callback an optional task invoked once the pulse completes, or {@code null} for none
+     * @return a {@link Future} that can be used to cancel or await completion of the pulse
      */
     default Future<?> pulseHighAsync(int interval, TimeUnit unit, Callable<Void> callback){
         return pulseAsync(interval, unit, DigitalState.HIGH, callback);
     }
 
     /**
-     * <p>pulseLowAsync.</p>
+     * Asynchronously pulses the output to {@link DigitalState#LOW} for the given duration.
      *
-     * @param interval a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @param callback a {@link java.util.concurrent.Callable} object.
-     * @return a {@link java.util.concurrent.Future} object.
+     * @param interval the pulse duration; must be greater than zero
+     * @param unit     the time unit of {@code interval}
+     * @param callback an optional task invoked once the pulse completes, or {@code null} for none
+     * @return a {@link Future} that can be used to cancel or await completion of the pulse
      */
     default Future<?> pulseLowAsync(int interval, TimeUnit unit, Callable<Void> callback){
         return pulseAsync(interval, unit, DigitalState.LOW, callback);
     }
 
     /**
-     * <p>pulse.</p>
+     * Pulses the output to {@link DigitalState#HIGH} for the given duration, then returns it to
+     * {@link DigitalState#LOW}.
      *
-     * @param interval a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws com.pi4j.io.exception.IOException if any.
+     * @param interval the pulse duration; must be greater than zero
+     * @param unit     the time unit of {@code interval}
+     * @return this instance for method chaining
+     * @throws com.pi4j.io.exception.IOException if the underlying hardware cannot be written
      */
     default DigitalOutput pulse(int interval, TimeUnit unit) throws IOException {
         return pulse(interval, unit, DigitalState.HIGH);
     }
     /**
-     * <p>pulse.</p>
+     * Pulses the output to the given state for the given duration, then returns it to the inverse state.
      *
-     * @param interval a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
-     * @throws com.pi4j.io.exception.IOException if any.
+     * @param interval the pulse duration; must be greater than zero
+     * @param unit     the time unit of {@code interval}
+     * @param state    the state to hold during the pulse
+     * @return this instance for method chaining
+     * @throws com.pi4j.io.exception.IOException if the underlying hardware cannot be written
      */
     default DigitalOutput pulse(int interval, TimeUnit unit, DigitalState state) throws IOException {
         return pulse(interval, unit, state, null);
     }
 
     /**
-     * <p>pulseAsync.</p>
+     * Asynchronously pulses the output to {@link DigitalState#HIGH} for the given duration.
      *
-     * @param interval a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @return a {@link java.util.concurrent.Future} object.
+     * @param interval the pulse duration; must be greater than zero
+     * @param unit     the time unit of {@code interval}
+     * @return a {@link Future} that can be used to cancel or await completion of the pulse
      */
     default Future<?> pulseAsync(int interval, TimeUnit unit){
         return pulseAsync(interval, unit, DigitalState.HIGH);
     }
     /**
-     * <p>pulseAsync.</p>
+     * Asynchronously pulses the output to the given state for the given duration.
      *
-     * @param interval a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @return a {@link java.util.concurrent.Future} object.
+     * @param interval the pulse duration; must be greater than zero
+     * @param unit     the time unit of {@code interval}
+     * @param state    the state to hold during the pulse
+     * @return a {@link Future} that can be used to cancel or await completion of the pulse
      */
     default Future<?> pulseAsync(int interval, TimeUnit unit, DigitalState state){
-        return pulseAsync(interval, unit, DigitalState.HIGH, null);
+        return pulseAsync(interval, unit, state, null);
     }
 
     /**
-     * <p>blink.</p>
+     * Blinks the output starting {@link DigitalState#HIGH}, using the same value as both the on and off delay
+     * and the number of cycles.
      *
-     * @param interval a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
+     * @param interval the time each state is held before toggling, also used as the number of cycles
+     * @param unit     the time unit of {@code interval}
+     * @return this instance for method chaining
      */
     default DigitalOutput blink(int interval, TimeUnit unit){
         return this.blink(interval, interval, unit);
     }
     /**
-     * <p>blink.</p>
+     * Blinks the output starting {@link DigitalState#HIGH} for the given number of cycles.
      *
-     * @param delay a int.
-     * @param duration a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
+     * @param delay    the time each state is held before toggling
+     * @param duration the number of on/off cycles to perform
+     * @param unit     the time unit of {@code delay}
+     * @return this instance for method chaining
      */
     default DigitalOutput blink(int delay, int duration, TimeUnit unit){
         return this.blink(delay, duration, unit, DigitalState.HIGH);
     }
     /**
-     * <p>blink.</p>
+     * Blinks the output starting from the given state for the given number of cycles.
      *
-     * @param delay a int.
-     * @param duration a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @return a {@link com.pi4j.io.gpio.digital.DigitalOutput} object.
+     * @param delay    the time each state is held before toggling
+     * @param duration the number of on/off cycles to perform
+     * @param unit     the time unit of {@code delay}
+     * @param state    the initial state before toggling begins
+     * @return this instance for method chaining
      */
     default DigitalOutput blink(int delay, int duration, TimeUnit unit, DigitalState state){
         return this.blink(delay, duration, unit, state, null);
     }
 
     /**
-     * <p>blinkAsync.</p>
+     * Asynchronously blinks the output starting {@link DigitalState#HIGH}, using the same value as both the
+     * delay and the number of cycles.
      *
-     * @param interval a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @return a {@link java.util.concurrent.Future} object.
+     * @param interval the time each state is held before toggling, also used as the number of cycles
+     * @param unit     the time unit of {@code interval}
+     * @return a {@link Future} that can be used to cancel or await completion of the blink
      */
     default Future<?> blinkAsync(int interval, TimeUnit unit){
         return this.blinkAsync(interval, interval, unit, DigitalState.HIGH);
     }
     /**
-     * <p>blinkAsync.</p>
+     * Asynchronously blinks the output starting {@link DigitalState#HIGH} for the given number of cycles.
      *
-     * @param delay a int.
-     * @param duration a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @return a {@link java.util.concurrent.Future} object.
+     * @param delay    the time each state is held before toggling
+     * @param duration the number of on/off cycles to perform
+     * @param unit     the time unit of {@code delay}
+     * @return a {@link Future} that can be used to cancel or await completion of the blink
      */
     default Future<?> blinkAsync(int delay, int duration, TimeUnit unit){
         return this.blinkAsync(delay, duration, unit, DigitalState.HIGH);
     }
     /**
-     * <p>blinkAsync.</p>
+     * Asynchronously blinks the output starting from the given state for the given number of cycles.
      *
-     * @param delay a int.
-     * @param duration a int.
-     * @param unit a {@link java.util.concurrent.TimeUnit} object.
-     * @param state a {@link com.pi4j.io.gpio.digital.DigitalState} object.
-     * @return a {@link java.util.concurrent.Future} object.
+     * @param delay    the time each state is held before toggling
+     * @param duration the number of on/off cycles to perform
+     * @param unit     the time unit of {@code delay}
+     * @param state    the initial state before toggling begins
+     * @return a {@link Future} that can be used to cancel or await completion of the blink
      */
     default Future<?> blinkAsync(int delay, int duration, TimeUnit unit, DigitalState state){
         return this.blinkAsync(delay, duration, unit, state, null);

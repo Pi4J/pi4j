@@ -1,30 +1,5 @@
 package com.pi4j.util;
 
-/*
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  StringUtil.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -32,115 +7,114 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
- * <p>StringUtil class.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * General-purpose string helpers used throughout Pi4J for null/empty checks, padding and centering, repetition,
+ * trimming, hexadecimal rendering of bytes and buffers, and lenient numeric parsing. Layout helpers here back the
+ * formatted output produced by {@link Console}.
  */
 public class StringUtil {
 
-    /** Constant <code>EMPTY=""</code> */
+    /** The empty string. */
     public static final String EMPTY = "";
-    /** Constant <code>DEFAULT_PAD_CHAR=' '</code> */
+    /** The default padding character (a space) used by the padding and centering helpers. */
     public static final char DEFAULT_PAD_CHAR = ' ';
 
     /**
-     * <p>isNullOrEmpty.</p>
+     * Returns whether the given string is {@code null} or has no characters, optionally trimming first.
      *
-     * @param data a {@link java.lang.String} object.
-     * @param trim a boolean.
-     * @return a boolean.
+     * @param data the string to test
+     * @param trim if {@code true}, leading and trailing whitespace is removed before the length check
+     * @return {@code true} if the (optionally trimmed) string is {@code null} or empty
      */
-    public static boolean isNullOrEmpty(String data, boolean trim){
-        if(data == null)
+    public static boolean isNullOrEmpty(String data, boolean trim) {
+        if (data == null)
             return true;
 
         // trim if requested
         String test = data;
-        if(trim)
+        if (trim)
             test = data.trim();
 
         return (test.length() <= 0);
     }
 
     /**
-     * <p>isNullOrEmpty.</p>
+     * Returns whether the given string is {@code null} or empty, without trimming.
      *
-     * @param data a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param data the string to test
+     * @return {@code true} if the string is {@code null} or has no characters
      */
-    public static boolean isNullOrEmpty(String data){
+    public static boolean isNullOrEmpty(String data) {
         return isNullOrEmpty(data, false);
     }
 
     /**
-     * <p>isNotNullOrEmpty.</p>
+     * Returns whether the given string is non-{@code null} and non-empty, without trimming.
      *
-     * @param data a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param data the string to test
+     * @return {@code true} if the string contains at least one character
      */
-    public static boolean isNotNullOrEmpty(String data){
+    public static boolean isNotNullOrEmpty(String data) {
         return isNotNullOrEmpty(data, false);
     }
 
     /**
-     * <p>isNotNullOrEmpty.</p>
+     * Returns whether the given string is non-{@code null} and non-empty, optionally trimming first.
      *
-     * @param data a {@link java.lang.String} object.
-     * @param trim a boolean.
-     * @return a boolean.
+     * @param data the string to test
+     * @param trim if {@code true}, leading and trailing whitespace is removed before the length check
+     * @return {@code true} if the (optionally trimmed) string contains at least one character
      */
-    public static boolean isNotNullOrEmpty(String data, boolean trim){
+    public static boolean isNotNullOrEmpty(String data, boolean trim) {
         return !(isNullOrEmpty(data, trim));
     }
 
     /**
-     * <p>setIfNullOrEmpty.</p>
+     * Returns the given string, or a replacement when it is {@code null} or empty.
      *
-     * @param data a {@link java.lang.String} object.
-     * @param replacement a {@link java.lang.String} object.
-     * @param trim a boolean.
-     * @return a {@link java.lang.String} object.
+     * @param data        the candidate string
+     * @param replacement the value to return when {@code data} is {@code null} or empty
+     * @param trim        if {@code true}, {@code data} is trimmed before the emptiness check
+     * @return {@code data} if it is non-empty, otherwise {@code replacement}
      */
-    public static String setIfNullOrEmpty(String data, String replacement, boolean trim){
-        if(isNullOrEmpty(data, trim)) {
+    public static String setIfNullOrEmpty(String data, String replacement, boolean trim) {
+        if (isNullOrEmpty(data, trim)) {
             return replacement;
         }
         return data;
     }
 
     /**
-     * <p>setIfNullOrEmpty.</p>
+     * Returns the given string, or a replacement when it is {@code null} or empty (without trimming).
      *
-     * @param data a {@link java.lang.String} object.
-     * @param replacement a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param data        the candidate string
+     * @param replacement the value to return when {@code data} is {@code null} or empty
+     * @return {@code data} if it is non-empty, otherwise {@code replacement}
      */
-    public static String setIfNullOrEmpty(String data, String replacement){
+    public static String setIfNullOrEmpty(String data, String replacement) {
         return setIfNullOrEmpty(data, replacement, false);
     }
 
     /**
-     * <p>contains.</p>
+     * Returns whether the source string contains the target substring.
      *
-     * @param source a {@link java.lang.String} object.
-     * @param target a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param source the string to search within
+     * @param target the substring to look for
+     * @return {@code true} if both arguments are non-{@code null} and {@code source} contains {@code target}
      */
-    public static boolean contains(String source, String target)  {
+    public static boolean contains(String source, String target) {
         return (null != source && null != target && source.contains(target));
     }
 
     /**
-     * <p>contains.</p>
+     * Returns whether the source string contains any of the target substrings.
      *
-     * @param source a {@link java.lang.String} object.
-     * @param targets an array of {@link java.lang.String} objects.
-     * @return a boolean.
+     * @param source  the string to search within
+     * @param targets the candidate substrings to look for
+     * @return {@code true} if {@code source} contains at least one of {@code targets}
      */
-    public static boolean contains(String source, String[] targets)  {
+    public static boolean contains(String source, String[] targets) {
         if (null != source && null != targets) {
-            for(var target : targets) {
+            for (var target : targets) {
                 if (source.contains(target)) {
                     return true;
                 }
@@ -150,16 +124,16 @@ public class StringUtil {
     }
 
     /**
-     * <p>contains.</p>
+     * Returns whether any of the source strings contains the target substring.
      *
-     * @param sources an array of {@link java.lang.String} objects.
-     * @param target a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param sources the strings to search within
+     * @param target  the substring to look for
+     * @return {@code true} if at least one of {@code sources} contains {@code target}
      */
-    public static boolean contains(String[] sources, String target)  {
+    public static boolean contains(String[] sources, String target) {
         if (null != sources && null != target) {
             for (var source : sources) {
-                if(contains(source, target))
+                if (contains(source, target))
                     return true;
             }
         }
@@ -167,16 +141,16 @@ public class StringUtil {
     }
 
     /**
-     * <p>contains.</p>
+     * Returns whether any of the source strings contains any of the target substrings.
      *
-     * @param sources an array of {@link java.lang.String} objects.
-     * @param targets an array of {@link java.lang.String} objects.
-     * @return a boolean.
+     * @param sources the strings to search within
+     * @param targets the candidate substrings to look for
+     * @return {@code true} if at least one of {@code sources} contains at least one of {@code targets}
      */
-    public static boolean contains(String[] sources, String[] targets)  {
+    public static boolean contains(String[] sources, String[] targets) {
         if (null != sources && null != targets) {
             for (var source : sources) {
-                if(contains(source, targets))
+                if (contains(source, targets))
                     return true;
             }
         }
@@ -184,207 +158,209 @@ public class StringUtil {
     }
 
     /**
-     * <p>create.</p>
+     * Creates a string of the given length filled with the default pad character.
      *
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param length the number of characters in the resulting string
+     * @return a string of spaces of the requested length
      */
-    public static String create(int length)  {
+    public static String create(int length) {
         return create(DEFAULT_PAD_CHAR, length);
     }
 
     /**
-     * <p>create.</p>
+     * Creates a string consisting of the given character repeated the requested number of times.
      *
-     * @param c a char.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param c      the character to repeat
+     * @param length the number of repetitions
+     * @return the resulting string
      */
-    public static String create(char c, int length)  {
+    public static String create(char c, int length) {
         StringBuilder sb = new StringBuilder(length);
-        for(var index = 0; index < length; index++)
+        for (var index = 0; index < length; index++)
             sb.append(c);
         return sb.toString();
     }
 
     /**
-     * <p>create.</p>
+     * Creates a string consisting of the given substring repeated the requested number of times.
      *
-     * @param s a {@link java.lang.String} object.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param s      the substring to repeat
+     * @param length the number of repetitions
+     * @return the resulting string
      */
-    public static String create(String s, int length)  {
+    public static String create(String s, int length) {
         StringBuilder sb = new StringBuilder(length * s.length());
-        for(var index = 0; index < length; index++)
+        for (var index = 0; index < length; index++)
             sb.append(s);
         return sb.toString();
     }
 
     /**
-     * <p>repeat.</p>
+     * Returns the given character repeated the requested number of times.
      *
-     * @param c a char.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param c      the character to repeat
+     * @param length the number of repetitions
+     * @return the resulting string
      */
-    public static String repeat(char c, int length)  {
+    public static String repeat(char c, int length) {
         return create(c, length);
     }
 
     /**
-     * <p>repeat.</p>
+     * Returns the given substring repeated the requested number of times.
      *
-     * @param s a {@link java.lang.String} object.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param s      the substring to repeat
+     * @param length the number of repetitions
+     * @return the resulting string
      */
-    public static String repeat(String s, int length)  {
+    public static String repeat(String s, int length) {
         return create(s, length);
     }
 
     /**
-     * <p>padLeft.</p>
+     * Pads the given string on the left with the default pad character.
      *
-     * @param data a {@link java.lang.String} object.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param data   the string to pad
+     * @param length the number of pad characters to prepend
+     * @return the left-padded string
      */
-    public static String padLeft(String data, int length)  {
+    public static String padLeft(String data, int length) {
         return padLeft(data, DEFAULT_PAD_CHAR, length);
     }
 
     /**
-     * <p>padLeft.</p>
+     * Pads the given string on the left with the specified pad character.
      *
-     * @param data a {@link java.lang.String} object.
-     * @param pad a char.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param data   the string to pad
+     * @param pad    the character to prepend
+     * @param length the number of pad characters to prepend
+     * @return the left-padded string
      */
-    public static String padLeft(String data, char pad, int length)  {
+    public static String padLeft(String data, char pad, int length) {
         var sb = new StringBuilder(data.length() + length);
-        for(var index = 0; index < length; index++)
+        for (var index = 0; index < length; index++)
             sb.append(pad);
         sb.append(data);
         return sb.toString();
     }
 
     /**
-     * <p>padLeft.</p>
+     * Pads the given string on the left with the specified pad string repeated a number of times.
      *
-     * @param data a {@link java.lang.String} object.
-     * @param pad a {@link java.lang.String} object.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param data   the string to pad
+     * @param pad    the substring to prepend
+     * @param length the number of times {@code pad} is prepended
+     * @return the left-padded string
      */
-    public static String padLeft(String data, String pad, int length)  {
+    public static String padLeft(String data, String pad, int length) {
         var sb = new StringBuilder(data.length() + (length * pad.length()));
-        for(var index = 0; index < length; index++)
+        for (var index = 0; index < length; index++)
             sb.append(pad);
         sb.append(data);
         return sb.toString();
     }
 
     /**
-     * <p>padRight.</p>
+     * Pads the given string on the right with the default pad character.
      *
-     * @param data a {@link java.lang.String} object.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param data   the string to pad
+     * @param length the number of pad characters to append
+     * @return the right-padded string
      */
-    public static String padRight(String data, int length)  {
+    public static String padRight(String data, int length) {
         return padRight(data, DEFAULT_PAD_CHAR, length);
     }
 
     /**
-     * <p>padRight.</p>
+     * Pads the given string on the right with the specified pad character.
      *
-     * @param data a {@link java.lang.String} object.
-     * @param pad a char.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param data   the string to pad
+     * @param pad    the character to append
+     * @param length the number of pad characters to append
+     * @return the right-padded string
      */
-    public static String padRight(String data, char pad, int length)  {
+    public static String padRight(String data, char pad, int length) {
         var sb = new StringBuilder(data.length() + length);
         sb.append(data);
-        for(var index = 0; index < length; index++)
+        for (var index = 0; index < length; index++)
             sb.append(pad);
         return sb.toString();
     }
 
     /**
-     * <p>padRight.</p>
+     * Pads the given string on the right with the specified pad string repeated a number of times.
      *
-     * @param data a {@link java.lang.String} object.
-     * @param pad a {@link java.lang.String} object.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param data   the string to pad
+     * @param pad    the substring to append
+     * @param length the number of times {@code pad} is appended
+     * @return the right-padded string
      */
-    public static String padRight(String data, String pad, int length)  {
+    public static String padRight(String data, String pad, int length) {
         var sb = new StringBuilder(data.length() + (length * pad.length()));
         sb.append(data);
-        for(var index = 0; index < length; index++)
+        for (var index = 0; index < length; index++)
             sb.append(pad);
         return sb.toString();
     }
 
     /**
-     * <p>pad.</p>
+     * Surrounds the given string with the default pad character on both sides.
      *
-     * @param data a {@link java.lang.String} object.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param data   the string to pad
+     * @param length the number of pad characters added on each side
+     * @return the padded string
      */
-    public static String pad(String data, int length)  {
+    public static String pad(String data, int length) {
         return pad(data, DEFAULT_PAD_CHAR, length);
     }
 
     /**
-     * <p>pad.</p>
+     * Surrounds the given string with the specified pad character on both sides.
      *
-     * @param data a {@link java.lang.String} object.
-     * @param pad a char.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param data   the string to pad
+     * @param pad    the character added on each side
+     * @param length the number of pad characters added on each side
+     * @return the padded string
      */
-    public static String pad(String data, char pad, int length)  {
+    public static String pad(String data, char pad, int length) {
         return create(pad, length) + data + create(pad, length);
     }
 
     /**
-     * <p>pad.</p>
+     * Surrounds the given string with the specified pad string on both sides.
      *
-     * @param data a {@link java.lang.String} object.
-     * @param pad a {@link java.lang.String} object.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param data   the string to pad
+     * @param pad    the substring added on each side
+     * @param length the number of times {@code pad} is added on each side
+     * @return the padded string
      */
-    public static String pad(String data, String pad, int length)  {
+    public static String pad(String data, String pad, int length) {
         return create(pad, length) + data + create(pad, length);
     }
 
     /**
-     * <p>padCenter.</p>
+     * Centers the given string within a field of the requested width using the default pad character. If the
+     * string is already at least as long as the width, it is returned unchanged.
      *
-     * @param data a {@link java.lang.String} object.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param data   the string to center
+     * @param length the total width of the resulting field
+     * @return the centered string
      */
     public static String padCenter(String data, int length) {
         return padCenter(data, DEFAULT_PAD_CHAR, length);
     }
 
     /**
-     * <p>padCenter.</p>
+     * Centers the given string within a field of the requested width using the specified pad character. If the
+     * string is already at least as long as the width, it is returned unchanged.
      *
-     * @param data a {@link java.lang.String} object.
-     * @param pad a char.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param data   the string to center
+     * @param pad    the character used to fill the surrounding space
+     * @param length the total width of the resulting field
+     * @return the centered string
      */
     public static String padCenter(String data, char pad, int length) {
-        if(data.length() < length) {
+        if (data.length() < length) {
             int needed = length - data.length();
             int padNeeded = needed / 2;
             StringBuilder result = new StringBuilder();
@@ -399,50 +375,50 @@ public class StringUtil {
     }
 
     /**
-     * <p>trimLeft.</p>
+     * Removes leading occurrences of the default pad character from the given string.
      *
-     * @param data a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param data the string to trim
+     * @return the string with leading pad characters removed, or {@link #EMPTY} if it consisted only of them
      */
-    public static String trimLeft(String data)  {
+    public static String trimLeft(String data) {
         return trimLeft(data, DEFAULT_PAD_CHAR);
     }
 
     /**
-     * <p>trimLeft.</p>
+     * Removes leading occurrences of the given character from the string.
      *
-     * @param data a {@link java.lang.String} object.
-     * @param trim a char.
-     * @return a {@link java.lang.String} object.
+     * @param data the string to trim
+     * @param trim the character to strip from the start
+     * @return the string with leading {@code trim} characters removed, or {@link #EMPTY} if it consisted only of them
      */
-    public static String trimLeft(String data, char trim)  {
-        for(var index = 0; index < data.length(); index++)
-            if(!(data.charAt(index) == trim))
+    public static String trimLeft(String data, char trim) {
+        for (var index = 0; index < data.length(); index++)
+            if (!(data.charAt(index) == trim))
                 return data.substring(index);
         return EMPTY;
     }
 
     /**
-     * <p>trimRight.</p>
+     * Removes trailing occurrences of the default pad character from the given string.
      *
-     * @param data a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param data the string to trim
+     * @return the string with trailing pad characters removed, or {@link #EMPTY} if it consisted only of them
      */
-    public static String trimRight(String data)  {
+    public static String trimRight(String data) {
         return trimRight(data, DEFAULT_PAD_CHAR);
     }
 
     /**
-     * <p>trimRight.</p>
+     * Removes trailing occurrences of the given character from the string.
      *
-     * @param data a {@link java.lang.String} object.
-     * @param trim a char.
-     * @return a {@link java.lang.String} object.
+     * @param data the string to trim
+     * @param trim the character to strip from the end
+     * @return the string with trailing {@code trim} characters removed, or {@link #EMPTY} if it consisted only of them
      */
-    public static String trimRight(String data, char trim)  {
+    public static String trimRight(String data, char trim) {
         int count = 0;
-        for(var index = data.length(); index > 0; index--)
-            if(data.charAt(index-1) == trim)
+        for (var index = data.length(); index > 0; index--)
+            if (data.charAt(index - 1) == trim)
                 count++;
             else
                 return data.substring(0, data.length() - count);
@@ -450,283 +426,289 @@ public class StringUtil {
     }
 
     /**
-     * <p>trim.</p>
+     * Removes leading and trailing occurrences of the default pad character from the given string.
      *
-     * @param data a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param data the string to trim
+     * @return the string with leading and trailing pad characters removed
      */
-    public static String trim(String data)  {
+    public static String trim(String data) {
         return trim(data, DEFAULT_PAD_CHAR);
     }
 
     /**
-     * <p>trim.</p>
+     * Removes leading and trailing occurrences of the given character from the string.
      *
-     * @param data a {@link java.lang.String} object.
-     * @param trim a char.
-     * @return a {@link java.lang.String} object.
+     * @param data the string to trim
+     * @param trim the character to strip from both ends
+     * @return the string with leading and trailing {@code trim} characters removed
      */
-    public static String trim(String data, char trim)  {
+    public static String trim(String data, char trim) {
         var result = trimLeft(data, trim);
         return trimRight(result, trim);
     }
 
     /**
-     * <p>center.</p>
+     * Returns the given text centered within a field of the requested width. The text is surrounded by spaces so
+     * that it sits in the middle of a fixed-width column.
      *
-     * @param text a {@link java.lang.String} object.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param text   the text to center
+     * @param length the total width of the resulting field
+     * @return the centered text
      */
-    public static String center(String text, int length){
-        var out = String.format("%"+length+"s%s%"+length+"s", "",text,"");
-        var mid = (out.length()/2);
-        var start = mid - (length/2);
+    public static String center(String text, int length) {
+        var out = String.format("%" + length + "s%s%" + length + "s", "", text, "");
+        var mid = (out.length() / 2);
+        var start = mid - (length / 2);
         var end = start + length;
         return out.substring((int) start, (int) end);
     }
 
     /**
-     * <p>concat.</p>
+     * Concatenates the given strings in order.
      *
-     * @param data a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @param data the strings to join
+     * @return the concatenation of all arguments
      */
-    public static String concat(String ... data)  {
+    public static String concat(String... data) {
         var sb = new StringBuilder();
-        for(var d : data){
+        for (var d : data) {
             sb.append(d);
         }
         return sb.toString();
     }
 
     /**
-     * <p>appendHexString.</p>
+     * Appends the two-digit uppercase hexadecimal representation of a byte to the given builder.
      *
-     * @param builder a {@link java.lang.StringBuilder} object.
-     * @param byt a byte.
+     * @param builder the builder to append to
+     * @param byt     the byte to render
      */
-    public static void appendHexString(StringBuilder builder, byte byt){
+    public static void appendHexString(StringBuilder builder, byte byt) {
         builder.append(String.format("%02X", byt));
     }
 
     /**
-     * <p>toHexString.</p>
+     * Returns the two-digit uppercase hexadecimal representation of a byte.
      *
-     * @param byt a byte.
-     * @return a {@link java.lang.String} object.
+     * @param byt the byte to render
+     * @return the two-character hex string
      */
-    public static String toHexString(byte byt){
+    public static String toHexString(byte byt) {
         return String.format("%02X", byt);
     }
 
     /**
-     * <p>appendHexString.</p>
+     * Appends the two-digit uppercase hexadecimal representation of the low byte of an int to the given builder.
      *
-     * @param builder a {@link java.lang.StringBuilder} object.
-     * @param byt a int.
+     * @param builder the builder to append to
+     * @param byt     the value whose least-significant byte is rendered
      */
-    public static void appendHexString(StringBuilder builder, int byt){
-        builder.append(String.format("%02X", (byte)byt));
+    public static void appendHexString(StringBuilder builder, int byt) {
+        builder.append(String.format("%02X", (byte) byt));
     }
 
     /**
-     * <p>toHexString.</p>
+     * Returns the two-digit uppercase hexadecimal representation of the low byte of an int.
      *
-     * @param byt a int.
-     * @return a {@link java.lang.String} object.
+     * @param byt the value whose least-significant byte is rendered
+     * @return the two-character hex string
      */
-    public static String toHexString(int byt){
-        return String.format("%02X", (byte)byt);
+    public static String toHexString(int byt) {
+        return String.format("%02X", (byte) byt);
     }
 
     /**
-     * <p>appendHexString.</p>
+     * Appends the space-separated, two-digit uppercase hexadecimal representation of each byte to the builder.
      *
-     * @param builder a {@link java.lang.StringBuilder} object.
-     * @param bytes an array of {@link byte} objects.
+     * @param builder the builder to append to
+     * @param bytes   the bytes to render
      */
-    public static void appendHexString(StringBuilder builder, byte[] bytes){
+    public static void appendHexString(StringBuilder builder, byte[] bytes) {
         for (byte b : bytes) {
             builder.append(String.format("%02X ", b));
         }
     }
 
     /**
-     * <p>toHexString.</p>
+     * Returns the space-separated, two-digit uppercase hexadecimal representation of the given text, decoded as
+     * US-ASCII bytes.
      *
-     * @param data a {@link java.lang.CharSequence} object.
-     * @return a {@link java.lang.String} object.
+     * @param data the text to render
+     * @return the trimmed hex string
      */
-    public static String toHexString(CharSequence data){
+    public static String toHexString(CharSequence data) {
         StringBuilder sb = new StringBuilder();
         appendHexString(sb, data);
         return sb.toString().trim();
     }
 
     /**
-     * <p>appendHexString.</p>
+     * Appends the space-separated, two-digit uppercase hexadecimal representation of the given text to the
+     * builder, decoded as US-ASCII bytes.
      *
-     * @param builder a {@link java.lang.StringBuilder} object.
-     * @param data a {@link java.lang.CharSequence} object.
+     * @param builder the builder to append to
+     * @param data    the text to render
      */
-    public static void appendHexString(StringBuilder builder, CharSequence data){
+    public static void appendHexString(StringBuilder builder, CharSequence data) {
         appendHexString(builder, data.toString().getBytes(StandardCharsets.US_ASCII));
     }
 
     /**
-     * <p>toHexString.</p>
+     * Returns the space-separated, two-digit uppercase hexadecimal representation of the given text, decoded with
+     * the specified charset.
      *
-     * @param data a {@link java.lang.CharSequence} object.
-     * @param charset character set used to decode string to bytes
-     * @return a {@link java.lang.String} object.
+     * @param data    the text to render
+     * @param charset character set used to encode the text to bytes
+     * @return the trimmed hex string
      */
-    public static String toHexString(CharSequence data, Charset charset){
+    public static String toHexString(CharSequence data, Charset charset) {
         StringBuilder sb = new StringBuilder();
         appendHexString(sb, data, charset);
         return sb.toString().trim();
     }
 
     /**
-     * <p>appendHexString.</p>
+     * Appends the space-separated, two-digit uppercase hexadecimal representation of the given text to the
+     * builder, decoded with the specified charset.
      *
-     * @param builder a {@link java.lang.StringBuilder} object.
-     * @param data a {@link java.lang.CharSequence} object.
-     * @param charset character set used to decode string to bytes
+     * @param builder the builder to append to
+     * @param data    the text to render
+     * @param charset character set used to encode the text to bytes
      */
-    public static void appendHexString(StringBuilder builder, CharSequence data, Charset charset){
+    public static void appendHexString(StringBuilder builder, CharSequence data, Charset charset) {
         appendHexString(builder, data.toString().getBytes(charset));
     }
 
     /**
-     * <p>toHexString.</p>
+     * Returns the space-separated, two-digit uppercase hexadecimal representation of the given bytes.
      *
-     * @param bytes an array of {@link byte} objects.
-     * @return a {@link java.lang.String} object.
+     * @param bytes the bytes to render
+     * @return the trimmed hex string
      */
-    public static String toHexString(byte[] bytes){
+    public static String toHexString(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         appendHexString(sb, bytes);
         return sb.toString().trim();
     }
 
     /**
-     * <p>appendHexString.</p>
+     * Appends the space-separated, two-digit uppercase hexadecimal representation of the buffer's backing array
+     * to the builder.
      *
-     * @param builder a {@link java.lang.StringBuilder} object.
-     * @param buffer a {@link java.nio.ByteBuffer} object.
+     * @param builder the builder to append to
+     * @param buffer  the buffer whose backing array is rendered
      */
-    public static void appendHexString(StringBuilder builder, ByteBuffer buffer){
+    public static void appendHexString(StringBuilder builder, ByteBuffer buffer) {
         appendHexString(builder, buffer.array());
     }
 
     /**
-     * <p>toHexString.</p>
+     * Returns the space-separated, two-digit uppercase hexadecimal representation of the buffer's backing array.
      *
-     * @param buffer a {@link java.nio.ByteBuffer} object.
-     * @return a {@link java.lang.String} object.
+     * @param buffer the buffer whose backing array is rendered
+     * @return the trimmed hex string
      */
-    public static String toHexString(ByteBuffer buffer){
+    public static String toHexString(ByteBuffer buffer) {
         StringBuilder sb = new StringBuilder();
         appendHexString(sb, buffer);
         return sb.toString().trim();
     }
 
     /**
-     * <p>appendHexString.</p>
+     * Appends the hexadecimal representation of a sub-range of the given bytes to the builder.
      *
-     * @param builder a {@link java.lang.StringBuilder} object.
-     * @param bytes an array of {@link byte} objects.
-     * @param offset a int.
-     * @param length a int.
+     * @param builder the builder to append to
+     * @param bytes   the source byte array
+     * @param offset  the index of the first byte to render
+     * @param length  the number of bytes to render
      */
-    public static void appendHexString(StringBuilder builder, byte[] bytes, int offset, int length){
-        appendHexString(builder, Arrays.copyOfRange(bytes, offset, offset+length));
+    public static void appendHexString(StringBuilder builder, byte[] bytes, int offset, int length) {
+        appendHexString(builder, Arrays.copyOfRange(bytes, offset, offset + length));
     }
 
     /**
-     * <p>toHexString.</p>
+     * Returns the hexadecimal representation of a sub-range of the given bytes.
      *
-     * @param bytes an array of {@link byte} objects.
-     * @param offset a int.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param bytes  the source byte array
+     * @param offset the index of the first byte to render
+     * @param length the number of bytes to render
+     * @return the trimmed hex string
      */
-    public static String toHexString(byte[] bytes, int offset, int length){
+    public static String toHexString(byte[] bytes, int offset, int length) {
         StringBuilder sb = new StringBuilder();
         appendHexString(sb, bytes, offset, length);
         return sb.toString().trim();
     }
 
     /**
-     * <p>appendHexString.</p>
+     * Appends the hexadecimal representation of a sub-range of the buffer's backing array to the builder.
      *
-     * @param builder a {@link java.lang.StringBuilder} object.
-     * @param buffer a {@link java.nio.ByteBuffer} object.
-     * @param offset a int.
-     * @param length a int.
+     * @param builder the builder to append to
+     * @param buffer  the buffer whose backing array is rendered
+     * @param offset  the index of the first byte to render
+     * @param length  the number of bytes to render
      */
-    public static void appendHexString(StringBuilder builder, ByteBuffer buffer, int offset, int length){
+    public static void appendHexString(StringBuilder builder, ByteBuffer buffer, int offset, int length) {
         appendHexString(builder, buffer.array(), offset, length);
     }
 
     /**
-     * <p>toHexString.</p>
+     * Returns the hexadecimal representation of a sub-range of the buffer's backing array.
      *
-     * @param buffer a {@link java.nio.ByteBuffer} object.
-     * @param offset a int.
-     * @param length a int.
-     * @return a {@link java.lang.String} object.
+     * @param buffer the buffer whose backing array is rendered
+     * @param offset the index of the first byte to render
+     * @param length the number of bytes to render
+     * @return the trimmed hex string
      */
-    public static String toHexString(ByteBuffer buffer, int offset, int length){
+    public static String toHexString(ByteBuffer buffer, int offset, int length) {
         StringBuilder sb = new StringBuilder();
         appendHexString(sb, buffer, offset, length);
         return sb.toString().trim();
     }
 
     /**
-     * <p>isNumeric.</p>
+     * Returns whether the given string can be parsed as a floating-point number.
      *
-     * @param str a {@link java.lang.String} object.
-     * @return a boolean.
+     * @param str the string to test
+     * @return {@code true} if the string parses as a number, otherwise {@code false}
      */
     public static boolean isNumeric(String str) {
         try {
             Double.parseDouble(str);
             return true;
-        } catch(NumberFormatException e){
+        } catch (NumberFormatException e) {
             return false;
         }
     }
 
     /**
-     * <p>parseInteger.</p>
+     * Parses the given string as an int, returning a default when it is not a valid integer.
      *
-     * @param str a {@link java.lang.String} object.
-     * @param defaultValue a {@link java.lang.Integer} object.
-     * @return a int.
+     * @param str          the string to parse
+     * @param defaultValue the value returned when {@code str} cannot be parsed
+     * @return the parsed integer, or {@code defaultValue} on a parse failure
      */
     public static int parseInteger(String str, Integer defaultValue) {
         try {
             Integer v = Integer.parseInt(str);
             return v.intValue();
-        } catch(NumberFormatException e){
+        } catch (NumberFormatException e) {
             return defaultValue;
         }
     }
 
     /**
-     * <p>parseLong.</p>
+     * Parses the given string as a long, returning a default when it is not a valid long.
      *
-     * @param str a {@link java.lang.String} object.
-     * @param defaultValue a {@link java.lang.Long} object.
-     * @return a int.
+     * @param str          the string to parse
+     * @param defaultValue the value returned when {@code str} cannot be parsed
+     * @return the parsed value, or {@code defaultValue} on a parse failure
      */
     public static long parseLong(String str, Long defaultValue) {
         try {
             Long v = Long.parseLong(str);
             return v.intValue();
-        } catch(NumberFormatException e){
+        } catch (NumberFormatException e) {
             return defaultValue;
         }
     }

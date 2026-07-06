@@ -1,189 +1,179 @@
 package com.pi4j.common;
 
-/*-
- * #%L
- * **********************************************************************
- * ORGANIZATION  :  Pi4J
- * PROJECT       :  Pi4J :: LIBRARY  :: Java Library (CORE)
- * FILENAME      :  Descriptor.java
- *
- * This file is part of the Pi4J project. More information about
- * this project can be found here:  https://pi4j.com/
- * **********************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import com.pi4j.common.impl.DescriptorImpl;
 
 import java.io.PrintStream;
 
 /**
- * <p>Descriptor interface.</p>
- *
- * @author Robert Savage (<a href="http://www.savagehomeautomation.com">http://www.savagehomeautomation.com</a>)
- * @version $Id: $Id
+ * A mutable, hierarchical description node produced by {@link Describable#describe()}. Each descriptor holds
+ * descriptive attributes (id, name, description, category, quantity, type, and value) and may contain child
+ * descriptors, forming a tree that can be printed to report the structure and state of a Pi4J object.
+ * Instances are created with {@link #create()} and configured fluently.
  */
 public interface Descriptor {
     /**
-     * <p>id.</p>
+     * Sets the identifier attribute of this descriptor.
      *
-     * @param id a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.common.Descriptor} object.
+     * @param id a unique identifier for the described object
+     * @return this descriptor instance for method chaining
      */
     Descriptor id(String id);
+
     /**
-     * <p>name.</p>
+     * Sets the display name attribute of this descriptor.
      *
-     * @param name a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.common.Descriptor} object.
+     * @param name a short, human-readable name for the described object
+     * @return this descriptor instance for method chaining
      */
     Descriptor name(String name);
+
     /**
-     * <p>description.</p>
+     * Sets the description attribute of this descriptor.
      *
-     * @param description a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.common.Descriptor} object.
+     * @param description a longer explanatory text for the described object
+     * @return this descriptor instance for method chaining
      */
     Descriptor description(String description);
+
     /**
-     * <p>category.</p>
+     * Sets the category attribute of this descriptor, used to group or label the described object.
      *
-     * @param category a {@link java.lang.String} object.
-     * @return a {@link com.pi4j.common.Descriptor} object.
+     * @param category the category label for the described object
+     * @return this descriptor instance for method chaining
      */
     Descriptor category(String category);
+
     /**
-     * <p>quantity.</p>
+     * Sets the quantity attribute of this descriptor, typically the count of items the described object represents.
      *
-     * @param quantity a {@link java.lang.Integer} object.
-     * @return a {@link com.pi4j.common.Descriptor} object.
+     * @param quantity the quantity associated with the described object
+     * @return this descriptor instance for method chaining
      */
     Descriptor quantity(Integer quantity);
+
     /**
-     * <p>type.</p>
+     * Sets the type attribute of this descriptor, identifying the class of the described object.
      *
-     * @param type a {@link java.lang.Class} object.
-     * @return a {@link com.pi4j.common.Descriptor} object.
+     * @param type the class representing the type of the described object
+     * @return this descriptor instance for method chaining
      */
     Descriptor type(Class type);
 
     /**
-     * <p>parent.</p>
+     * Sets the parent of this descriptor, linking it as a child within a descriptor tree.
      *
-     * @param parent a {@link com.pi4j.common.Descriptor} object.
-     * @return a {@link com.pi4j.common.Descriptor} object.
+     * @param parent the descriptor that contains this descriptor
+     * @return this descriptor instance for method chaining
      */
     Descriptor parent(Descriptor parent);
 
     /**
-     * <p>value.</p>
+     * Sets the value attribute of this descriptor, the current value or state of the described object.
      *
-     * @param value a {@link java.lang.Object} object.
-     * @return a {@link com.pi4j.common.Descriptor} object.
+     * @param value the value associated with the described object
+     * @return this descriptor instance for method chaining
      */
     Descriptor value(Object value);
 
     /**
-     * <p>id.</p>
+     * Returns the identifier attribute of this descriptor.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured identifier, or {@code null} if none was set
      */
     String id();
+
     /**
-     * <p>name.</p>
+     * Returns the display name attribute of this descriptor.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured name, or {@code null} if none was set
      */
     String name();
+
     /**
-     * <p>category.</p>
+     * Returns the category attribute of this descriptor.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured category, or {@code null} if none was set
      */
     String category();
+
     /**
-     * <p>description.</p>
+     * Returns the description attribute of this descriptor.
      *
-     * @return a {@link java.lang.String} object.
+     * @return the configured description, or {@code null} if none was set
      */
     String description();
+
     /**
-     * <p>quantity.</p>
+     * Returns the quantity attribute of this descriptor.
      *
-     * @return a {@link java.lang.Integer} object.
+     * @return the configured quantity, or {@code null} if none was set
      */
     Integer quantity();
+
     /**
-     * <p>value.</p>
+     * Returns the value attribute of this descriptor.
      *
-     * @return a {@link java.lang.Object} object.
+     * @return the configured value, or {@code null} if none was set
      */
     Object value();
+
     /**
-     * <p>type.</p>
+     * Returns the type attribute of this descriptor.
      *
-     * @return a {@link java.lang.Class} object.
+     * @return the configured type, or {@code null} if none was set
      */
     Class type();
+
     /**
-     * <p>parent.</p>
+     * Returns the parent of this descriptor within a descriptor tree.
      *
-     * @return a {@link com.pi4j.common.Descriptor} object.
+     * @return the parent descriptor, or {@code null} if this descriptor has no parent (root node)
      */
     Descriptor parent();
 
     /**
-     * <p>create.</p>
+     * Creates a new, empty descriptor instance with no attributes or children set.
      *
-     * @return a {@link com.pi4j.common.Descriptor} object.
+     * @return a new {@link Descriptor}
      */
-    static Descriptor create(){
+    static Descriptor create() {
         return new DescriptorImpl();
     }
 
     /**
-     * <p>add.</p>
+     * Adds the given descriptor as a child of this descriptor and sets this descriptor as its parent.
+     * A {@code null} argument is ignored.
      *
-     * @param descriptor a {@link com.pi4j.common.Descriptor} object.
-     * @return a {@link com.pi4j.common.Descriptor} object.
+     * @param descriptor the child descriptor to attach
+     * @return this descriptor instance for method chaining
      */
     Descriptor add(Descriptor descriptor);
 
     /**
-     * <p>size.</p>
+     * Returns the number of direct child descriptors attached to this descriptor.
      *
-     * @return a int.
+     * @return the count of immediate children
      */
     int size();
+
     /**
-     * <p>isEmpty.</p>
+     * Indicates whether this descriptor has no child descriptors.
      *
-     * @return a boolean.
+     * @return {@code true} if this descriptor has no children, {@code false} otherwise
      */
     boolean isEmpty();
+
     /**
-     * <p>isNotEmpty.</p>
+     * Indicates whether this descriptor has at least one child descriptor.
      *
-     * @return a boolean.
+     * @return {@code true} if this descriptor has one or more children, {@code false} otherwise
      */
     boolean isNotEmpty();
 
     /**
-     * <p>print.</p>
+     * Prints this descriptor and its full tree of child descriptors to the given stream as indented text.
      *
-     * @param stream a {@link java.io.PrintStream} object.
+     * @param stream the output stream to write the formatted description to
      */
     void print(PrintStream stream);
 }

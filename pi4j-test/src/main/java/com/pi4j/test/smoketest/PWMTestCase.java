@@ -1,0 +1,105 @@
+package com.pi4j.test.smoketest;
+
+import com.pi4j.io.gpio.digital.*;
+import com.pi4j.io.pwm.Pwm;
+import com.pi4j.io.pwm.PwmType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class PWMTestCase extends TestCase {
+
+    private static final Logger logger = LoggerFactory.getLogger(PWMTestCase.class);
+
+    public static TestResult run(ProviderContext providerContext, int frequency, int dutyCycle, int expected) {
+        return run(providerContext, 0, 2, PwmType.HARDWARE, frequency, dutyCycle, expected);
+    }
+
+    public static TestResult run(ProviderContext providerContext, int chip, int channel, PwmType pwmType, int frequency, int dutyCycle, int expected) {
+        logger.info("Starting PWM test");
+
+        Pwm pwm = null;
+        DigitalInput gpioInMonitor = null;
+
+        var testName = "PWM (freq: " + frequency + ", dc: " + dutyCycle + ")";
+
+        try {
+            // Initialize PWM
+            var configPwm = Pwm
+                .newConfigBuilder(providerContext.getContext())
+                .chip(chip)
+                .channel(channel)
+                .pwmType(pwmType)
+                .initial(dutyCycle)
+                .frequency(frequency)
+                .shutdown(0)
+                .build();
+            pwm = providerContext.getContext().create(configPwm);
+
+            Thread.sleep(100);
+
+            if (pwm.getFrequency() != frequency || pwm.getDutyCycle() != dutyCycle) {
+                return new TestResult(testName, false, "The expected initial values are not correct");
+            }
+
+            // Create input to listen for "flashes"
+            gpioInMonitor = createDigitalInput(providerContext.getContext(), 23, PullResistance.PULL_DOWN, 0);
+            var flashListener = new DataInGpioListener();
+            gpioInMonitor.addListener(flashListener);
+            Thread.sleep(100);
+            // Since the initial value is non zero, it is possible that
+            // the PWM output could be low or high, no validation to be done here
+
+            // Test
+            logger.info("Starting to count flashes, please wait...");
+            flashListener.zeroPwmFlashes() ;
+            pwm.on(dutyCycle, frequency);
+            Thread.sleep(10_000);  // wait 10 seconds while listener counts flashes
+            var flashCount = flashListener.getPwmFlashes();
+            pwm.off();
+            logger.info("Number of flashes counted: {}", flashCount);
+
+            // Check counted flashes versus expected
+            if (flashCount == expected) {
+                return new TestResult(testName, true, "Correct number of flashes detected");
+            } else {
+                return new TestResult(testName, false, "Number of flashes is not correct: "
+                    + flashCount + "/" + expected);
+            }
+        } catch (Exception e) {
+            logger.error("Test failure", e);
+            return new TestResult(testName, false, "Test failure: " + e);
+        } finally {
+            if (pwm != null) {
+                pwm.close();
+            }
+            if (gpioInMonitor != null) {
+                gpioInMonitor.close();
+            }
+        }
+    }
+
+    private static class DataInGpioListener implements DigitalStateChangeListener {
+        private int pwmFlashes = 0;
+
+        @Override
+        public void onDigitalStateChange(DigitalStateChangeEvent event) {
+            if (event.state() == DigitalState.HIGH) {
+                pwmFlashes++;
+                logger.debug("Pin went HIGH,PWM flashed on flashCount = " + pwmFlashes);
+            } else if (event.state() == DigitalState.LOW) {
+                logger.debug("Pin went LOW,PWM flashed off flashCount = " + pwmFlashes);
+            } else {
+                logger.warn("Strange event state: {}", event.state());
+            }
+        }
+
+        public int getPwmFlashes() {
+            return pwmFlashes;
+        }
+        public void zeroPwmFlashes() {
+            pwmFlashes = 0;
+            logger.debug("Zero flash count");
+        }
+
+    }
+}
