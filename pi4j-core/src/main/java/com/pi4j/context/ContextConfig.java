@@ -43,33 +43,12 @@ public interface ContextConfig {
     default boolean isAutoDetectPlatforms() { return autoDetectPlatforms(); };
 
     /**
-     * Indicates whether automatic injection of Pi4J dependencies into annotated members is enabled.
-     *
-     * @return {@code true} if auto-injection is enabled, {@code false} otherwise
-     */
-    boolean autoInject();
-
-    /**
      * Indicates whether a JVM shutdown hook is registered to shut the context down automatically when the
      * JVM terminates.
      *
      * @return {@code true} if the shutdown hook is enabled, {@code false} otherwise
      */
     boolean enableShutdownHook();
-
-    /**
-     * Bean-style accessor for {@link #autoInject()}.
-     *
-     * @return {@code true} if auto-injection is enabled, {@code false} otherwise
-     */
-    default boolean getAutoInject() { return autoInject(); };
-
-    /**
-     * Bean-style accessor for {@link #autoInject()}.
-     *
-     * @return {@code true} if auto-injection is enabled, {@code false} otherwise
-     */
-    default boolean isAutoInject() { return autoInject(); };
 
     // **************************************************
     // PROVIDERS
