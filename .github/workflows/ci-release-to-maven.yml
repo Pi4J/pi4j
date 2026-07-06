@@ -43,12 +43,19 @@ jobs:
         run: |
           VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          if [[ "$VERSION" != *"-SNAPSHOT" ]]; then
+
+          # Ensure tags are available for existence checks
+          git fetch --tags --force
+
+          if [[ "$VERSION" != *"-SNAPSHOT" ]] && git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
+            echo "is-release=false" >> "$GITHUB_OUTPUT"
+            echo "Tag already exists; skipping release: $VERSION"
+          elif [[ "$VERSION" != *"-SNAPSHOT" ]]; then
             echo "is-release=true" >> "$GITHUB_OUTPUT"
-            echo "✅ Release version detected: $VERSION"
+            echo "Release version detected: $VERSION"
           else
             echo "is-release=false" >> "$GITHUB_OUTPUT"
-            echo "⏭️  Snapshot version – skipping release: $VERSION"
+            echo "Snapshot version – skipping release: $VERSION"
           fi
 
   # ── Step 2: build, stage locally, approve, then release via JReleaser ──────
