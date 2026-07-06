@@ -20,7 +20,6 @@ public class DefaultContextBuilder implements ContextBuilder {
     protected boolean autoDetectMockPlugins = !BoardInfoHelper.runningOnRaspberryPi();
     protected boolean autoDetectPlatforms = false;
     protected boolean autoDetectProviders = false;
-    protected boolean autoInject = false;
     protected boolean enableShutdownHook = false;
 
     // default platform identifier
@@ -83,18 +82,6 @@ public class DefaultContextBuilder implements ContextBuilder {
     }
 
     @Override
-    public ContextBuilder autoInject() {
-        this.autoInject = true;
-        return this;
-    }
-
-    @Override
-    public ContextBuilder noAutoInject() {
-        this.autoInject = false;
-        return this;
-    }
-
-    @Override
     public ContextBuilder enableShutdownHook() {
         this.enableShutdownHook = true;
         return this;
@@ -138,9 +125,6 @@ public class DefaultContextBuilder implements ContextBuilder {
             public boolean enableShutdownHook() {
                 return builder.enableShutdownHook;
             }
-
-            @Override
-            public boolean autoInject() { return builder.autoInject; }
 
             @Override
             public boolean autoDetectProviders() {

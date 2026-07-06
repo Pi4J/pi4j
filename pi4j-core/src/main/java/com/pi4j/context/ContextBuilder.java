@@ -70,33 +70,6 @@ public interface ContextBuilder extends Builder<Context> {
     ContextBuilder noAutoDetectProviders();
 
     /**
-     * Enables automatic injection of Pi4J dependencies into annotated members of registered objects.
-     *
-     * @return this builder instance for method chaining
-     */
-    ContextBuilder autoInject();
-
-    /**
-     * Disables automatic injection of Pi4J dependencies.
-     *
-     * @return this builder instance for method chaining
-     */
-    ContextBuilder noAutoInject();
-
-    /**
-     * Enables or disables automatic dependency injection depending on the given flag.
-     *
-     * @param autoInject {@code true} to enable auto-injection, {@code false} to disable it
-     * @return this builder instance for method chaining
-     */
-    default ContextBuilder setAutoInject(boolean autoInject){
-        if(autoInject)
-            return autoInject();
-        else
-            return noAutoInject();
-    }
-
-    /**
      * Enables registration of a JVM shutdown hook that automatically shuts the context down when the JVM
      * terminates.
      *
