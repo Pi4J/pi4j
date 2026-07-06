@@ -1,4 +1,4 @@
-name: Build release tags and push to download repo
+name: "Package release zip and publish to pi4j/download"
 
 on:
   push:

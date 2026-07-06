@@ -1,8 +1,8 @@
-name: Build develop snapshot and push to download repo
+name: "Build snapshot and deploy to Maven"
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:

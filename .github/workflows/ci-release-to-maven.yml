@@ -1,0 +1,171 @@
+# Release with JReleaser
+# https://jreleaser.org/guide/latest/continuous-integration/github-actions.html
+#
+# Triggers automatically on pushes to main that touch pom.xml, and can also be
+# started manually from the GitHub Actions UI.
+# The "check-version" job gates the actual release: it only proceeds when the
+# version is NOT a SNAPSHOT, so bumping 5.0.0-SNAPSHOT → 5.0.0 is all it takes
+# to kick off a full release.
+
+name: "Release to Maven Central with JReleaser"
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'pom.xml'
+  workflow_dispatch:
+
+jobs:
+  # ── Step 1: decide whether this is a real release ──────────────────────────
+  check-version:
+    name: Check version
+    runs-on: ubuntu-latest
+    outputs:
+      is-release: ${{ steps.version.outputs.is-release }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'zulu'
+
+      - name: Read project version
+        id: version
+        run: |
+          VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+          # Ensure tags are available for existence checks
+          git fetch --tags --force
+
+          if [[ "$VERSION" != *"-SNAPSHOT" ]] && git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
+            echo "is-release=false" >> "$GITHUB_OUTPUT"
+            echo "Tag already exists; skipping release: $VERSION"
+          elif [[ "$VERSION" != *"-SNAPSHOT" ]]; then
+            echo "is-release=true" >> "$GITHUB_OUTPUT"
+            echo "Release version detected: $VERSION"
+          else
+            echo "is-release=false" >> "$GITHUB_OUTPUT"
+            echo "Snapshot version – skipping release: $VERSION"
+          fi
+
+  # ── Step 2: build, stage locally, approve, then release via JReleaser ──────
+  release:
+    name: Release v${{ needs.check-version.outputs.version }}
+    needs: check-version
+    if: needs.check-version.outputs.is-release == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to create GitHub Release & tag
+      issues: write     # needed by manual-approval to open an issue
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history so JReleaser can build the changelog
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'zulu'
+
+      - name: Grant execute permission for mvnw
+        run: chmod +x mvnw
+
+      - name: Validate release secrets are available
+        run: |
+          required=(
+            JRELEASER_MAVENCENTRAL_USERNAME
+            JRELEASER_MAVENCENTRAL_TOKEN
+            JRELEASER_GPG_PASSPHRASE
+            JRELEASER_GPG_SECRET_KEY
+            JRELEASER_GPG_PUBLIC_KEY
+          )
+          for name in "${required[@]}"; do
+            if [ -z "${!name}" ]; then
+              echo "ERROR: Required secret '$name' is not set"
+              exit 1
+            fi
+          done
+          echo "All required release secrets are present."
+        env:
+          JRELEASER_MAVENCENTRAL_USERNAME: ${{ secrets.JRELEASER_MAVENCENTRAL_USERNAME }}
+          JRELEASER_MAVENCENTRAL_TOKEN: ${{ secrets.JRELEASER_MAVENCENTRAL_TOKEN }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
+          JRELEASER_GPG_SECRET_KEY: ${{ secrets.JRELEASER_GPG_SECRET_KEY }}
+          JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.JRELEASER_GPG_PUBLIC_KEY }}
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+
+      # Build + generate sources & javadoc JARs, deploy to a local staging dir.
+      # JReleaser will sign and upload everything from there.
+      # Note: Maven 4 altDeploymentRepository syntax is id::url (no layout field)
+      - name: Build for release
+        run: |
+          ./mvnw -ntp -B -Prelease -DskipTests \
+            -DaltDeploymentRepository=local::file:./target/staging-deploy \
+            deploy
+
+      - name: List files staged for release
+        run: ls -laR ./target/staging-deploy
+
+      # Check JReleaser config before asking for approval
+      - name: Check JReleaser configuration
+        env:
+          JRELEASER_MAVENCENTRAL_USERNAME: ${{ secrets.JRELEASER_MAVENCENTRAL_USERNAME }}
+          JRELEASER_MAVENCENTRAL_TOKEN: ${{ secrets.JRELEASER_MAVENCENTRAL_TOKEN }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
+          JRELEASER_GPG_SECRET_KEY: ${{ secrets.JRELEASER_GPG_SECRET_KEY }}
+          JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.JRELEASER_GPG_PUBLIC_KEY }}
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./mvnw -ntp -B -Prelease -Djreleaser.config.file=jreleaser.yml jreleaser:config
+
+      # Manual gate: one of the listed approvers must react on the auto-created
+      # GitHub issue before the release continues.
+      - name: Get release approval
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ secrets.GITHUB_TOKEN }}
+          approvers: FDelporte,stefanhaustein
+          minimum-approvals: 1
+          issue-title: "Release v${{ needs.check-version.outputs.version }} to Maven Central"
+          issue-body: "Please approve or deny the release of **v${{ needs.check-version.outputs.version }}** to Maven Central."
+          exclude-workflow-initiator-as-approver: false
+          fail-on-denial: true
+          polling-interval-seconds: 10
+
+      # Post JARs to Maven Central
+      # https://jreleaser.org/guide/latest/examples/maven/maven-central.html
+      - name: Release to Maven Central
+        env:
+          JRELEASER_MAVENCENTRAL_USERNAME: ${{ secrets.JRELEASER_MAVENCENTRAL_USERNAME }}
+          JRELEASER_MAVENCENTRAL_TOKEN: ${{ secrets.JRELEASER_MAVENCENTRAL_TOKEN }}
+          JRELEASER_GPG_PASSPHRASE: ${{ secrets.JRELEASER_GPG_PASSPHRASE }}
+          JRELEASER_GPG_SECRET_KEY: ${{ secrets.JRELEASER_GPG_SECRET_KEY }}
+          JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.JRELEASER_GPG_PUBLIC_KEY }}
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./mvnw -ntp -B -Prelease -Djreleaser.config.file=jreleaser.yml jreleaser:full-release
+
+      # Always upload JReleaser logs so failures are easy to diagnose
+      - name: Upload JReleaser output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jreleaser-output
+          path: target/jreleaser/
