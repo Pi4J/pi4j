@@ -18,7 +18,7 @@ project:
     the low-level I/O capabilities of Raspberry Pi and other Linux-based Single-Board Computers.
   authors:
     - Pi4J Contributors
-  license: APACHE-2.0
+  license: Apache-2.0
   links:
     homepage: https://github.com/Pi4J/pi4j
     documentation: https://pi4j.com
