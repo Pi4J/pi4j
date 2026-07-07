@@ -44,7 +44,7 @@ public class ContextBuilder implements Builder<Context> {
     /**
      * Private Constructor
      */
-    private ContextBuilder() {
+    protected ContextBuilder() {
         // forbid object construction
     }
 
@@ -178,7 +178,7 @@ public class ContextBuilder implements Builder<Context> {
      * @param enableShutdownHook {@code true} to register the shutdown hook, {@code false} to skip it
      * @return this builder instance for method chaining
      */
-    ContextBuilder setShutdownHook(boolean enableShutdownHook) {
+    public ContextBuilder setShutdownHook(boolean enableShutdownHook) {
         if (enableShutdownHook)
             return enableShutdownHook();
         else
