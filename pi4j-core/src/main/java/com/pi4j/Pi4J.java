@@ -48,7 +48,7 @@ public class Pi4J {
      */
     public static Context newAutoContext() {
         logger.info("New auto context");
-        return newContextBuilder().autoDetect().build();
+        return newContextBuilder().autoDetectProviders().build();
     }
 
     /**

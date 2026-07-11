@@ -94,7 +94,7 @@ public class DefaultContext implements Context {
             Map<IOType, Provider> providers = new HashMap<>();
 
             // only attempt to load platforms and providers from the classpath if an auto detect option is enabled
-            if (config.autoDetectPlatforms() || config.autoDetectProviders()) {
+            if (config.autoDetectProviders()) {
 
                 // detect available Pi4J Plugins by scanning the classpath looking for plugin instances
                 ServiceLoader<Plugin> serviceLoaderPlugins = ServiceLoader.load(Plugin.class);
