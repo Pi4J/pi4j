@@ -22,27 +22,6 @@ public interface ContextConfig {
     boolean autoDetectMockPlugins();
 
     /**
-     * Indicates whether platform implementations should be auto-detected on the classpath.
-     *
-     * @return {@code true} if platform auto-detection is enabled, {@code false} otherwise
-     */
-    boolean autoDetectPlatforms();
-
-    /**
-     * Bean-style accessor for {@link #autoDetectPlatforms()}.
-     *
-     * @return {@code true} if platform auto-detection is enabled, {@code false} otherwise
-     */
-    default boolean getAutoDetectPlatforms() { return autoDetectPlatforms(); };
-
-    /**
-     * Bean-style accessor for {@link #autoDetectPlatforms()}.
-     *
-     * @return {@code true} if platform auto-detection is enabled, {@code false} otherwise
-     */
-    default boolean isAutoDetectPlatforms() { return autoDetectPlatforms(); };
-
-    /**
      * Indicates whether a JVM shutdown hook is registered to shut the context down automatically when the
      * JVM terminates.
      *

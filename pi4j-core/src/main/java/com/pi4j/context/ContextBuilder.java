@@ -25,7 +25,6 @@ public class ContextBuilder implements Builder<Context> {
 
     // auto detection flags
     protected boolean autoDetectMockPlugins = !BoardInfoHelper.runningOnRaspberryPi();
-    protected boolean autoDetectPlatforms = false;
     protected boolean autoDetectProviders = false;
     protected boolean enableShutdownHook = false;
 
@@ -76,26 +75,6 @@ public class ContextBuilder implements Builder<Context> {
     }
 
     /**
-     * Enables auto-detection of platform implementations available on the classpath.
-     *
-     * @return this builder instance for method chaining
-     */
-    public ContextBuilder autoDetectPlatforms() {
-        this.autoDetectPlatforms = true;
-        return this;
-    }
-
-    /**
-     * Disables auto-detection of platform implementations on the classpath.
-     *
-     * @return this builder instance for method chaining
-     */
-    public ContextBuilder noAutoDetectPlatforms() {
-        this.autoDetectPlatforms = false;
-        return this;
-    }
-
-    /**
      * Enables auto-detection of provider implementations available on the classpath.
      *
      * @return this builder instance for method chaining
@@ -136,42 +115,6 @@ public class ContextBuilder implements Builder<Context> {
         return this;
     }
 
-
-    /**
-     * Enables or disables auto-detection of both platforms and providers depending on the given flag.
-     *
-     * @param autoDetect {@code true} to enable auto-detection, {@code false} to disable it
-     * @return this builder instance for method chaining
-     */
-    public ContextBuilder setAutoDetect(boolean autoDetect){
-        if(autoDetect)
-            return autoDetect();
-        else
-            return noAutoDetect();
-    }
-
-    /**
-     * Enables auto-detection of all extensibility modules (platforms and providers) on the classpath.
-     *
-     * @return this builder instance for method chaining
-     */
-    public ContextBuilder autoDetect(){
-        // auto detect all extensibility modules in the classpath
-        return  autoDetectPlatforms().
-            autoDetectProviders();
-    }
-
-    /**
-     * Disables auto-detection of all extensibility modules (platforms and providers) on the classpath.
-     *
-     * @return this builder instance for method chaining
-     */
-    public ContextBuilder noAutoDetect(){
-        // do not auto detect all extensibility modules in the classpath
-        return  noAutoDetectPlatforms().
-            noAutoDetectProviders();
-    }
-
     /**
      * Enables or disables the JVM shutdown hook depending on the given flag.
      *
@@ -197,7 +140,6 @@ public class ContextBuilder implements Builder<Context> {
             private final Collection<Provider> providers = Collections.unmodifiableCollection(
                 new ArrayList<>(ContextBuilder.this.providers));
             private final boolean autoDetectMockPlugins = ContextBuilder.this.autoDetectMockPlugins;
-            private final boolean autoDetectPlatforms = ContextBuilder.this.autoDetectPlatforms;
             private final boolean enableShutdownHook = ContextBuilder.this.enableShutdownHook;
             private final boolean autoDetectProviders = ContextBuilder.this.autoDetectProviders;
 
@@ -209,11 +151,6 @@ public class ContextBuilder implements Builder<Context> {
             @Override
             public boolean autoDetectMockPlugins() {
                 return autoDetectMockPlugins;
-            }
-
-            @Override
-            public boolean autoDetectPlatforms() {
-                return autoDetectPlatforms;
             }
 
             @Override
