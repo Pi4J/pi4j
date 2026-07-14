@@ -101,14 +101,8 @@ class RegistryTest {
         // now shutdown all I/O instances by closing them.
         input.close();
         output.close();
-        //i2c.close();
-        //pwm.close();
-
-        // The test PWM has no context here; assuming mock/fake incompleteness.
-        // First guess was that this is because TestPwmProvider returns null from the create method, but this would
-        // mean that pwm.id() above would fail already.
-        pi4j.shutdown(i2c.id());
-        pi4j.shutdown(pwm.id());
+        i2c.close();
+        pwm.close();
 
         assertAll(
             // and now we shouldn't find them by address
@@ -129,6 +123,7 @@ class RegistryTest {
         input.close();
         output.close();
         pwm.close();
+        i2c.close();
     }
 
     @Test
