@@ -86,6 +86,7 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
 
     @Override
     public Pwm initialize(Context context) throws InitializeException {
+        super.initialize(context);
 
         // apply initial frequency value if configured
         if (this.config.frequency() != null) {
