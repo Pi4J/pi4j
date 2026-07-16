@@ -5,14 +5,12 @@ import com.pi4j.config.ChannelConfig;
 import com.pi4j.config.ChipConfig;
 import com.pi4j.io.IOConfig;
 
-import java.util.Collection;
 
 /**
  * Immutable configuration for a {@link Pwm} instance. It carries the addressing
  * (chip, channel and/or BCM pin), the generator {@link PwmType}, the
  * {@link PwmPolarity}, the initial frequency and duty-cycle, optional initial and
- * shutdown values, and any {@link PwmPreset} definitions. Instances are assembled
- * with a {@link PwmConfigBuilder} and consumed by a {@link PwmProvider} when
+ * shutdown values. Instances are assembled with a {@link PwmConfigBuilder} and consumed by a {@link PwmProvider} when
  * creating the PWM I/O.
  */
 public interface PwmConfig extends ChipConfig<PwmConfig>, ChannelConfig<PwmConfig>, BcmConfig<PwmConfig>, IOConfig<PwmConfig> {
