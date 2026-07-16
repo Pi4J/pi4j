@@ -113,7 +113,6 @@ public class DefaultPwmConfigBuilder
 
     @Override
     public PwmConfig build() {
-        PwmConfig config = new DefaultPwmConfig(getResolvedProperties());
-        return config;
+        return new DefaultPwmConfig(getResolvedProperties());
     }
 }
