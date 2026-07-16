@@ -7,9 +7,6 @@ import com.pi4j.io.pwm.PwmPolarity;
 import com.pi4j.io.pwm.PwmType;
 import com.pi4j.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 public class DefaultPwmConfig

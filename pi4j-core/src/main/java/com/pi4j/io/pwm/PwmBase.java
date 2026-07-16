@@ -6,9 +6,6 @@ import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.IOBase;
 import com.pi4j.io.exception.IOException;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**

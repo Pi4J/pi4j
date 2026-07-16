@@ -6,7 +6,6 @@ import com.pi4j.io.OnOff;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.util.Frequency;
 
-import java.util.Map;
 
 /**
  * Represents a single PWM (Pulse Width Modulation) I/O instance, generating a

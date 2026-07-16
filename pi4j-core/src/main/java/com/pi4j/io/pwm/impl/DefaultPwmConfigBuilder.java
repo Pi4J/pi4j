@@ -4,9 +4,6 @@ import com.pi4j.context.Context;
 import com.pi4j.io.impl.IOBcmConfigBuilderBase;
 import com.pi4j.io.pwm.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class DefaultPwmConfigBuilder
     extends IOBcmConfigBuilderBase<PwmConfigBuilder, PwmConfig>
     implements PwmConfigBuilder {
