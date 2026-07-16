@@ -30,8 +30,6 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
     protected boolean onState = false;
     /** Configured signal polarity; defaults to {@link PwmPolarity#NORMAL}. */
     protected PwmPolarity polarity = PwmPolarity.NORMAL;
-    /** Presets registered with this instance, keyed by lower-cased, trimmed preset name. */
-    protected Map<String, PwmPreset> presets = Collections.synchronizedMap(new HashMap<>());
 
     /**
      * Creates a new PWM base instance and registers any presets defined in the
@@ -42,9 +40,6 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
      */
     public PwmBase(PwmProvider provider, PwmConfig config) {
         super(provider, config);
-        for (PwmPreset preset : config.presets()) {
-            this.presets.put(preset.name().toLowerCase().trim(), preset);
-        }
     }
 
     @Override
@@ -137,52 +132,6 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
             } catch (IOException e) {
                 throw new ShutdownException(e);
             }
-        }
-        return this;
-    }
-
-    @Override
-    public Map<String, PwmPreset> getPresets() {
-        return Collections.unmodifiableMap(this.presets);
-    }
-
-    @Override
-    public PwmPreset getPreset(String name) {
-        String key = name.toLowerCase().trim();
-        if (presets.containsKey(key)) {
-            return presets.get(key);
-        }
-        return null;
-    }
-
-    @Override
-    public PwmPreset deletePreset(String name) {
-        String key = name.toLowerCase().trim();
-        if (presets.containsKey(key)) {
-            return presets.remove(key);
-        }
-        return null;
-    }
-
-    @Override
-    public Pwm addPreset(PwmPreset preset) {
-        String key = preset.name().toLowerCase().trim();
-        presets.put(key, preset);
-        return this;
-    }
-
-    @Override
-    public Pwm applyPreset(String name) throws IOException {
-        String key = name.toLowerCase().trim();
-        if (presets.containsKey(key)) {
-            PwmPreset preset = presets.get(key);
-            if (preset.dutyCycle() != null)
-                setDutyCycle(preset.dutyCycle());
-            if (preset.frequency() != null)
-                setFrequency(preset.frequency().intValue());
-            on(); // update PWM signal now
-        } else {
-            throw new IOException("PWM PRESET NOT FOUND: " + name);
         }
         return this;
     }

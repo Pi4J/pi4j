@@ -4,7 +4,6 @@ import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.io.impl.IOConfigBase;
 import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.pwm.PwmPolarity;
-import com.pi4j.io.pwm.PwmPreset;
 import com.pi4j.io.pwm.PwmType;
 import com.pi4j.util.StringUtil;
 
@@ -28,7 +27,6 @@ public class DefaultPwmConfig
     protected PwmPolarity polarity = PwmPolarity.NORMAL;
     protected Double shutdownValue = null;
     protected Double initialValue = null;
-    protected List<PwmPreset> presets = new ArrayList<>();
 
     /**
      * PRIVATE CONSTRUCTOR
@@ -39,14 +37,6 @@ public class DefaultPwmConfig
 
     // private configuration properties
     protected PullResistance pullResistance = PullResistance.OFF;
-
-    /**
-     * PRIVATE CONSTRUCTOR
-     */
-    protected DefaultPwmConfig(Map<String, String> properties, Collection<PwmPreset> presets) {
-        this(properties);
-        this.presets.addAll(presets);
-    }
 
     /**
      * PRIVATE CONSTRUCTOR
@@ -183,10 +173,5 @@ public class DefaultPwmConfig
     @Override
     public Double initialValue() {
         return this.initialValue;
-    }
-
-    @Override
-    public Collection<PwmPreset> presets() {
-        return this.presets;
     }
 }

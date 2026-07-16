@@ -8,8 +8,8 @@ import com.pi4j.io.pwm.impl.DefaultPwmConfigBuilder;
 /**
  * Fluent builder for assembling a {@link PwmConfig}. It exposes chained setters for
  * the addressing (chip, channel, BCM pin), {@link PwmType}, {@link PwmPolarity},
- * frequency, duty-cycle, initial/shutdown values and {@link PwmPreset} definitions,
- * and produces an immutable configuration via its {@code build()} method.
+ * frequency, duty-cycle, and initial/shutdown values, and produces an immutable configuration via its {@code build()}
+ * method.
  */
 public interface PwmConfigBuilder extends
     IOConfigBuilder<PwmConfigBuilder, PwmConfig>,
@@ -171,13 +171,4 @@ public interface PwmConfigBuilder extends
     default PwmConfigBuilder initial(Integer dutyCycle) {
         return initial(dutyCycle == null ? null : (double) dutyCycle);
     }
-    /**
-     * Add one or more PwmPresets to this PWM instance. You can create new PWM
-     * preset instance using the 'PwmPreset::newBuilder(name)' static
-     * factory method.
-     *
-     * @param preset one or more pre-configured PwmPreset instances
-     * @return this builder instance
-     */
-    PwmConfigBuilder preset(PwmPreset... preset);
 }

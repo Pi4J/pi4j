@@ -239,20 +239,4 @@ public interface PwmConfig extends ChipConfig<PwmConfig>, ChannelConfig<PwmConfi
     default Double getInitialValue() {
         return initialValue();
     }
-
-    /**
-     * Get the configured PwmPresets assigned to this PWM instance.
-     *
-     * @return collection of PwmPresets
-     */
-    Collection<PwmPreset> presets();
-
-    /**
-     * Get the configured PwmPresets assigned to this PWM instance.
-     *
-     * @return collection of PwmPresets
-     */
-    default Collection<PwmPreset> getPresets() {
-        return presets();
-    }
 }

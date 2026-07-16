@@ -11,8 +11,6 @@ public class DefaultPwmConfigBuilder
     extends IOBcmConfigBuilderBase<PwmConfigBuilder, PwmConfig>
     implements PwmConfigBuilder {
 
-    protected List<PwmPreset> presets = new ArrayList<>();
-
     /**
      * PRIVATE CONSTRUCTOR
      */
@@ -114,16 +112,8 @@ public class DefaultPwmConfigBuilder
     }
 
     @Override
-    public PwmConfigBuilder preset(PwmPreset... preset) {
-        for (PwmPreset p : preset) {
-            this.presets.add(p);
-        }
-        return this;
-    }
-
-    @Override
     public PwmConfig build() {
-        PwmConfig config = new DefaultPwmConfig(getResolvedProperties(), this.presets);
+        PwmConfig config = new DefaultPwmConfig(getResolvedProperties());
         return config;
     }
 }
