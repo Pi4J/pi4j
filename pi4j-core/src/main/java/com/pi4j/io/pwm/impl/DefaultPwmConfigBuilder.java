@@ -4,14 +4,9 @@ import com.pi4j.context.Context;
 import com.pi4j.io.impl.IOBcmConfigBuilderBase;
 import com.pi4j.io.pwm.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class DefaultPwmConfigBuilder
     extends IOBcmConfigBuilderBase<PwmConfigBuilder, PwmConfig>
     implements PwmConfigBuilder {
-
-    protected List<PwmPreset> presets = new ArrayList<>();
 
     /**
      * PRIVATE CONSTRUCTOR
@@ -114,16 +109,7 @@ public class DefaultPwmConfigBuilder
     }
 
     @Override
-    public PwmConfigBuilder preset(PwmPreset... preset) {
-        for (PwmPreset p : preset) {
-            this.presets.add(p);
-        }
-        return this;
-    }
-
-    @Override
     public PwmConfig build() {
-        PwmConfig config = new DefaultPwmConfig(getResolvedProperties(), this.presets);
-        return config;
+        return new DefaultPwmConfig(getResolvedProperties());
     }
 }

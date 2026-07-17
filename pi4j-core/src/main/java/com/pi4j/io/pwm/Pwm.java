@@ -6,7 +6,6 @@ import com.pi4j.io.OnOff;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.util.Frequency;
 
-import java.util.Map;
 
 /**
  * Represents a single PWM (Pulse Width Modulation) I/O instance, generating a
@@ -360,67 +359,4 @@ public interface Pwm extends IO<Pwm, PwmConfig, PwmProvider>, OnOff<Pwm> {
         setFrequency(frequency);
         return this;
     }
-
-    /**
-     * Get all the PwmPreset instances assigned to this PWM instance.
-     *
-     * @return a map of PwmPresets indexed/cataloged by preset name.
-     */
-    Map<String, PwmPreset> getPresets();
-
-    /**
-     * Get all the PwmPreset assigned to this PWM instance.
-     *
-     * @return a map of PwmPreset indexed/cataloged by preset name.
-     */
-    default Map<String, PwmPreset> presets() {
-        return getPresets();
-    }
-
-    /**
-     * Get a single PwmPreset from this PWM instance by the preset's name.
-     *
-     * @param name preset name string
-     * @return a single PwmPreset instance
-     */
-    PwmPreset getPreset(String name);
-
-    /**
-     * Get a single PwmPreset from this PWM instance by the preset's name.
-     *
-     * @param name preset name string
-     * @return a single PwmPreset instance
-     */
-    default PwmPreset preset(String name) {
-        return getPreset(name);
-    }
-
-    /**
-     * Delete/remove a PwmPreset by name from this PWM instance.
-     *
-     * @param name preset name string
-     * @return the deleted PWM Preset instance
-     */
-    PwmPreset deletePreset(String name);
-
-    /**
-     * Add a new PwmPreset to this PWM instance. You can create new PWM
-     * preset instance using the 'PwmPreset::newBuilder(name)' static
-     * factory method.
-     *
-     * @param preset a pre-configured PwmPreset instance
-     * @return this PWM instance
-     */
-    Pwm addPreset(PwmPreset preset);
-
-    /**
-     * Apply/recall a {@link PwmPreset} by name to this PWM instance.
-     * This will immediately update the live PWM signal with the
-     * frequency and duty-cycle defined in the preset.
-     *
-     * @param name the name of a preset previously added to this instance
-     * @return this PWM instance for method chaining
-     * @throws IOException if the named preset cannot be found or communication with the PWM pin fails
-     */
-    Pwm applyPreset(String name) throws IOException;
 }
