@@ -27,8 +27,9 @@ public class GPIOInputPerformanceTest extends BaseSetup {
     public void setup() throws InterruptedException, IOException {
         setup("gpio");
 
-        this.pi4j = Pi4J.newContextBuilder().add(new FFMDigitalInputProviderImpl()).setGpioChipName("gpiochip2").build();
+        this.pi4j = Pi4J.newContextBuilder().add(new FFMDigitalInputProviderImpl()).build();
         var config = DigitalInputConfigBuilder.newInstance()
+            .bus(97)
             .bcm(3)
             .debounce(99L, TimeUnit.MICROSECONDS)
             .pull(PullResistance.PULL_DOWN)
