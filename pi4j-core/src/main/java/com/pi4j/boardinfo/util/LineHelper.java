@@ -40,7 +40,8 @@ public class LineHelper {
      * @param bank the zero-based bank index ({@code 0} for bank A, {@code 1} for bank B, ...), e.g. {@code 8} for bank I
      * @param line the pin number within the bank ({@code 0}-{@code 31}), e.g. {@code 15} for PI15
      * @return the absolute line offset on the {@code gpiochip} device, e.g. {@code 271} for PI15
-     * @throws IllegalArgumentException if {@code bank} is negative or {@code line} is not in {@code 0}-{@code 31}
+     * @throws IllegalArgumentException if {@code bank} is negative, {@code line} is not in {@code 0}-{@code 31},
+     *                                   or the resulting offset would overflow {@code int}
      */
     public static int getAddress(int bank, int line) {
         if (bank < 0) {
@@ -49,7 +50,11 @@ public class LineHelper {
         if (line < 0 || line >= LINES_PER_BANK) {
             throw new IllegalArgumentException("Line must be between 0 and " + (LINES_PER_BANK - 1) + ": " + line);
         }
-        return bank * LINES_PER_BANK + line;
+        long offset = (long) bank * LINES_PER_BANK + line;
+        if (offset > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Bank index too large, line offset would overflow int: " + bank);
+        }
+        return (int) offset;
     }
 
     /**

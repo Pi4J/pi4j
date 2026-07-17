@@ -58,6 +58,12 @@ class LineHelperTest {
     }
 
     @Test
+    void shouldRejectBankIndexThatWouldOverflowInt() {
+        assertThrows(IllegalArgumentException.class, () -> LineHelper.getAddress(Integer.MAX_VALUE / 32 + 1, 0));
+        assertThrows(IllegalArgumentException.class, () -> LineHelper.getAddress(Integer.MAX_VALUE, 0));
+    }
+
+    @Test
     void shouldConvertBankLetterToIndex() {
         assertEquals(0, LineHelper.bankIndex('A'));
         assertEquals(8, LineHelper.bankIndex('I'));
