@@ -81,35 +81,40 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
             logger.info("{}-{} - setting up DigitalOutput BCM...", deviceName, bcm);
             logger.trace("{}-{} - opening device file.", deviceName, bcm);
             var fd = file.open(deviceName, FileFlag.O_RDONLY | FileFlag.O_CLOEXEC);
-            var lineInfo = new LineInfo(new byte[]{}, new byte[]{}, bcm, 0, 0, new LineAttribute[]{});
-            logger.trace("{}-{} - getting line info.", deviceName, bcm);
-            lineInfo = ioctl.call(fd, Command.getGpioV2GetLineInfoIoctl(), lineInfo);
-            if ((lineInfo.flags() & PinFlag.USED.getValue()) > 0) {
-                this.shutdownInternal(context());
-                throw new InitializeException("BCM " + bcm + " is in use");
+            // The chip device fd is only needed to read the line info and issue the line request.
+            // Close it in a finally so an early exit - the line already being in use, or any failing
+            // ioctl - cannot leak it. The per-request line fd returned below (chipFileDescriptor) is a
+            // separate descriptor that must stay open for subsequent value writes.
+            try {
+                var lineInfo = new LineInfo(new byte[]{}, new byte[]{}, bcm, 0, 0, new LineAttribute[]{});
+                logger.trace("{}-{} - getting line info.", deviceName, bcm);
+                lineInfo = ioctl.call(fd, Command.getGpioV2GetLineInfoIoctl(), lineInfo);
+                if ((lineInfo.flags() & PinFlag.USED.getValue()) > 0) {
+                    throw new InitializeException("BCM " + bcm + " is in use");
+                }
+                logger.trace("{}-{} - DigitalOutput BCM line info: {}", deviceName, bcm, lineInfo);
+                var flags = PinFlag.OUTPUT.getValue();
+                var attributes = new ArrayList<LineConfigAttribute>();
+                var initialState = config().initialState();
+                if (initialState != null) {
+                    // Pass the configured initial state to the kernel as part of the line request so the
+                    // pin is driven to it the moment the line is requested. Without this the kernel drives
+                    // a newly requested output low by default and the pin is only switched to the initial
+                    // state afterwards, producing a transient low-then-high glitch (issue #654).
+                    var values = initialState.isHigh() ? 1L : 0L;
+                    var outputValues = new LineAttribute(LineAttributeId.GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES.getValue(), 0, values, 0);
+                    // The single requested line lives at index 0 of the offsets array, so its mask bit is 0.
+                    attributes.add(new LineConfigAttribute(outputValues, 1L));
+                    logger.trace("{}-{} - DigitalOutput BCM initial state: {}", deviceName, bcm, initialState);
+                }
+                var lineConfig = new LineConfig(flags, attributes.size(), attributes.toArray(new LineConfigAttribute[0]));
+                var lineRequest = new LineRequest(new int[]{bcm}, ("pi4j." + getClass().getSimpleName()).getBytes(), lineConfig, 1, 0, 0);
+                var result = ioctl.call(fd, Command.getGpioV2GetLineIoctl(), lineRequest);
+                this.chipFileDescriptor = result.fd();
+                logger.info("{}-{} - DigitalOutput BCM configured: {}", deviceName, bcm, result);
+            } finally {
+                file.close(fd);
             }
-            logger.trace("{}-{} - DigitalOutput BCM line info: {}", deviceName, bcm, lineInfo);
-            var flags = PinFlag.OUTPUT.getValue();
-            var attributes = new ArrayList<LineConfigAttribute>();
-            var initialState = config().initialState();
-            if (initialState != null) {
-                // Pass the configured initial state to the kernel as part of the line request so the
-                // pin is driven to it the moment the line is requested. Without this the kernel drives
-                // a newly requested output low by default and the pin is only switched to the initial
-                // state afterwards, producing a transient low-then-high glitch (issue #654).
-                var values = initialState.isHigh() ? 1L : 0L;
-                var outputValues = new LineAttribute(LineAttributeId.GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES.getValue(), 0, values, 0);
-                // The single requested line lives at index 0 of the offsets array, so its mask bit is 0.
-                attributes.add(new LineConfigAttribute(outputValues, 1L));
-                logger.trace("{}-{} - DigitalOutput BCM initial state: {}", deviceName, bcm, initialState);
-            }
-            var lineConfig = new LineConfig(flags, attributes.size(), attributes.toArray(new LineConfigAttribute[0]));
-            var lineRequest = new LineRequest(new int[]{bcm}, ("pi4j." + getClass().getSimpleName()).getBytes(), lineConfig, 1, 0, 0);
-            var result = ioctl.call(fd, Command.getGpioV2GetLineIoctl(), lineRequest);
-            this.chipFileDescriptor = result.fd();
-
-            file.close(fd);
-            logger.info("{}-{} - DigitalOutput BCM configured: {}", deviceName, bcm, result);
         } catch (java.io.IOException e) {
             logger.error("{}-{} - DigitalOutput BCM Initialization error: {}", deviceName, bcm, e.getMessage());
             throw new InitializeException(e);

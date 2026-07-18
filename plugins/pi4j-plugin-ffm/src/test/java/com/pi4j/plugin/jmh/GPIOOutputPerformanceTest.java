@@ -28,8 +28,9 @@ public class GPIOOutputPerformanceTest extends BaseSetup {
     @Setup
     public void setup() throws InterruptedException, IOException {
         setup("gpio");
-        this.pi4j = Pi4J.newContextBuilder().add(new FFMDigitalOutputProviderImpl()).setGpioChipName("gpiochip2").build();
+        this.pi4j = Pi4J.newContextBuilder().add(new FFMDigitalOutputProviderImpl()).build();
         var config = DigitalOutputConfigBuilder.newInstance()
+            .bus(97)
             .bcm(5)
             .build();
         this.pin = pi4j.digitalOutput().create(config);

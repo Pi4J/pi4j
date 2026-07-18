@@ -120,36 +120,41 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             logger.info("{}-{} - setting up DigitalInput BCM...", deviceName, bcm);
             logger.trace("{}-{} - opening device file.", deviceName, bcm);
             var fd = file.open(deviceName, FileFlag.O_RDONLY | FileFlag.O_CLOEXEC);
-            var lineInfo = new LineInfo(new byte[]{}, new byte[]{}, bcm, 0, 0, new LineAttribute[]{});
-            logger.trace("{}-{} - getting line info.", deviceName, bcm);
-            lineInfo = ioctl.call(fd, Command.getGpioV2GetLineInfoIoctl(), lineInfo);
-            if ((lineInfo.flags() & PinFlag.USED.getValue()) > 0) {
-                this.shutdownInternal(context());
-                throw new InitializeException("BCM " + bcm + " is in use");
-            }
-            logger.trace("{}-{} - DigitalInput BCM line info: {}", deviceName, bcm, lineInfo);
-            var flags = PinFlag.INPUT.getValue() | PinFlag.EDGE_RISING.getValue() | PinFlag.EDGE_FALLING.getValue();
-            var attributes = new ArrayList<LineConfigAttribute>();
-            if (debounce > 0) {
-                // check conversion from ms to ns
-                if (debounce * 1000 > Integer.MAX_VALUE) {
-                    throw new InitializeException("Debounce value of " + debounce + " is too large");
+            // The chip device fd is only needed to read the line info and issue the line request.
+            // Close it in a finally so an early exit - the line already being in use, an overflowing
+            // debounce value, or any failing ioctl - cannot leak it. The per-request line fd returned
+            // below (chipFileDescriptor) is a separate descriptor retained for value reads and polling.
+            try {
+                var lineInfo = new LineInfo(new byte[]{}, new byte[]{}, bcm, 0, 0, new LineAttribute[]{});
+                logger.trace("{}-{} - getting line info.", deviceName, bcm);
+                lineInfo = ioctl.call(fd, Command.getGpioV2GetLineInfoIoctl(), lineInfo);
+                if ((lineInfo.flags() & PinFlag.USED.getValue()) > 0) {
+                    throw new InitializeException("BCM " + bcm + " is in use");
                 }
-                var debounceAttribute = new LineAttribute(LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(), 0, 0, (int) debounce * 1000);
-                attributes.add(new LineConfigAttribute(debounceAttribute, 1L << bcm));
+                logger.trace("{}-{} - DigitalInput BCM line info: {}", deviceName, bcm, lineInfo);
+                var flags = PinFlag.INPUT.getValue() | PinFlag.EDGE_RISING.getValue() | PinFlag.EDGE_FALLING.getValue();
+                var attributes = new ArrayList<LineConfigAttribute>();
+                if (debounce > 0) {
+                    // check conversion from ms to ns
+                    if (debounce * 1000 > Integer.MAX_VALUE) {
+                        throw new InitializeException("Debounce value of " + debounce + " is too large");
+                    }
+                    var debounceAttribute = new LineAttribute(LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(), 0, 0, (int) debounce * 1000);
+                    attributes.add(new LineConfigAttribute(debounceAttribute, 1L << bcm));
+                }
+                flags |= switch (pull) {
+                    case OFF -> 0;
+                    case PULL_DOWN -> PinFlag.BIAS_PULL_DOWN.getValue();
+                    case PULL_UP -> PinFlag.BIAS_PULL_UP.getValue();
+                };
+                var lineConfig = new LineConfig(flags, attributes.size(), attributes.toArray(new LineConfigAttribute[0]));
+                var lineRequest = new LineRequest(new int[]{bcm}, ("pi4j." + getClass().getSimpleName()).getBytes(), lineConfig, 1, 0, 0);
+                var result = ioctl.call(fd, Command.getGpioV2GetLineIoctl(), lineRequest);
+                this.chipFileDescriptor = result.fd();
+                logger.info("{}-{} - DigitalInput BCM configured: {}", deviceName, bcm, result);
+            } finally {
+                file.close(fd);
             }
-            flags |= switch (pull) {
-                case OFF -> 0;
-                case PULL_DOWN -> PinFlag.BIAS_PULL_DOWN.getValue();
-                case PULL_UP -> PinFlag.BIAS_PULL_UP.getValue();
-            };
-            var lineConfig = new LineConfig(flags, attributes.size(), attributes.toArray(new LineConfigAttribute[0]));
-            var lineRequest = new LineRequest(new int[]{bcm}, ("pi4j." + getClass().getSimpleName()).getBytes(), lineConfig, 1, 0, 0);
-            var result = ioctl.call(fd, Command.getGpioV2GetLineIoctl(), lineRequest);
-            this.chipFileDescriptor = result.fd();
-
-            file.close(fd);
-            logger.info("{}-{} - DigitalInput BCM configured: {}", deviceName, bcm, result);
         } catch (IOException e) {
             logger.error("{}-{} - DigitalInput BCM Initialization error: {}", deviceName, bcm, e.getMessage());
             throw new InitializeException(e);
@@ -227,7 +232,15 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             for (EventWatcher watcher : watchers) {
                 watcher.stopWatching();
             }
-            if (!watchers.isEmpty()) {
+            watchers.clear();
+            // Await the executor whenever it was ever created, NOT merely when the watchers list is
+            // currently non-empty. removeListener() stops its watcher and clears the list without
+            // waiting for the watcher thread to leave its native poll(); such a thread still holds the
+            // requested line fd. If shutdown then closed the fd without waiting (because the list looked
+            // empty) the fd would leak and the GPIO line would stay flagged USED - which surfaces as a
+            // failing next request to the same BCM, or as "rmmod: Module gpio_mock is in use" when a
+            // test tears down the mock chip.
+            if (eventTaskProcessor != null) {
                 logger.trace("{}-{} - Gracefully shutting down event processor", deviceName, bcm);
                 eventTaskProcessor.shutdown();
                 // The watcher threads block in a native poll() that does not honour interruption,

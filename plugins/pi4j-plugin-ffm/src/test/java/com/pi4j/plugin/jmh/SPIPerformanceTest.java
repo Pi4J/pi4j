@@ -33,7 +33,7 @@ public class SPIPerformanceTest extends BaseSetup {
             .add(new FFMSpiProviderImpl())
             .build();
         var config = SpiConfigBuilder.newInstance()
-            .bus(SpiBus.BUS_0)
+            .bus(SpiBus.BUS_6)
             .channel(0)
             .mode(0)
             .baud(50_000)
