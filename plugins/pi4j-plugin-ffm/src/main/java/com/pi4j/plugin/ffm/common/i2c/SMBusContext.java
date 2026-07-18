@@ -1,12 +1,11 @@
 package com.pi4j.plugin.ffm.common.i2c;
 
 import com.pi4j.exception.Pi4JException;
-import com.pi4j.plugin.ffm.common.Pi4JArchitectureGuess;
 import com.pi4j.plugin.ffm.common.Pi4JNativeContext;
+import com.pi4j.plugin.ffm.common.Pi4JNativeLibrary;
 
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
-import java.nio.file.Path;
 
 /**
  * Holds the native downcall {@link MethodHandle}s for the SMBus helper functions provided by
@@ -19,8 +18,9 @@ class SMBusContext extends Pi4JNativeContext {
 
     static {
         try {
-            var path = Path.of(Pi4JArchitectureGuess.getLibraryPath("libi2c"));
-            LIBI2C = SymbolLookup.libraryLookup(path, ARENA);
+            // Resolve libi2c through the system dynamic linker rather than a hardcoded per-architecture
+            // path, so the lookup works on any CPU architecture (amd64, aarch64, riscv64, ...) and distro.
+            LIBI2C = Pi4JNativeLibrary.load("libi2c", ARENA);
         } catch (Exception e) {
             throw new Pi4JException("Probably libi2c-dev package is missing. Try to install with `sudo apt-get install libi2c-dev`", e);
         }
