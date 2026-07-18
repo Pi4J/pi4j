@@ -10,6 +10,8 @@ module com.pi4j.plugin.ffm {
     exports com.pi4j.plugin.ffm.providers.spi;
     exports com.pi4j.plugin.ffm.providers.i2c;
     exports com.pi4j.plugin.ffm.providers.gpio;
+    exports com.pi4j.plugin.ffm.detect;
+    exports com.pi4j.plugin.ffm.detect.model;
 
     provides com.pi4j.extension.Plugin with FFMPlugin;
 }

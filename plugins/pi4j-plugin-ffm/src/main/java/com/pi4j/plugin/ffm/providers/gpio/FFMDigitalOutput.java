@@ -14,6 +14,7 @@ import com.pi4j.plugin.ffm.common.gpio.enums.LineAttributeId;
 import com.pi4j.plugin.ffm.common.gpio.structs.*;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
+import com.pi4j.plugin.ffm.detect.model.HWInterfaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
         super(provider, config);
         this.bcm = config.bcm();
         this.deviceName = "/dev/gpiochip" + config.bus();
-        FFMPermissionHelper.checkDevicePermissions(deviceName, config);
+        FFMPermissionHelper.checkDevicePermissions(deviceName, HWInterfaces.GPIO, true);
     }
 
     /**

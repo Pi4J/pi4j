@@ -11,6 +11,7 @@ import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
+import com.pi4j.plugin.ffm.detect.model.HWInterfaces;
 import com.pi4j.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,7 @@ public class FFMI2CBus extends I2CBusBase {
     public FFMI2CBus(I2CConfig config) {
         super(config);
         this.busName = I2C_BUS + bus;
-        FFMPermissionHelper.checkDevicePermissions(busName, config);
+        FFMPermissionHelper.checkDevicePermissions(busName, HWInterfaces.I2C, true);
         try {
             logger.debug("{} - setting up I2CBus...", busName);
             if (!canAccessDevice()) {

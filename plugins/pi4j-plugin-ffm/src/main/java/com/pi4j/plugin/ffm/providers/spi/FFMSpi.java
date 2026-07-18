@@ -16,6 +16,7 @@ import com.pi4j.plugin.ffm.common.ioctl.Command;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
 import com.pi4j.plugin.ffm.common.spi.SpiMultipleTransferBuffer;
 import com.pi4j.plugin.ffm.common.spi.SpiTransferBuffer;
+import com.pi4j.plugin.ffm.detect.model.HWInterfaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +78,7 @@ public class FFMSpi extends SpiBase implements Spi {
     public FFMSpi(SpiProvider provider, SpiConfig config) {
         super(provider, config);
         this.path = SPI_BUS + config.bus().getBus() + "." + config.channel();
-        FFMPermissionHelper.checkDevicePermissions(path, config);
+        FFMPermissionHelper.checkDevicePermissions(path, HWInterfaces.SPI, true);
     }
 
     /**

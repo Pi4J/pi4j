@@ -19,6 +19,7 @@ import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
 import com.pi4j.plugin.ffm.common.poll.PollFlag;
 import com.pi4j.plugin.ffm.common.poll.PollNative;
 import com.pi4j.plugin.ffm.common.poll.structs.PollingData;
+import com.pi4j.plugin.ffm.detect.model.HWInterfaces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +90,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         this.deviceName = "/dev/gpiochip" + config.bus();
         this.debounce = (config.debounce() != null && config.debounce() >= 0) ? config.debounce() : 0;
         this.pull = config.pull();
-        FFMPermissionHelper.checkDevicePermissions(deviceName, config);
+        FFMPermissionHelper.checkDevicePermissions(deviceName, HWInterfaces.GPIO, true);
     }
 
     /**

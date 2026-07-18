@@ -10,6 +10,7 @@ import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.FileWatcher;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
+import com.pi4j.plugin.ffm.detect.model.HWInterfaces;
 import com.pi4j.util.Delay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +70,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         super(provider, config);
         this.chip = config.chip();
         this.channel = config.channel();
-        FFMPermissionHelper.checkDevicePermissions(CHIP_PATH + chip, config);
+        FFMPermissionHelper.checkDevicePermissions(CHIP_PATH + chip, HWInterfaces.PWM, true);
     }
 
     /**

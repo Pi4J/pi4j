@@ -62,7 +62,7 @@ public class IoctlNative {
             var dataMemorySegment = arena.allocate(ValueLayout.JAVA_LONG);
             dataMemorySegment.set(ValueLayout.JAVA_LONG, 0, data);
             var capturedState = arena.allocate(CAPTURED_STATE_LAYOUT);
-            var callResult = (int) IoctlContext.IOCTL_0.invoke(capturedState, fd, command, dataMemorySegment);
+            var callResult = (long) IoctlContext.IOCTL_0.invoke(capturedState, fd, command, dataMemorySegment);
             processError(callResult, capturedState, "call", fd, command, data);
             return dataMemorySegment.get(ValueLayout.JAVA_LONG, 0);
         } catch (Throwable e) {
