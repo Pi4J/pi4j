@@ -8,7 +8,7 @@
 #   GPIO_MOCK_HOGS    - occupied line per chip,   (default "2,-1", -1 means none)
 #   GPIO_MOCK_NUMBERS - desired /dev/gpiochip<N>  (optional, e.g. "0,1,99")
 # Example: GPIO_MOCK_NGPIOS=16,4 GPIO_MOCK_LABELS=bankA,bankB GPIO_MOCK_HOGS=-1,-1 ./gpio-setup.sh
-NGPIOS="${GPIO_MOCK_NGPIOS:-8,1}"
+NGPIOS="${GPIO_MOCK_NGPIOS:-9,1}"
 LABELS="${GPIO_MOCK_LABELS:-accessible,inaccessible}"
 HOGS="${GPIO_MOCK_HOGS:-2,-1}"
 NUMBERS="${GPIO_MOCK_NUMBERS:-97,98}"

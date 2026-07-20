@@ -171,4 +171,23 @@ public class GPIOTest extends BaseSetup {
         assertEquals(DigitalState.HIGH, output.config().initialState());
         assertEquals(DigitalState.HIGH, output.state());
     }
+
+
+    @Test
+    public void testGpioReconfigure() {
+        var config = DigitalOutputConfigBuilder.newInstance()
+            .bus(97)
+            .bcm(8)
+            .initial(DigitalState.HIGH)
+            .build();
+        var output = pi4j0.digitalOutput().create(config);
+        assertEquals(DigitalState.HIGH, output.config().initialState());
+        assertEquals(8, output.bcm());
+
+        output.state(DigitalState.LOW);
+
+        var input = output.reconfigure().digitalInput().create();
+        assertEquals(DigitalState.LOW, input.state());
+        assertEquals(8, output.bcm());
+    }
 }

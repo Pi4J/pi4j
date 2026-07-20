@@ -215,6 +215,17 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
     /**
      * {@inheritDoc}
      * <p>
+     * Returns a provider-agnostic {@link DefaultPinReconfigurer} that releases this output's GPIO line
+     * and re-requests it as an input or output through the context's registered providers.
+     */
+    @Override
+    public PinReconfigurer reconfigure() {
+        return new DefaultPinReconfigurer(this, context());
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
      * Before delegating to the base shutdown logic, drives the output to the configured shutdown state if
      * {@link DigitalOutputConfig#shutdownState()} is set and not {@link DigitalState#UNKNOWN}.
      *
