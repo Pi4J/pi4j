@@ -1,5 +1,7 @@
 package com.pi4j.io.gpio.digital;
 
+import com.pi4j.exception.Pi4JException;
+
 /**
  * Step of the pin-reconfiguration fluent API that creates a {@link DigitalOutput}, atomically
  * releasing the previous GPIO line claim and re-requesting it as an output. Obtained from
@@ -15,7 +17,7 @@ public interface OutputReconfigurer {
      * @return the newly created {@link DigitalOutput}
      * @throws Exception if shutting down the old pin or creating the new one fails
      */
-    DigitalOutput create(DigitalOutputConfig config) throws Exception;
+    DigitalOutput create(DigitalOutputConfig config) throws Pi4JException;
 
     /**
      * Releases the currently claimed GPIO line and re-requests it as a digital output, reusing the
@@ -26,5 +28,5 @@ public interface OutputReconfigurer {
      * @return the newly created {@link DigitalOutput}
      * @throws Exception if shutting down the old pin or creating the new one fails
      */
-    DigitalOutput create() throws Exception;
+    DigitalOutput create() throws Pi4JException;
 }
