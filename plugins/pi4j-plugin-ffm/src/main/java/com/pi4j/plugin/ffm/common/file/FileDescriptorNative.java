@@ -102,6 +102,31 @@ public class FileDescriptorNative {
     }
 
     /**
+     * Repositions the file offset of an open descriptor. Delegate to native 'lseek64' glibc method.
+     * <p>
+     * Used to rewind long-lived descriptors (e.g. sysfs PWM attribute files that are opened once and
+     * reused) to the start before each read or write, so the operation always acts on the whole value.
+     *
+     * @param fd     file descriptor whose offset is to be changed
+     * @param offset the new offset, interpreted according to {@code whence}
+     * @param whence one of {@code SEEK_SET}, {@code SEEK_CUR} or {@code SEEK_END}; see {@link FileFlag}
+     * @return the resulting offset measured in bytes from the beginning of the file
+     * @throws Pi4JException if the native {@code lseek64} call fails, carrying the {@code errno} detail
+     */
+    public long lseek(int fd, long offset, int whence) {
+        try (var arena = Arena.ofConfined()) {
+            var capturedState = arena.allocate(CAPTURED_STATE_LAYOUT);
+            var callResult = (long) FileDescriptorContext.LSEEK64.invoke(capturedState, fd, offset, whence);
+            if (callResult < 0) {
+                processError(-1, capturedState, "lseek", fd, offset, whence);
+            }
+            return callResult;
+        } catch (Throwable e) {
+            throw new Pi4JException(e.getMessage(), e);
+        }
+    }
+
+    /**
      * Locks the file on filesystem. Delegate to native 'flock' glibc method.
      *
      * @param fd       file descriptor of the file to lock
