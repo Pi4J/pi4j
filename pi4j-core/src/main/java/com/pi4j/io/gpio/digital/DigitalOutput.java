@@ -52,7 +52,6 @@ public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfi
         return DigitalOutputBuilder.newInstance(context);
     }
 
-
     /**
      * Sets the output to the given digital state, driving the underlying pin accordingly.
      *
