@@ -15,15 +15,4 @@ public abstract class DigitalInputBase extends DigitalBase<DigitalInput, Digital
     public DigitalInputBase(DigitalInputProvider provider, DigitalInputConfig config){
         super(provider, config);
     }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Returns a provider-agnostic {@link DefaultPinReconfigurer} that releases this input's GPIO line
-     * and re-requests it as an output or input through the context's registered providers.
-     */
-    @Override
-    public PinReconfigurer reconfigure() {
-        return new DefaultPinReconfigurer(this, context());
-    }
 }

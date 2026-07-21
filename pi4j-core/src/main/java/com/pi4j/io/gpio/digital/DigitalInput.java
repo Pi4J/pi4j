@@ -29,19 +29,4 @@ public interface DigitalInput extends Digital<DigitalInput, DigitalInputConfig, 
      * @return the configured {@link PullResistance}
      */
     default PullResistance pull() { return config().pull(); }
-
-    /**
-     * Returns a {@link PinReconfigurer} that can atomically release this GPIO line and
-     * re-request it as a digital output or input with a new configuration.
-     * <p>
-     * Implementations that support runtime reconfiguration (e.g. the FFM backend) override
-     * this method. All others throw {@link UnsupportedOperationException}.
-     *
-     * @return a reconfigurer for this pin
-     * @throws UnsupportedOperationException if the backing implementation does not support reconfiguration
-     */
-    default PinReconfigurer reconfigure() {
-        throw new UnsupportedOperationException(
-            "reconfigure() is not supported by " + getClass().getSimpleName());
-    }
 }

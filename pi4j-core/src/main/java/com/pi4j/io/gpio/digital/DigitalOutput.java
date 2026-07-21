@@ -52,22 +52,6 @@ public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfi
         return DigitalOutputBuilder.newInstance(context);
     }
 
-
-    /**
-     * Returns a {@link PinReconfigurer} that can atomically release this GPIO line and
-     * re-request it as a digital input or output with a new configuration.
-     * <p>
-     * Implementations that support runtime reconfiguration (e.g. the FFM backend) override
-     * this method. All others throw {@link UnsupportedOperationException}.
-     *
-     * @return a reconfigurer for this pin
-     * @throws UnsupportedOperationException if the backing implementation does not support reconfiguration
-     */
-    default PinReconfigurer reconfigure() {
-        throw new UnsupportedOperationException(
-            "reconfigure() is not supported by " + getClass().getSimpleName());
-    }
-
     /**
      * Sets the output to the given digital state, driving the underlying pin accordingly.
      *
