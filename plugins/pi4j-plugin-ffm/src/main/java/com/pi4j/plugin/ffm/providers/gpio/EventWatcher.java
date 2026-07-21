@@ -39,7 +39,7 @@ class EventWatcher implements Runnable {
     private final PinEventProcessing eventProcessor;
     private final long debounceNs;
 
-    private boolean stopWatching = false;
+    private volatile boolean stopWatching = false;
 
     EventWatcher(int fd, int offset, long debounce, FileDescriptorNative file, PinEvent pinEvent, PinEventProcessing eventProcessor) {
         this.fd = fd;
@@ -165,11 +165,11 @@ class EventWatcher implements Runnable {
         }
     }
 
-    public synchronized void stopWatching() {
+    public void stopWatching() {
         this.stopWatching = true;
     }
 
-    public synchronized boolean isRunning() {
+    public boolean isRunning() {
         return !this.stopWatching;
     }
 }
