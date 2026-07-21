@@ -23,7 +23,7 @@ import java.util.List;
  * debounce, and hands the resulting {@link DetectedEvent} list to a {@link PinEventProcessing}
  * callback. It runs until {@link #stopWatching()} is called.
  */
-public class EventWatcher implements Runnable {
+class EventWatcher implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(EventWatcher.class);
 
     private final PollNative poll = new PollNative();
@@ -112,19 +112,15 @@ public class EventWatcher implements Runnable {
                         logger.trace("{} - Detected new event on offset {}: {}",
                             Thread.currentThread().getName(), offset, event);
                         if ((event.id() & this.pinEvent.getValue()) != 0) {
-                            var pinEvent = PinEvent.getByValue(event.id());
+                            var pinEventType = PinEvent.getByValue(event.id());
                             logger.trace("{} - Processing event on offset {}: {}",
-                                Thread.currentThread().getName(), offset, pinEvent);
+                                Thread.currentThread().getName(), offset, pinEventType);
                             DetectedEvent detectedEvent =
-                                new DetectedEvent(event.timestampNs(), pinEvent, event.lineSeqno());
+                                new DetectedEvent(event.timestampNs(), pinEventType, event.lineSeqno());
                             if (debounceNs > 0) {
-                                long currentTimeNs = System.nanoTime();
                                 if (lastDebouncedEvent == null) {
-                                    lastDebouncedEvent = detectedEvent;
-                                    lastDebouncedState = pinEvent;
-                                    lastEventReceivedTimeNs = currentTimeNs;
                                     logger.trace("{} - Starting debounce period on offset {} for {}",
-                                        Thread.currentThread().getName(), offset, pinEvent);
+                                        Thread.currentThread().getName(), offset, pinEventType);
                                 } else {
                                     long timeSinceLastEventNs =
                                         detectedEvent.timestampInNanos() - lastDebouncedEvent.timestampInNanos();
@@ -133,9 +129,6 @@ public class EventWatcher implements Runnable {
                                             "{} - Event on offset {} within debounce period ({}ns < {}ns), updating to latest",
                                             Thread.currentThread().getName(), offset,
                                             timeSinceLastEventNs, debounceNs);
-                                        lastDebouncedEvent = detectedEvent;
-                                        lastDebouncedState = pinEvent;
-                                        lastEventReceivedTimeNs = currentTimeNs;
                                     } else {
                                         logger.trace(
                                             "{} - Debounce period passed on offset {} ({}ns >= {}ns), dispatching event",
@@ -144,11 +137,11 @@ public class EventWatcher implements Runnable {
                                         if (lastDebouncedState != null) {
                                             eventList.add(lastDebouncedEvent);
                                         }
-                                        lastDebouncedEvent = detectedEvent;
-                                        lastDebouncedState = pinEvent;
-                                        lastEventReceivedTimeNs = currentTimeNs;
                                     }
                                 }
+                                lastDebouncedEvent = detectedEvent;
+                                lastDebouncedState = pinEventType;
+                                lastEventReceivedTimeNs = System.nanoTime();
                             } else {
                                 eventList.add(detectedEvent);
                             }
