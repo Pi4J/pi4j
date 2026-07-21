@@ -18,8 +18,6 @@ import java.util.ArrayList;
  * Native {@link DigitalOutput} implementation for the FFM backend. Requests a single GPIO line from a
  * {@code /dev/gpiochipN} character device as an output via the GPIO v2 character-device ioctl
  * ({@code GPIO_V2_GET_LINE_IOCTL}) and drives its level with {@code GPIO_V2_LINE_SET_VALUES_IOCTL}.
- * <p>
- * The pin can be atomically reconfigured as a digital input at runtime via {@link #reconfigure()}.
  */
 public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput {
     private static final Logger logger = LoggerFactory.getLogger(FFMDigitalOutput.class);
@@ -67,15 +65,15 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
             var outputValues = new LineAttribute(
                 LineAttributeId.GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES.getValue(), 0, values, 0);
             attributes.add(new LineConfigAttribute(outputValues, 1L));
-            logger.trace("{}-{} - DigitalOutput BCM initial state: {}", line.deviceName, line.bcm, initialState);
+            logger.trace("{}-{} - DigitalOutput BCM initial state: {}", line.deviceName, line.offset, initialState);
         }
         try {
             line.openAndRequest(flags, attributes, getClass().getSimpleName());
         } catch (InitializeException e) {
-            logger.error("{}-{} - DigitalOutput BCM Initialization error: {}", line.deviceName, line.bcm, e.getMessage());
+            logger.error("{}-{} - DigitalOutput BCM Initialization error: {}", line.deviceName, line.offset, e.getMessage());
             throw e;
         }
-        logger.info("{}-{} - DigitalOutput BCM configured.", line.deviceName, line.bcm);
+        logger.info("{}-{} - DigitalOutput BCM configured.", line.deviceName, line.offset);
         return super.initialize(context);
     }
 
@@ -89,13 +87,13 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
     @Override
     public DigitalOutput shutdownInternal(Context context) throws ShutdownException {
         super.shutdownInternal(context);
-        logger.info("{}-{} - closing GPIO BCM.", line.deviceName, line.bcm);
+        logger.info("{}-{} - closing GPIO BCM.", line.deviceName, line.offset);
         try {
             line.close();
         } catch (Exception e) {
             throw new ShutdownException(e);
         }
-        logger.info("{}-{} - GPIO BCM is closed. Recreate the pin object to reuse.", line.deviceName, line.bcm);
+        logger.info("{}-{} - GPIO BCM is closed. Recreate the pin object to reuse.", line.deviceName, line.offset);
         return this;
     }
 

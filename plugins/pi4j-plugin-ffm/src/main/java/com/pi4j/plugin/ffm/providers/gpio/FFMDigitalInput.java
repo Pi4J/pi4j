@@ -8,18 +8,13 @@ import com.pi4j.io.gpio.digital.*;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.gpio.DetectedEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinEvent;
-import com.pi4j.plugin.ffm.common.gpio.PinEventProcessing;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.enums.LineAttributeId;
-import com.pi4j.plugin.ffm.common.gpio.structs.*;
-import com.pi4j.plugin.ffm.common.poll.PollFlag;
-import com.pi4j.plugin.ffm.common.poll.PollNative;
-import com.pi4j.plugin.ffm.common.poll.structs.PollingData;
+import com.pi4j.plugin.ffm.common.gpio.structs.LineAttribute;
+import com.pi4j.plugin.ffm.common.gpio.structs.LineConfigAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.foreign.Arena;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -33,21 +28,16 @@ import java.util.concurrent.TimeUnit;
  * ({@code GPIO_V2_GET_LINE_IOCTL}), reads its level with {@code GPIO_V2_LINE_GET_VALUES_IOCTL}, and
  * watches for edge events by polling the resulting line file descriptor. Configured bias (pull
  * up/down) and optional debounce are applied through GPIO v2 line attributes.
- * <p>
- * The pin can be atomically reconfigured as a digital output at runtime via {@link #reconfigure()}.
  */
 public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
     private static final Logger logger = LoggerFactory.getLogger(FFMDigitalInput.class);
 
-    // Graceful period for event watcher to shut down.
-    // NOTE: used for poll() inside watcher thread — always keep at half of the total timeout.
-    private static final int EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS = 200;
+
 
     // Maximum graceful-await cycles before giving up on a stuck watcher thread.
     private static final int EVENT_WATCHER_SHUTDOWN_MAX_ATTEMPTS = 5;
 
     private final FFMGpioLine line;
-    private final PollNative poll = new PollNative();
 
     private final long debounce;
     private final PullResistance pull;
@@ -101,10 +91,10 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         try {
             line.openAndRequest(flags, attributes, getClass().getSimpleName());
         } catch (InitializeException e) {
-            logger.error("{}-{} - DigitalInput BCM Initialization error: {}", line.deviceName, line.bcm, e.getMessage());
+            logger.error("{}-{} - DigitalInput offset Initialization error: {}", line.deviceName, line.offset, e.getMessage());
             throw e;
         }
-        logger.info("{}-{} - DigitalInput BCM configured.", line.deviceName, line.bcm);
+        logger.info("{}-{} - DigitalInput offset configured.", line.deviceName, line.offset);
         return this;
     }
 
@@ -116,7 +106,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             }
             var debounceAttribute = new LineAttribute(
                 LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(), 0, 0, (int) debounce * 1000);
-            attributes.add(new LineConfigAttribute(debounceAttribute, 1L << line.bcm));
+            attributes.add(new LineConfigAttribute(debounceAttribute, 1L << line.offset));
         }
         return attributes;
     }
@@ -131,16 +121,16 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      */
     @Override
     public DigitalInput addListener(DigitalStateChangeListener... listener) {
-        logger.trace("{}-{} - Adding new listener", line.deviceName, line.bcm);
+        logger.trace("{}-{} - Adding new listener", line.deviceName, line.offset);
         if (threadFactory == null) {
             this.threadFactory = Thread.ofPlatform()
-                .name(line.deviceName + "-event-detection-pin-", line.bcm)
+                .name(line.deviceName + "-event-detection-pin-", line.offset)
                 .daemon(true)
                 .uncaughtExceptionHandler((_, e) -> logger.error(e.getMessage(), e))
                 .factory();
             this.eventTaskProcessor = Executors.newCachedThreadPool(threadFactory);
         }
-        var watcher = new EventWatcher(line.chipFileDescriptor, PinEvent.BOTH, events -> {
+        var watcher = new EventWatcher(line.chipFileDescriptor, line.offset, debounce, line.file, PinEvent.BOTH, events -> {
             for (DetectedEvent detectedEvent : events) {
                 var state = switch (detectedEvent.pinEvent()) {
                     case RISING -> DigitalState.HIGH;
@@ -154,7 +144,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         // add listener first to avoid race with event dispatch
         super.addListener(listener);
         eventTaskProcessor.submit(watcher);
-        logger.trace("{}-{} - New listener added", line.deviceName, line.bcm);
+        logger.trace("{}-{} - New listener added", line.deviceName, line.offset);
         return this;
     }
 
@@ -184,9 +174,9 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
     @Override
     public DigitalInput shutdownInternal(Context context) throws ShutdownException {
         super.shutdownInternal(context);
-        logger.info("{}-{} - closing GPIO BCM.", line.deviceName, line.bcm);
+        logger.info("{}-{} - closing GPIO offset.", line.deviceName, line.offset);
         try {
-            logger.trace("{}-{} - Stopping event watchers", line.deviceName, line.bcm);
+            logger.trace("{}-{} - Stopping event watchers", line.deviceName, line.offset);
             for (EventWatcher watcher : watchers) {
                 watcher.stopWatching();
             }
@@ -196,23 +186,23 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             // thread still holds the line fd. Closing the fd without waiting would leave the GPIO
             // line flagged USED on the next create attempt.
             if (eventTaskProcessor != null) {
-                logger.trace("{}-{} - Gracefully shutting down event processor", line.deviceName, line.bcm);
+                logger.trace("{}-{} - Gracefully shutting down event processor", line.deviceName, line.offset);
                 eventTaskProcessor.shutdown();
                 var terminated = false;
                 for (int attempt = 0;
                      attempt < EVENT_WATCHER_SHUTDOWN_MAX_ATTEMPTS && !terminated; attempt++) {
                     terminated = eventTaskProcessor.awaitTermination(
-                        EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                        EventWatcher.EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS);
                     if (!terminated) {
                         logger.trace("{}-{} - Event processor still running, waiting for watcher threads",
-                            line.deviceName, line.bcm);
+                            line.deviceName, line.offset);
                     }
                 }
                 if (!terminated) {
                     logger.error(
                         "{}-{} - Event watcher threads did not terminate within {}ms; forcing shutdown",
-                        line.deviceName, line.bcm,
-                        (long) EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS * EVENT_WATCHER_SHUTDOWN_MAX_ATTEMPTS);
+                        line.deviceName, line.offset,
+                        (long) EventWatcher.EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS * EVENT_WATCHER_SHUTDOWN_MAX_ATTEMPTS);
                     eventTaskProcessor.shutdownNow();
                 }
             }
@@ -222,7 +212,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         } finally {
             line.close();
         }
-        logger.info("{}-{} - GPIO BCM is closed.", line.deviceName, line.bcm);
+        logger.info("{}-{} - GPIO offset is closed.", line.deviceName, line.offset);
         return this;
     }
 
@@ -237,159 +227,5 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
     @Override
     public DigitalState state() {
         return line.readState();
-    }
-
-    /**
-     * Runnable that blocks in a native {@code poll()} on the requested GPIO line file descriptor,
-     * reads {@code struct gpio_v2_line_event} records as they arrive, applies optional software
-     * debounce, and hands the resulting {@link DetectedEvent} list to a {@link PinEventProcessing}
-     * callback. It runs until {@link #stopWatching()} is called.
-     */
-    private class EventWatcher implements Runnable {
-        private static final Logger logger = LoggerFactory.getLogger(EventWatcher.class);
-
-        private final int fd;
-        private final PinEvent pinEvent;
-        private final PinEventProcessing eventProcessor;
-        private final long debounceNs;
-
-        private boolean stopWatching = false;
-
-        EventWatcher(int fd, PinEvent pinEvent, PinEventProcessing eventProcessor) {
-            this.fd = fd;
-            this.pinEvent = pinEvent;
-            this.eventProcessor = eventProcessor;
-            // convert microseconds to nanoseconds for software debounce
-            this.debounceNs = debounce * 1000L;
-        }
-
-        @Override
-        public void run() {
-            var eventSize = (int) LineEvent.LAYOUT.byteSize();
-            var timestamp = Instant.now();
-            List<DetectedEvent> eventList = new ArrayList<>();
-            DetectedEvent lastDebouncedEvent = null;
-            PinEvent lastDebouncedState = null;
-            long lastEventReceivedTimeNs = 0;
-            logger.trace("{} - Start polling GPIO data on BCM {} at {}",
-                Thread.currentThread().getName(), line.bcm, timestamp);
-            while (!stopWatching) {
-                try {
-                    // PollingData must be recreated each time — poll does not erase revents between calls
-                    var pollData = new PollingData(fd, (short) (PollFlag.POLLIN | PollFlag.POLLPRI), (short) 0);
-                    pollData = poll.poll(pollData, 1, EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS / 2);
-                    if (pollData == null) {
-                        var duration = timestamp.until(Instant.now()).toMillis();
-                        logger.trace("{} - No events detected on BCM {}: polling timeout at {} (took {}ms)",
-                            Thread.currentThread().getName(), line.bcm, timestamp, duration);
-                        if (lastDebouncedEvent != null && debounceNs > 0 && lastEventReceivedTimeNs > 0) {
-                            long currentTimeNs = System.nanoTime();
-                            long timeSinceLastEventNs = currentTimeNs - lastEventReceivedTimeNs;
-                            if (timeSinceLastEventNs >= debounceNs) {
-                                logger.trace(
-                                    "{} - Dispatching pending debounced event on BCM {} after timeout ({}ns >= {}ns)",
-                                    Thread.currentThread().getName(), line.bcm, timeSinceLastEventNs, debounceNs);
-                                eventList.add(lastDebouncedEvent);
-                                eventProcessor.process(eventList);
-                                eventList.clear();
-                                lastDebouncedEvent = null;
-                                lastEventReceivedTimeNs = 0;
-                            }
-                        }
-                        timestamp = Instant.now();
-                        continue;
-                    }
-                    if ((pollData.revents() & (PollFlag.POLLERR | PollFlag.POLLHUP | PollFlag.POLLNVAL)) != 0) {
-                        logger.error("{} - Internal error during polling on BCM {}. Last polling data: {}",
-                            Thread.currentThread().getName(), line.bcm, pollData);
-                        stopWatching();
-                        continue;
-                    }
-                    if ((pollData.revents() & (PollFlag.POLLIN | PollFlag.POLLPRI)) != 0) {
-                        // default minimum buffer size is 16 line events
-                        // see https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/gpio.h#L185
-                        var buf = line.file.read(fd, new byte[16 * eventSize], 16 * eventSize);
-                        var holder = new byte[eventSize];
-                        for (int i = 0; i < 16 * LineEvent.LAYOUT.byteSize(); i += eventSize) {
-                            // Check all 8 bytes of timestamp_ns — checking only buf[i] (the LSB) is
-                            // insufficient because a valid timestamp divisible by 256 ns has a zero LSB.
-                            if ((buf[i] | buf[i + 1] | buf[i + 2] | buf[i + 3]
-                                | buf[i + 4] | buf[i + 5] | buf[i + 6] | buf[i + 7]) == 0) {
-                                continue;
-                            }
-                            System.arraycopy(buf, i, holder, 0, eventSize);
-                            var memoryBuffer = Arena.ofAuto().allocate(LineEvent.LAYOUT);
-                            memoryBuffer.asByteBuffer().put(holder);
-                            var event = LineEvent.createEmpty().from(memoryBuffer);
-                            logger.trace("{} - Detected new event on BCM {}: {}",
-                                Thread.currentThread().getName(), line.bcm, event);
-                            if ((event.id() & this.pinEvent.getValue()) != 0) {
-                                var pinEvent = PinEvent.getByValue(event.id());
-                                logger.trace("{} - Processing event on BCM {}: {}",
-                                    Thread.currentThread().getName(), line.bcm, pinEvent);
-                                DetectedEvent detectedEvent =
-                                    new DetectedEvent(event.timestampNs(), pinEvent, event.lineSeqno());
-                                if (debounceNs > 0) {
-                                    long currentTimeNs = System.nanoTime();
-                                    if (lastDebouncedEvent == null) {
-                                        lastDebouncedEvent = detectedEvent;
-                                        lastDebouncedState = pinEvent;
-                                        lastEventReceivedTimeNs = currentTimeNs;
-                                        logger.trace("{} - Starting debounce period on BCM {} for {}",
-                                            Thread.currentThread().getName(), line.bcm, pinEvent);
-                                    } else {
-                                        long timeSinceLastEventNs =
-                                            detectedEvent.timestampInNanos() - lastDebouncedEvent.timestampInNanos();
-                                        if (timeSinceLastEventNs < debounceNs) {
-                                            logger.trace(
-                                                "{} - Event on BCM {} within debounce period ({}ns < {}ns), updating to latest",
-                                                Thread.currentThread().getName(), line.bcm,
-                                                timeSinceLastEventNs, debounceNs);
-                                            lastDebouncedEvent = detectedEvent;
-                                            lastDebouncedState = pinEvent;
-                                            lastEventReceivedTimeNs = currentTimeNs;
-                                        } else {
-                                            logger.trace(
-                                                "{} - Debounce period passed on BCM {} ({}ns >= {}ns), dispatching event",
-                                                Thread.currentThread().getName(), line.bcm,
-                                                timeSinceLastEventNs, debounceNs);
-                                            if (lastDebouncedState != null) {
-                                                eventList.add(lastDebouncedEvent);
-                                            }
-                                            lastDebouncedEvent = detectedEvent;
-                                            lastDebouncedState = pinEvent;
-                                            lastEventReceivedTimeNs = currentTimeNs;
-                                        }
-                                    }
-                                } else {
-                                    eventList.add(detectedEvent);
-                                }
-                            }
-                        }
-                        logger.trace("{} - Total events on BCM {}: {}",
-                            Thread.currentThread().getName(), line.bcm, eventList.size());
-                        if (!eventList.isEmpty()) {
-                            eventProcessor.process(eventList);
-                            eventList.clear();
-                        }
-                        logger.trace("{} - Total processing on BCM {} took {}ms",
-                            Thread.currentThread().getName(), line.bcm, timestamp.until(Instant.now()).toMillis());
-                        timestamp = Instant.now();
-                    }
-                } catch (Throwable e) {
-                    logger.error("{} - Error while polling pin on BCM {}",
-                        Thread.currentThread().getName(), line.bcm, e);
-                    throw new Pi4JException(e);
-                }
-            }
-        }
-
-        public synchronized void stopWatching() {
-            this.stopWatching = true;
-        }
-
-        public synchronized boolean isRunning() {
-            return !this.stopWatching;
-        }
     }
 }
