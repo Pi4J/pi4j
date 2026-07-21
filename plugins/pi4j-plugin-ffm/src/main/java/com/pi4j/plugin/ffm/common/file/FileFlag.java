@@ -56,6 +56,14 @@ public final class FileFlag {
     /** {@code LOCK_UN}: remove an existing advisory lock from the file. */
     public static final int LOCK_UN = 8;
 
+    // lseek whence flags
+    /** {@code SEEK_SET}: set the file offset to an absolute position. */
+    public static final int SEEK_SET = 0;
+    /** {@code SEEK_CUR}: set the file offset relative to the current position. */
+    public static final int SEEK_CUR = 1;
+    /** {@code SEEK_END}: set the file offset relative to the end of the file. */
+    public static final int SEEK_END = 2;
+
     // access flags
     /** {@code F_OK}: test for the existence of the file. */
     public static final int F_OK = 0;
