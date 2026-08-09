@@ -11,6 +11,7 @@ import com.pi4j.plugin.ffm.common.permission.PermissionNative;
 import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
 import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
+import com.pi4j.plugin.ffm.providers.parallel.FFMParallelPortProvider;
 import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
 import com.pi4j.plugin.ffm.providers.spi.FFMSpiProviderImpl;
 import com.pi4j.provider.ProviderBase;
@@ -110,7 +111,10 @@ public class FFMPermissionHelper {
 
         // checking groups existence and user belonging to the groups
         switch (provider) {
-            case FFMDigitalInputProviderImpl _, FFMDigitalOutputProviderImpl _, FFMPwmProviderImpl _ ->
+            case FFMDigitalInputProviderImpl _,
+                 FFMDigitalOutputProviderImpl _,
+                 FFMPwmProviderImpl _,
+                 FFMParallelPortProvider _ ->
                 checkGroups(osGroups, userGroups, "gpio", "dialout");
             case FFMI2CProviderImpl _ -> checkGroups(osGroups, userGroups, "i2c");
             case FFMSpiProviderImpl _ -> checkGroups(osGroups, userGroups, "spi");

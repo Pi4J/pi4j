@@ -8,6 +8,7 @@ import com.pi4j.extension.PluginService;
 import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
 import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
+import com.pi4j.plugin.ffm.providers.parallel.FFMParallelPortProvider;
 import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
 import com.pi4j.plugin.ffm.providers.spi.FFMSpiProviderImpl;
 import com.pi4j.provider.Provider;
@@ -47,7 +48,8 @@ public class FFMPlugin implements Plugin {
         new Candidate("ffm-digital-output", FFMDigitalOutputProviderImpl::new),
         new Candidate("ffm-i2c", FFMI2CProviderImpl::new),
         new Candidate("ffm-spi", FFMSpiProviderImpl::new),
-        new Candidate("ffm-pwm", FFMPwmProviderImpl::new)
+        new Candidate("ffm-pwm", FFMPwmProviderImpl::new),
+        new Candidate("ffm-parallel-port", FFMParallelPortProvider::new)
     );
 
     private Provider<?, ?, ?>[] providers = new Provider[]{};

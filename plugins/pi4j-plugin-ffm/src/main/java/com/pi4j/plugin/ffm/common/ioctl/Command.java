@@ -102,6 +102,16 @@ public final class Command {
         return IoctlMagic.GPIO_V2_LINE_SET_VALUES_IOCTL;
     }
 
+    /**
+     * Returns the {@code GPIO_V2_LINE_SET_CONFIG_IOCTL} request code used to configure the
+     * requested GPIO lines.
+     *
+     * @return the {@code GPIO_V2_LINE_SET_CONFIG_IOCTL} request code
+     */
+    public static long getGpioV2LineSetConfigIoctl() {
+        return IoctlMagic.GPIO_V2_LINE_SET_CONFIG_IOCTL;
+    }
+
     /*
     SPI Commands
      */
