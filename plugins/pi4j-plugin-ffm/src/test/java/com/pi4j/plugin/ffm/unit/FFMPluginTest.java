@@ -6,6 +6,7 @@ import com.pi4j.plugin.ffm.FFMPlugin;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
 import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
+import com.pi4j.plugin.ffm.providers.parallel.FFMParallelPortProvider;
 import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
 import com.pi4j.provider.Provider;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,7 @@ public class FFMPluginTest {
 
             new FFMPlugin().initialize(service);
 
-            assertEquals(List.of("ffm-digital-input", "ffm-digital-output", "ffm-i2c", "ffm-spi", "ffm-pwm"),
+            assertEquals(List.of("ffm-digital-input", "ffm-digital-output", "ffm-i2c", "ffm-spi", "ffm-pwm", "ffm-parallel-port"),
                 registeredIds(service));
         }
     }
@@ -52,7 +53,7 @@ public class FFMPluginTest {
             permissions.when(() -> FFMPermissionHelper.checkUserPermissions(any())).thenAnswer(invocation -> {
                 Object provider = invocation.getArgument(0);
                 if (provider instanceof FFMDigitalInputProviderImpl || provider instanceof FFMDigitalOutputProviderImpl
-                    || provider instanceof FFMPwmProviderImpl) {
+                    || provider instanceof FFMPwmProviderImpl || provider instanceof FFMParallelPortProvider) {
                     throw new Pi4JException("Current user 'test' is not member of any of the groups [gpio, dialout]");
                 }
                 return null;
