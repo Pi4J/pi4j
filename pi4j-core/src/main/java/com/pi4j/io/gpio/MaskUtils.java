@@ -1,14 +1,11 @@
-package com.pi4j.plugin.ffm.providers.gpio;
+package com.pi4j.io.gpio;
 
-import java.util.Iterator;
+import java.util.PrimitiveIterator;
 
 /**
  * Utility functions to convert between long value bit masks and offsets representing set bits
- * <p>
- * TODO: This is likely to become relevant at a more generic level, as devices with multiple channels are built out.
- *  This utility should be considered likely to be made public and relocated.
  */
-class MaskUtils {
+public class MaskUtils {
 
     private MaskUtils() {}
 
@@ -39,10 +36,18 @@ class MaskUtils {
         return mask;
     }
 
+    public static long packed(long mask) {
+        long packed = 0;
+        for (int i = 0; i < Long.bitCount(mask); i++) {
+            packed |= 1L << i;
+        }
+        return packed;
+    }
+
     /**
      * Iterator over the offsets of a mask
      */
-    private static class MaskIterator implements Iterator<Integer> {
+    private static class MaskIterator implements PrimitiveIterator.OfInt {
 
         private long remaining;
 
@@ -56,7 +61,7 @@ class MaskUtils {
         }
 
         @Override
-        public Integer next() {
+        public int nextInt() {
             int index = Long.numberOfTrailingZeros(remaining);
             remaining &= ~(1L << index);
             return index;

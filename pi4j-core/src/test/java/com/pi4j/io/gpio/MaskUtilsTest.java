@@ -1,4 +1,4 @@
-package com.pi4j.plugin.ffm.providers.gpio;
+package com.pi4j.io.gpio;
 
 import org.junit.jupiter.api.Test;
 
