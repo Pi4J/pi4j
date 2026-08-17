@@ -56,6 +56,9 @@ public abstract class ParallelPortBase
 
     @Override
     public final void setDirection(Direction direction) {
+        if (direction == this.direction) {
+            return;
+        }
         this.direction = handleSetDirection(direction);
     }
 
