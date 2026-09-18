@@ -181,7 +181,7 @@ public class I2CTest {
              var direct = pi4j.create(I2CConfigBuilder.newInstance().bus(7).device(0x1C).i2cImplementation(I2CImplementation.DIRECT))) {
 
             var data = direct.read();
-            assertEquals((byte) 0xff, data);
+            assertEquals(0xff, data, "read() returns the byte unsigned, as readRegister(int) does");
 
             var data1 = new byte[1];
             var count1 = direct.read(data1, 0, 1);
@@ -232,29 +232,33 @@ public class I2CTest {
     @Test
     public void testReadFile() {
         var functionalities = I2CFunctionality.I2C_FUNC_I2C.getValue();
-        var i2cReadByte = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, ("T").getBytes());
-        var i2cReadBytes = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, ("Test").getBytes());
-        try (var _ = FileDescriptorNativeMock.setup(I2C_FILE, i2cReadByte, i2cReadBytes);
+        // bytes with the top bit set: a PCF8574 with all pins high answers 0xFF, a sensor id can be 0xBC
+        var highBytes = new byte[]{(byte) 0xff, (byte) 0xbc, (byte) 0x80, 0x7f};
+        var i2cReadBytes = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, highBytes);
+        try (var _ = FileDescriptorNativeMock.setup(I2C_FILE, i2cReadBytes);
              var _ = IoctlNativeMock.i2c(functionalities);
              var file = pi4j.create(I2CConfigBuilder.newInstance().bus(9).device(0x1C).i2cImplementation(I2CImplementation.FILE))) {
 
             var data = file.read();
-            assertEquals(("T").getBytes()[0], data);
+            assertEquals(0xff, data, "read() returns the byte unsigned");
 
             var data1 = new byte[4];
             var count1 = file.read(data1, 0, 4);
             assertEquals(4, count1);
-            assertArrayEquals(("Test").getBytes(), data1);
+            assertArrayEquals(highBytes, data1);
+
+            var value = file.readRegister(0x1C);
+            assertEquals(0xff, value, "readRegister(int) returns the byte value, not a byte count");
 
             var data2 = new byte[4];
             var count2 = file.readRegister(0x1C, data2);
             assertEquals(4, count2);
-            assertArrayEquals(("Test").getBytes(), data2);
+            assertArrayEquals(highBytes, data2);
 
             var data3 = new byte[4];
-            var count3 = file.readRegister(("Test").getBytes(), data3);
+            var count3 = file.readRegister(highBytes, data3);
             assertEquals(4, count3);
-            assertArrayEquals(("Test").getBytes(), data3);
+            assertArrayEquals(highBytes, data3);
         }
     }
 }

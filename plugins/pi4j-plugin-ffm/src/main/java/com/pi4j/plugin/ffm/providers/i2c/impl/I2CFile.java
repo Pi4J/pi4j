@@ -57,7 +57,8 @@ public class I2CFile extends I2CBase<FFMI2CBus> {
     @Override
     public int read() {
         var buffer = new byte[1];
-        return i2CBus.execute(this, (i2cFileDescriptor) -> FILE.read(i2cFileDescriptor, buffer, buffer.length))[0];
+        // unsigned, like the SMBus implementation: a raw byte would sign-extend 0x80..0xFF
+        return Byte.toUnsignedInt(i2CBus.execute(this, (i2cFileDescriptor) -> FILE.read(i2cFileDescriptor, buffer, buffer.length))[0]);
     }
 
     @Override
@@ -81,8 +82,8 @@ public class I2CFile extends I2CBase<FFMI2CBus> {
     public int readRegister(int register) {
         var buffer = new byte[1];
         var read = i2CBus.execute(this, (i2cFileDescriptor) -> FILE.read(i2cFileDescriptor, buffer, buffer.length));
-        ByteBuffer.wrap(buffer).put(read);
-        return read.length;
+        // the single-register variant returns the byte value, not the number of bytes read
+        return Byte.toUnsignedInt(read[0]);
     }
 
     @Override
