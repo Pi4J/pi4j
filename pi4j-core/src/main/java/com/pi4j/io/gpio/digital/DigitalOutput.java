@@ -60,7 +60,9 @@ public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfi
      * @return this instance for method chaining
      * @throws IOException if the underlying hardware cannot be written
      */
-    DigitalOutput pulse(int interval, TimeUnit unit, DigitalState state, Callable<Void> callback) throws IOException;
+    default DigitalOutput pulse(int interval, TimeUnit unit, DigitalState state, Callable<Void> callback) {
+        return DigitalOutputOperations.pulse(this, interval, unit, state, callback);
+    }
     /**
      * Performs the same operation as {@link #pulse(int, TimeUnit, DigitalState, Callable)} but on a background
      * thread without blocking the caller.
@@ -71,7 +73,9 @@ public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfi
      * @param callback an optional task invoked once the pulse completes, or {@code null} for none
      * @return a {@link Future} that can be used to cancel or await completion of the pulse
      */
-    Future<?> pulseAsync(int interval, TimeUnit unit, DigitalState state, Callable<Void> callback);
+    default Future<?> pulseAsync(int interval, TimeUnit unit, DigitalState state, Callable<Void> callback) {
+        return DigitalOutputOperations.pulseAsync(this, interval, unit, state, callback);
+    }
     /**
      * Drives the output to the given initial state and then toggles it repeatedly, producing a square wave,
      * blocking the calling thread until the requested number of toggles completes.
@@ -83,7 +87,9 @@ public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfi
      * @param callback an optional task invoked once the blinking completes, or {@code null} for none
      * @return this instance for method chaining
      */
-    DigitalOutput blink(int delay, int duration, TimeUnit unit, DigitalState state, Callable<Void> callback);
+    default DigitalOutput blink(int delay, int duration, TimeUnit unit, DigitalState state, Callable<Void> callback) {
+      return DigitalOutputOperations.blink(this, delay, duration, unit, state, callback);
+    }
     /**
      * Performs the same operation as {@link #blink(int, int, TimeUnit, DigitalState, Callable)} but on a
      * background thread without blocking the caller.
@@ -95,7 +101,9 @@ public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfi
      * @param callback an optional task invoked once the blinking completes, or {@code null} for none
      * @return a {@link Future} that can be used to cancel or await completion of the blink
      */
-    Future<?> blinkAsync(int delay, int duration, TimeUnit unit, DigitalState state, Callable<Void> callback);
+    default Future<?> blinkAsync(int delay, int duration, TimeUnit unit, DigitalState state, Callable<Void> callback) {
+        return DigitalOutputOperations.blinkAsync(this, delay, duration, unit, state, callback);
+    }
 
     /**
      * Sets the output state from a numeric value, mapping it to a {@link DigitalState} via
