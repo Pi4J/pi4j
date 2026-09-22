@@ -143,7 +143,8 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
 
     @Override
     public int read() {
-        return internalRead(new byte[1], 0, 1)[0];
+        // unsigned, like readRegister(int) and the SMBus implementation: a raw byte would sign-extend 0x80..0xFF
+        return Byte.toUnsignedInt(internalRead(new byte[1], 0, 1)[0]);
     }
 
     @Override
