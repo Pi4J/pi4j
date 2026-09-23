@@ -74,10 +74,15 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
      */
     @Override
     public final void close() {
-        // The null check accounts for contextless tests or somehow just closing without initializing
         // The closed check ensures idempotency, as required by the close method contract.
-        if (this.context != null && !closed) {
-            this.context.shutdown(getId());
+        if (!closed) {
+            // The null check accounts for contextless tests or somehow just closing without initializing,
+            // although we probably should make context a required ctor parameter, see #719
+            if (this.context != null) {
+                this.context.shutdown(getId());
+            } else {
+                shutdownInternal(null);
+            }
         }
     }
 
