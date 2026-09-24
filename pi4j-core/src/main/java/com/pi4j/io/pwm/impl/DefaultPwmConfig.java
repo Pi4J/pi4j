@@ -20,7 +20,8 @@ public class DefaultPwmConfig
     // private configuration properties
     protected Double dutyCycle = null;
     protected Double frequency = null;
-    protected PwmType pwmType = PwmType.SOFTWARE;
+    // Note that this was changed from SOFTWARE with version 5, as FFM only supports HARDWARE.
+    protected PwmType pwmType = PwmType.HARDWARE;
     protected PwmPolarity polarity = PwmPolarity.NORMAL;
     protected Double shutdownValue = null;
     protected Double initialValue = null;

@@ -71,6 +71,10 @@ public interface PwmConfig extends ChipConfig, ChannelConfig, BcmConfig, IOConfi
      * <p>
      * Example: A value of 50 represents a duty-cycle where half of
      * the time period the signal is LOW and the other half is HIGH.
+     * <p>
+     * Note that (in contrast to initialValue), setting this will not turn the PWM on
+     * implicitly
+     * <p>
      *
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      */
@@ -183,30 +187,6 @@ public interface PwmConfig extends ChipConfig, ChannelConfig, BcmConfig, IOConfi
         return shutdownValue();
     }
 
-    /**
-     * Optionally configure a PWM duty-cycle value that should automatically
-     * be applied to the PWM instance when the Pi4J context is shutdown.
-     * This option can be helpful if you wish to do something like stop a PWM
-     * signal (by configuring this 'shutdown' value to zero) when your application
-     * is terminated an Pi4J is shutdown.
-     *
-     * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
-     * @return this PwmConfig instance
-     */
-    PwmConfig shutdownValue(Double dutyCycle);
-
-    /**
-     * Optionally configure a PWM duty-cycle value that should automatically
-     * be applied to the PWM instance when the Pi4J context is shutdown.
-     * This option can be helpful if you wish to do something like stop a PWM
-     * signal (by configuring this 'shutdown' value to zero) when your application
-     * is terminated an Pi4J is shutdown.
-     *
-     * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
-     */
-    default void setShutdownValue(Double dutyCycle) {
-        this.shutdownValue(dutyCycle);
-    }
 
     /**
      * Get configured PWM duty-cycle value that is automatically applied to
