@@ -157,18 +157,6 @@ public class DefaultPwmConfig
     }
 
     @Override
-    public PwmConfig shutdownValue(Double dutyCycle) {
-
-        // bounds check the duty-cycle value
-        Double dc = dutyCycle;
-        if (dc < 0) dc = 0.0;
-        if (dc > 100) dc = 100.0;
-
-        this.shutdownValue = dc;
-        return this;
-    }
-
-    @Override
     public Double initialValue() {
         return this.initialValue;
     }
