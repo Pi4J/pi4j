@@ -121,23 +121,25 @@ public class FFMPermissionHelper {
     private static void checkGroups(List<String> osGroups, List<String> userGroups, String... groupNames) {
         var set = Arrays.asList(groupNames);
         var groupPresent = osGroups.stream().anyMatch(set::contains);
-        var groupString = Arrays.toString(groupNames).replace("[", "").replace("]", "");
         if (!groupPresent) {
+            // membership in any one of the groups is enough, so suggest the first
             logger.error("* * * No groups for provider is present in the system   * * *");
-            logger.error("* You can run `sudo groupadd {}` and `sudo useradd {} {}`   *", groupString, CURRENT_USER, groupString);
+            logger.error("* You can run `sudo groupadd {}` and `sudo usermod -aG {} {}`   *", groupNames[0], groupNames[0], CURRENT_USER);
             logger.error("* Scripts to configure this, are available on:              *");
             logger.error("* https://github.com/pi4J/pi4j-os (check the README)        *");
-            logger.error("* * * * * * Do not forget to reboot the device!   * * * * * *");
-            throw new Pi4JException("No suitable user group present for provider. Should be " + Arrays.toString(groupNames));
+            logger.error("* * * * * * Log in again or reboot for it to apply  * * * * * *");
+            throw new Pi4JException("No suitable user group present for provider. Should be one of " + Arrays.toString(groupNames));
         }
         var userInGroup = userGroups.stream().anyMatch(set::contains);
         if (!userInGroup) {
+            // suggest a group that exists on this system; the user needs only one of them
+            var existingGroup = set.stream().filter(osGroups::contains).findFirst().orElse(groupNames[0]);
             logger.error("* * * Current user does not belong to required groups!  * * *");
-            logger.error("* You can run `sudo useradd {} {}`                          *", CURRENT_USER, groupString);
+            logger.error("* You can run `sudo usermod -aG {} {}`                      *", existingGroup, CURRENT_USER);
             logger.error("* Scripts to configure this, are available on:              *");
             logger.error("* https://github.com/pi4J/pi4j-os (check the README)        *");
-            logger.error("* * * * * * Do not forget to reboot the device!   * * * * * *");
-            throw new Pi4JException("Current user '" + CURRENT_USER + "' is not member of groups " + Arrays.toString(groupNames));
+            logger.error("* * * * * * Log in again or reboot for it to apply  * * * * * *");
+            throw new Pi4JException("Current user '" + CURRENT_USER + "' is not member of any of the groups " + Arrays.toString(groupNames));
         }
     }
 
