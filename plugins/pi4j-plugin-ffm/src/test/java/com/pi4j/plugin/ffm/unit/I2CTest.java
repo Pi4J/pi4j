@@ -14,7 +14,6 @@ import com.pi4j.plugin.ffm.mocks.SMBusNativeMock;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
 import com.pi4j.plugin.ffm.providers.i2c.I2CFunctionality;
 import com.pi4j.plugin.ffm.providers.i2c.impl.I2CDirect;
-import com.pi4j.plugin.ffm.providers.i2c.impl.I2CFile;
 import com.pi4j.plugin.ffm.providers.i2c.impl.I2CSMBus;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -57,8 +56,7 @@ public class I2CTest {
         try (var _ = FileDescriptorNativeMock.setup(I2C_FILE); var _ = IoctlNativeMock.i2c(functionalities);
              var _ = SMBusNativeMock.setup();
              var smbus = pi4j.create(I2CConfigBuilder.newInstance().bus(1).device(0x1C).i2cImplementation(I2CImplementation.SMBUS));
-             var direct = pi4j.create(I2CConfigBuilder.newInstance().bus(2).device(0x1C).i2cImplementation(I2CImplementation.DIRECT));
-             var file = pi4j.create(I2CConfigBuilder.newInstance().bus(3).device(0x1C).i2cImplementation(I2CImplementation.FILE))) {
+             var direct = pi4j.create(I2CConfigBuilder.newInstance().bus(2).device(0x1C).i2cImplementation(I2CImplementation.DIRECT))) {
 
             assertInstanceOf(I2CSMBus.class, smbus);
             assertEquals(1, smbus.bus());
@@ -66,9 +64,6 @@ public class I2CTest {
             assertInstanceOf(I2CDirect.class, direct);
             assertEquals(2, direct.bus());
             assertEquals(0x1C, direct.device());
-            assertInstanceOf(I2CFile.class, file);
-            assertEquals(3, file.bus());
-            assertEquals(0x1C, file.device());
         }
     }
 
@@ -200,65 +195,5 @@ public class I2CTest {
         }
     }
 
-    @Test
-    public void testWriteFile() {
-        var functionalities = I2CFunctionality.I2C_FUNC_I2C.getValue();
-        var i2cWriteByte = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, new byte[]{0x1C});
-        var i2cWriteBytes = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, ("Test").getBytes());
-        var i2cWriteRegister1 = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, new byte[]{0x1C, 0x1C});
-        var i2cWriteRegister2 = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, new byte[]{0x1C, 0x54, 0x65, 0x73, 0x74});
-        var i2cWriteRegister3 = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, new byte[]{0x54, 0x65, 0x73, 0x74, 0x54, 0x65, 0x73, 0x74});
-        try (var _ = FileDescriptorNativeMock.setup(I2C_FILE, i2cWriteByte, i2cWriteBytes, i2cWriteRegister1, i2cWriteRegister2, i2cWriteRegister3);
-             var _ = IoctlNativeMock.i2c(functionalities);
-             var file = pi4j.create(I2CConfigBuilder.newInstance().bus(8).device(0x1C).i2cImplementation(I2CImplementation.FILE))) {
 
-            var result = file.write((byte) 0x1C);
-            assertEquals(1, result);
-
-            result = file.write(("Test").getBytes());
-            assertEquals(4, result);
-
-            result = file.writeRegister(0x1C, 0x1C);
-            assertEquals(1, result);
-
-            result = file.writeRegister(0x1C, ("Test").getBytes(), 0, 4);
-            assertEquals(4, result);
-
-            result = file.writeRegister(("Test").getBytes(), ("Test").getBytes(), 0, 4);
-            assertEquals(4, result);
-        }
-    }
-
-    @Test
-    public void testReadFile() {
-        var functionalities = I2CFunctionality.I2C_FUNC_I2C.getValue();
-        // bytes with the top bit set: a PCF8574 with all pins high answers 0xFF, a sensor id can be 0xBC
-        var highBytes = new byte[]{(byte) 0xff, (byte) 0xbc, (byte) 0x80, 0x7f};
-        var i2cReadBytes = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, highBytes);
-        try (var _ = FileDescriptorNativeMock.setup(I2C_FILE, i2cReadBytes);
-             var _ = IoctlNativeMock.i2c(functionalities);
-             var file = pi4j.create(I2CConfigBuilder.newInstance().bus(9).device(0x1C).i2cImplementation(I2CImplementation.FILE))) {
-
-            var data = file.read();
-            assertEquals(0xff, data, "read() returns the byte unsigned");
-
-            var data1 = new byte[4];
-            var count1 = file.read(data1, 0, 4);
-            assertEquals(4, count1);
-            assertArrayEquals(highBytes, data1);
-
-            var value = file.readRegister(0x1C);
-            assertEquals(0xff, value, "readRegister(int) returns the byte value, not a byte count");
-
-            var data2 = new byte[4];
-            var count2 = file.readRegister(0x1C, data2);
-            assertEquals(4, count2);
-            assertArrayEquals(highBytes, data2);
-
-            var data3 = new byte[4];
-            var count3 = file.readRegister(highBytes, data3);
-            assertEquals(4, count3);
-            assertArrayEquals(highBytes, data3);
-        }
-    }
 }
