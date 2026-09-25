@@ -103,7 +103,7 @@ public interface PwmConfigBuilder extends
      * the time period the signal is LOW and the other half is HIGH.
      * <p>
      * Note that setting this value does not turn PWM on at construction time. For this purpose,
-     * use inital() instead.
+     * use initial() instead.
      * <p>
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      * @return this builder instance
