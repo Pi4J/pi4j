@@ -42,7 +42,7 @@ public class FiveDigitalInputsTestCase extends TestCase {
             input1 = createInputListener(providerContext, 5);
             input2 = createInputListener(providerContext, 6);
             input3 = createInputListener(providerContext, 13);
-            input4 = createInputListener(providerContext, 19);
+            input4 = createInputListener(providerContext, 17);
             Thread.sleep(100);
 
             // Initialize 5th input, to validate a future fix
