@@ -5,6 +5,9 @@ import com.pi4j.io.IOConfig;
 import com.pi4j.io.IOConfigBuilder;
 import com.pi4j.io.IOType;
 import com.pi4j.io.gpio.digital.*;
+import com.pi4j.io.gpio.parallel.ParallelPort;
+import com.pi4j.io.gpio.parallel.ParallelPortConfig;
+import com.pi4j.io.gpio.parallel.ParallelPortConfigBuilder;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CConfigBuilder;
@@ -58,6 +61,10 @@ public interface IOCreator {
         return create(config, Spi.class);
     }
 
+    default ParallelPort create(ParallelPortConfig config) {
+        return create(config, ParallelPort.class);
+    }
+
     default DigitalOutput create(DigitalOutputConfigBuilder config) {
         return create(config.build());
     }
@@ -75,6 +82,10 @@ public interface IOCreator {
     }
 
     default Spi create(SpiConfigBuilder config) {
+        return create(config.build());
+    }
+
+    default ParallelPort create(ParallelPortConfigBuilder config) {
         return create(config.build());
     }
 }
