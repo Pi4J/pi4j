@@ -20,7 +20,8 @@ public class DefaultPwmConfig
     // private configuration properties
     protected Double dutyCycle = null;
     protected Double frequency = null;
-    protected PwmType pwmType = PwmType.SOFTWARE;
+    // Note that this was changed from SOFTWARE with version 5, as FFM only supports HARDWARE.
+    protected PwmType pwmType = PwmType.HARDWARE;
     protected PwmPolarity polarity = PwmPolarity.NORMAL;
     protected Double shutdownValue = null;
     protected Double initialValue = null;
@@ -153,18 +154,6 @@ public class DefaultPwmConfig
     @Override
     public Double shutdownValue() {
         return this.shutdownValue;
-    }
-
-    @Override
-    public PwmConfig shutdownValue(Double dutyCycle) {
-
-        // bounds check the duty-cycle value
-        Double dc = dutyCycle;
-        if (dc < 0) dc = 0.0;
-        if (dc > 100) dc = 100.0;
-
-        this.shutdownValue = dc;
-        return this;
     }
 
     @Override

@@ -101,7 +101,10 @@ public interface PwmConfigBuilder extends
      * <p>
      * Example: A value of 50 represents a duty-cycle where half of
      * the time period the signal is LOW and the other half is HIGH.
-     *
+     * <p>
+     * Note that setting this value does not turn PWM on at construction time. For this purpose,
+     * use initial() instead.
+     * <p>
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      * @return this builder instance
      */
@@ -110,7 +113,10 @@ public interface PwmConfigBuilder extends
     /**
      * Sets the duty-cycle from an integer percentage value. Provided for backward
      * compatibility with Pi4J 4.x; delegates to {@link #dutyCycle(Double)}.
-     *
+     * <p>
+     * Note that setting this value does not turn PWM on at construction time. For this purpose,
+     * use inital() instead.
+     * <p>
      * @param dutyCycle duty-cycle value expressed as a percentage (range: 0-100), or {@code null} to leave unset
      * @return this builder instance for method chaining
      */
@@ -169,6 +175,9 @@ public interface PwmConfigBuilder extends
      * signal (by configuring this 'initial' value to 50%) when your application
      * creates the PWM instance.  This just helps eliminate a second line of code
      * to manually start the PWM signal for cases where you prefer it is auto-started.
+     * <p>
+     * Note that this method (in contrast to dutyCycle()) will turn on PWM at construction
+     * time if the value is greater than 0. If both are set, this value will win.
      *
      * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
      * @return this builder instance
