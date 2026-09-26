@@ -2,6 +2,8 @@ package com.pi4j.plugin.ffm.providers.parallel;
 
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
+import com.pi4j.exception.Pi4JException;
+import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortBase;
@@ -66,12 +68,25 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
 
     @Override
     public ParallelPort addListener(Listener listener) {
-        return null;
+        throw new UnsupportedOperationException("TBD");
     }
 
     @Override
     public ParallelPort removeListener(Listener listener) {
-        return null;
+        throw new UnsupportedOperationException("TBD");
+    }
+
+    @Override
+    public ParallelPort shutdownInternal(Context context) throws ShutdownException {
+        if (config.shutdownValue() != null && getDirection() == Direction.OUTPUT) {
+            write(config.shutdownValue());
+        }
+        try {
+            gpioLine.close();
+        } catch (Pi4JException e) {
+            throw new ShutdownException(e);
+        }
+        return super.shutdownInternal(context);
     }
 
     /**
