@@ -24,6 +24,7 @@ module com.pi4j {
     exports com.pi4j.io;
     exports com.pi4j.io.gpio;
     exports com.pi4j.io.gpio.digital;
+    exports com.pi4j.io.gpio.parallel;
     exports com.pi4j.io.exception;
     exports com.pi4j.io.i2c;
     exports com.pi4j.io.pwm;
@@ -36,7 +37,6 @@ module com.pi4j {
     opens com.pi4j.boardinfo.datareader;
     exports com.pi4j.boardinfo.util.command;
     opens com.pi4j.boardinfo.util.command;
-    exports com.pi4j.io.gpio.parallel;
 
     // extensibility service interfaces
     uses com.pi4j.extension.Plugin;

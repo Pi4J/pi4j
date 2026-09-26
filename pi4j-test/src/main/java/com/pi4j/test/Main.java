@@ -77,7 +77,8 @@ public class Main {
             DigitalOutputTestCase.run(providerContext),
             //DigitalInputDebounceMonitorTestCase.run(providerContext), // This test needs a Logic Analyzer
             DigitalInputDebounceTimeTestCase.run(providerContext),
-            DigitalInputDebounceCountTestCase.run(providerContext)
+            DigitalInputDebounceCountTestCase.run(providerContext),
+            ParallelPortTestCase.run(providerContext)
         );
 
         // Overall results
