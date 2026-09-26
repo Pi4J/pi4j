@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ParallelPortTestCase {
 
+    private ParallelPortTestCase() {}
+
     private static final Logger logger = LoggerFactory.getLogger(ParallelPortTestCase.class);
 
     private static final String TEST_NAME = "Parallel Port";
