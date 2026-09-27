@@ -3,7 +3,6 @@ package com.pi4j.plugin.ffm.providers.i2c;
 import com.pi4j.io.i2c.*;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.providers.i2c.impl.I2CDirect;
-import com.pi4j.plugin.ffm.providers.i2c.impl.I2CFile;
 import com.pi4j.plugin.ffm.providers.i2c.impl.I2CSMBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,6 @@ import org.slf4j.LoggerFactory;
  * FFM backend {@link I2CProvider}. Opens an {@link FFMI2CBus} for each requested device and selects
  * the concrete I2C access implementation - {@link I2CDirect} ({@code I2C_RDWR} ioctls),
  * {@link com.pi4j.plugin.ffm.providers.i2c.impl.I2CSMBus} (SMBus ioctls) or
- * {@link com.pi4j.plugin.ffm.providers.i2c.impl.I2CFile} (plain file read/write) - based on the
  * configured preference and the capabilities the adapter actually reports.
  */
 public class FFMI2CProviderImpl extends I2CProviderBase implements I2CProvider {
@@ -61,12 +59,9 @@ public class FFMI2CProviderImpl extends I2CProviderBase implements I2CProvider {
         if (impl.equals(I2CImplementation.SMBUS) && bus.supportsSMBus()) {
             logger.debug("{} - creating SMBus adapter based on default implementation and functions", bus.getBusName());
             i2c = new I2CSMBus(this, config, bus);
-        } else if (impl.equals(I2CImplementation.DIRECT) && bus.supportsDirect()) {
+        } else {
             logger.debug("{} - creating Direct ioctl adapter based on default implementation and functions", bus.getBusName());
             i2c = new I2CDirect(this, config, bus);
-        } else {
-            logger.debug("{} - creating File adapter based on default implementation and functions", bus.getBusName());
-            i2c = new I2CFile(this, config, bus);
         }
 
         return i2c;

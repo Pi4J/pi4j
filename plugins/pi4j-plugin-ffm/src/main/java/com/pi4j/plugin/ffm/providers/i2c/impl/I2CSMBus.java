@@ -120,7 +120,7 @@ public class I2CSMBus extends I2CBase<FFMI2CBus> {
     @Override
     public int read(byte[] data, int offset, int length) {
         throw new UnsupportedOperationException("SMBus protocol does not support reading to data arrays without register. " +
-            "Please, use I2CDirect or I2CFile provider instead.");
+            "Please, use I2CDirect provider instead.");
     }
 
     @Override
@@ -131,7 +131,7 @@ public class I2CSMBus extends I2CBase<FFMI2CBus> {
     @Override
     public int write(byte[] data, int offset, int length) {
         throw new UnsupportedOperationException("SMBus protocol does not support writing data arrays without register. " +
-            "Please, use I2CDirect or I2CFile provider instead.");
+            "Please, use I2CDirect provider instead.");
     }
 
     @Override
@@ -143,7 +143,7 @@ public class I2CSMBus extends I2CBase<FFMI2CBus> {
     @Override
     public int readRegister(byte[] register, byte[] data, int offset, int length) {
         throw new UnsupportedOperationException("SMBus protocol does not support reading multiregister devices. " +
-            "Please, use I2CDirect or I2CFile provider instead.");
+            "Please, use I2CDirect provider instead.");
     }
 
     @Override
