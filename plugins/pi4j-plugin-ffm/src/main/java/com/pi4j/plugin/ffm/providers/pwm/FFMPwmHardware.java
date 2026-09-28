@@ -240,12 +240,16 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
      * the channel is released by writing its number to the chip's {@code unexport} sysfs file.
      */
     @Override
-    public Pwm shutdownInternal(Context context) throws ShutdownException {
+    public void close() {
+        if (closed) {
+            return;
+        }
         // When a shutdown value is configured the superclass drives it through on()/off(), which still
         // need the persistent attribute descriptors, so those are closed only afterwards.
         if (config.getShutdownValue() != null) {
             try {
-                return super.shutdownInternal(context);
+                super.close();
+                return;
             } finally {
                 closeAttributeFds();
             }
@@ -258,7 +262,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         file.write(exportFd, getByteContent(channel));
         file.close(exportFd);
 
-        return this;
+        super.close();
     }
 
     /**

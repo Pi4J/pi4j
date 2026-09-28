@@ -3,7 +3,6 @@ package com.pi4j.plugin.ffm.providers.spi;
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
-import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBase;
 import com.pi4j.io.spi.SpiConfig;
@@ -151,9 +150,11 @@ public class FFMSpi extends SpiBase implements Spi {
     }
 
     @Override
-    public Spi shutdownInternal(Context context) throws ShutdownException {
-        FILE.close(spiFileDescriptor);
-        return super.shutdownInternal(context);
+    public void close() {
+        if (!closed) {
+            FILE.close(spiFileDescriptor);
+            super.close();
+        }
     }
 
     /**

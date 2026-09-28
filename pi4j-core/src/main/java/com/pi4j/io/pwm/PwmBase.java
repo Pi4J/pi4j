@@ -118,9 +118,9 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
     }
 
     @Override
-    public Pwm shutdownInternal(Context context) throws ShutdownException {
+    public void close() {
         // apply a shutdown value if configured
-        if (this.config.shutdownValue() != null) {
+        if (!closed && this.config.shutdownValue() != null) {
             try {
                 if (this.config.shutdownValue() <= 0) {
                     this.off();
@@ -131,6 +131,6 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
                 throw new ShutdownException(e);
             }
         }
-        return super.shutdownInternal(context);
+        super.close();
     }
 }

@@ -90,12 +90,9 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
     }
 
     @Override
-    public DIGITAL_TYPE shutdownInternal(Context context) throws ShutdownException {
-        // remove all listeners
+    public void close() {
         stateChangeEventManager.clear();
-
-        // return this instance
-        return super.shutdownInternal(context);
+        super.close();
     }
 
     @Override

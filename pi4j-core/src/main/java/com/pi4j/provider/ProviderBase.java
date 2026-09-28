@@ -4,7 +4,6 @@ import com.pi4j.config.Config;
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.LifecycleException;
-import com.pi4j.exception.ShutdownException;
 import com.pi4j.extension.ExtensionBase;
 import com.pi4j.io.IO;
 import org.slf4j.Logger;
@@ -71,7 +70,7 @@ public abstract class ProviderBase<PROVIDER_TYPE extends Provider, IO_TYPE exten
      * the remaining shutdowns.
      */
     @Override
-    public PROVIDER_TYPE shutdownInternal(Context context) throws ShutdownException {
+    public void close() {
 
         // TODO :: ABSTRACT PROVIDER IO INSTANCE SHUTDOWN VIA PROXY IMPL
 
@@ -79,12 +78,11 @@ public abstract class ProviderBase<PROVIDER_TYPE extends Provider, IO_TYPE exten
         Map<String, IO> instances = context.registry().allByProvider(this.id(), IO.class);
         instances.forEach((address, instance)->{
             try {
-                instance.shutdownInternal(context);
+                instance.close();
             } catch (LifecycleException e) {
                 logger.error(e.getMessage(), e);
             }
         });
-        return (PROVIDER_TYPE)this;
     }
 
     @Override

@@ -59,10 +59,12 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
     }
 
     @Override
-    public I2C shutdownInternal(Context context) {
-        logger.debug("[{}::{}] :: CLOSE(BUS={}; DEVICE={})",
-            Mock.I2C_PROVIDER_NAME, this.id, config.bus(), config.device());
-        return super.shutdownInternal(context);
+    public void close() {
+        if (!closed) {
+            logger.debug("[{}::{}] :: CLOSE(BUS={}; DEVICE={})",
+                Mock.I2C_PROVIDER_NAME, this.id, config.bus(), config.device());
+            super.close();
+        }
     }
 
     // -------------------------------------------------------------------

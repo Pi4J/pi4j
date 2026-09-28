@@ -130,10 +130,11 @@ public class I2CFile extends I2CBase<FFMI2CBus> {
     }
 
     @Override
-    public I2C shutdownInternal(Context context) throws ShutdownException {
-        super.shutdownInternal(context);
-        i2CBus.close();
-        return this;
+    public void close() {
+        if (!closed) {
+            i2CBus.close();
+            super.close();
+        }
     }
 
 }

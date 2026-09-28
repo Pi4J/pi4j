@@ -103,8 +103,10 @@ public class MutableRegistry implements Registry {
         // shutdown instance
         try {
             long start = System.currentTimeMillis();
-
-            instance.shutdownInternal(context);
+            // Close is required to be idempotent. So we should be free to call close again, even if this call
+            // comes from close(). Ideally, we wouldn't have this ambiguity but relying on this seems to be the
+            // simplest solution until we provide a callback to the lifecycle initialization.
+            instance.close();
             long took = System.currentTimeMillis() - start;
             if (took > 10) {
                 logger.info("Shutting down of IO {} took {}ms", instance.getId(), took);
