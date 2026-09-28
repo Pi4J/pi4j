@@ -10,7 +10,6 @@ import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
 import org.openjdk.jmh.annotations.*;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 

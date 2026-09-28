@@ -2,6 +2,7 @@ package com.pi4j.plugin.ffm.providers.gpio;
 
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;

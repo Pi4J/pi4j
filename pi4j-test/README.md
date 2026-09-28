@@ -113,7 +113,14 @@ The PWM, input, output, and debounce connections are M-M jumpers between T-cobbl
 
 Only needed for `DigitalInputDebounceMonitorTestCase` (not added to the wiring diagram and pictures).
 
-| Test      | From RPi Pin | Number | BCM  | To RPi Pin | Number | BCM | Color | LED |
-|:----------|:-------------|:------:|:----:|:-----------|:------:|:---:|:------|-----|
-| Debounce  | GPIO         | 32     | 12   | GPIO       |   35   | 19  | Brown | 5   |
-|           |              |        |      | GPIO       |   38   | 20  | LOGIC | 6   |
+| Test      | From RPi Pin | Number | BCM  | To RPi Pin | Number |   BCM    | Color | LED |
+|:----------|:-------------|:------:|:----:|:-----------|:------:|:--------:|:------|-----|
+| Debounce  | GPIO         | 15     | 22   | GPIO       |   13   | 27 Note1 | Brown | 5   |
+|           |              |        |      | GPIO       |   29   |  5       | LOGIC | 6   |
+
+/**
+*     IMPORTANT
+* Note1 Recent kernel changes to the device tree has gpios EX: BCM19, reserved for kernel usage.
+*   As the smoketest PCB is already created, use the existing path already wired for the 
+* regular debounce test.
+*/

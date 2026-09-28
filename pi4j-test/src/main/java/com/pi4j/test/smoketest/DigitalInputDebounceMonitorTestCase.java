@@ -4,6 +4,14 @@ import com.pi4j.io.gpio.digital.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ *     IMPORTANT
+ * Note1 Recent kernel changes to the device tree has gpios EX: BCM19, reserved for kernel usage.
+ *   As the smoketest PCB is already created, use the existing path already wired for the
+ * regular debounce test.
+ */
+
+
 public class DigitalInputDebounceMonitorTestCase extends TestCase {
 
     private static final Logger logger = LoggerFactory.getLogger(DigitalInputDebounceMonitorTestCase.class);
@@ -19,12 +27,12 @@ public class DigitalInputDebounceMonitorTestCase extends TestCase {
         DigitalInput gpioInMonitor = null;
         try {
             // Initialize output
-            gpioOutTest = createDigitalOutput(providerContext.getContext(), 12, DigitalState.LOW, DigitalState.LOW);
+            gpioOutTest = createDigitalOutput(providerContext.getContext(), 22, DigitalState.LOW, DigitalState.LOW);
             Thread.sleep(100);
             if (gpioOutTest.state() != DigitalState.LOW) {
                 return new TestResult(TEST_NAME, false, "Output Test has not the correct initial state");
             }
-            gpioOutLogic = createDigitalOutput(providerContext.getContext(), 20, DigitalState.LOW, DigitalState.LOW);
+            gpioOutLogic = createDigitalOutput(providerContext.getContext(), 5, DigitalState.LOW, DigitalState.LOW);
             Thread.sleep(100);
             if (gpioOutLogic.state() != DigitalState.LOW) {
                 return new TestResult(TEST_NAME, false, "Output Logic GPIO not the correct initial state");
@@ -34,7 +42,7 @@ public class DigitalInputDebounceMonitorTestCase extends TestCase {
 
             while (debounceSetting > 0) {
                 // Initialize input
-                gpioInMonitor = createDigitalInput(providerContext.getContext(), 19, PullResistance.PULL_DOWN, debounceSetting);
+                gpioInMonitor = createDigitalInput(providerContext.getContext(), 27, PullResistance.PULL_DOWN, debounceSetting);
                 Thread.sleep(100);
                 gpioInMonitor.addListener(listener);
 

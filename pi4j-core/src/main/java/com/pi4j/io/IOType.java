@@ -3,6 +3,10 @@ package com.pi4j.io;
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.gpio.digital.*;
+import com.pi4j.io.gpio.parallel.ParallelPort;
+import com.pi4j.io.gpio.parallel.ParallelPortConfig;
+import com.pi4j.io.gpio.parallel.ParallelPortConfigBuilder;
+import com.pi4j.io.gpio.parallel.ParallelPortProvider;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.i2c.I2CConfigBuilder;
@@ -38,7 +42,9 @@ public enum IOType {
     /** I2C (Inter-Integrated Circuit) bus device. */
     I2C(I2CProvider.class, I2C.class, I2CConfig.class, I2CConfigBuilder.class),
     /** SPI (Serial Peripheral Interface) bus device. */
-    SPI(SpiProvider.class, Spi.class, SpiConfig.class, SpiConfigBuilder.class);
+    SPI(SpiProvider.class, Spi.class, SpiConfig.class, SpiConfigBuilder.class),
+    /** Parallel port device. */
+    PARALLEL(ParallelPortProvider.class, ParallelPort.class, ParallelPortConfig.class, ParallelPortConfigBuilder.class);
 
     private Class<? extends Provider> providerClass;
     private Class<? extends IO> ioClass;
