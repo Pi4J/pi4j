@@ -3,7 +3,6 @@ package com.pi4j.plugin.ffm.providers.pwm;
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
-import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.pwm.*;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
