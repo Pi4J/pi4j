@@ -100,6 +100,11 @@ public class MutableRegistry implements Registry {
         if (instance == null)
             throw new IllegalArgumentException("An IO instance cannot be NULL.");
 
+        // Make sure instance wasn't already shut down / prevent a loop with close()
+        if (this.instances.remove(instance.id()) == null) {
+            return instance;
+        }
+
         // shutdown instance
         try {
             long start = System.currentTimeMillis();
@@ -119,7 +124,6 @@ public class MutableRegistry implements Registry {
         // remove the shutdown instance from the registry
         removeFromMap(instance);
 
-        this.instances.remove(instance.id());
         return instance;
     }
 
