@@ -2,7 +2,6 @@ package com.pi4j.common;
 
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
-import com.pi4j.exception.ShutdownException;
 
 import java.io.Closeable;
 

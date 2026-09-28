@@ -1,9 +1,7 @@
 package com.pi4j.io.gpio.digital;
 
-import com.pi4j.context.Context;
 import com.pi4j.event.EventDelegate;
 import com.pi4j.event.EventManager;
-import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.gpio.GpioBase;
 
 import java.util.function.Consumer;
