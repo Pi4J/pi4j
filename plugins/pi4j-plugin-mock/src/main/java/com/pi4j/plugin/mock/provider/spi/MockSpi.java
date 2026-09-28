@@ -1,6 +1,5 @@
 package com.pi4j.plugin.mock.provider.spi;
 
-import com.pi4j.context.Context;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBase;
 import com.pi4j.io.spi.SpiConfig;

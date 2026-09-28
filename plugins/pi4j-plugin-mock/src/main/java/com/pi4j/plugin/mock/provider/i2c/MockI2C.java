@@ -1,6 +1,5 @@
 package com.pi4j.plugin.mock.provider.i2c;
 
-import com.pi4j.context.Context;
 import com.pi4j.io.i2c.*;
 import com.pi4j.plugin.mock.Mock;
 import com.pi4j.util.StringUtil;
