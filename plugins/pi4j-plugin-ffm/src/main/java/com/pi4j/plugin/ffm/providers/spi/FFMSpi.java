@@ -151,10 +151,11 @@ public class FFMSpi extends SpiBase implements Spi {
 
     @Override
     public void close() {
-        if (!closed) {
-            FILE.close(spiFileDescriptor);
-            super.close();
+        if (closed) {
+            return;
         }
+        FILE.close(spiFileDescriptor);
+        super.close();
     }
 
     /**

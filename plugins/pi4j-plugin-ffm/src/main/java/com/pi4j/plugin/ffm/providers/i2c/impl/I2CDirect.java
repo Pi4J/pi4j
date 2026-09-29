@@ -136,10 +136,11 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      */
     @Override
     public void close() {
-        if (!closed) {
-            i2CBus.close();
-            super.close();
+        if (closed) {
+            return;
         }
+        i2CBus.close();
+        super.close();
     }
 
     @Override

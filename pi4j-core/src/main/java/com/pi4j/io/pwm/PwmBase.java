@@ -119,8 +119,11 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
 
     @Override
     public void close() {
+        if (closed) {
+            return;
+        }
         // apply a shutdown value if configured
-        if (!closed && this.config.shutdownValue() != null) {
+        if (this.config.shutdownValue() != null) {
             try {
                 if (this.config.shutdownValue() <= 0) {
                     this.off();

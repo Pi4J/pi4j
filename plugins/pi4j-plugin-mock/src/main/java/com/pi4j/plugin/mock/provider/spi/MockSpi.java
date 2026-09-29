@@ -60,11 +60,13 @@ public class MockSpi extends SpiBase implements Spi {
         return bytes;
     }
 
+    @Override
     public void close() {
-        if (!closed) {
-            logger.info("{} CLOSE(CHANNEL={}; BAUD={})", logPreamble, config.channel(), config.baud());
-            super.close();
+        if (closed) {
+            return;
         }
+        logger.info("{} CLOSE(CHANNEL={}; BAUD={})", logPreamble, config.channel(), config.baud());
+        super.close();
     }
 
     /**

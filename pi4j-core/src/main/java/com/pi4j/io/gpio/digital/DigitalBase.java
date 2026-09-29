@@ -89,6 +89,9 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
 
     @Override
     public void close() {
+        if (closed) {
+            return;
+        }
         stateChangeEventManager.clear();
         super.close();
     }

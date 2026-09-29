@@ -82,17 +82,18 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
      */
     @Override
     public void close() {
-        // set pin state to the shutdown state if a shutdown state is configured
-        if (!closed) {
-            if (config().shutdownState() != null && config().shutdownState() != DigitalState.UNKNOWN) {
-                try {
-                    state(config().shutdownState());
-                } catch (IOException e) {
-                    throw new ShutdownException(e);
-                }
-            }
-            super.close();
+        if (closed) {
+            return;
         }
+        // set pin state to the shutdown state if a shutdown state is configured
+        if (config().shutdownState() != null && config().shutdownState() != DigitalState.UNKNOWN) {
+            try {
+                state(config().shutdownState());
+            } catch (IOException e) {
+                throw new ShutdownException(e);
+            }
+        }
+        super.close();
     }
 
     /**
