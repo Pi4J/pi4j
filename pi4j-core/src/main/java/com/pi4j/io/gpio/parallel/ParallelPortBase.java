@@ -1,5 +1,6 @@
 package com.pi4j.io.gpio.parallel;
 
+import com.pi4j.context.Context;
 import com.pi4j.event.EventManager;
 import com.pi4j.io.IOBase;
 import com.pi4j.io.gpio.MaskUtils;
@@ -29,8 +30,8 @@ public abstract class ParallelPortBase
         this, Listener::onValueChange
     );
 
-    protected ParallelPortBase(ParallelPortProvider provider, ParallelPortConfig config) {
-        super(provider, config);
+    protected ParallelPortBase(Context context, ParallelPortProvider provider, ParallelPortConfig config) {
+        super(context, provider, config);
         this.mask = (int) MaskUtils.packed(config.mask());
         this.direction = config.initialDirection();
     }

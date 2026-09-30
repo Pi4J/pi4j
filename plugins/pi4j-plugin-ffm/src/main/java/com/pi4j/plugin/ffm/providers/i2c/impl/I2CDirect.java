@@ -28,12 +28,13 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
     /**
      * Creates a direct-mode I2C device bound to the given bus.
      *
+     * @param context  the context this device belongs to
      * @param provider the {@link I2CProvider} that created this device
      * @param config   the {@link I2CConfig} supplying the target device address
      * @param i2CBus   the shared {@link FFMI2CBus} whose file descriptor carries the transfers
      */
-    public I2CDirect(I2CProvider provider, I2CConfig config, FFMI2CBus i2CBus) {
-        super(provider, config, i2CBus);
+    public I2CDirect(Context context, I2CProvider provider, I2CConfig config, FFMI2CBus i2CBus) {
+        super(context, provider, config, i2CBus);
     }
 
     @Override

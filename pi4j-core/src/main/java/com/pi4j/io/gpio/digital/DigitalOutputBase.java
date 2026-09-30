@@ -19,11 +19,12 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
     /**
      * Creates a new digital output bound to the given provider and configuration.
      *
+     * @param context  the context this DigitalOutput belongs to
      * @param provider the provider that created and manages this output instance
      * @param config   the configuration describing the pin address, initial state, shutdown state and identity
      */
-    public DigitalOutputBase(DigitalOutputProvider provider, DigitalOutputConfig config) {
-        super(provider, config);
+    public DigitalOutputBase(Context context, DigitalOutputProvider provider, DigitalOutputConfig config) {
+        super(context, provider, config);
     }
 
     /**

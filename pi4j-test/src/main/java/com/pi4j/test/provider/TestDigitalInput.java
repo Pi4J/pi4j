@@ -1,5 +1,6 @@
 package com.pi4j.test.provider;
 
+import com.pi4j.context.Context;
 import com.pi4j.io.gpio.digital.*;
 
 public class TestDigitalInput extends DigitalInputBase implements DigitalInput {
@@ -11,8 +12,8 @@ public class TestDigitalInput extends DigitalInputBase implements DigitalInput {
         return this.state;
     }
 
-    public TestDigitalInput(DigitalInputProvider provider, DigitalInputConfig config){
-        super(provider, config);
+    public TestDigitalInput(Context context, DigitalInputProvider provider, DigitalInputConfig config){
+        super(context, provider, config);
     }
 
     public TestDigitalInput test(DigitalState state){

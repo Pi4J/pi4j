@@ -23,10 +23,10 @@ public class TestDigitalInputProviderImpl extends DigitalInputProviderBase imple
 
     @Override
     public DigitalInput create(DigitalInputConfig config) {
-        TestDigitalInput input = new TestDigitalInput(this, config);
+        TestDigitalInput input = new TestDigitalInput(context, this, config);
         if (this.context.registry().exists(input.id()))
             throw new IOAlreadyExistsException(config.id());
-        input.initialize(this.context);
+        input.initialize(context);
         this.context.register(input);
         return input;
     }

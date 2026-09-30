@@ -1,5 +1,6 @@
 package com.pi4j.plugin.mock.provider.gpio.parallel;
 
+import com.pi4j.context.Context;
 import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortBase;
@@ -24,7 +25,7 @@ public class MockParallelPort
      * @param config   the {@link ParallelPortConfig} describing this I/O, including its BCM pin numbers
      */
     public MockParallelPort(ParallelPortProvider provider, ParallelPortConfig config) {
-        super(provider, config);
+        super(null, provider, config);
         this.value = new AtomicInteger((int) (config.initialValue() & MaskUtils.packed(config.mask())));
     }
 

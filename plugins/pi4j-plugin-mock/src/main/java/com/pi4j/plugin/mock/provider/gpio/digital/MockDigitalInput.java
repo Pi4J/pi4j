@@ -1,6 +1,7 @@
 package com.pi4j.plugin.mock.provider.gpio.digital;
 
 
+import com.pi4j.context.Context;
 import com.pi4j.io.gpio.digital.*;
 
 /**
@@ -21,11 +22,12 @@ public class MockDigitalInput extends DigitalInputBase implements DigitalInput {
     /**
      * Creates a mock digital input bound to the given provider and configuration.
      *
+     * @param context the context of this instance
      * @param provider the {@link DigitalInputProvider} that created this instance
      * @param config the {@link DigitalInputConfig} describing the pin, pull resistance and other settings
      */
-    public MockDigitalInput(DigitalInputProvider provider, DigitalInputConfig config){
-        super(provider, config);
+    public MockDigitalInput(Context context, DigitalInputProvider provider, DigitalInputConfig config){
+        super(context, provider, config);
     }
 
     @Override

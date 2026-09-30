@@ -37,6 +37,6 @@ public class MockDigitalInputProviderImpl extends DigitalInputProviderBase imple
      */
     @Override
     public DigitalInput create(DigitalInputConfig config) {
-        return new MockDigitalInput(this, config);
+        return new MockDigitalInput(context, this, config);
     }
 }

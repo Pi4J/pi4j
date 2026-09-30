@@ -32,7 +32,7 @@ public class FFMDigitalOutputProviderImpl extends DigitalOutputProviderBase impl
      */
     @Override
     public DigitalOutput create(DigitalOutputConfig config) {
-        return new FFMDigitalOutput( this, config);
+        return new FFMDigitalOutput(context,  this, config);
     }
 
     @Override

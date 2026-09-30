@@ -32,11 +32,12 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
      * Creates a new PWM base instance and registers any presets defined in the
      * supplied configuration, keyed by their lower-cased, trimmed names.
      *
+     * @param context  the context of this instance
      * @param provider the PWM provider that created this instance
      * @param config   the configuration describing this PWM channel, including any initial presets
      */
-    public PwmBase(PwmProvider provider, PwmConfig config) {
-        super(provider, config);
+    public PwmBase(Context context, PwmProvider provider, PwmConfig config) {
+        super(context, provider, config);
     }
 
     @Override

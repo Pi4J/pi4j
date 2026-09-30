@@ -9,7 +9,7 @@ import com.pi4j.common.IdentityBase;
  *
  * @param <T> the self-type returned by fluent lifecycle and identity methods
  */
-public abstract class ExtensionBase<T> extends IdentityBase<T> implements Extension<T> {
+public abstract class ExtensionBase<T> extends IdentityBase implements Extension<T> {
 
     /**
      * Creates an extension with no identity values set; id, name, and description may be

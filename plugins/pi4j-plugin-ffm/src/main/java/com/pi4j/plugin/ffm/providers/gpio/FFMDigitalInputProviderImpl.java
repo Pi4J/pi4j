@@ -31,7 +31,7 @@ public class FFMDigitalInputProviderImpl extends DigitalInputProviderBase implem
      */
     @Override
     public DigitalInput create(DigitalInputConfig config) {
-        return new FFMDigitalInput(this, config);
+        return new FFMDigitalInput(context, this, config);
     }
 
     @Override

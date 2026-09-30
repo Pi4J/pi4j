@@ -1,6 +1,7 @@
 package com.pi4j.plugin.mock.provider.gpio.digital;
 
 
+import com.pi4j.context.Context;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.gpio.digital.DigitalOutputBase;
@@ -25,8 +26,8 @@ public class MockDigitalOutput extends DigitalOutputBase implements DigitalOutpu
      * @param provider the {@link DigitalOutputProvider} that created this instance
      * @param config the {@link DigitalOutputConfig} describing the pin and its initial/shutdown states
      */
-    public MockDigitalOutput(DigitalOutputProvider provider, DigitalOutputConfig config){
-        super(provider, config);
+    public MockDigitalOutput(Context context, DigitalOutputProvider provider, DigitalOutputConfig config){
+        super(context, provider, config);
     }
 
     /**

@@ -36,12 +36,13 @@ public class I2CSMBus extends I2CBase<FFMI2CBus> {
     /**
      * Creates an SMBus-based I2C device bound to the given bus.
      *
+     * @param context  the context of this instance
      * @param provider the {@link I2CProvider} that created this instance
      * @param config   the I2C configuration carrying the bus number and target slave device address
      * @param i2CBus   the shared {@link FFMI2CBus} wrapping the open {@code /dev/i2c-N} file descriptor
      */
-    public I2CSMBus(I2CProvider provider, I2CConfig config, FFMI2CBus i2CBus) {
-        super(provider, config, i2CBus);
+    public I2CSMBus(Context context, I2CProvider provider, I2CConfig config, FFMI2CBus i2CBus) {
+        super(context, provider, config, i2CBus);
     }
 
     /**
