@@ -21,11 +21,12 @@ public class MockParallelPort
     /**
      * Creates a new GPIO I/O instance bound to the given provider and configuration.
      *
+     * @param context  the context of this instance
      * @param provider the {@link ParallelPortProvider} that creates and backs this I/O instance
      * @param config   the {@link ParallelPortConfig} describing this I/O, including its BCM pin numbers
      */
-    public MockParallelPort(ParallelPortProvider provider, ParallelPortConfig config) {
-        super(null, provider, config);
+    public MockParallelPort(Context context, ParallelPortProvider provider, ParallelPortConfig config) {
+        super(context, provider, config);
         this.value = new AtomicInteger((int) (config.initialValue() & MaskUtils.packed(config.mask())));
     }
 
