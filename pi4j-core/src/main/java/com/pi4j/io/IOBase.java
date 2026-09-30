@@ -4,7 +4,6 @@ import com.pi4j.common.Descriptor;
 import com.pi4j.common.IdentityBase;
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
-import com.pi4j.exception.ShutdownException;
 import com.pi4j.provider.Provider;
 
 import java.io.Closeable;
@@ -27,7 +26,7 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
     protected PROVIDER_TYPE provider;
     private Context context;
     // close() requires idempotency.
-    private boolean closed = false;
+    protected boolean closed = false;
 
     @Override
     public PROVIDER_TYPE provider(){
@@ -63,26 +62,25 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
     }
 
     /**
-     * Closes the driver by calling this.context().shutdown(this.getId()), which in turn calls
-     * the local shutdownInternal(context) method here via DefaultRuntimeRegistry.remove().
+     * Closes the driver and calls this.context().shutdown(this), which removes this IO instance from the context
+     * registry.
      * <p>
-     * Basically, for Pi4J, this constitutes an idempotent user convenience method for
-     * this.context().shutdown(this.getId())
+     * Note for subclass implementations: As context.shoutdown(IO) might be called directly for historical reasons,
+     * it needs to call this method again. To prevent an infinite cycles, it's important that the idempotency aspect
+     * of the close contract is strictly observed.
      * <p>
-     * Subclasses should typically override the local shutdown method with implementation-specific shutdown
-     * behaviour. Behaviour added here will not be triggered by context.shutdown()
      */
     @Override
-    public final void close() {
+    public void close() {
         // The closed check ensures idempotency, as required by the close method contract.
-        if (!closed) {
-            // The null check accounts for contextless tests or somehow just closing without initializing,
-            // although we probably should make context a required ctor parameter, see #719
-            if (this.context != null) {
-                this.context.shutdown(getId());
-            } else {
-                shutdownInternal(null);
-            }
+        if (closed) {
+            return;
+        }
+        closed = true;
+        // The null check accounts for contextless tests or somehow just closing without initializing,
+        // although we probably should make context a required ctor parameter, see #719
+        if (this.context != null) {
+            this.context.shutdown(this);
         }
     }
 
@@ -108,17 +106,6 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
     @Override
     public IO_TYPE initialize(Context context) throws InitializeException {
         this.context = context;
-        return (IO_TYPE) this;
-    }
-
-    @Override
-    public IO_TYPE shutdownInternal(Context context) throws ShutdownException {
-        // Close is supposed to be idempotent. We interpret this here to include effective shutdowns by
-        // other means, i.e. the infrastructure calling this method.
-        this.closed = true;
-        if (context != this.context) {
-            throw new IllegalArgumentException("The context parameter and the local context don't match.");
-        }
         return (IO_TYPE) this;
     }
 

@@ -170,11 +170,13 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      * Stops all event watchers, waits for their threads to finish their current native {@code poll()}
      * cycle, then delegates to {@link FFMGpioLine#close()} to release the GPIO line.
      *
-     * @throws ShutdownException if waiting for the watcher threads or closing native resources fails
+     * Throws a ShutdownException if waiting for the watcher threads or closing native resources fails
      */
     @Override
-    public DigitalInput shutdownInternal(Context context) throws ShutdownException {
-        super.shutdownInternal(context);
+    public void close() throws ShutdownException {
+        if (closed) {
+            return;
+        }
         logger.info("{}-{} - closing GPIO offset.", line.deviceName, line.mask);
         try {
             logger.trace("{}-{} - Stopping event watchers", line.deviceName, line.mask);
@@ -214,7 +216,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             line.close();
         }
         logger.info("{}-{} - GPIO offset is closed.", line.deviceName, line.mask);
-        return this;
+        super.close();
     }
 
     /**

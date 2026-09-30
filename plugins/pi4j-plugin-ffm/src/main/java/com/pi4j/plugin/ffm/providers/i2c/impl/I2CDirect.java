@@ -135,10 +135,12 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      * I2C bus file descriptor.
      */
     @Override
-    public I2C shutdownInternal(Context context) {
-        super.shutdownInternal(context);
+    public void close() {
+        if (closed) {
+            return;
+        }
         i2CBus.close();
-        return this;
+        super.close();
     }
 
     @Override

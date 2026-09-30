@@ -78,10 +78,13 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
      * Before delegating to the base shutdown logic, drives the output to the configured shutdown state if
      * {@link DigitalOutputConfig#shutdownState()} is set and not {@link DigitalState#UNKNOWN}.
      *
-     * @throws ShutdownException if the shutdown state cannot be written or base shutdown fails
+     * Throws a ShutdownException if the shutdown state cannot be written or base shutdown fails
      */
     @Override
-    public DigitalOutput shutdownInternal(Context context) throws ShutdownException {
+    public void close() {
+        if (closed) {
+            return;
+        }
         // set pin state to the shutdown state if a shutdown state is configured
         if (config().shutdownState() != null && config().shutdownState() != DigitalState.UNKNOWN) {
             try {
@@ -90,7 +93,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
                 throw new ShutdownException(e);
             }
         }
-        return super.shutdownInternal(context);
+        super.close();
     }
 
     /**

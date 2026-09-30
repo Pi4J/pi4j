@@ -1,9 +1,7 @@
 package com.pi4j.io.gpio.digital;
 
-import com.pi4j.context.Context;
 import com.pi4j.event.EventDelegate;
 import com.pi4j.event.EventManager;
-import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.gpio.GpioBase;
 
 import java.util.function.Consumer;
@@ -90,12 +88,12 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
     }
 
     @Override
-    public DIGITAL_TYPE shutdownInternal(Context context) throws ShutdownException {
-        // remove all listeners
+    public void close() {
+        if (closed) {
+            return;
+        }
         stateChangeEventManager.clear();
-
-        // return this instance
-        return super.shutdownInternal(context);
+        super.close();
     }
 
     @Override

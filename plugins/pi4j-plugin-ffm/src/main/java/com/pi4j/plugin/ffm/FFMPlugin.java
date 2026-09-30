@@ -1,5 +1,6 @@
 package com.pi4j.plugin.ffm;
 
+import com.pi4j.common.Lifecycle;
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
@@ -74,6 +75,6 @@ public class FFMPlugin implements Plugin {
 
     @Override
     public void shutdown(Context context) throws ShutdownException {
-        Arrays.stream(this.providers).forEach(provider -> provider.shutdownInternal(context));
+        Arrays.stream(this.providers).forEach(Lifecycle::close);
     }
 }

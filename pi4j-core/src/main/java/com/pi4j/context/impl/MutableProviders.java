@@ -240,7 +240,7 @@ public class MutableProviders implements Providers {
         try {
             logger.trace("calling 'shutdown()' provider [id={}; name={}; class={}]",
                 provider.id(), provider.name(), provider.getClass().getName());
-            provider.shutdownInternal(context);
+            provider.close();
         } catch (ShutdownException e) {
             logger.error("unable to 'shutdown()' provider: [id={}; name={}]; {}",
                 provider.id(), provider.name(), e.getMessage());

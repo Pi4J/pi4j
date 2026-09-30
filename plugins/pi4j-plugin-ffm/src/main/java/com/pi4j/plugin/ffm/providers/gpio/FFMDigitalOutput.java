@@ -83,19 +83,21 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
      * <p>
      * Closes the requested line file descriptor, releasing the GPIO line back to the kernel.
      *
-     * @throws ShutdownException if closing the native line file descriptor fails
+     * Throws a ShutdownException if closing the native line file descriptor fails
      */
     @Override
-    public DigitalOutput shutdownInternal(Context context) throws ShutdownException {
-        super.shutdownInternal(context);
+    public void close() {
+        if (closed) {
+            return;
+        }
         logger.info("{}-{} - closing GPIO BCM.", line.deviceName, line.mask);
         try {
-            line.close();
+                line.close();
         } catch (Exception e) {
             throw new ShutdownException(e);
         }
         logger.info("{}-{} - GPIO BCM is closed. Recreate the pin object to reuse.", line.deviceName, line.mask);
-        return this;
+        super.close();
     }
 
     /**

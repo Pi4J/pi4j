@@ -1,6 +1,5 @@
 package com.pi4j.plugin.mock.provider.i2c;
 
-import com.pi4j.context.Context;
 import com.pi4j.io.i2c.*;
 import com.pi4j.plugin.mock.Mock;
 import com.pi4j.util.StringUtil;
@@ -59,10 +58,13 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
     }
 
     @Override
-    public I2C shutdownInternal(Context context) {
+    public void close() {
+        if (closed) {
+            return;
+        }
         logger.debug("[{}::{}] :: CLOSE(BUS={}; DEVICE={})",
             Mock.I2C_PROVIDER_NAME, this.id, config.bus(), config.device());
-        return super.shutdownInternal(context);
+        super.close();
     }
 
     // -------------------------------------------------------------------
