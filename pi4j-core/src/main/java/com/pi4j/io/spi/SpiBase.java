@@ -21,7 +21,7 @@ public abstract class SpiBase extends IOBase<Spi, SpiConfig, SpiProvider> implem
      * @param provider the {@link SpiProvider} that created and backs this SPI device
      * @param config   the {@link SpiConfig} describing the bus, channel, mode, and clock settings to use
      */
-    public SpiBase(Context context, SpiProvider provider, SpiConfig config) {
+    protected SpiBase(Context context, SpiProvider provider, SpiConfig config) {
         super(context, provider, config);
     }
 

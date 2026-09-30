@@ -40,7 +40,7 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
      * @param provider the provider that created and backs this instance
      * @param config   the configuration defining this instance's identity and properties
      */
-    public IOBase(Context context, PROVIDER_TYPE provider, CONFIG_TYPE config){
+    protected IOBase(Context context, PROVIDER_TYPE provider, CONFIG_TYPE config){
         super();
         this.id = config.id();
         this.name = config.name();
@@ -98,8 +98,7 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
 
     @Override
     public IO_TYPE initialize(Context context) throws InitializeException {
-        if (this.context != null && context != this.context &&
-            this.context != null) {
+        if (context != this.context) {
             throw new IllegalArgumentException("Context mismatch");
         }
         return (IO_TYPE) this;

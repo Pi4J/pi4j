@@ -15,7 +15,7 @@ public abstract class DigitalInputBase extends DigitalBase<DigitalInput, Digital
      * @param provider the {@link DigitalInputProvider} responsible for this input's underlying I/O
      * @param config the configuration describing this input (pin, pull resistance, debounce, etc.)
      */
-    public DigitalInputBase(Context context, DigitalInputProvider provider, DigitalInputConfig config){
+    protected DigitalInputBase(Context context, DigitalInputProvider provider, DigitalInputConfig config){
         super(context, provider, config);
     }
 }

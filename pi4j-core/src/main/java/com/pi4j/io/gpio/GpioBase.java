@@ -24,7 +24,7 @@ public abstract class GpioBase<IO_TYPE extends Gpio<IO_TYPE, CONFIG_TYPE, PROVID
      * @param provider the {@link Provider} that creates and backs this I/O instance
      * @param config   the {@link GpioConfig} describing this I/O, including its BCM pin number
      */
-    public GpioBase(Context context, PROVIDER_TYPE provider, CONFIG_TYPE config) {
+    protected GpioBase(Context context, PROVIDER_TYPE provider, CONFIG_TYPE config) {
         super(context, provider, config);
     }
 

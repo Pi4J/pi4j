@@ -23,7 +23,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
      * @param provider the provider that created and manages this output instance
      * @param config   the configuration describing the pin address, initial state, shutdown state and identity
      */
-    public DigitalOutputBase(Context context, DigitalOutputProvider provider, DigitalOutputConfig config) {
+    protected DigitalOutputBase(Context context, DigitalOutputProvider provider, DigitalOutputConfig config) {
         super(context, provider, config);
     }
 

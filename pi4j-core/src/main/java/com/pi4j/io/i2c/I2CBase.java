@@ -25,7 +25,7 @@ public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig, I
      * @param config   the configuration describing the bus and device address
      * @param i2CBus   the bus instance used to serialize access for this device
      */
-    public I2CBase(Context context, I2CProvider provider, I2CConfig config, T i2CBus) {
+    protected I2CBase(Context context, I2CProvider provider, I2CConfig config, T i2CBus) {
         super(context, provider, config);
         this.i2CBus = i2CBus;
     }

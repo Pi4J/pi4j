@@ -36,7 +36,7 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
      * @param provider the PWM provider that created this instance
      * @param config   the configuration describing this PWM channel, including any initial presets
      */
-    public PwmBase(Context context, PwmProvider provider, PwmConfig config) {
+    protected PwmBase(Context context, PwmProvider provider, PwmConfig config) {
         super(context, provider, config);
     }
 
