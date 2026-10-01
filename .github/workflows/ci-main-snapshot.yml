@@ -143,7 +143,14 @@ jobs:
           fi
           git commit -m "Update from https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
           for i in 1 2 3; do
-            git push origin main && break
+            if git push origin main; then
+              echo "Pushed successfully."
+              exit 0
+            fi
+            if [ "$i" -eq 3 ]; then
+              echo "::error::Failed to push to Pi4J/download after 3 attempts."
+              exit 1
+            fi
             echo "Push attempt $i failed, rebasing and retrying..."
             git pull --rebase origin main
           done
