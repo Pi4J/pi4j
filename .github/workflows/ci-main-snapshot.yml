@@ -147,9 +147,11 @@ jobs:
               echo "Pushed successfully."
               exit 0
             fi
+            if [ "$i" -eq 3 ]; then
+              echo "::error::Failed to push to Pi4J/download after 3 attempts."
+              exit 1
+            fi
             echo "Push attempt $i failed, rebasing and retrying..."
             git pull --rebase origin main
           done
-          echo "::error::Failed to push to Pi4J/download after 3 attempts."
-          exit 1
 
