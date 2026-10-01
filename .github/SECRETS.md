@@ -9,8 +9,8 @@ before you assume "the workflow is green" means "the thing actually happened."
 
 | Secret | Used in | Purpose | Type |
 |---|---|---|---|
-| `OSSRH_USERNAME` / `OSSRH_TOKEN` | `ci-main-snapshot.yml` | Deploy snapshot artifacts to the Sonatype Central snapshots repository (`sonatype-oss-snapshots` server id) | Org secret (Pi4J org settings → Secrets and variables → Actions) |
-| `API_TOKEN_GITHUB` | `ci-main-snapshot.yml` (`DeployPackages` job) | Push the built `.zip`/`.deb` bundle to [Pi4J/download](https://github.com/Pi4J/download) | Org secret, must have **write access to `Pi4J/download`** |
+| `OSSRH_USERNAME` / `OSSRH_TOKEN` | `ci-main-snapshot.yml`, `ci-publish-download-bundle.yml`, `ci-pull-request.yml`, `ci-jmh-biweekly.yml` | Deploy snapshot artifacts to the Sonatype Central snapshots repository (`sonatype-oss-snapshots` server id) | Org secret (Pi4J org settings → Secrets and variables → Actions) |
+| `API_TOKEN_GITHUB` | `ci-main-snapshot.yml` and `ci-publish-download-bundle.yml` (`DeployPackages` jobs) | Push built `.zip` bundles to [Pi4J/download](https://github.com/Pi4J/download) | Org secret, must have **write access to `Pi4J/download`** |
 
 `Pi4J/download` itself (not this repo) also has `PI4J_BOT_GITHUB_PAT`, used
 by its own `rebuild-repo.yml` to trigger that repo's `dynamic-readme.yml`
