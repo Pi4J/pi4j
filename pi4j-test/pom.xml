@@ -64,6 +64,19 @@
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
 
+            <!-- JAR MANIFEST -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>com.pi4j.test</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
             <!-- MAVEN RUN JUNIT5 TESTS -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -233,7 +246,7 @@
                                                  username="${raspberrypi.username}" password="${raspberrypi.password}"
                                                  trust="true"
                                                  failonerror="false" usepty="true" useSystemIn="true"
-                                                 command="sudo java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 --module-path ${raspberrypi.deploydirectory} --module ${launcher.class} ${launcher.args}"/>
+                                                 command="sudo java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -cp &quot;${raspberrypi.deploydirectory}/*&quot; ${launcher.class} ${launcher.args}"/>
                                     </target>
                                 </configuration>
                             </execution>

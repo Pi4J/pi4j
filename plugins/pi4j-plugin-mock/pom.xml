@@ -18,6 +18,19 @@
 
     <build>
         <plugins>
+            <!-- JAR MANIFEST -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>com.pi4j.plugin.mock</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
             <!-- OPTIONALLY DEPLOY THE FINAL JAR TO THE RASPBERRY PI -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -63,6 +63,19 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <!-- JAR MANIFEST -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Automatic-Module-Name>com.pi4j.plugin.ffm</Automatic-Module-Name>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
             <!-- DOWNLOAD RUNTIME DEPENDENCIES -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
