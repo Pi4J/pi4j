@@ -34,7 +34,7 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
      * @param provider the {@link DigitalProvider} responsible for this instance's underlying I/O
      * @param config the configuration describing this instance (pin, on-state, etc.)
      */
-    public DigitalBase(Context context, PROVIDER_TYPE provider, CONFIG_TYPE config){
+    protected DigitalBase(Context context, PROVIDER_TYPE provider, CONFIG_TYPE config) {
         super(context, provider, config);
 
         // create an event manager for digital state change events
