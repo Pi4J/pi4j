@@ -41,7 +41,7 @@ failure again.
 
 | Token | Rotated on | Expires | Rotated by |
 |---|---|---|---|
-| `API_TOKEN_GITHUB` | 2026-10-01 | _(fill in from the token creation page)_ | — |
+| `API_TOKEN_GITHUB` | 2026-10-01 | 2027-09-30 | @fdelporte |
 
 ## Incident note (2026-07-02 → 2026-10-01)
 
