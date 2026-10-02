@@ -76,7 +76,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
     /**
      * Long-lived file descriptors for the exported channel's {@code enable}, {@code period},
      * {@code duty_cycle} and {@code polarity} sysfs attributes. They are opened once in
-     * {@link #initialize(Context)} and reused by every {@link #on()}/{@link #off()} call (rewinding to
+     * {@link com.pi4j.io.IOBase#initialize()} and reused by every {@link #on()}/{@link #off()} call (rewinding to
      * offset 0 before each access) so the hot path no longer pays an {@code open()}/{@code close()}
      * syscall pair — and its native buffer allocations — for every attribute. They are released in
      * {@link #shutdownInternal(Context)}. A value of {@code -1} means "not yet opened".
@@ -91,12 +91,13 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
      * that the corresponding {@code /sys/class/pwm/pwmchipN} path is accessible with the required
      * permissions.
      *
+     * @param context  the context of this instance
      * @param provider the {@link PwmProvider} that created this instance
      * @param config   the PWM configuration supplying the chip number, channel and optional initial
      *                 duty cycle, polarity and frequency
      */
-    public FFMPwmHardware(PwmProvider provider, PwmConfig config) {
-        super(provider, config);
+    public FFMPwmHardware(Context context, PwmProvider provider, PwmConfig config) {
+        super(context, provider, config);
         this.chip = config.chip();
         this.channel = config.channel();
         FFMPermissionHelper.checkDevicePermissions(CHIP_PATH + chip, config);

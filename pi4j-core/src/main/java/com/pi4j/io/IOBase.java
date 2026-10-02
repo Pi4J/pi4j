@@ -22,9 +22,9 @@ import java.io.Closeable;
 public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, PROVIDER_TYPE extends Provider>
         extends IdentityBase implements IO<IO_TYPE,CONFIG_TYPE, PROVIDER_TYPE>, Closeable {
 
-    protected CONFIG_TYPE config;
-    protected PROVIDER_TYPE provider;
-    private Context context;
+    protected final CONFIG_TYPE config;
+    protected final PROVIDER_TYPE provider;
+    protected final Context context;
     // close() requires idempotency.
     protected boolean closed = false;
 
@@ -40,13 +40,14 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
      * @param provider the provider that created and backs this instance
      * @param config   the configuration defining this instance's identity and properties
      */
-    public IOBase(PROVIDER_TYPE provider, CONFIG_TYPE config){
+    protected IOBase(Context context, PROVIDER_TYPE provider, CONFIG_TYPE config){
         super();
         this.id = config.id();
         this.name = config.name();
         this.description = config.description();
         this.provider = provider;
         this.config = config;
+        this.context = context;
     }
 
     @Override
@@ -94,18 +95,12 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig, P
         return this.config;
     }
 
-    /**
-     * Returns the Pi4J {@link Context} this instance was initialized with, for use by subclasses.
-     *
-     * @return the owning context, or {@code null} if the instance has not been initialized
-     */
-    protected Context context() {
-        return this.context;
-    }
 
     @Override
     public IO_TYPE initialize(Context context) throws InitializeException {
-        this.context = context;
+        if (context != this.context) {
+            throw new IllegalArgumentException("Context mismatch");
+        }
         return (IO_TYPE) this;
     }
 

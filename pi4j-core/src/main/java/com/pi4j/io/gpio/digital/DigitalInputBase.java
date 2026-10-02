@@ -1,5 +1,7 @@
 package com.pi4j.io.gpio.digital;
 
+import com.pi4j.context.Context;
+
 /**
  * Abstract base class for {@link DigitalInput} implementations, specializing {@link DigitalBase}
  * with the digital-input type parameters. Provider-specific subclasses extend this to supply the
@@ -9,10 +11,11 @@ public abstract class DigitalInputBase extends DigitalBase<DigitalInput, Digital
     /**
      * Creates a digital input bound to the given provider and configuration.
      *
+     * @param context the context this device belongs to
      * @param provider the {@link DigitalInputProvider} responsible for this input's underlying I/O
      * @param config the configuration describing this input (pin, pull resistance, debounce, etc.)
      */
-    public DigitalInputBase(DigitalInputProvider provider, DigitalInputConfig config){
-        super(provider, config);
+    protected DigitalInputBase(Context context, DigitalInputProvider provider, DigitalInputConfig config){
+        super(context, provider, config);
     }
 }

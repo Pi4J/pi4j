@@ -58,10 +58,10 @@ public class FFMI2CProviderImpl extends I2CProviderBase implements I2CProvider {
         I2CBase<?> i2c;
         if (impl.equals(I2CImplementation.SMBUS) && bus.supportsSMBus()) {
             logger.debug("{} - creating SMBus adapter based on default implementation and functions", bus.getBusName());
-            i2c = new I2CSMBus(this, config, bus);
+            i2c = new I2CSMBus(context, this, config, bus);
         } else {
             logger.debug("{} - creating Direct ioctl adapter based on default implementation and functions", bus.getBusName());
-            i2c = new I2CDirect(this, config, bus);
+            i2c = new I2CDirect(context, this, config, bus);
         }
 
         return i2c;

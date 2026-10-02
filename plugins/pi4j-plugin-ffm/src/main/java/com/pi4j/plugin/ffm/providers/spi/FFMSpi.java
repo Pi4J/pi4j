@@ -73,8 +73,8 @@ public class FFMSpi extends SpiBase implements Spi {
      * @param provider the {@link SpiProvider} that created this instance
      * @param config   the SPI configuration carrying the bus, channel, mode, baud rate and bit order
      */
-    public FFMSpi(SpiProvider provider, SpiConfig config) {
-        super(provider, config);
+    public FFMSpi(Context context, SpiProvider provider, SpiConfig config) {
+        super(context, provider, config);
         this.path = SPI_BUS + config.bus().getBus() + "." + config.channel();
         FFMPermissionHelper.checkDevicePermissions(path, config);
     }

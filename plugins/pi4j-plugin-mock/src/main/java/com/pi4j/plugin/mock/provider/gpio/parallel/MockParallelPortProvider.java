@@ -18,6 +18,6 @@ public class MockParallelPortProvider
 
     @Override
     public MockParallelPort create(ParallelPortConfig config) {
-        return new MockParallelPort(this, config);
+        return new MockParallelPort(context, this, config);
     }
 }

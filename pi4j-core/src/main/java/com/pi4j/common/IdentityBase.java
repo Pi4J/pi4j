@@ -1,17 +1,14 @@
 package com.pi4j.common;
 
-import com.pi4j.extension.Extension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Convenient base class for {@link Extension} implementations that provides default {@link Identity}-style
+ * Convenient base class for {@link Identity} implementations that provides default {@link Identity}-style
  * storage for id, name, and description. Subclasses inherit sensible defaults derived from
  * the concrete class name and may override them via the constructors.
- *
- * @param <T> the self-type returned by the {@link Extension} lifecycle, enabling fluent subclass APIs
  */
-public abstract class IdentityBase<T> implements Extension<T> {
+public abstract class IdentityBase implements Identity {
 
     /** Logger bound to the concrete subclass for diagnostic output. */
     protected Logger logger = LoggerFactory.getLogger(this.getClass());

@@ -59,6 +59,6 @@ public class FFMPwmProviderImpl extends PwmProviderBase implements PwmProvider {
         }
 
         // create new I/O instance based on I/O config
-        return new FFMPwmHardware(this, config);
+        return new FFMPwmHardware(context, this, config);
     }
 }

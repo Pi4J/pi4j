@@ -1,5 +1,6 @@
 package com.pi4j.io.i2c;
 
+import com.pi4j.context.Context;
 import com.pi4j.io.IOBase;
 import com.pi4j.io.i2c.impl.DefaultI2CRegister;
 
@@ -19,12 +20,13 @@ public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig, I
     /**
      * Creates an I2C device bound to the given provider, configuration and bus, marking it as open.
      *
+     * @param context  the context this device belongs to
      * @param provider the provider that created this device
      * @param config   the configuration describing the bus and device address
      * @param i2CBus   the bus instance used to serialize access for this device
      */
-    public I2CBase(I2CProvider provider, I2CConfig config, T i2CBus) {
-        super(provider, config);
+    protected I2CBase(Context context, I2CProvider provider, I2CConfig config, T i2CBus) {
+        super(context, provider, config);
         this.i2CBus = i2CBus;
     }
 

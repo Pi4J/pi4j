@@ -29,14 +29,14 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
      * Creates a digital output bound to a GPIO line. Resolves the target device path
      * ({@code /dev/gpiochip} + the configured bus number), captures the BCM line offset from the
      * configuration, and verifies that the current user has the required permissions on the device
-     * file. The line itself is not requested until {@link #initialize(Context)} is called.
+     * file. The line itself is not requested until {@link com.pi4j.io.IOBase#initialize()} is called.
      *
      * @param provider the {@link DigitalOutputProvider} that created this instance
      * @param config   the {@link DigitalOutputConfig} supplying the BCM line offset, bus number and
      *                 initial state
      */
-    public FFMDigitalOutput(DigitalOutputProvider provider, DigitalOutputConfig config) {
-        super(provider, config);
+    public FFMDigitalOutput(Context context, DigitalOutputProvider provider, DigitalOutputConfig config) {
+        super(context, provider, config);
         this.line = new FFMGpioLine(MaskUtils.mask(config.bcm()), config.bus());
         FFMPermissionHelper.checkDevicePermissions(line.deviceName, config);
     }
