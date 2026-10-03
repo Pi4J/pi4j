@@ -3,7 +3,7 @@ package com.pi4j.io.gpio.digital;
 import com.pi4j.context.Context;
 import com.pi4j.event.EventDelegate;
 import com.pi4j.event.EventManager;
-import com.pi4j.io.gpio.GpioBase;
+import com.pi4j.io.IOBase;
 
 import java.util.function.Consumer;
 
@@ -11,7 +11,7 @@ import java.util.function.Consumer;
  * Abstract base implementation of {@link Digital}, providing the listener management and
  * state-change event dispatch shared by all digital I/O types. Subclasses such as
  * {@link DigitalInputBase} build on this to add their specific I/O behaviour, while the
- * generic {@link GpioBase} supplies the common GPIO lifecycle support.
+ * generic {@link IOBase} supplies the common GPIO lifecycle support.
  *
  * @param <DIGITAL_TYPE> the concrete digital I/O type, used as the self-referencing return type for fluent methods
  * @param <CONFIG_TYPE> the {@link DigitalConfig} type describing this instance
@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
         CONFIG_TYPE extends DigitalConfig,
         PROVIDER_TYPE extends DigitalProvider>
-        extends GpioBase<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>
+        extends IOBase<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>
         implements Digital<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>
 {
     // internal listeners collection
