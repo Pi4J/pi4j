@@ -4,7 +4,7 @@ import com.pi4j.Pi4J;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortConfigBuilder;
-import com.pi4j.io.gpio.parallel.ParallelPortProvider;
+import com.pi4j.plugin.mock.MockContext;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -14,8 +14,6 @@ import static com.pi4j.io.gpio.digital.DigitalState.LOW;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MockParallelPortTest {
-
-    private final ParallelPortProvider provider = new MockParallelPortProvider();
 
     private final ParallelPortConfigBuilder configBuilder = ParallelPortConfigBuilder.newInstance()
         .id("parallel-port")
@@ -34,7 +32,7 @@ class MockParallelPortTest {
      */
     @Test
     void canWriteToPort() {
-        var context = Pi4J.newContextBuilder().add(provider).build();
+        var context = new MockContext();
         var port = context.create(configBuilder.initialDirection(ParallelPort.Direction.OUTPUT).build());
 
         port.write(0b10);
@@ -46,7 +44,7 @@ class MockParallelPortTest {
      */
     @Test
     void cannotWriteToInputPort() {
-        var context = Pi4J.newContextBuilder().add(provider).build();
+        var context = new MockContext();
         var port = context.create(configBuilder.initialDirection(ParallelPort.Direction.INPUT).build());
 
         assertThrows(IllegalStateException.class, () -> port.write(0b10));
@@ -57,7 +55,7 @@ class MockParallelPortTest {
      */
     @Test
     void cannotWriteOutsideThePortMask() {
-        var context = Pi4J.newContextBuilder().add(provider).build();
+        var context = new MockContext();
         var port = context.create(configBuilder.initialDirection(ParallelPort.Direction.OUTPUT).build());
 
         assertThrows(IllegalArgumentException.class, () -> port.write(0b1000));
@@ -68,7 +66,7 @@ class MockParallelPortTest {
      */
     @Test
     void canChangePortDirection() {
-        var context = Pi4J.newContextBuilder().add(provider).build();
+        var context = new MockContext();
         var port = context.create(configBuilder.initialDirection(ParallelPort.Direction.INPUT).build());
 
         assertThrows(IllegalStateException.class, () -> port.write(0b10));

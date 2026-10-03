@@ -25,4 +25,8 @@ public interface Provider<IO_TYPE extends IO, CONFIG_TYPE extends Config>  {
      * @return the newly created I/O instance
      */
     IO_TYPE create(CONFIG_TYPE config);
+
+    default IO_TYPE create(ConfigBuilder<?, CONFIG_TYPE> configBuilder) {
+        return create(configBuilder.build());
+    }
 }

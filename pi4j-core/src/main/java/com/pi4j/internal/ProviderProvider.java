@@ -19,19 +19,19 @@ import com.pi4j.provider.Provider;
 @Deprecated(since="5.0")
 public interface ProviderProvider {
 
-    default Provider<DigitalInput, DigitalInputConfig> din() {
+    default DigitalInputProvider din() {
         return digitalInput();
     }
 
-    default Provider<DigitalOutput, DigitalOutputConfig> dout()  {
+    default DigitalOutputProvider dout()  {
         return digitalOutput();
     }
 
-    default Provider<DigitalInput, DigitalInputConfig> digitalInput() {
+    default DigitalInputProvider digitalInput() {
         return config -> ((Context) this).create(config);
     }
 
-    default Provider<DigitalOutput, DigitalOutputConfig> digitalOutput() {
+    default DigitalOutputProvider digitalOutput() {
         return config -> ((Context) this).create(config);
     }
 
@@ -47,11 +47,11 @@ public interface ProviderProvider {
         return config -> ((Context) this).create(config);
     }
 
-    default Provider<DigitalInput, DigitalInputConfig> getDigitalInputProvider() {
+    default DigitalInputProvider getDigitalInputProvider() {
         return this.digitalInput();
     }
 
-    default Provider<DigitalOutput, DigitalOutputConfig> getDigitalOutputProvider() {
+    default DigitalOutputProvider getDigitalOutputProvider() {
         return this.digitalOutput();
     }
 

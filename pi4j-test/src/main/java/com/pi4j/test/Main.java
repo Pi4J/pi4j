@@ -56,14 +56,6 @@ public class Main {
             providerContext = new ProviderContext(ProviderContext.TestProvider.NEWAUTOCONTEXT);
         }
 
-        // create About class instance
-        About about = new About(providerContext);
-        about.enumerateProviders();
-
-        for (var ioType : IOType.values()) {
-            about.enumerateProviders(ioType);
-        }
-
         // Run the tests
         var tests = List.of(
             I2CTestCase.run(providerContext),

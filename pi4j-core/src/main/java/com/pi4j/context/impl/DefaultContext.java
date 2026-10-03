@@ -9,6 +9,8 @@ import com.pi4j.exception.LifecycleException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.extension.Plugin;
 import com.pi4j.io.IO;
+import com.pi4j.io.IOConfig;
+import com.pi4j.io.IOType;
 import com.pi4j.registry.Registry;
 import com.pi4j.util.ExecutorPool;
 import org.slf4j.Logger;
@@ -21,11 +23,10 @@ import java.util.concurrent.Future;
 
 public abstract class DefaultContext implements Context {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultContext.class);
+    protected static final Logger logger = LoggerFactory.getLogger(DefaultContext.class);
 
     private final ContextConfig config;
     private BoardInfo boardInfo = null;
-
 
     private final EventManager<Context, ShutdownListener, ShutdownEvent> shutdownEventManager =new EventManager(this,
         (EventDelegate<ShutdownListener, ShutdownEvent>) (listener, event) -> listener.onShutdown(event));
@@ -58,8 +59,7 @@ public abstract class DefaultContext implements Context {
                 continue;
             }
 
-            logger.trace("detected plugin: [{}] in classpath; calling 'initialize()'",
-                plugin.getClass().getName());
+            logger.trace("detected plugin: [{}] in classpath; calling 'initialize()'", plugin.getClass().getName());
 
             try {
                 return plugin.createContext(config);
@@ -242,4 +242,17 @@ public abstract class DefaultContext implements Context {
     public void register(IO instance) {
         mutableRegistry.register(instance);
     }
+
+    @Override
+    public <I extends IO<?, ?>> I create(IOConfig config, IOType type) {
+        I io = (I) createImpl(config, type);
+        register(io);
+        return io;
+    }
+
+    /**
+     * Context implementations must override this method to crate IO instances. Registration is handled by
+     * the caller.
+     */
+    protected abstract IO<?,?> createImpl(IOConfig config, IOType type);
 }
