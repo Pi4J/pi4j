@@ -5,33 +5,10 @@ import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.context.Context;
 import com.pi4j.context.ContextConfig;
 import com.pi4j.event.*;
-import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.LifecycleException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.extension.Plugin;
-import com.pi4j.extension.impl.DefaultPluginService;
-import com.pi4j.extension.impl.PluginStore;
-import com.pi4j.internal.ProviderProvider;
 import com.pi4j.io.IO;
-import com.pi4j.io.IOType;
-import com.pi4j.io.gpio.digital.DigitalInput;
-import com.pi4j.io.gpio.digital.DigitalInputConfig;
-import com.pi4j.io.gpio.digital.DigitalInputProvider;
-import com.pi4j.io.gpio.digital.DigitalOutput;
-import com.pi4j.io.gpio.digital.DigitalOutputConfig;
-import com.pi4j.io.gpio.digital.DigitalOutputProvider;
-import com.pi4j.io.i2c.I2C;
-import com.pi4j.io.i2c.I2CConfig;
-import com.pi4j.io.i2c.I2CProvider;
-import com.pi4j.io.pwm.Pwm;
-import com.pi4j.io.pwm.PwmConfig;
-import com.pi4j.io.pwm.PwmProvider;
-import com.pi4j.io.spi.Spi;
-import com.pi4j.io.spi.SpiConfig;
-import com.pi4j.io.spi.SpiProvider;
-import com.pi4j.provider.Provider;
-import com.pi4j.provider.ProviderBase;
-import com.pi4j.provider.Providers;
 import com.pi4j.registry.Registry;
 import com.pi4j.util.ExecutorPool;
 import org.slf4j.Logger;
@@ -42,15 +19,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-public class DefaultContext implements Context {
+public abstract class DefaultContext implements Context {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(DefaultContext.class);
 
-    private ContextConfig config = null;
+    private final ContextConfig config;
     private BoardInfo boardInfo = null;
 
-    private final MutableProviders mutableProviders = new MutableProviders(this);
-    private final List<Plugin> plugins = new ArrayList<>();
+
     private final EventManager<Context, ShutdownListener, ShutdownEvent> shutdownEventManager =new EventManager(this,
         (EventDelegate<ShutdownListener, ShutdownEvent>) (listener, event) -> listener.onShutdown(event));
     private final EventManager<Context, InitializedListener, InitializedEvent> initializedEventManager = new EventManager(this,
@@ -63,7 +39,38 @@ public class DefaultContext implements Context {
     private volatile boolean isShutdown = false;
 
     public static Context newInstance(ContextConfig config) {
-        return new DefaultContext(config);
+        if (!config.autoDetectProviders() &&
+            !config.autoDetectMockPlugins()) {
+            throw new IllegalArgumentException("Can't create a new instance without at least one auto-detection type enabled.");
+        }
+
+        // detect available Pi4J Plugins by scanning the classpath looking for plugin instances
+        ServiceLoader<Plugin> serviceLoaderPlugins = ServiceLoader.load(Plugin.class);
+        for (Plugin plugin : serviceLoaderPlugins) {
+            if (plugin == null) continue;
+
+            if (!config.autoDetectMockPlugins() && plugin.isMock()) {
+                logger.trace("Ignoring mock plugin: [{}] in classpath", plugin.getClass().getName());
+                continue;
+            }
+            if (!config.autoDetectProviders() && !plugin.isMock()) {
+                logger.trace("Ignoring non-mock plugin: [{}] in classpath", plugin.getClass().getName());
+                continue;
+            }
+
+            logger.trace("detected plugin: [{}] in classpath; calling 'initialize()'",
+                plugin.getClass().getName());
+
+            try {
+                return plugin.createContext(config);
+            } catch (Exception ex) {
+                // unable to initialize this provider instance
+                logger.error("unable to 'initialize()' plugin: [{}]; {}", plugin.getClass().getName(),
+                    ex.getMessage(), ex);
+            }
+        }
+
+        throw new IllegalStateException("No plugin found matching the provided context configuration");
     }
 
     /**
@@ -103,69 +110,6 @@ public class DefaultContext implements Context {
 
         // initialize runtime now
         logger.info("Initializing Pi4J context/runtime...");
-        try {
-            // clear plugins container
-            plugins.clear();
-
-            // container sets for providers to load
-            Map<IOType, Provider> providers = new HashMap<>();
-
-            // only attempt to load platforms and providers from the classpath if an auto detect option is enabled
-            if (config.autoDetectProviders() || config.autoDetectMockPlugins()) {
-
-                // detect available Pi4J Plugins by scanning the classpath looking for plugin instances
-                ServiceLoader<Plugin> serviceLoaderPlugins = ServiceLoader.load(Plugin.class);
-                for (Plugin plugin : serviceLoaderPlugins) {
-                    if (plugin == null)
-                        continue;
-
-                    if (!config.autoDetectMockPlugins() && plugin.isMock()) {
-                        logger.trace("Ignoring mock plugin: [{}] in classpath", plugin.getClass().getName());
-                        continue;
-                    }
-                    if (!config.autoDetectProviders() && !plugin.isMock()) {
-                        logger.trace("Ignoring non-mock plugin: [{}] in classpath", plugin.getClass().getName());
-                        continue;
-                    }
-
-                    logger.trace("detected plugin: [{}] in classpath; calling 'initialize()'",
-                        plugin.getClass().getName());
-                    try {
-                        // add plugin to internal cache
-                        this.plugins.add(plugin);
-
-                        PluginStore store = new PluginStore();
-                        plugin.initialize(DefaultPluginService.newInstance(this, store));
-
-                        // if auto-detect providers is enabled,
-                        //    OR
-                        // Detecting Mocks is enabled and this is a mock plugin
-                        // then add any detected providers to the collection to load
-                        store.providers.forEach(provider -> addProvider(provider, providers));
-
-                    } catch (Exception ex) {
-                        // unable to initialize this provider instance
-                        logger.error("unable to 'initialize()' plugin: [{}]; {}", plugin.getClass().getName(),
-                            ex.getMessage(), ex);
-                    }
-                }
-            }
-
-            config().getProviders().forEach(provider -> {
-                Provider replaced = providers.put(provider.getType(), provider);
-                if (replaced != null) {
-                    logger.info("Replacing auto detected provider {} {} with provider {} from context config",
-                        replaced.getType(), replaced.getName(), provider.getName());
-                }
-            });
-
-            // initialize all providers
-            this.mutableProviders.initialize(providers.values());
-
-        } catch (Exception e) {
-            logger.error("failed to 'initialize(); '", e);
-            throw new InitializeException(e);
-        }
 
         logger.info("Pi4J context/runtime successfully initialized.");
 
@@ -175,40 +119,8 @@ public class DefaultContext implements Context {
         logger.debug("Pi4J runtime context successfully created & initialized.");
     }
 
-    /**
-     * <p>Adds providers to the given collection, to later be used in the runtime after initialization.</p>
-     * <p>This method validates the priority of a {@link Provider}, and guarantees, that we don't have multiple
-     * providers for the same {@link IOType}</p>
-     *
-     * @param provider
-     * @param providers
-     */
-    private void addProvider(Provider provider, Map<IOType, Provider> providers) {
-        if (!providers.containsKey(provider.getType())) {
-            providers.put(provider.getType(), provider);
-        } else {
-            Provider existingProvider = providers.get(provider.getType());
-            if (provider.getPriority() <= existingProvider.getPriority()) {
-                if (existingProvider.getName().equals(provider.getName()))
-                    throw new InitializeException(
-                        provider.getType() + " with name " + provider.getName() + " (" + provider.getId() + ") is already registered.");
-                logger.info("Ignoring provider {} {} ({}) with priority {} as lower priority than {} which has priority {}",
-                    provider.getType(), provider.getName(), provider.getId(), provider.getPriority(),
-                    existingProvider.getName(), existingProvider.getPriority());
-            } else {
-                logger.info("Replacing provider {} {} ({}) with priority {} with provider {} ({}) with higher priority {}",
-                    existingProvider.getType(), existingProvider.getName(), existingProvider.getId(), existingProvider.getPriority(),
-                    provider.getName(), provider.getId(), provider.getPriority());
-                providers.put(provider.getType(), provider);
-            }
-        }
-    }
-
     @Override
     public ContextConfig config() { return this.config; }
-
-    @Override
-    public Providers providers() { return mutableProviders; }
 
     @Override
     public Registry registry() { return this.mutableRegistry; }
@@ -241,18 +153,6 @@ public class DefaultContext implements Context {
 
             // remove all I/O instances
             this.mutableRegistry.shutdown();
-
-            // shutdown all providers
-            this.mutableProviders.shutdown();
-
-            // shutdown all plugins
-            for (Plugin plugin : this.plugins) {
-                try {
-                    plugin.shutdown(this);
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                }
-            }
 
             // shutdown executor pool
             this.executorPool.destroy();
@@ -341,80 +241,5 @@ public class DefaultContext implements Context {
     @Override
     public void register(IO instance) {
         mutableRegistry.register(instance);
-    }
-
-    /**
-     * Provide backwards compatibility for deprecated {@link ProviderProvider#digitalInput()}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T extends DigitalInputProvider> T digitalInput() {
-        class Provider extends ProviderBase<DigitalInputProvider, DigitalInput, DigitalInputConfig> implements DigitalInputProvider {
-            @Override
-            public DigitalInput create(DigitalInputConfig config) {
-                return DefaultContext.this.create(config);
-            }
-        }
-        return (T) new Provider();
-    }
-
-    /**
-     * Provide backwards compatibility for deprecated {@link ProviderProvider#digitalOutput()}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T extends DigitalOutputProvider> T digitalOutput() {
-        class Provider extends ProviderBase<DigitalOutputProvider, DigitalOutput, DigitalOutputConfig> implements DigitalOutputProvider {
-            @Override
-            public DigitalOutput create(DigitalOutputConfig config) {
-                return DefaultContext.this.create(config);
-            }
-        }
-        return (T) new Provider();
-    }
-
-    /**
-     * Provide backwards compatibility for deprecated {@link ProviderProvider#pwm()}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T extends PwmProvider> T pwm() {
-        class Provider extends ProviderBase<PwmProvider, Pwm, PwmConfig> implements PwmProvider {
-            @Override
-            public Pwm create(PwmConfig config) {
-                return DefaultContext.this.create(config);
-            }
-        }
-        return (T) new Provider();
-    }
-
-    /**
-     * Provide backwards compatibility for deprecated {@link ProviderProvider#i2c()}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T extends I2CProvider> T i2c() {
-        class Provider extends ProviderBase<I2CProvider, I2C, I2CConfig> implements I2CProvider {
-            @Override
-            public I2C create(I2CConfig config) {
-                return DefaultContext.this.create(config);
-            }
-        }
-        return (T) new Provider();
-    }
-
-    /**
-     * Provide backwards compatibility for deprecated {@link ProviderProvider#spi()}
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T extends SpiProvider> T spi() {
-        class Provider extends ProviderBase<SpiProvider, Spi, SpiConfig> implements SpiProvider {
-            @Override
-            public Spi create(SpiConfig config) {
-                return DefaultContext.this.create(config);
-            }
-        }
-        return (T) new Provider();
     }
 }

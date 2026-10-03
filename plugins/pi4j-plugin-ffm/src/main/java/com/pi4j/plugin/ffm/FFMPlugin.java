@@ -53,8 +53,6 @@ public class FFMPlugin implements Plugin {
         new Candidate("ffm-parallel-port", FFMParallelPortProvider::new)
     );
 
-    private Provider<?, ?, ?>[] providers = new Provider[]{};
-
     @Override
     public void initialize(PluginService service) {
         var available = new ArrayList<Provider<?, ?, ?>>();
