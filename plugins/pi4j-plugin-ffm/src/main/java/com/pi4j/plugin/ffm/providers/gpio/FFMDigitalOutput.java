@@ -92,13 +92,14 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
             return;
         }
         logger.info("{}-{} - closing GPIO BCM.", line.deviceName, line.mask);
+        // super.close() sets the closing state so it needs to be called before physically shutting down.
+        super.close();
         try {
                 line.close();
         } catch (Exception e) {
             throw new ShutdownException(e);
         }
         logger.info("{}-{} - GPIO BCM is closed. Recreate the pin object to reuse.", line.deviceName, line.mask);
-        super.close();
     }
 
     /**
