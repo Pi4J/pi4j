@@ -1,7 +1,6 @@
 package com.pi4j.io.gpio;
 
 import com.pi4j.io.IO;
-import com.pi4j.provider.Provider;
 
 /**
  * Common base contract for Pi4J GPIO-based I/O instances such as digital inputs/outputs and PWM pins.
