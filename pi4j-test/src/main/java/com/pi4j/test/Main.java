@@ -1,6 +1,5 @@
 package com.pi4j.test;
 
-import com.pi4j.io.IOType;
 import com.pi4j.test.smoketest.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
