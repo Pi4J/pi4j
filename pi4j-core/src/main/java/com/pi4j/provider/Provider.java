@@ -8,6 +8,8 @@ import com.pi4j.io.IO;
  * Legacy interface stub for IO construction; still supported for deprecated ProviderProvider implemented by
  * Context as the corresponding construction pattern was frequently advertised on the website.
  *
+ * @param <IO_TYPE>       the type of {@link IO} instance this provider creates
+ * @param <CONFIG_TYPE>   the {@link Config} type consumed when creating an I/O instance
  * @deprecated
  */
 @Deprecated(since="5.0")
