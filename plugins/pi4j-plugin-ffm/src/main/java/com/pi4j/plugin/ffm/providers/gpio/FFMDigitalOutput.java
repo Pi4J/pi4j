@@ -90,6 +90,7 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
         if (closed) {
             return;
         }
+        super.close();
         logger.info("{}-{} - closing GPIO BCM.", line.deviceName, line.mask);
         // super.close() sets the closing state so it needs to be called before physically shutting down.
         super.close();
