@@ -33,8 +33,8 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
      * @param provider the provider that creates and backs this I/O instance
      * @param config   the configuration describing this I/O
      */
-    public FFMParallelPort(ParallelPortProvider provider, ParallelPortConfig config) {
-        super(provider, config);
+    public FFMParallelPort(Context context, ParallelPortProvider provider, ParallelPortConfig config) {
+        super(context, provider, config);
         this.inputLineConfig = createInputLineConfigs(config);
         this.outputLineConfig = createOutputLineConfigs(config);
         this.gpioLine = new FFMGpioLine(config.mask(), config.bus());
@@ -77,7 +77,7 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
     }
 
     @Override
-    public ParallelPort shutdownInternal(Context context) throws ShutdownException {
+    public void close() {
         if (config.shutdownValue() != null && getDirection() == Direction.OUTPUT) {
             write(config.shutdownValue());
         }
@@ -86,7 +86,7 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
         } catch (Pi4JException e) {
             throw new ShutdownException(e);
         }
-        return super.shutdownInternal(context);
+        super.close();
     }
 
     /**

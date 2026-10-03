@@ -21,6 +21,6 @@ public class FFMParallelPortProvider
 
     @Override
     public ParallelPort create(ParallelPortConfig config) {
-        return new FFMParallelPort(this, config);
+        return new FFMParallelPort(context, this, config);
     }
 }
