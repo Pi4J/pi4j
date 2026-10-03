@@ -15,7 +15,7 @@ import java.util.Map;
  * @param pull the pull resistance setting
  * @param debounce the debounce time in microseconds
  * @param initialValue the initial value of the port
- * @param shutdownValue the value applied to the port on shutdown
+ * @param shutdownValue the value applied to the port on shutdown (can be null)
  * @param initialDirection the initial direction of the port
  */
 public record ParallelPortConfig(
@@ -29,7 +29,7 @@ public record ParallelPortConfig(
     long debounce,
     // output
     int initialValue,
-    int shutdownValue,
+    Integer shutdownValue,
     // port
     ParallelPort.Direction initialDirection
 ) implements IOConfig {
