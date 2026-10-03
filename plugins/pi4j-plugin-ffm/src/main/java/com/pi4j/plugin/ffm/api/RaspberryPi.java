@@ -1,10 +1,7 @@
 package com.pi4j.plugin.ffm.api;
 
-import com.pi4j.Pi4J;
 import com.pi4j.boardinfo.model.HeaderPin;
 import com.pi4j.context.Context;
-import com.pi4j.context.ContextBuilder;
-import com.pi4j.context.ContextConfig;
 import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.i2c.I2C;

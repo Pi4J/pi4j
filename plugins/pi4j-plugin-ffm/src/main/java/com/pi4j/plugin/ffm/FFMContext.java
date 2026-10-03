@@ -8,7 +8,6 @@ import com.pi4j.io.IOConfig;
 import com.pi4j.io.IOType;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
-import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 import com.pi4j.io.i2c.I2C;
