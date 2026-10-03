@@ -2,15 +2,18 @@ package com.pi4j.plugin.mock.provider.pwm;
 
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfig;
-import com.pi4j.io.pwm.PwmProviderBase;
+import com.pi4j.io.pwm.PwmProvider;
 import com.pi4j.plugin.mock.Mock;
+import com.pi4j.provider.ProviderBase;
 
 /**
- * Default in-memory implementation of {@link MockPwmProvider}, extending {@link PwmProviderBase}.
+ * Default in-memory implementation of {@link MockPwmProvider}, extending {@link ProviderBase}.
  * It produces {@link MockPwm} instances that simulate PWM channels in memory rather than driving
  * real PWM hardware.
  */
-public class MockPwmProviderImpl extends PwmProviderBase implements MockPwmProvider {
+public class MockPwmProviderImpl
+    extends ProviderBase<PwmProvider, Pwm, PwmConfig>
+    implements MockPwmProvider {
 
     /**
      * Creates the mock PWM provider, assigning its mock {@link #ID} and {@link #NAME}.

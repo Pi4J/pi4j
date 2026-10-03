@@ -4,6 +4,7 @@ import com.pi4j.io.i2c.*;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.providers.i2c.impl.I2CDirect;
 import com.pi4j.plugin.ffm.providers.i2c.impl.I2CSMBus;
+import com.pi4j.provider.ProviderBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +14,9 @@ import org.slf4j.LoggerFactory;
  * {@link com.pi4j.plugin.ffm.providers.i2c.impl.I2CSMBus} (SMBus ioctls) or
  * configured preference and the capabilities the adapter actually reports.
  */
-public class FFMI2CProviderImpl extends I2CProviderBase implements I2CProvider {
+public class FFMI2CProviderImpl
+    extends ProviderBase<I2CProvider, I2C, I2CConfig>
+    implements I2CProvider {
     private static final Logger logger = LoggerFactory.getLogger(FFMI2CProviderImpl.class);
 
     /**
