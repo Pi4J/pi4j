@@ -50,7 +50,6 @@ public class FFMPermissionHelper {
      * The required group set depends on the concrete provider type: GPIO/PWM providers need
      * {@code gpio} or {@code dialout}, I2C needs {@code i2c}, and SPI needs {@code spi}.
      *
-     * @param provider the FFM provider whose access requirements determine which OS groups are checked
      * @throws Pi4JException if no matching group exists on the system, if the current user does not
      *                       belong to one, or if the provider type is not recognized
      */
