@@ -8,11 +8,9 @@ import com.pi4j.event.Event;
  *
  * @param <DIGITAL_TYPE> the concrete {@link Digital} type that is the source of the event
  * @param <CONFIG_TYPE> the {@link DigitalConfig} type of the source
- * @param <PROVIDER_TYPE> the {@link DigitalProvider} type of the source
  */
-public interface DigitalEvent<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
-        CONFIG_TYPE extends DigitalConfig,
-        PROVIDER_TYPE extends DigitalProvider>
+public interface DigitalEvent<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE>,
+        CONFIG_TYPE extends DigitalConfig>
         extends Event {
     /**
      * Returns the digital I/O instance that produced this event.

@@ -8,7 +8,6 @@ import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortBase;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
-import com.pi4j.io.gpio.parallel.ParallelPortProvider;
 import com.pi4j.plugin.ffm.common.FFMGpioLine;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.enums.LineAttributeId;
@@ -30,11 +29,10 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
     /**
      * Creates a new GPIO parallel port instance bound to the given provider and configuration.
      *
-     * @param provider the provider that creates and backs this I/O instance
      * @param config   the configuration describing this I/O
      */
-    public FFMParallelPort(Context context, ParallelPortProvider provider, ParallelPortConfig config) {
-        super(context, provider, config);
+    public FFMParallelPort(Context context, ParallelPortConfig config) {
+        super(context, config);
         this.inputLineConfig = createInputLineConfigs(config);
         this.outputLineConfig = createOutputLineConfigs(config);
         this.gpioLine = new FFMGpioLine(config.mask(), config.bus());

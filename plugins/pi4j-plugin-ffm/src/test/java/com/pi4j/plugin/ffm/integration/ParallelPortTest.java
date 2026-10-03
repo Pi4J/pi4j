@@ -1,9 +1,10 @@
 package com.pi4j.plugin.ffm.integration;
 
 import com.pi4j.Pi4J;
+import com.pi4j.context.ContextBuilder;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortConfigBuilder;
-import com.pi4j.plugin.ffm.providers.parallel.FFMParallelPortProvider;
+import com.pi4j.plugin.ffm.FFMContext;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -22,9 +23,7 @@ public class ParallelPortTest {
 
     @Test
     void testOutput() {
-        var context = Pi4J.newContextBuilder()
-            .add(new FFMParallelPortProvider())
-            .build();
+        var context = new FFMContext();
 
         var device = context.create(ParallelPortConfigBuilder.newInstance()
             .id("test-gpio")
@@ -50,9 +49,7 @@ public class ParallelPortTest {
      */
     @Test
     void testInput() {
-        var context = Pi4J.newContextBuilder()
-            .add(new FFMParallelPortProvider())
-            .build();
+        var context = new FFMContext();
 
         var outputPort = context.create(ParallelPortConfigBuilder.newInstance()
             .id("test-output")
@@ -90,9 +87,7 @@ public class ParallelPortTest {
      */
     @Test
     void directionExample() {
-        var context = Pi4J.newContextBuilder()
-            .add(new FFMParallelPortProvider())
-            .build();
+        var context = new FFMContext();
 
         var outputPort = context.create(ParallelPortConfigBuilder.newInstance()
             .id("test-output")

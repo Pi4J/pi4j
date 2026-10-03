@@ -32,12 +32,11 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
      * configuration, and verifies that the current user has the required permissions on the device
      * file. The line itself is not requested until {@link com.pi4j.io.IOBase#initialize()} is called.
      *
-     * @param provider the {@link DigitalOutputProvider} that created this instance
      * @param config   the {@link DigitalOutputConfig} supplying the BCM line offset, bus number and
      *                 initial state
      */
-    public FFMDigitalOutput(Context context, DigitalOutputProvider provider, DigitalOutputConfig config) {
-        super(context, provider, config);
+    public FFMDigitalOutput(Context context, DigitalOutputConfig config) {
+        super(context, config);
         this.line = new FFMGpioLine(MaskUtils.mask(config.bcm()), config.bus());
         FFMPermissionHelper.checkDevicePermissions(line.deviceName, config);
     }
@@ -91,6 +90,7 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
         if (closed) {
             return;
         }
+        super.close();
         logger.info("{}-{} - closing GPIO BCM.", line.deviceName, line.mask);
         try {
                 line.close();
@@ -98,7 +98,6 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
             throw new ShutdownException(e);
         }
         logger.info("{}-{} - GPIO BCM is closed. Recreate the pin object to reuse.", line.deviceName, line.mask);
-        super.close();
     }
 
     /**

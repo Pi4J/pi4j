@@ -1,163 +1,69 @@
 package com.pi4j.internal;
 
-import com.pi4j.io.IOType;
-import com.pi4j.io.gpio.digital.DigitalInputProvider;
-import com.pi4j.io.gpio.digital.DigitalOutputProvider;
-import com.pi4j.io.i2c.I2CProvider;
-import com.pi4j.io.pwm.PwmProvider;
-import com.pi4j.io.spi.SpiProvider;
+import com.pi4j.context.Context;
+import com.pi4j.io.gpio.digital.*;
+import com.pi4j.io.i2c.I2C;
+import com.pi4j.io.i2c.I2CConfig;
+import com.pi4j.io.pwm.Pwm;
+import com.pi4j.io.pwm.PwmConfig;
+import com.pi4j.io.spi.Spi;
+import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.provider.Provider;
-import com.pi4j.provider.exception.ProviderException;
-import com.pi4j.provider.exception.ProviderInterfaceException;
-import com.pi4j.provider.exception.ProviderNotFoundException;
 
 /**
+ * Minimal stub preserved to keep code structured after examples advertised on the website working while
+ * generally migrating out of providers.
+ *
  * @deprecated Please use Context.create() methods directly. They are type safe wrt. the requested IO configuration.
  */
 @Deprecated(since="5.0")
 public interface ProviderProvider {
 
-    /**
-     * @throws ProviderException if any.
-     */
-    default <T extends DigitalInputProvider> T din() throws ProviderException {
+    default DigitalInputProvider din() {
         return digitalInput();
     }
 
-    /**
-     * @throws ProviderException if any.
-     */
-    default <T extends DigitalOutputProvider> T dout() throws ProviderException {
+    default DigitalOutputProvider dout()  {
         return digitalOutput();
     }
 
-    /**
-     * @throws ProviderException if any.
-     */
-    default <T extends DigitalInputProvider> T digitalInput() throws ProviderException {
-        return this.provider(IOType.DIGITAL_INPUT);
+    default DigitalInputProvider digitalInput() {
+        return config -> ((Context) this).create(config);
     }
 
-    /**
-     * @throws ProviderException if any.
-     */
-    default <T extends DigitalOutputProvider> T digitalOutput() throws ProviderException {
-        return this.provider(IOType.DIGITAL_OUTPUT);
+    default DigitalOutputProvider digitalOutput() {
+        return config -> ((Context) this).create(config);
     }
 
-    /**
-     * @throws ProviderException if any.
-     */
-    default <T extends PwmProvider> T pwm() throws ProviderException {
-        return this.provider(IOType.PWM);
+    default Provider<Pwm, PwmConfig> pwm() {
+        return config -> ((Context) this).create(config);
     }
 
-    /**
-     * @throws ProviderException if any.
-     */
-    default <T extends SpiProvider> T spi() throws ProviderException {
-        return this.provider(IOType.SPI);
+    default Provider<Spi, SpiConfig> spi() {
+        return config -> ((Context) this).create(config);
     }
 
-    /**
-     * @throws ProviderException if any.
-     */
-    default <T extends I2CProvider> T i2c() throws ProviderException {
-        return this.provider(IOType.I2C);
+    default Provider<I2C, I2CConfig> i2c() {
+        return config -> ((Context) this).create(config);
     }
 
-    /**
-     * @throws ProviderException if any.
-     */
-    default <T extends DigitalInputProvider> T getDigitalInputProvider() throws ProviderException {
+    default DigitalInputProvider getDigitalInputProvider() {
         return this.digitalInput();
     }
 
-    /**
-     * @throws ProviderException if any.
-     */
-    default <T extends DigitalOutputProvider> T getDigitalOutputProvider() throws ProviderException {
+    default DigitalOutputProvider getDigitalOutputProvider() {
         return this.digitalOutput();
     }
 
-    /**
-     * @throws ProviderException if any.
-     */
-    default <T extends PwmProvider> T getPwmProvider() throws ProviderException {
+    default Provider<Pwm, PwmConfig> getPwmProvider() {
         return this.pwm();
     }
 
-    /**
-     * @throws ProviderException if any.
-     */
-    default <T extends SpiProvider> T getSpiProvider() throws ProviderException {
+    default Provider<Spi, SpiConfig> getSpiProvider() {
         return this.spi();
     }
 
-    /**
-     * @throws ProviderException if any.
-     */
-    default <T extends I2CProvider> T getI2CProvider() throws ProviderException {
+    default Provider<I2C, I2CConfig> getI2CProvider() {
         return this.i2c();
     }
-
-    /**
-     * @throws com.pi4j.provider.exception.ProviderNotFoundException if any.
-     */
-    <T extends Provider> T provider(String providerId) throws ProviderNotFoundException;
-
-    /**
-     * @param <T>           the provider type
-     * @throws ProviderNotFoundException if any.
-     */
-    <T extends Provider> T provider(String providerId, Class<T> providerClass) throws ProviderNotFoundException;
-
-    /**
-     * @throws ProviderNotFoundException  if any.
-     * @throws ProviderInterfaceException if any.
-     */
-    <T extends Provider> T provider(Class<T> providerClass) throws ProviderNotFoundException, ProviderInterfaceException;
-
-    /**
-     * @throws ProviderNotFoundException if the provider specified by {@code ioType} can not be found.
-     */
-    <T extends Provider> T provider(IOType ioType) throws ProviderNotFoundException;
-
-    boolean hasProvider(String providerId);
-
-    <T extends Provider> boolean hasProvider(Class<T> providerClass);
-
-    <T extends Provider> boolean hasProvider(IOType ioType);
-
-    /**
-     * @throws ProviderNotFoundException if the provider specified by {@code providerId} can not be found.
-     */
-    default <T extends Provider> T getProvider(String providerId) throws ProviderNotFoundException {
-        return provider(providerId);
-    }
-
-    /**
-     * @param providerClass
-     * @throws ProviderNotFoundException if the provider specified by {@code providerId} can not be found.
-     */
-    default <T extends Provider> T getProvider(String providerId, Class<T> providerClass) throws ProviderNotFoundException {
-        return provider(providerId, providerClass);
-    }
-
-    /**
-     * @throws ProviderNotFoundException  if the provider specified by {@code providerClass} can not be found.
-     * @throws ProviderInterfaceException if {@code providerClass} is not a valid provider.
-     */
-    default <T extends Provider> T getProvider(Class<T> providerClass) throws ProviderNotFoundException,
-        ProviderInterfaceException {
-        return provider(providerClass);
-    }
-
-    /**
-     * @throws ProviderNotFoundException if the provider specified by {@code ioType} can not be found.
-     */
-    default <T extends Provider> T getProvider(IOType ioType) throws ProviderNotFoundException {
-        return provider(ioType);
-    }
-
 }

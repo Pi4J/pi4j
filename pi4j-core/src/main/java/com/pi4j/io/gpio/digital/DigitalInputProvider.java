@@ -1,11 +1,13 @@
 package com.pi4j.io.gpio.digital;
 
+import com.pi4j.provider.Provider;
+
 /**
- * Provider contract for creating {@link DigitalInput} instances. Implementations bind digital inputs to a
- * specific platform or I/O expander, while the convenience {@code create} methods here build the necessary
- * {@link DigitalInputConfig} from simple parameters.
+ * Legacy provider stub for creating {@link DigitalInput} instances.
+ * @deprecated
  */
-public interface DigitalInputProvider extends DigitalProvider<DigitalInputProvider, DigitalInput, DigitalInputConfig> {
+@Deprecated(since = "5.0")
+public interface DigitalInputProvider extends Provider<DigitalInput, DigitalInputConfig> {
 
     /**
      * Creates a digital input from the configuration produced by the given builder.
@@ -26,7 +28,7 @@ public interface DigitalInputProvider extends DigitalProvider<DigitalInputProvid
      * @return the newly created digital input instance
      */
     default <T extends DigitalInput> T create(Integer bcm) {
-        var config = DigitalInput.newConfigBuilder(context())
+        var config = DigitalInput.newConfigBuilder()
             .bcm(bcm)
             .build();
         return (T) create(config);
@@ -41,7 +43,7 @@ public interface DigitalInputProvider extends DigitalProvider<DigitalInputProvid
      * @return the newly created digital input instance
      */
     default <T extends DigitalInput> T create(Integer bcm, String id) {
-        var config = DigitalInput.newConfigBuilder(context())
+        var config = DigitalInput.newConfigBuilder()
             .bcm(bcm)
             .id(id)
             .build();
@@ -58,7 +60,7 @@ public interface DigitalInputProvider extends DigitalProvider<DigitalInputProvid
      * @return the newly created digital input instance
      */
     default <T extends DigitalInput> T create(Integer bcm, String id, String name) {
-        var config = DigitalInput.newConfigBuilder(context())
+        var config = DigitalInput.newConfigBuilder()
             .bcm(bcm)
             .id(id)
             .name(name)
@@ -77,7 +79,7 @@ public interface DigitalInputProvider extends DigitalProvider<DigitalInputProvid
      * @return the newly created digital input instance
      */
     default <T extends DigitalInput> T create(Integer bcm, String id, String name, String description) {
-        var config = DigitalInput.newConfigBuilder(context())
+        var config = DigitalInput.newConfigBuilder()
             .bcm(bcm)
             .id(id)
             .name(name)

@@ -10,12 +10,11 @@ import java.util.concurrent.Callable;
 
 /**
  * Represents a single I2C device on an I2C bus and is the primary handle through which application code reads and
- * writes data, both as raw byte streams and via device registers. Instances are created by an {@link I2CProvider}
- * from an {@link I2CConfig}; register-level access is obtained through {@link #getRegister(int)} and atomic
+ * writes data, both as raw byte streams and via device registers. Register-level access is obtained through {@link #getRegister(int)} and atomic
  * bus operations through {@link #execute(Callable)}.
  */
 public interface I2C
-    extends IO<I2C, I2CConfig, I2CProvider>, IODataWriter, IODataReader, I2CRegisterDataReaderWriter, SerialCircuitIO, AutoCloseable {
+    extends IO<I2C, I2CConfig>, IODataWriter, IODataReader, I2CRegisterDataReaderWriter, SerialCircuitIO, AutoCloseable {
 
     // Override to remove checked exception declaration
     @Override
