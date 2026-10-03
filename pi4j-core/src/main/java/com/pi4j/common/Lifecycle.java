@@ -5,8 +5,6 @@ import com.pi4j.exception.InitializeException;
 
 import java.io.Closeable;
 
-import java.io.Closeable;
-
 /**
  * Defines the managed startup and shutdown phases for Pi4J components such as I/O providers and platforms.
  * Components are brought online with {@link #initialize(Context)} and torn down with
