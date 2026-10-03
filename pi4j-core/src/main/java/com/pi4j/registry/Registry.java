@@ -11,7 +11,7 @@ import com.pi4j.provider.Provider;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+
 
 /**
  * Read-only view of the runtime registry that tracks every {@link IO} instance created through the Pi4J context.

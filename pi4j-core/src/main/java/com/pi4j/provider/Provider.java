@@ -1,13 +1,8 @@
 package com.pi4j.provider;
 
-import com.pi4j.common.Descriptor;
 import com.pi4j.config.Config;
 import com.pi4j.config.ConfigBuilder;
-import com.pi4j.context.Context;
-import com.pi4j.extension.Extension;
 import com.pi4j.io.IO;
-import com.pi4j.io.IOType;
-import com.pi4j.io.exception.IOException;
 
 /**
  * Legacy interface stub for IO construction; still supported for deprecated ProviderProvider implemented by
