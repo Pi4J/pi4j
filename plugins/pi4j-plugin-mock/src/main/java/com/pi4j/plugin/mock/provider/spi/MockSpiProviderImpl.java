@@ -2,15 +2,18 @@ package com.pi4j.plugin.mock.provider.spi;
 
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiConfig;
-import com.pi4j.io.spi.SpiProviderBase;
+import com.pi4j.io.spi.SpiProvider;
 import com.pi4j.plugin.mock.Mock;
+import com.pi4j.provider.ProviderBase;
 
 /**
- * Default in-memory implementation of {@link MockSpiProvider}, extending {@link SpiProviderBase}.
+ * Default in-memory implementation of {@link MockSpiProvider}, extending {@link ProviderBase}.
  * It produces {@link MockSpi} instances that exchange bytes through an in-memory buffer rather than
  * communicating over a real SPI bus.
  */
-public class MockSpiProviderImpl extends SpiProviderBase implements MockSpiProvider {
+public class MockSpiProviderImpl
+    extends ProviderBase<SpiProvider, Spi, SpiConfig>
+    implements MockSpiProvider {
 
     /**
      * Creates the mock SPI provider, assigning its mock {@link #ID} and {@link #NAME}.

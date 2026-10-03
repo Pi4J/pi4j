@@ -3,6 +3,7 @@ package com.pi4j.plugin.ffm.providers.pwm;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.pwm.*;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
+import com.pi4j.provider.ProviderBase;
 
 /**
  * {@link PwmProvider} for the FFM backend that creates hardware PWM instances driven through the Linux
@@ -12,7 +13,9 @@ import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
  * @see com.pi4j.io.pwm.PwmProvider
  * @see FFMPwmHardware
  */
-public class FFMPwmProviderImpl extends PwmProviderBase implements PwmProvider {
+public class FFMPwmProviderImpl
+    extends ProviderBase<PwmProvider, Pwm, PwmConfig>
+    implements PwmProvider {
 
     /**
      * Creates the provider, assigning its id and name and verifying that the current user holds the

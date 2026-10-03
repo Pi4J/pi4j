@@ -3,8 +3,8 @@ package com.pi4j.plugin.ffm.providers.spi;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.io.spi.SpiProvider;
-import com.pi4j.io.spi.SpiProviderBase;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
+import com.pi4j.provider.ProviderBase;
 
 /**
  * {@link SpiProvider} for the FFM backend that creates SPI instances communicating with the kernel
@@ -14,7 +14,9 @@ import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
  * @see com.pi4j.io.spi.SpiProvider
  * @see FFMSpi
  */
-public class FFMSpiProviderImpl extends SpiProviderBase implements SpiProvider {
+public class FFMSpiProviderImpl
+    extends ProviderBase<SpiProvider, Spi, SpiConfig>
+    implements SpiProvider {
 
     /**
      * Creates the provider, assigning its id and name and verifying that the current user holds the
