@@ -2,15 +2,18 @@ package com.pi4j.plugin.mock.provider.i2c;
 
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfig;
-import com.pi4j.io.i2c.I2CProviderBase;
+import com.pi4j.io.i2c.I2CProvider;
 import com.pi4j.plugin.mock.Mock;
+import com.pi4j.provider.ProviderBase;
 
 /**
- * Default in-memory implementation of {@link MockI2CProvider}, extending {@link I2CProviderBase}.
+ * Default in-memory implementation of {@link MockI2CProvider}, extending {@link ProviderBase}.
  * It produces {@link MockI2C} instances that simulate I2C device registers in memory rather than
  * communicating over a real I2C bus.
  */
-public class MockI2CProviderImpl extends I2CProviderBase implements MockI2CProvider {
+public class MockI2CProviderImpl
+    extends ProviderBase<I2CProvider, I2C, I2CConfig>
+    implements MockI2CProvider {
 
     /**
      * Creates the mock I2C provider, assigning its mock {@link #ID} and {@link #NAME}.

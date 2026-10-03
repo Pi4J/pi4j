@@ -2,10 +2,13 @@ package com.pi4j.test.provider.impl;
 
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiConfig;
-import com.pi4j.io.spi.SpiProviderBase;
+import com.pi4j.io.spi.SpiProvider;
+import com.pi4j.provider.ProviderBase;
 import com.pi4j.test.provider.TestSpiProvider;
 
-public class TestSpiProviderImpl extends SpiProviderBase implements TestSpiProvider {
+public class TestSpiProviderImpl
+    extends ProviderBase<SpiProvider, Spi, SpiConfig>
+    implements TestSpiProvider {
 
     public TestSpiProviderImpl(){ super(); }
 
