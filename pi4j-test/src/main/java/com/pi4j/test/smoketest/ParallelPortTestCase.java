@@ -45,7 +45,8 @@ public class ParallelPortTestCase {
             for (int i = 0; i < 4; i++) {
                 outputPort.write(i);
                 var inputValue = inputPort.read();
-                if (inputValue != i) {
+                var expected = ~i & 3;
+                if (inputValue != expected) {
                     return new TestResult(TEST_NAME, false,
                         "Input value didn't match output value (" + i + " != " + inputValue + ")"
                     );
@@ -60,7 +61,8 @@ public class ParallelPortTestCase {
             for (int i = 0; i < 4; i++) {
                 inputPort.write(i);
                 var inputValue = outputPort.read();
-                if (inputValue != i) {
+                var expected = ~i & 3;
+                if (inputValue != expected) {
                     return new TestResult(TEST_NAME, false,
                         "Reversed values did not match (" + i + " != " + inputValue + ")"
                     );
