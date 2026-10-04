@@ -18,6 +18,9 @@ public class ParallelPortTestCase {
 
     private static final String TEST_NAME = "Parallel Port";
 
+    private static final int[] OUTPUT_BITS = new int[] { 0, 1 };
+    private static final int[] INPUT_BITS = new int[] { 1, 0 };
+
     private static final ParallelPortConfig OUTPUT_CONFIG = ParallelPortConfigBuilder.newInstance()
         .id("parallel-out")
         .initialDirection(ParallelPort.Direction.OUTPUT)
@@ -43,11 +46,9 @@ public class ParallelPortTestCase {
             logger.info("Testing with configured port directions");
 
             for (int i = 0; i < 4; i++) {
-                outputPort.write(i);
-                var inputValue = inputPort.read();
-                // reverse the mask being compared to accommodate existing digital tests pin mapping
-                var expected = ~i & 3;
-                if (inputValue != expected) {
+                outputPort.write(remap(i, OUTPUT_BITS));
+                var inputValue = remap(inputPort.read(), INPUT_BITS);
+                if (i != inputValue) {
                     return new TestResult(TEST_NAME, false,
                         "Input value didn't match output value (" + i + " != " + inputValue + ")"
                     );
@@ -60,11 +61,9 @@ public class ParallelPortTestCase {
             inputPort.setDirection(ParallelPort.Direction.OUTPUT);
 
             for (int i = 0; i < 4; i++) {
-                inputPort.write(i);
-                var inputValue = outputPort.read();
-                // reverse the mask being compared to accommodate existing digital tests pin mapping
-                var expected = ~i & 3;
-                if (inputValue != expected) {
+                inputPort.write(remap(i, INPUT_BITS));
+                var inputValue = remap(outputPort.read(), OUTPUT_BITS);
+                if (i != inputValue) {
                     return new TestResult(TEST_NAME, false,
                         "Reversed values did not match (" + i + " != " + inputValue + ")"
                     );
@@ -79,5 +78,15 @@ public class ParallelPortTestCase {
         }
 
         return new TestResult(TEST_NAME, true, "Write-read operations completed");
+    }
+
+    private static int remap(int value, int[] bits) {
+        var result = 0;
+        for (int i = 0; i < bits.length; i++) {
+            if ((value & (1 << i)) != 0) {
+                result |= 1 << bits[i];
+            }
+        }
+        return result;
     }
 }
