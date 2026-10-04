@@ -45,6 +45,7 @@ public class ParallelPortTestCase {
             for (int i = 0; i < 4; i++) {
                 outputPort.write(i);
                 var inputValue = inputPort.read();
+                // reverse the mask being compared to accommodate existing digital tests pin mapping
                 var expected = ~i & 3;
                 if (inputValue != expected) {
                     return new TestResult(TEST_NAME, false,
@@ -61,6 +62,7 @@ public class ParallelPortTestCase {
             for (int i = 0; i < 4; i++) {
                 inputPort.write(i);
                 var inputValue = outputPort.read();
+                // reverse the mask being compared to accommodate existing digital tests pin mapping
                 var expected = ~i & 3;
                 if (inputValue != expected) {
                     return new TestResult(TEST_NAME, false,
