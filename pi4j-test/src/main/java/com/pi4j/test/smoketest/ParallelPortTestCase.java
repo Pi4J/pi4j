@@ -22,16 +22,16 @@ public class ParallelPortTestCase {
         .id("parallel-out")
         .initialDirection(ParallelPort.Direction.OUTPUT)
         .shutdownValue(0)
-        .bcm(20)
-        .bcm(21)
+        .bcm(24)
+        .bcm(26)
         .build();
 
     private static final ParallelPortConfig INPUT_CONFIG = ParallelPortConfigBuilder.newInstance()
         .id("parallel-in")
         .initialDirection(ParallelPort.Direction.INPUT)
         .shutdownValue(0)
-        .bcm(7)
-        .bcm(12)
+        .bcm(16)
+        .bcm(25)
         .build();
 
     public static TestResult run(ProviderContext providerContext) {
@@ -66,6 +66,8 @@ public class ParallelPortTestCase {
                     );
                 }
             }
+
+            inputPort.setDirection(ParallelPort.Direction.INPUT);
         } catch (Exception e) {
             logger.error("Test failure", e);
             return new TestResult(TEST_NAME, false, "Test failure: " + e.getMessage());
