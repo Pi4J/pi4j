@@ -21,8 +21,35 @@ Usage parms:
 -p newautocontext (default), or ffm
 -h help
 ```
+### Results
+At program conpletion a sumation of success/failure is printed, then each of the test results are 
+listed individually.   If there was a test that failed scroll up to the see the details logged during 
+execution and any exception details. 
+
+
 
 ## Wiring
+The TestBoard and smoketest program assume what GPIOs are available.  The board uses GPIOs as input
+and output, also I2C, SPI and PWM.
+
+### GPIO usage.
+See section  [direct wiring](#direct-wiring) for a list of GPIOs used during smoketest execution.
+
+### Config.sys
+I2c, SPI and PWM require config.sys settings.   Config.sys is located in /boot/firmware/config.txt in newer OS, 
+ /boot/config.txt in very old OS.  
+Near the top of the file config.sys 
+
+dtparam=i2c_arm=on   
+dtparam=spi=on 
+
+[all]  
+dtoverlay=pwm
+
+
+Note: if your normal config has the following it will also work as gpio18 channel2 exists in either.  
+dtoverlay=pwm-2chan
+
 
 ### PCB
 
@@ -32,7 +59,7 @@ Below, you can find a full description of the wiring used for the test setup. If
 
 ### Breadboard
 
-Two BMP280 (air pressure and temperature) or BME280 (air pressure, temperature, and humidity) are used as they are available as PCBs with both I2C and SPI interfaces. Some other wiring is added to connect GPIOs to each other, to test different types of communication. 
+Two BMP280 (air pressure and temperature) or BME280 (air pre/boot/firmware/config.txtssure, temperature, and humidity) are used as they are available as PCBs with both I2C and SPI interfaces. Some other wiring is added to connect GPIOs to each other, to test different types of communication. 
 
 <!-- Full image URL as this is used as a source for a page on pi4j.com -->
 ![Wiring diagram](https://github.com/Pi4J/pi4j/raw/develop/pi4j-test/wiring/wiring-diagram.png)
@@ -120,7 +147,10 @@ Only needed for `DigitalInputDebounceMonitorTestCase` (not added to the wiring d
 
 /**
 *     IMPORTANT
-* Note1 Recent kernel changes to the device tree has gpios EX: BCM19, reserved for kernel usage.
-*   As the smoketest PCB is already created, use the existing path already wired for the 
+* Note1 Recent kernel changes to the device tree has gpios EX: BCM19, shown reserved for kernel usage 
+* and now detected by FFM as already in use. .
+* This BCM19 use occurs when the PWM is configured for 2 or more channels.  To stop a config.sys 
+* change to free the gpio, GPIO19 is no longer used in the smoketest, 
+*   As the smoketest PCB is already created, the smoketest uses the existing path already wired for the 
 * regular debounce test.
 */
