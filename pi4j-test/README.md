@@ -4,7 +4,9 @@ Testing the full Pi4J library is hard because it requires real hardware devices 
 
 ## Main Test
 
-The `src/main/java/com/pi4j/test/Main.java` class verifies that the providers can be loaded and used. The use is very basic, but just enough to know it worked. 
+The `src/main/java/com/pi4j/test/Main.java` class verifies that the providers can be loaded and used. The use is very basic, but just enough to know it worked.
+The Main.java program executes the individual testcase programs located in `src/main/java/com/pi4j/test/smoketest`.
+
 
 ## Build and Run
 
@@ -22,23 +24,24 @@ Usage parms:
 -h help
 ```
 ### Results
-At program conpletion a sumation of success/failure is printed, then each of the test results are 
+At program completion a summation of success/failure is printed, then each of the test results are 
 listed individually.   If there was a test that failed scroll up to the see the details logged during 
 execution and any exception details. 
 
 
 
 ## Wiring
-The TestBoard and smoketest program assume what GPIOs are available.  The board uses GPIOs as input
-and output, also I2C, SPI and PWM.
+The TestBoard and smoketest program assume what GPIOs are available.  The TestBoard uses GPIOs as input
+and output, and as I2C, SPI and PWM interfaces. 
+GPIO usage can be inspected using the Pi command line tools  _pinctrl get 0-40_ and  _gpioinfo -c gpiochip0_.
 
 ### GPIO usage.
 See section  [direct wiring](#direct-wiring) for a list of GPIOs used during smoketest execution.
 
-### Config.sys
-I2c, SPI and PWM require config.sys settings.   Config.sys is located in /boot/firmware/config.txt in newer OS, 
+### config.txt
+I2c, SPI and PWM require config.txt settings.   config.txt is located in /boot/firmware/config.txt in newer OS, 
  /boot/config.txt in very old OS.  
-Near the top of the file config.sys 
+Near the top of the file config.txt 
 
 dtparam=i2c_arm=on   
 dtparam=spi=on 
@@ -46,9 +49,6 @@ dtparam=spi=on
 [all]  
 dtoverlay=pwm
 
-
-Note: if your normal config has the following it will also work as gpio18 channel2 exists in either.  
-dtoverlay=pwm-2chan
 
 
 ### PCB
@@ -59,7 +59,7 @@ Below, you can find a full description of the wiring used for the test setup. If
 
 ### Breadboard
 
-Two BMP280 (air pressure and temperature) or BME280 (air pre/boot/firmware/config.txtssure, temperature, and humidity) are used as they are available as PCBs with both I2C and SPI interfaces. Some other wiring is added to connect GPIOs to each other, to test different types of communication. 
+Two BMP280 (air pressure and temperature) or BME280 (air pressure, temperature, and humidity) are used as they are available as PCBs with both I2C and SPI interfaces. Some other wiring is added to connect GPIOs to each other, to test different types of communication. 
 
 <!-- Full image URL as this is used as a source for a page on pi4j.com -->
 ![Wiring diagram](https://github.com/Pi4J/pi4j/raw/develop/pi4j-test/wiring/wiring-diagram.png)
@@ -99,8 +99,8 @@ Used for the wiring diagram:
 
 ### Sensor Wiring
 
-The I2C and SPI BMP280 charts refer to connection points on the breakout board, 
-but your sensor may use different letter designations. Also, there are BMP sensors available with I2C **and** SPI interfaces or **only one** of the interfaces, read the fine print if you order these sensors.
+The I2C and SPI BMP280 and BME280 charts refer to connection points on the breakout board, 
+but your sensor may use different letter designations. Also, there are BMP and BME sensors available with I2C **and** SPI interfaces or **only one** of the interfaces, read the fine print if you order these sensors.
 
 #### I2C
 
@@ -138,19 +138,11 @@ The PWM, input, output, and debounce connections are M-M jumpers between T-cobbl
 | Input     | GPIO         |   36   | 16  | GPIO       |   37   | 26  | White | 3   |
 | Debounce  | GPIO         |   15   | 22  | GPIO       |   13   | 27  | Grey  | 4   |
 
-Only needed for `DigitalInputDebounceMonitorTestCase` (not added to the wiring diagram and pictures).
+Only needed for **DigitalInputDebounceMonitorTestCase** (not added to the wiring diagram and pictures).  
+This test includes the use of a logic analyzer to accurately measure timing sequences. It is not included as a test programs executed by the Main.java program.
 
 | Test      | From RPi Pin | Number | BCM  | To RPi Pin | Number |   BCM    | Color | LED |
 |:----------|:-------------|:------:|:----:|:-----------|:------:|:--------:|:------|-----|
 | Debounce  | GPIO         | 15     | 22   | GPIO       |   13   | 27 Note1 | Brown | 5   |
 |           |              |        |      | GPIO       |   29   |  5       | LOGIC | 6   |
 
-/**
-*     IMPORTANT
-* Note1 Recent kernel changes to the device tree has gpios EX: BCM19, shown reserved for kernel usage 
-* and now detected by FFM as already in use. .
-* This BCM19 use occurs when the PWM is configured for 2 or more channels.  To stop a config.sys 
-* change to free the gpio, GPIO19 is no longer used in the smoketest, 
-*   As the smoketest PCB is already created, the smoketest uses the existing path already wired for the 
-* regular debounce test.
-*/
