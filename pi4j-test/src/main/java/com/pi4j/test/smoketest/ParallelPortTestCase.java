@@ -22,16 +22,16 @@ public class ParallelPortTestCase {
         .id("parallel-out")
         .initialDirection(ParallelPort.Direction.OUTPUT)
         .shutdownValue(0)
-        .bcm(24)
-        .bcm(26)
+        .bcm(24) // output port used by DigitalOutputTestCase
+        .bcm(26) // output port used by DigitalInputTestCase
         .build();
 
     private static final ParallelPortConfig INPUT_CONFIG = ParallelPortConfigBuilder.newInstance()
         .id("parallel-in")
         .initialDirection(ParallelPort.Direction.INPUT)
         .shutdownValue(0)
-        .bcm(16)
-        .bcm(25)
+        .bcm(16) // input port used by DigitalInputTestCase
+        .bcm(25) // input port used by DigitalOutputTestCase
         .build();
 
     public static TestResult run(ProviderContext providerContext) {
