@@ -78,6 +78,10 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
 
     @Override
     public void close() {
+        if (closed) {
+            return;
+        }
+        super.close();
         if (config.shutdownValue() != null && getDirection() == Direction.OUTPUT) {
             write(config.shutdownValue());
         }
@@ -86,7 +90,6 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
         } catch (Pi4JException e) {
             throw new ShutdownException(e);
         }
-        super.close();
     }
 
     /**
