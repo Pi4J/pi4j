@@ -67,6 +67,7 @@ public class ParallelPortTestCase {
                 }
             }
 
+            // reset input port input mode
             inputPort.setDirection(ParallelPort.Direction.INPUT);
         } catch (Exception e) {
             logger.error("Test failure", e);
