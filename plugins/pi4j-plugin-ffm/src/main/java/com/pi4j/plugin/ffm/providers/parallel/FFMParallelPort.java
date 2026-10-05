@@ -22,17 +22,19 @@ import java.util.function.UnaryOperator;
 /**
  * FFM implementation of {@link ParallelPort}
  */
-public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
+public sealed class FFMParallelPort
+    extends ParallelPortBase
+    implements ParallelPort
+    permits FFMParallelPort.WithBitmaskMappingLogic {
 
     private final LineConfig inputLineConfig;
     private final LineConfig outputLineConfig;
     private final FFMGpioLine gpioLine;
 
-    private final BitmaskMappingLogic bitmaskMappingLogic;
-
     /**
      * Creates a new GPIO parallel port instance bound to the given provider and configuration.
      *
+     * @param context the Pi4J context
      * @param provider the provider that creates and backs this I/O instance
      * @param config   the configuration describing this I/O
      */
@@ -41,7 +43,6 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
         this.inputLineConfig = createInputLineConfigs(config);
         this.outputLineConfig = createOutputLineConfigs(config);
         this.gpioLine = new FFMGpioLine(MaskUtils.mask(config.offsets()), config.bus());
-        this.bitmaskMappingLogic = new BitmaskMappingLogic(config.offsets());
     }
 
     @Override
@@ -56,18 +57,12 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
 
     @Override
     protected void handleWrite(int value) {
-        var valueToWrite = (this.bitmaskMappingLogic.isRequired())
-            ? bitmaskMappingLogic.map(value)
-            : value;
-        gpioLine.writeValue(valueToWrite);
+        gpioLine.writeValue(value);
     }
 
     @Override
     protected int handleRead() {
-        var rawValue = gpioLine.readValue();
-        return this.bitmaskMappingLogic.isRequired()
-            ? this.bitmaskMappingLogic.unmap(rawValue)
-            : rawValue;
+        return gpioLine.readValue();
     }
 
     @Override
@@ -167,6 +162,46 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
         }
 
         return  new LineConfig(modeFlags, attributes.length, attributes);
+    }
+
+    /**
+     * {@link FFMParallelPort} which maps to and from user-specified and hardware-compatible bitmask.
+     * <p>
+     * This allows users to avoid the O(n) overhead of remapping bitmasks for each {@link #read()} and
+     * {@link #write(int)} operation when their offsets are provided in a hardware-native order
+     * @see BitmaskMappingLogic
+     */
+    static final class WithBitmaskMappingLogic extends FFMParallelPort {
+
+        private final BitmaskMappingLogic mappingLogic;
+
+        /**
+         * Creates a new GPIO parallel port instance bound to the given provider and configuration.
+         *
+         * @param context the Pi4J context
+         * @param provider the provider that creates and backs this I/O instance
+         * @param config   the configuration describing this I/O
+         * @param mappingLogic logic required to map user-defined pins to hardware-friendly values
+         */
+        WithBitmaskMappingLogic(
+            Context context,
+            ParallelPortProvider provider,
+            ParallelPortConfig config,
+            BitmaskMappingLogic mappingLogic
+        ) {
+            super(context, provider, config);
+            this.mappingLogic = mappingLogic;
+        }
+
+        @Override
+        protected void handleWrite(int value) {
+            super.handleWrite(mappingLogic.map(value));
+        }
+
+        @Override
+        protected int handleRead() {
+            return mappingLogic.unmap(super.handleRead());
+        }
     }
 
     /**

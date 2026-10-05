@@ -5,8 +5,6 @@ import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.io.impl.IOConfigBuilderBase;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Builder for {@link ParallelPortConfig}

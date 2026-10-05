@@ -6,7 +6,6 @@ import com.pi4j.io.gpio.digital.PullResistance;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Configuration for a parallel port

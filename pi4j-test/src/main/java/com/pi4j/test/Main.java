@@ -66,18 +66,18 @@ public class Main {
 
         // Run the tests
         var tests = List.of(
-//            I2CTestCase.run(providerContext),
-//            I2CWithOffsetTestCase.run(providerContext),
-//            SpiTestCase.run(providerContext),
-//            SpiWithOffsetTestCase.run(providerContext),
-//            //SpiWriteReadTestCase.run(providerContext), // requires manual CS across write/read operation
-//            PWMTestCase.run(providerContext, 1, 50, 10),
-//            DigitalInputTestCase.run(providerContext),
-//            FiveDigitalInputsTestCase.run(providerContext),
-//            DigitalOutputTestCase.run(providerContext),
-//            //DigitalInputDebounceMonitorTestCase.run(providerContext), // This test needs a Logic Analyzer
-//            DigitalInputDebounceTimeTestCase.run(providerContext),
-//            DigitalInputDebounceCountTestCase.run(providerContext),
+            I2CTestCase.run(providerContext),
+            I2CWithOffsetTestCase.run(providerContext),
+            SpiTestCase.run(providerContext),
+            SpiWithOffsetTestCase.run(providerContext),
+            //SpiWriteReadTestCase.run(providerContext), // requires manual CS across write/read operation
+            PWMTestCase.run(providerContext, 1, 50, 10),
+            DigitalInputTestCase.run(providerContext),
+            FiveDigitalInputsTestCase.run(providerContext),
+            DigitalOutputTestCase.run(providerContext),
+            //DigitalInputDebounceMonitorTestCase.run(providerContext), // This test needs a Logic Analyzer
+            DigitalInputDebounceTimeTestCase.run(providerContext),
+            DigitalInputDebounceCountTestCase.run(providerContext),
             ParallelPortTestCase.run(providerContext)
         );
 
