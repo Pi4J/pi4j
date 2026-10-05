@@ -32,21 +32,15 @@ class ParallelPortConfigBuilderTest {
 
     @Test
     void cannotAddDuplicatesWhenAddingBcm() {
-        assertThrows(IllegalArgumentException.class,
-            () -> ParallelPortConfigBuilder.newInstance()
-                .bcm(1)
-                .bcm(2)
-                .bcm(1)
-                .build()
-        );
+        var builder = ParallelPortConfigBuilder.newInstance()
+            .bcm(1)
+            .bcm(2);
+        assertThrows(IllegalArgumentException.class, () -> builder.bcm(1));
     }
 
     @Test
     void cannotAddDuplicatesWhenAddingMultipleBcmValues() {
-        assertThrows(IllegalArgumentException.class,
-            () -> ParallelPortConfigBuilder.newInstance()
-                .bcm(1, 2, 1)
-                .build()
-        );
+        var builder = ParallelPortConfigBuilder.newInstance();
+        assertThrows(IllegalArgumentException.class, () -> builder.bcm(1, 2, 1));
     }
 }

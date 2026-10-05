@@ -24,8 +24,7 @@ import java.util.function.UnaryOperator;
  */
 public sealed class FFMParallelPort
     extends ParallelPortBase
-    implements ParallelPort
-    permits FFMParallelPort.WithBitmaskMappingLogic {
+    implements ParallelPort {
 
     private final LineConfig inputLineConfig;
     private final LineConfig outputLineConfig;
@@ -236,14 +235,14 @@ public sealed class FFMParallelPort
                 .mapToInt(offsets::indexOf)
                 .toArray();
 
-            var required = false;
+            var req = false;
             for (int i = 1; i < this.offsets.length; i++) {
                 if (this.offsets[i] < this.offsets[i - 1]) {
-                    required = true;
+                    req = true;
                     break;
                 }
             }
-            this.required = required;
+            this.required = req;
         }
 
         /**
