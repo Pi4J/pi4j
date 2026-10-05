@@ -17,7 +17,7 @@ import com.pi4j.plugin.ffm.common.gpio.structs.LineConfig;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineConfigAttribute;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * FFM implementation of {@link ParallelPort}
@@ -28,21 +28,7 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
     private final LineConfig outputLineConfig;
     private final FFMGpioLine gpioLine;
 
-    /**
-     * Operation to map from user-specified values to {@code ioctl}-friendly values, according to the order of
-     * {@link ParallelPortConfig#offsets()}
-     * <p>
-     * Defaults to {@link Function#identity()} when offsets are in ascending numerical order
-     */
-    private final Function<Integer, Integer> mapToHardwareOperation;
-
-    /**
-     * Operation to map from {@code ioctl} values to user-friendly values, according to the order of
-     * {@link ParallelPortConfig#offsets()}
-     * <p>
-     * Defaults to {@link Function#identity()} when offsets are in ascending numerical order
-     */
-    private final Function<Integer, Integer> mapFromHardwareOperation;
+    private final BitmaskMappingLogic bitmaskMappingLogic;
 
     /**
      * Creates a new GPIO parallel port instance bound to the given provider and configuration.
@@ -55,16 +41,7 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
         this.inputLineConfig = createInputLineConfigs(config);
         this.outputLineConfig = createOutputLineConfigs(config);
         this.gpioLine = new FFMGpioLine(MaskUtils.mask(config.offsets()), config.bus());
-
-        RemapLogic remapLogic = new RemapLogic(config.offsets());
-
-        mapToHardwareOperation = (remapLogic.isRequired())
-            ? remapLogic::map
-            : Function.identity();
-
-        mapFromHardwareOperation = remapLogic.isRequired()
-            ? remapLogic::unmap
-            : Function.identity();
+        this.bitmaskMappingLogic = new BitmaskMappingLogic(config.offsets());
     }
 
     @Override
@@ -79,12 +56,18 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
 
     @Override
     protected void handleWrite(int value) {
-        gpioLine.writeValue(mapToHardwareOperation.apply(value));
+        var valueToWrite = (this.bitmaskMappingLogic.isRequired())
+            ? bitmaskMappingLogic.map(value)
+            : value;
+        gpioLine.writeValue(valueToWrite);
     }
 
     @Override
     protected int handleRead() {
-        return mapFromHardwareOperation.apply(gpioLine.readValue());
+        var rawValue = gpioLine.readValue();
+        return this.bitmaskMappingLogic.isRequired()
+            ? this.bitmaskMappingLogic.unmap(rawValue)
+            : rawValue;
     }
 
     @Override
@@ -191,24 +174,41 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
      * by hardware.
      * <p>
      * If the user supplies bcm values in ascending order, remapping is not required
-     * (as indicated by {@link #isRequired()} evaluating to false) and {@link Function#identity()} should be used
-     * instead.
+     * (as indicated by {@link #isRequired()} evaluating to false) and {@link UnaryOperator#identity()} is sufficient.
      * <p>
      * If the user supplies bcm values in anything other than ascending order, we're assuming that
      * this implies a bit-order. In such cases, we need to adjust the user-provided values to match
      * what {@code ioctl} expects (for {@link #map(int)}) or provides ({@link #unmap}).
      */
-    static final class RemapLogic {
+    static final class BitmaskMappingLogic {
+        /**
+         * The indices of each bit of the user-specified mask required to map to the value to a hardware-compatible
+         * bit mask
+         */
         private final int[] offsets;
 
         /**
-         * Construct remapping logic based on the user-specified offsets
-         * @param offsets the in-order offsets as specified by the user
+         * Whether remap logic is necessary for this user mask
          */
-        public RemapLogic(List<Integer> offsets) {
+        private final boolean required;
+
+        /**
+         * Construct remapping logic based on the user-specified offsets
+         * @param offsets the ordered offsets as specified by the user
+         */
+        public BitmaskMappingLogic(List<Integer> offsets) {
             this.offsets = offsets.stream().sorted()
                 .mapToInt(offsets::indexOf)
                 .toArray();
+
+            var required = false;
+            for (int i = 1; i < this.offsets.length; i++) {
+                if (this.offsets[i] < this.offsets[i - 1]) {
+                    required = true;
+                    break;
+                }
+            }
+            this.required = required;
         }
 
         /**
@@ -216,13 +216,7 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
          * @return true if the user offsets are out of sequential order
          */
         public boolean isRequired() {
-            boolean required = false;
-
-            for (int i = 1; i < offsets.length; i++) {
-                required |= offsets[i] < offsets[i - 1];
-            }
-
-            return required;
+            return this.required;
         }
 
         /**

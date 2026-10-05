@@ -76,14 +76,4 @@ public class ParallelPortTestCase {
 
         return new TestResult(TEST_NAME, true, "Write-read operations completed");
     }
-
-    private static int remap(int value, int[] bits) {
-        var result = 0;
-        for (int i = 0; i < bits.length; i++) {
-            if ((value & (1 << i)) != 0) {
-                result |= 1 << bits[i];
-            }
-        }
-        return result;
-    }
 }

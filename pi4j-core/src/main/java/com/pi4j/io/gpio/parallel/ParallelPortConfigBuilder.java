@@ -5,6 +5,7 @@ import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.io.impl.IOConfigBuilderBase;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ import java.util.List;
 public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortConfigBuilder, ParallelPortConfig> {
 
     private Integer bus = 0;
-    private final List<Integer> offsets = new ArrayList<>();
+    private final ArrayList<Integer> offsets = new ArrayList<>();
     private ParallelPort.Direction initialDirection = ParallelPort.Direction.INPUT;
     private Integer initialValue = 0;
     private Integer shutdownValue = 0;
@@ -40,6 +41,18 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
             throw new IllegalArgumentException("Offsets already contain the value " + bcm);
         }
         this.offsets.add(bcm);
+        return this;
+    }
+
+    /**
+     * Add multiple BCM pin mappings.
+     * @param bcm a multiple BCM pin mappings
+     * @return this builder instance
+     */
+    public ParallelPortConfigBuilder bcm(int...bcm) {
+        for (int i : bcm) {
+            this.bcm(i);
+        }
         return this;
     }
 
