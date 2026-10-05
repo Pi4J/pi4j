@@ -1,5 +1,6 @@
 package com.pi4j.io.gpio;
 
+import java.util.Collection;
 import java.util.PrimitiveIterator;
 
 /**
@@ -29,6 +30,19 @@ public class MaskUtils {
      * @return a mask with the bits at the given offsets set
      */
     public static long mask(int... offsets) {
+        long mask = 0;
+        for (var offset : offsets) {
+            mask |= 1L << offset;
+        }
+        return mask;
+    }
+
+    /**
+     * Return a mask with the bits at the given offsets set
+     * @param offsets the offsets of the bits to set
+     * @return a mask with the bits at the given offsets set
+     */
+    public static long mask(Collection<Integer> offsets) {
         long mask = 0;
         for (var offset : offsets) {
             mask |= 1L << offset;

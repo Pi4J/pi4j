@@ -1,9 +1,12 @@
 package com.pi4j.io.gpio.parallel;
 
 import com.pi4j.io.IOConfig;
+import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.digital.PullResistance;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Configuration for a parallel port
@@ -11,7 +14,7 @@ import java.util.Map;
  * @param name the user-provided name
  * @param description the user-provided description
  * @param bus the bus number / GPIO chip
- * @param mask bit mask representing the pins in the port
+ * @param offsets bit mask representing the pins in the port
  * @param pull the pull resistance setting
  * @param debounce the debounce time in microseconds
  * @param initialValue the initial value of the port
@@ -23,7 +26,7 @@ public record ParallelPortConfig(
     @Override String name,
     @Override String description,
     int bus,
-    int mask,
+    List<Integer> offsets,
     // input
     PullResistance pull,
     long debounce,
@@ -34,9 +37,13 @@ public record ParallelPortConfig(
     ParallelPort.Direction initialDirection
 ) implements IOConfig {
 
+    public long mask() {
+        return MaskUtils.mask(offsets);
+    }
+
     @Override
     public int getUniqueIdentifier() {
-        return mask;
+        return (int) mask();
     }
 
     @Override

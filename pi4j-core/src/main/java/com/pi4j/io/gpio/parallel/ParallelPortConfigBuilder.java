@@ -4,13 +4,16 @@ import com.pi4j.config.Config;
 import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.io.impl.IOConfigBuilderBase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Builder for {@link ParallelPortConfig}
  */
 public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortConfigBuilder, ParallelPortConfig> {
 
     private Integer bus = 0;
-    private int bcmMask = 0;
+    private final List<Integer> offsets = new ArrayList<>();
     private ParallelPort.Direction initialDirection = ParallelPort.Direction.INPUT;
     private Integer initialValue = 0;
     private Integer shutdownValue = 0;
@@ -33,7 +36,10 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
      * @return this builder instance
      */
     public ParallelPortConfigBuilder bcm(int bcm) {
-        this.bcmMask |= (1 << bcm);
+        if (offsets.contains(bcm)) {
+            throw new IllegalArgumentException("Offsets already contain the value " + bcm);
+        }
+        this.offsets.add(bcm);
         return this;
     }
 
@@ -93,7 +99,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
      */
     @Override
     public ParallelPortConfig build() {
-        if (bcmMask == 0) {
+        if (offsets.isEmpty()) {
             throw new IllegalArgumentException("BCM pins must be specified");
         }
         if (initialDirection == null) {
@@ -104,7 +110,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
             this.properties.get(Config.NAME_KEY),
             this.properties.get(Config.DESCRIPTION_KEY),
             this.bus,
-            this.bcmMask,
+            this.offsets,
             this.pull,
             this.debounce,
             this.initialValue,

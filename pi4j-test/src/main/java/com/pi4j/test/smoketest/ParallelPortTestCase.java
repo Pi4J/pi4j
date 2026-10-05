@@ -18,9 +18,6 @@ public class ParallelPortTestCase {
 
     private static final String TEST_NAME = "Parallel Port";
 
-    private static final int[] OUTPUT_BITS = new int[] { 0, 1 };
-    private static final int[] INPUT_BITS = new int[] { 1, 0 };
-
     private static final ParallelPortConfig OUTPUT_CONFIG = ParallelPortConfigBuilder.newInstance()
         .id("parallel-out")
         .initialDirection(ParallelPort.Direction.OUTPUT)
@@ -33,8 +30,8 @@ public class ParallelPortTestCase {
         .id("parallel-in")
         .initialDirection(ParallelPort.Direction.INPUT)
         .shutdownValue(0)
-        .bcm(16) // input port used by DigitalInputTestCase
         .bcm(25) // input port used by DigitalOutputTestCase
+        .bcm(16) // input port used by DigitalInputTestCase
         .build();
 
     public static TestResult run(ProviderContext providerContext) {
@@ -46,8 +43,8 @@ public class ParallelPortTestCase {
             logger.info("Testing with configured port directions");
 
             for (int i = 0; i < 4; i++) {
-                outputPort.write(remap(i, OUTPUT_BITS));
-                var inputValue = remap(inputPort.read(), INPUT_BITS);
+                outputPort.write(i);
+                var inputValue = inputPort.read();
                 if (i != inputValue) {
                     return new TestResult(TEST_NAME, false,
                         "Input value didn't match output value (" + i + " != " + inputValue + ")"
@@ -61,8 +58,8 @@ public class ParallelPortTestCase {
             inputPort.setDirection(ParallelPort.Direction.OUTPUT);
 
             for (int i = 0; i < 4; i++) {
-                inputPort.write(remap(i, INPUT_BITS));
-                var inputValue = remap(outputPort.read(), OUTPUT_BITS);
+                inputPort.write(i);
+                var inputValue = outputPort.read();
                 if (i != inputValue) {
                     return new TestResult(TEST_NAME, false,
                         "Reversed values did not match (" + i + " != " + inputValue + ")"

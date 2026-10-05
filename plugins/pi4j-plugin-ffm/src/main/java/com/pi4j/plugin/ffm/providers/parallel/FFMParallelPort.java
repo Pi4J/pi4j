@@ -17,6 +17,7 @@ import com.pi4j.plugin.ffm.common.gpio.structs.LineConfig;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineConfigAttribute;
 
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * FFM implementation of {@link ParallelPort}
@@ -28,6 +29,22 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
     private final FFMGpioLine gpioLine;
 
     /**
+     * Operation to map from user-specified values to {@code ioctl}-friendly values, according to the order of
+     * {@link ParallelPortConfig#offsets()}
+     * <p>
+     * Defaults to {@link Function#identity()} when offsets are in ascending numerical order
+     */
+    private final Function<Integer, Integer> mapToHardwareOperation;
+
+    /**
+     * Operation to map from {@code ioctl} values to user-friendly values, according to the order of
+     * {@link ParallelPortConfig#offsets()}
+     * <p>
+     * Defaults to {@link Function#identity()} when offsets are in ascending numerical order
+     */
+    private final Function<Integer, Integer> mapFromHardwareOperation;
+
+    /**
      * Creates a new GPIO parallel port instance bound to the given provider and configuration.
      *
      * @param provider the provider that creates and backs this I/O instance
@@ -37,7 +54,17 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
         super(context, provider, config);
         this.inputLineConfig = createInputLineConfigs(config);
         this.outputLineConfig = createOutputLineConfigs(config);
-        this.gpioLine = new FFMGpioLine(config.mask(), config.bus());
+        this.gpioLine = new FFMGpioLine(MaskUtils.mask(config.offsets()), config.bus());
+
+        RemapLogic remapLogic = new RemapLogic(config.offsets());
+
+        mapToHardwareOperation = (remapLogic.isRequired())
+            ? remapLogic::map
+            : Function.identity();
+
+        mapFromHardwareOperation = remapLogic.isRequired()
+            ? remapLogic::unmap
+            : Function.identity();
     }
 
     @Override
@@ -52,12 +79,12 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
 
     @Override
     protected void handleWrite(int value) {
-        gpioLine.writeValue(value);
+        gpioLine.writeValue(mapToHardwareOperation.apply(value));
     }
 
     @Override
     protected int handleRead() {
-        return gpioLine.readValue();
+        return mapFromHardwareOperation.apply(gpioLine.readValue());
     }
 
     @Override
@@ -157,5 +184,71 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
         }
 
         return  new LineConfig(modeFlags, attributes.length, attributes);
+    }
+
+    /**
+     * Operations to invoke when mapping to and from a user-provided and the bitmask expected or provided
+     * by hardware.
+     * <p>
+     * If the user supplies bcm values in ascending order, remapping is not required
+     * (as indicated by {@link #isRequired()} evaluating to false) and {@link Function#identity()} should be used
+     * instead.
+     * <p>
+     * If the user supplies bcm values in anything other than ascending order, we're assuming that
+     * this implies a bit-order. In such cases, we need to adjust the user-provided values to match
+     * what {@code ioctl} expects (for {@link #map(int)}) or provides ({@link #unmap}).
+     */
+    static final class RemapLogic {
+        private final int[] offsets;
+
+        /**
+         * Construct remapping logic based on the user-specified offsets
+         * @param offsets the in-order offsets as specified by the user
+         */
+        public RemapLogic(List<Integer> offsets) {
+            this.offsets = offsets.stream().sorted()
+                .mapToInt(offsets::indexOf)
+                .toArray();
+        }
+
+        /**
+         * Whether re-mapping logic is required
+         * @return true if the user offsets are out of sequential order
+         */
+        public boolean isRequired() {
+            boolean required = false;
+
+            for (int i = 1; i < offsets.length; i++) {
+                required |= offsets[i] < offsets[i - 1];
+            }
+
+            return required;
+        }
+
+        /**
+         * Map the user-specified value to that required by {@code ioctl}
+         * @param value the user value
+         * @return a value which can sent to {@code ioctl}
+         */
+        public int map(int value) {
+            int result = 0;
+            for (int i = 0; i < this.offsets.length; i++) {
+                result |= ((value >> i) & 1) << offsets[i];
+            }
+            return result;
+        }
+
+        /**
+         * Map the {@code ioctl}-provided value back to user space
+         * @param value the value returned by {@code ioctl}
+         * @return a value which makes sense to the user
+         */
+        public int unmap(int value) {
+            int result = 0;
+            for (int i = 0; i < this.offsets.length; i++) {
+                result |= ((value >> offsets[i]) & 1) << i;
+            }
+            return result;
+        }
     }
 }
