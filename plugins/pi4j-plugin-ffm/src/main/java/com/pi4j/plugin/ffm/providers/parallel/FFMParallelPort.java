@@ -17,11 +17,14 @@ import com.pi4j.plugin.ffm.common.gpio.structs.LineConfig;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineConfigAttribute;
 
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 /**
  * FFM implementation of {@link ParallelPort}
  */
-public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
+public sealed class FFMParallelPort
+    extends ParallelPortBase
+    implements ParallelPort {
 
     private final LineConfig inputLineConfig;
     private final LineConfig outputLineConfig;
@@ -30,6 +33,7 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
     /**
      * Creates a new GPIO parallel port instance bound to the given provider and configuration.
      *
+     * @param context the Pi4J context
      * @param provider the provider that creates and backs this I/O instance
      * @param config   the configuration describing this I/O
      */
@@ -37,7 +41,7 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
         super(context, provider, config);
         this.inputLineConfig = createInputLineConfigs(config);
         this.outputLineConfig = createOutputLineConfigs(config);
-        this.gpioLine = new FFMGpioLine(config.mask(), config.bus());
+        this.gpioLine = new FFMGpioLine(MaskUtils.mask(config.offsets()), config.bus());
     }
 
     @Override
@@ -157,5 +161,122 @@ public class FFMParallelPort extends ParallelPortBase implements ParallelPort {
         }
 
         return  new LineConfig(modeFlags, attributes.length, attributes);
+    }
+
+    /**
+     * {@link FFMParallelPort} which maps to and from user-specified and hardware-compatible bitmask.
+     * <p>
+     * This allows users to avoid the O(n) overhead of remapping bitmasks for each {@link #read()} and
+     * {@link #write(int)} operation when their offsets are provided in a hardware-native order
+     * @see BitmaskMappingLogic
+     */
+    static final class WithBitmaskMappingLogic extends FFMParallelPort {
+
+        private final BitmaskMappingLogic mappingLogic;
+
+        /**
+         * Creates a new GPIO parallel port instance bound to the given provider and configuration.
+         *
+         * @param context the Pi4J context
+         * @param provider the provider that creates and backs this I/O instance
+         * @param config   the configuration describing this I/O
+         * @param mappingLogic logic required to map user-defined pins to hardware-friendly values
+         */
+        WithBitmaskMappingLogic(
+            Context context,
+            ParallelPortProvider provider,
+            ParallelPortConfig config,
+            BitmaskMappingLogic mappingLogic
+        ) {
+            super(context, provider, config);
+            this.mappingLogic = mappingLogic;
+        }
+
+        @Override
+        protected void handleWrite(int value) {
+            super.handleWrite(mappingLogic.map(value));
+        }
+
+        @Override
+        protected int handleRead() {
+            return mappingLogic.unmap(super.handleRead());
+        }
+    }
+
+    /**
+     * Operations to invoke when mapping to and from a user-provided and the bitmask expected or provided
+     * by hardware.
+     * <p>
+     * If the user supplies bcm values in ascending order, remapping is not required
+     * (as indicated by {@link #isRequired()} evaluating to false) and {@link UnaryOperator#identity()} is sufficient.
+     * <p>
+     * If the user supplies bcm values in anything other than ascending order, we're assuming that
+     * this implies a bit-order. In such cases, we need to adjust the user-provided values to match
+     * what {@code ioctl} expects (for {@link #map(int)}) or provides ({@link #unmap}).
+     */
+    static final class BitmaskMappingLogic {
+        /**
+         * The indices of each bit of the user-specified mask required to map to the value to a hardware-compatible
+         * bit mask
+         */
+        private final int[] offsets;
+
+        /**
+         * Whether remap logic is necessary for this user mask
+         */
+        private final boolean required;
+
+        /**
+         * Construct remapping logic based on the user-specified offsets
+         * @param offsets the ordered offsets as specified by the user
+         */
+        public BitmaskMappingLogic(List<Integer> offsets) {
+            this.offsets = offsets.stream().sorted()
+                .mapToInt(offsets::indexOf)
+                .toArray();
+
+            var req = false;
+            for (int i = 1; i < this.offsets.length; i++) {
+                if (this.offsets[i] < this.offsets[i - 1]) {
+                    req = true;
+                    break;
+                }
+            }
+            this.required = req;
+        }
+
+        /**
+         * Whether re-mapping logic is required
+         * @return true if the user offsets are out of sequential order
+         */
+        public boolean isRequired() {
+            return this.required;
+        }
+
+        /**
+         * Map the user-specified value to that required by {@code ioctl}
+         * @param value the user value
+         * @return a value which can sent to {@code ioctl}
+         */
+        public int map(int value) {
+            int result = 0;
+            for (int i = 0; i < this.offsets.length; i++) {
+                result |= ((value >> i) & 1) << offsets[i];
+            }
+            return result;
+        }
+
+        /**
+         * Map the {@code ioctl}-provided value back to user space
+         * @param value the value returned by {@code ioctl}
+         * @return a value which makes sense to the user
+         */
+        public int unmap(int value) {
+            int result = 0;
+            for (int i = 0; i < this.offsets.length; i++) {
+                result |= ((value >> offsets[i]) & 1) << i;
+            }
+            return result;
+        }
     }
 }

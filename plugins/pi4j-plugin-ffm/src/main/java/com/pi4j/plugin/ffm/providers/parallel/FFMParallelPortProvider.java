@@ -21,6 +21,9 @@ public class FFMParallelPortProvider
 
     @Override
     public ParallelPort create(ParallelPortConfig config) {
-        return new FFMParallelPort(context, this, config);
+        var mappingLogic = new FFMParallelPort.BitmaskMappingLogic(config.offsets());
+        return mappingLogic.isRequired()
+            ? new FFMParallelPort.WithBitmaskMappingLogic(context, this, config, mappingLogic)
+            : new FFMParallelPort(context, this, config);
     }
 }
