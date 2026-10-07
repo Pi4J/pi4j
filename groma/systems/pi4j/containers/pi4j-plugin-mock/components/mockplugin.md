@@ -12,7 +12,7 @@ groma:
 description: Registers the mock provider implementations with Pi4J's plugin loader
 ---
 
-The Plugin entry point loaded via the extension mechanism to register this module's simulated digital I/O, I2C, SPI, PWM, and parallel-port providers with a Context, for development and testing without real hardware.
+The Plugin entry point loaded via the extension mechanism to register this module's simulated digital I/O, I2C, SPI, and PWM providers with a Context, for development and testing without real hardware.
 
 ## Relationships
 
