@@ -5,7 +5,6 @@ import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortBase;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
-import com.pi4j.io.gpio.parallel.ParallelPortProvider;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

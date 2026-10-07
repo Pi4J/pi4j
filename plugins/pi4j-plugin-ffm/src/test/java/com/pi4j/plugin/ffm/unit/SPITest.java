@@ -2,8 +2,10 @@ package com.pi4j.plugin.ffm.unit;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
+import com.pi4j.context.ContextBuilder;
 import com.pi4j.io.spi.SpiBus;
 import com.pi4j.io.spi.SpiConfigBuilder;
+import com.pi4j.plugin.ffm.FFMContext;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.spi.SpiMultipleTransferBuffer;
 import com.pi4j.plugin.ffm.common.spi.SpiTransferBuffer;
@@ -11,7 +13,6 @@ import com.pi4j.plugin.ffm.mocks.FileDescriptorNativeMock;
 import com.pi4j.plugin.ffm.mocks.FileDescriptorNativeMock.FileDescriptorTestData;
 import com.pi4j.plugin.ffm.mocks.IoctlNativeMock;
 import com.pi4j.plugin.ffm.mocks.PermissionHelperMock;
-import com.pi4j.plugin.ffm.providers.spi.FFMSpiProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -34,10 +35,7 @@ public class SPITest {
 
     @BeforeAll
     public static void setup() {
-        pi4j = Pi4J.newContextBuilder()
-            .add(new FFMSpiProviderImpl())
-            .build();
-
+        pi4j = new FFMContext();
     }
 
     @AfterAll

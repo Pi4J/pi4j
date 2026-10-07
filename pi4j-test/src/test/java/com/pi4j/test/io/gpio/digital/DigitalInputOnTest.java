@@ -5,8 +5,8 @@ import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalState;
+import com.pi4j.plugin.mock.MockContext;
 import com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalInput;
-import com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalInputProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,8 +27,7 @@ public class DigitalInputOnTest {
 
     @BeforeEach
     public void beforeTest() throws Pi4JException {
-        // Initialize Pi4J with MOCK digital iput provider
-        pi4j = Pi4J.newContextBuilder().add(MockDigitalInputProvider.newInstance()).build();
+        pi4j = new MockContext();
     }
 
     @AfterEach

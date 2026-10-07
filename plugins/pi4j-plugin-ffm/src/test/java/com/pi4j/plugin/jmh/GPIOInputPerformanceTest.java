@@ -2,9 +2,10 @@ package com.pi4j.plugin.jmh;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
+import com.pi4j.context.ContextBuilder;
 import com.pi4j.io.gpio.digital.*;
 import com.pi4j.plugin.BaseSetup;
-import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
+import com.pi4j.plugin.ffm.FFMContext;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
@@ -27,7 +28,7 @@ public class GPIOInputPerformanceTest extends BaseSetup {
     public void setup() throws InterruptedException, IOException {
         setup("gpio");
 
-        this.pi4j = Pi4J.newContextBuilder().add(new FFMDigitalInputProviderImpl()).build();
+        this.pi4j = new FFMContext();
         var config = DigitalInputConfigBuilder.newInstance()
             .bus(97)
             .bcm(3)

@@ -3,6 +3,8 @@ package com.pi4j.plugin.ffm.api;
 import com.pi4j.Pi4J;
 import com.pi4j.boardinfo.model.HeaderPin;
 import com.pi4j.context.Context;
+import com.pi4j.context.ContextBuilder;
+import com.pi4j.context.ContextConfig;
 import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.i2c.I2C;
@@ -12,10 +14,7 @@ import com.pi4j.io.pwm.PwmConfigBuilder;
 import com.pi4j.io.pwm.PwmPolarity;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiMode;
-import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
-import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
-import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
-import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
+import com.pi4j.plugin.ffm.FFMContext;
 
 /**
  * Board-family facade grouping the Raspberry Pi board models supported by the FFM plugin. Concrete
@@ -40,14 +39,7 @@ public interface RaspberryPi extends Pi4JApi.API {
          * through {@link Pi4JApi#board(Class)}.
          */
         Model4B() {
-            this.context = Pi4J.newContextBuilder()
-                .add(
-                    new FFMDigitalOutputProviderImpl(),
-                    new FFMDigitalInputProviderImpl(),
-                    new FFMI2CProviderImpl(),
-                    new FFMPwmProviderImpl()
-                )
-                .build();
+            this.context = new FFMContext();
         }
 
         /**

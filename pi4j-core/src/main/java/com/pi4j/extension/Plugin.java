@@ -8,7 +8,6 @@ import com.pi4j.exception.ShutdownException;
 /**
  * A loadable Pi4J component, typically discovered on the classpath.
  */
-
 public interface Plugin  {
     Context createContext(ContextConfig config);
 
