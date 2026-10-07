@@ -1,0 +1,89 @@
+name: Groma PR comparison
+
+on:
+  workflow_dispatch:
+    inputs:
+      pull-request:
+        description: PR number to compare after review
+        required: true
+        type: number
+  pull_request_target:
+    types: [opened, synchronize, reopened, edited]
+
+permissions: {}
+
+jobs:
+  compare:
+    if: >-
+      github.event.repository.private == false &&
+      (github.event_name == 'workflow_dispatch' ||
+       github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      number: ${{ steps.pull.outputs.number }}
+      base: ${{ steps.pull.outputs.base }}
+    steps:
+      - name: Select the pull request
+        id: pull
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ inputs.pull-request || github.event.pull_request.number }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$NUMBER" \
+            --jq '"number=\(.number)\nbase=\(.base.sha)\nhead=\(.head.sha)"' >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ steps.pull.outputs.base }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Find the PR comparison base
+        id: commits
+        env:
+          BASE: ${{ steps.pull.outputs.base }}
+          HEAD: ${{ steps.pull.outputs.head }}
+        # Keep the trusted base checked out; export reads the PR commit from Git.
+        run: |
+          git fetch --no-tags origin "$HEAD"
+          echo "from=$(git merge-base "$BASE" "$HEAD")" >> "$GITHUB_OUTPUT"
+      - uses: MrLesk/groma.md-action@v1
+        id: map
+        with:
+          groma-version: '0.6.6'
+          from: ${{ steps.commits.outputs.from }}
+          revision: ${{ steps.pull.outputs.head }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: groma-comparison
+          path: ${{ steps.map.outputs.output }}
+          retention-days: 1
+
+  publish:
+    needs: compare
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      pages: write
+      id-token: write
+    # All PRs share one Pages site. Serialize publication and retain every preview.
+    concurrency:
+      group: groma-pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.preview.outputs.url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: groma-comparison
+          path: comparison
+      - uses: MrLesk/groma.md-action/publish@v1
+        id: preview
+        with:
+          pull-request: ${{ needs.compare.outputs.number }}
+          base: ${{ needs.compare.outputs.base }}
+          directory: comparison
+          token: ${{ github.token }}
