@@ -21,10 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: read
-    outputs:
-      number: ${{ steps.pull.outputs.number }}
-      base: ${{ steps.pull.outputs.base }}
+      pull-requests: write
     steps:
       - name: Select the pull request
         id: pull
@@ -56,34 +53,35 @@ jobs:
           revision: ${{ steps.pull.outputs.head }}
       - uses: actions/upload-artifact@v4
         with:
-          name: groma-comparison
+          name: groma-comparison-${{ steps.pull.outputs.number }}
           path: ${{ steps.map.outputs.output }}
-          retention-days: 1
+          retention-days: 14
+      - name: Comment the architecture comparison
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ steps.pull.outputs.number }}
+          SUMMARY: ${{ steps.map.outputs.summary }}
+        run: |
+          C_ADD=$(jq -r '.components.added' <<<"$SUMMARY")
+          C_MOD=$(jq -r '.components.modified' <<<"$SUMMARY")
+          C_REM=$(jq -r '.components.removed' <<<"$SUMMARY")
+          R_ADD=$(jq -r '.relationships.added' <<<"$SUMMARY")
+          R_MOD=$(jq -r '.relationships.modified' <<<"$SUMMARY")
+          R_REM=$(jq -r '.relationships.removed' <<<"$SUMMARY")
+          RUN_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          body="<!-- groma-comparison -->
+          ### Groma architecture comparison
 
-  publish:
-    needs: compare
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      pages: write
-      id-token: write
-    # All PRs share one Pages site. Serialize publication and retain every preview.
-    concurrency:
-      group: groma-pages
-      cancel-in-progress: false
-    environment:
-      name: github-pages
-      url: ${{ steps.preview.outputs.url }}
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: groma-comparison
-          path: comparison
-      - uses: MrLesk/groma.md-action/publish@v1
-        id: preview
-        with:
-          pull-request: ${{ needs.compare.outputs.number }}
-          base: ${{ needs.compare.outputs.base }}
-          directory: comparison
-          token: ${{ github.token }}
+          | Changes | Added | Modified | Removed |
+          | --- | ---: | ---: | ---: |
+          | Components | $C_ADD | $C_MOD | $C_REM |
+          | Relationships | $R_ADD | $R_MOD | $R_REM |
+
+          [Download the full before/after architecture map]($RUN_URL) from this run's artifacts (kept 14 days). The current map is also published at https://www.pi4j.com/groma/."
+          existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$NUMBER/comments" --paginate \
+            --jq '[.[] | select(.user.login == "github-actions[bot]" and (.body | startswith("<!-- groma-comparison -->")))][0].id // empty')
+          if [ -n "$existing" ]; then
+            gh api "repos/$GITHUB_REPOSITORY/issues/comments/$existing" -X PATCH -f body="$body"
+          else
+            gh api "repos/$GITHUB_REPOSITORY/issues/$NUMBER/comments" -X POST -f body="$body"
+          fi
