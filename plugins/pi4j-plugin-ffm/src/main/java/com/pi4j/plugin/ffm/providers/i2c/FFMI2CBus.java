@@ -9,8 +9,6 @@ import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
 import com.pi4j.plugin.ffm.common.file.FileFlag;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
-import com.pi4j.plugin.ffm.providers.i2c.impl.I2CDirect;
-import com.pi4j.plugin.ffm.providers.i2c.impl.I2CSMBus;
 import com.pi4j.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
