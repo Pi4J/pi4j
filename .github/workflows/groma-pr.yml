@@ -1,0 +1,87 @@
+name: Groma PR comparison
+
+on:
+  workflow_dispatch:
+    inputs:
+      pull-request:
+        description: PR number to compare after review
+        required: true
+        type: number
+  pull_request_target:
+    types: [opened, synchronize, reopened, edited]
+
+permissions: {}
+
+jobs:
+  compare:
+    if: >-
+      github.event.repository.private == false &&
+      (github.event_name == 'workflow_dispatch' ||
+       github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Select the pull request
+        id: pull
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ inputs.pull-request || github.event.pull_request.number }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$NUMBER" \
+            --jq '"number=\(.number)\nbase=\(.base.sha)\nhead=\(.head.sha)"' >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ steps.pull.outputs.base }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Find the PR comparison base
+        id: commits
+        env:
+          BASE: ${{ steps.pull.outputs.base }}
+          HEAD: ${{ steps.pull.outputs.head }}
+        # Keep the trusted base checked out; export reads the PR commit from Git.
+        run: |
+          git fetch --no-tags origin "$HEAD"
+          echo "from=$(git merge-base "$BASE" "$HEAD")" >> "$GITHUB_OUTPUT"
+      - uses: MrLesk/groma.md-action@v1
+        id: map
+        with:
+          groma-version: '0.6.6'
+          from: ${{ steps.commits.outputs.from }}
+          revision: ${{ steps.pull.outputs.head }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: groma-comparison-${{ steps.pull.outputs.number }}
+          path: ${{ steps.map.outputs.output }}
+          retention-days: 14
+      - name: Comment the architecture comparison
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ steps.pull.outputs.number }}
+          SUMMARY: ${{ steps.map.outputs.summary }}
+        run: |
+          C_ADD=$(jq -r '.components.added' <<<"$SUMMARY")
+          C_MOD=$(jq -r '.components.modified' <<<"$SUMMARY")
+          C_REM=$(jq -r '.components.removed' <<<"$SUMMARY")
+          R_ADD=$(jq -r '.relationships.added' <<<"$SUMMARY")
+          R_MOD=$(jq -r '.relationships.modified' <<<"$SUMMARY")
+          R_REM=$(jq -r '.relationships.removed' <<<"$SUMMARY")
+          RUN_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          body="<!-- groma-comparison -->
+          ### Groma architecture comparison
+
+          | Changes | Added | Modified | Removed |
+          | --- | ---: | ---: | ---: |
+          | Components | $C_ADD | $C_MOD | $C_REM |
+          | Relationships | $R_ADD | $R_MOD | $R_REM |
+
+          [Download the full before/after architecture map]($RUN_URL) from this run's artifacts (kept 14 days). The current map is also published at https://www.pi4j.com/groma/."
+          existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$NUMBER/comments" --paginate \
+            --jq '[.[] | select(.user.login == "github-actions[bot]" and (.body | startswith("<!-- groma-comparison -->")))][0].id // empty')
+          if [ -n "$existing" ]; then
+            gh api "repos/$GITHUB_REPOSITORY/issues/comments/$existing" -X PATCH -f body="$body"
+          else
+            gh api "repos/$GITHUB_REPOSITORY/issues/$NUMBER/comments" -X POST -f body="$body"
+          fi

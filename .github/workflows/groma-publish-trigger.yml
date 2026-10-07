@@ -1,0 +1,26 @@
+name: Trigger Groma website rebuild
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'groma/**'
+      - 'pi4j-core/src/main/java/**'
+      - 'pi4j-test/src/main/java/**'
+      - 'plugins/**/src/main/java/**'
+
+permissions: {}
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger pi4j.github.io rebuild
+        env:
+          GH_TOKEN: ${{ secrets.GROMA_WEBSITE_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::warning::GROMA_WEBSITE_DISPATCH_TOKEN secret is not set; skipping the pi4j.github.io rebuild trigger. A maintainer needs to create a token with write access to Pi4J/pi4j.github.io and add it as that secret here."
+            exit 0
+          fi
+          gh api repos/Pi4J/pi4j.github.io/dispatches -f event_type=groma-architecture-updated
