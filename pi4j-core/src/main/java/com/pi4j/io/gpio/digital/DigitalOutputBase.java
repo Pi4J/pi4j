@@ -11,7 +11,7 @@ import com.pi4j.io.exception.IOException;
  * configured initial and shutdown states. Concrete providers extend this class and override {@link #state(DigitalState)} to
  * actually drive the hardware.
  */
-public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, DigitalOutputConfig, DigitalOutputProvider> implements DigitalOutput {
+public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, DigitalOutputConfig> implements DigitalOutput {
 
     /** The current cached state of this output; {@link DigitalState#UNKNOWN} until first set. */
     protected DigitalState state = DigitalState.UNKNOWN;
@@ -20,11 +20,10 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
      * Creates a new digital output bound to the given provider and configuration.
      *
      * @param context  the context this DigitalOutput belongs to
-     * @param provider the provider that created and manages this output instance
      * @param config   the configuration describing the pin address, initial state, shutdown state and identity
      */
-    protected DigitalOutputBase(Context context, DigitalOutputProvider provider, DigitalOutputConfig config) {
-        super(context, provider, config);
+    protected DigitalOutputBase(Context context, DigitalOutputConfig config) {
+        super(context, config);
     }
 
     /**

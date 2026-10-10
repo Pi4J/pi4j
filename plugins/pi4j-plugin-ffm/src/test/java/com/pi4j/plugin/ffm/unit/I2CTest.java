@@ -4,6 +4,7 @@ import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.io.i2c.I2CConfigBuilder;
 import com.pi4j.io.i2c.I2CImplementation;
+import com.pi4j.plugin.ffm.FFMContext;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.i2c.rdwr.I2CMessage;
 import com.pi4j.plugin.ffm.common.i2c.rdwr.RDWRData;
@@ -11,7 +12,6 @@ import com.pi4j.plugin.ffm.mocks.FileDescriptorNativeMock;
 import com.pi4j.plugin.ffm.mocks.IoctlNativeMock;
 import com.pi4j.plugin.ffm.mocks.PermissionHelperMock;
 import com.pi4j.plugin.ffm.mocks.SMBusNativeMock;
-import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
 import com.pi4j.plugin.ffm.providers.i2c.I2CFunctionality;
 import com.pi4j.plugin.ffm.providers.i2c.impl.I2CDirect;
 import com.pi4j.plugin.ffm.providers.i2c.impl.I2CSMBus;
@@ -34,10 +34,7 @@ public class I2CTest {
 
     @BeforeAll
     public static void setup() {
-        pi4j = Pi4J.newContextBuilder()
-            .add(new FFMI2CProviderImpl())
-            .build();
-
+        pi4j = new FFMContext();
     }
 
     @AfterAll

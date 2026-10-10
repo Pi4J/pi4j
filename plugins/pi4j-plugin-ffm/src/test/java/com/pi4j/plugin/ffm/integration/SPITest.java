@@ -1,12 +1,11 @@
 package com.pi4j.plugin.ffm.integration;
 
-import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
+import com.pi4j.context.ContextBuilder;
 import com.pi4j.io.spi.Spi;
-import com.pi4j.io.spi.SpiBus;
 import com.pi4j.io.spi.SpiConfigBuilder;
 import com.pi4j.plugin.BaseSetup;
-import com.pi4j.plugin.ffm.providers.spi.FFMSpiProviderImpl;
+import com.pi4j.plugin.ffm.FFMContext;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -30,9 +29,7 @@ public class SPITest extends BaseSetup {
     @BeforeAll
     public static void setup() throws InterruptedException, IOException {
         setup("spi");
-        pi4j = Pi4J.newContextBuilder()
-            .add(new FFMSpiProviderImpl())
-            .build();
+        pi4j = new FFMContext();
         var config = SpiConfigBuilder.newInstance()
             .bus(6)
             .channel(0)

@@ -27,17 +27,17 @@ import com.pi4j.io.spi.SpiConfigBuilder;
  */
 public interface IOCreator {
 
-    <I extends IO<?, ?, ?>> I create(IOConfig config, IOType type);
+    <I extends IO<?, ?>> I create(IOConfig config, IOType type);
 
-    default <I extends IO<?, ?, ?>> I create(IOConfig config, Class<I> ioClass) {
+    default <I extends IO<?, ?>> I create(IOConfig config, Class<I> ioClass) {
         return (ioClass.cast(create(config, IOType.getByIOClass(ioClass))));
     }
 
-    default <I extends IO<?, ?, ?>> I create(IOConfigBuilder<?, ?> builder, IOType ioType) {
+    default <I extends IO<?, ?>> I create(IOConfigBuilder<?, ?> builder, IOType ioType) {
         return create((IOConfig) builder.build(), ioType);
     }
 
-    default <I extends IO<?, ?, ?>> I create(IOConfigBuilder<?, ?> builder, Class<I> ioClass) {
+    default <I extends IO<?, ?>> I create(IOConfigBuilder<?, ?> builder, Class<I> ioClass) {
         return create((IOConfig) builder.build(), ioClass);
     }
 

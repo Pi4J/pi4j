@@ -2,19 +2,13 @@ package com.pi4j.plugin.ffm.common;
 
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.IOConfig;
+import com.pi4j.io.IOType;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.plugin.ffm.common.permission.PermissionNative;
-import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
-import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
-import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
-import com.pi4j.plugin.ffm.providers.parallel.FFMParallelPortProvider;
-import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
-import com.pi4j.plugin.ffm.providers.spi.FFMSpiProviderImpl;
-import com.pi4j.provider.ProviderBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +27,7 @@ import java.util.List;
  * provider opens a kernel device. It inspects POSIX users and groups (via {@link PermissionNative},
  * which wraps the glibc group database) and the POSIX file attributes of device nodes such as
  * {@code /dev/gpiochip0}, {@code /dev/i2c-1} or {@code /dev/spidev0.0}, and raises a
- * {@link Pi4JException} when the configuration would prevent native access. Used by the FFM
- * {@link ProviderBase} implementations during initialization.
+ * {@link Pi4JException} when the configuration would prevent native access.
  */
 public class FFMPermissionHelper {
     private static final Logger logger = LoggerFactory.getLogger(FFMPermissionHelper.class);
@@ -57,11 +50,10 @@ public class FFMPermissionHelper {
      * The required group set depends on the concrete provider type: GPIO/PWM providers need
      * {@code gpio} or {@code dialout}, I2C needs {@code i2c}, and SPI needs {@code spi}.
      *
-     * @param provider the FFM provider whose access requirements determine which OS groups are checked
      * @throws Pi4JException if no matching group exists on the system, if the current user does not
      *                       belong to one, or if the provider type is not recognized
      */
-    public static void checkUserPermissions(ProviderBase<?, ?, ?> provider) {
+    public static void checkUserPermissions(IOType ioType) {
         // check if running with sudo
         // all access should be good, but this is not safe!
         if (RUN_AS_SUDO) {
@@ -110,15 +102,11 @@ public class FFMPermissionHelper {
         }
 
         // checking groups existence and user belonging to the groups
-        switch (provider) {
-            case FFMDigitalInputProviderImpl _,
-                 FFMDigitalOutputProviderImpl _,
-                 FFMPwmProviderImpl _,
-                 FFMParallelPortProvider _ ->
+        switch (ioType) {
+            case IOType.DIGITAL_INPUT, IOType.DIGITAL_OUTPUT, IOType.PARALLEL, IOType.PWM ->
                 checkGroups(osGroups, userGroups, "gpio", "dialout");
-            case FFMI2CProviderImpl _ -> checkGroups(osGroups, userGroups, "i2c");
-            case FFMSpiProviderImpl _ -> checkGroups(osGroups, userGroups, "spi");
-            default -> throw new Pi4JException("Unknown provider " + provider);
+            case IOType.I2C -> checkGroups(osGroups, userGroups, "i2c");
+            case IOType.SPI -> checkGroups(osGroups, userGroups, "spi");
         }
     }
 

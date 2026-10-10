@@ -19,7 +19,7 @@ import com.pi4j.io.gpio.MaskUtils;
  * significantly between {@link com.pi4j.io.IO} implementations.
  */
 public abstract class ParallelPortBase
-    extends IOBase<ParallelPort, ParallelPortConfig, ParallelPortProvider>
+    extends IOBase<ParallelPort, ParallelPortConfig>
     implements ParallelPort {
 
     private final int mask;
@@ -30,8 +30,8 @@ public abstract class ParallelPortBase
         this, Listener::onValueChange
     );
 
-    protected ParallelPortBase(Context context, ParallelPortProvider provider, ParallelPortConfig config) {
-        super(context, provider, config);
+    protected ParallelPortBase(Context context, ParallelPortConfig config) {
+        super(context, config);
         this.mask = (int) MaskUtils.packed(config.mask());
         this.direction = config.initialDirection();
     }

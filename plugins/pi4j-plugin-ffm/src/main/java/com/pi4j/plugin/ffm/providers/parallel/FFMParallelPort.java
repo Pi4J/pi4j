@@ -8,7 +8,6 @@ import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortBase;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
-import com.pi4j.io.gpio.parallel.ParallelPortProvider;
 import com.pi4j.plugin.ffm.common.FFMGpioLine;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.enums.LineAttributeId;
@@ -34,11 +33,17 @@ public sealed class FFMParallelPort
      * Creates a new GPIO parallel port instance bound to the given provider and configuration.
      *
      * @param context the Pi4J context
-     * @param provider the provider that creates and backs this I/O instance
      * @param config   the configuration describing this I/O
      */
-    public FFMParallelPort(Context context, ParallelPortProvider provider, ParallelPortConfig config) {
-        super(context, provider, config);
+    public static FFMParallelPort create(Context context, ParallelPortConfig config) {
+        var mappingLogic = new FFMParallelPort.BitmaskMappingLogic(config.offsets());
+        return mappingLogic.isRequired()
+            ? new FFMParallelPort.WithBitmaskMappingLogic(context, config, mappingLogic)
+            : new FFMParallelPort(context, config);
+    }
+
+    private FFMParallelPort(Context context, ParallelPortConfig config) {
+        super(context, config);
         this.inputLineConfig = createInputLineConfigs(config);
         this.outputLineConfig = createOutputLineConfigs(config);
         this.gpioLine = new FFMGpioLine(MaskUtils.mask(config.offsets()), config.bus());
@@ -178,17 +183,15 @@ public sealed class FFMParallelPort
          * Creates a new GPIO parallel port instance bound to the given provider and configuration.
          *
          * @param context the Pi4J context
-         * @param provider the provider that creates and backs this I/O instance
          * @param config   the configuration describing this I/O
          * @param mappingLogic logic required to map user-defined pins to hardware-friendly values
          */
         WithBitmaskMappingLogic(
             Context context,
-            ParallelPortProvider provider,
             ParallelPortConfig config,
             BitmaskMappingLogic mappingLogic
         ) {
-            super(context, provider, config);
+            super(context, config);
             this.mappingLogic = mappingLogic;
         }
 

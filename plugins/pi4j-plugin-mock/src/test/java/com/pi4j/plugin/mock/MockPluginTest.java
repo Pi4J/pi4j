@@ -1,23 +1,15 @@
 package com.pi4j.plugin.mock;
 
-import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.pwm.PwmConfigBuilder;
 import com.pi4j.io.spi.SpiConfigBuilder;
-import com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalOutputProviderImpl;
-import com.pi4j.plugin.mock.provider.pwm.MockPwmProviderImpl;
-import com.pi4j.plugin.mock.provider.spi.MockSpiProviderImpl;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MockPluginTest {
-    private final Context pi4j = Pi4J.newContextBuilder()
-        .add(new MockPwmProviderImpl())
-        .add(new MockSpiProviderImpl())
-        .add(new MockDigitalOutputProviderImpl())
-        .build();
+    private final Context pi4j = new MockContext();
 
     @Test
     void canRecreateOutput() {

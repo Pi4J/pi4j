@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * {@link IOBase}. Concrete providers extend this class and implement the actual byte-transfer logic
  * defined by {@link Spi}.
  */
-public abstract class SpiBase extends IOBase<Spi, SpiConfig, SpiProvider> implements Spi {
+public abstract class SpiBase extends IOBase<Spi, SpiConfig> implements Spi {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -18,11 +18,10 @@ public abstract class SpiBase extends IOBase<Spi, SpiConfig, SpiProvider> implem
      * Creates a new SPI device instance bound to the given provider and configuration.
      *
      * @param context  the {@link Context} this SPI device belongs to
-     * @param provider the {@link SpiProvider} that created and backs this SPI device
      * @param config   the {@link SpiConfig} describing the bus, channel, mode, and clock settings to use
      */
-    protected SpiBase(Context context, SpiProvider provider, SpiConfig config) {
-        super(context, provider, config);
+    protected SpiBase(Context context, SpiConfig config) {
+        super(context, config);
     }
 
     @Override

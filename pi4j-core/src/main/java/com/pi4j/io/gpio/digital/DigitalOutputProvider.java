@@ -1,11 +1,14 @@
 package com.pi4j.io.gpio.digital;
 
+import com.pi4j.provider.Provider;
+
 /**
- * Provider responsible for creating and managing {@link DigitalOutput} instances for a particular hardware
- * platform or device. It specializes {@link DigitalProvider} for the output direction and adds convenience
- * factory methods that build the {@link DigitalOutputConfig} from a BCM pin number and optional identity.
+ * Legacy compatibility stub preserving provider-based input creation.
+ *
+ * @deprecated
  */
-public interface DigitalOutputProvider extends DigitalProvider<DigitalOutputProvider, DigitalOutput, DigitalOutputConfig> {
+@Deprecated(since = "5.0")
+public interface DigitalOutputProvider extends Provider<DigitalOutput, DigitalOutputConfig> {
 
     /**
      * Creates a digital output from a pre-populated configuration builder.

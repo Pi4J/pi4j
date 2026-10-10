@@ -2,11 +2,7 @@ package com.pi4j.test.smoketest;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
-import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
-import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
-import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
-import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
-import com.pi4j.plugin.ffm.providers.spi.FFMSpiProviderImpl;
+import com.pi4j.plugin.ffm.FFMContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,14 +38,7 @@ public class ProviderContext {
 
         switch (testProvider) {
             case NEWAUTOCONTEXT -> pi4j = Pi4J.newAutoContext();
-            case FFM -> pi4j = Pi4J
-                .newContextBuilder()
-                .add(new FFMDigitalOutputProviderImpl())
-                .add(new FFMDigitalInputProviderImpl())
-                .add(new FFMI2CProviderImpl())
-                .add(new FFMSpiProviderImpl())
-                .add(new FFMPwmProviderImpl())
-                .build();
+            case FFM -> pi4j = new FFMContext();
             default -> logger.error("No test provider specified");
         }
     }

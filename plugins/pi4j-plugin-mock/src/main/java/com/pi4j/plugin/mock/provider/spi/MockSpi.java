@@ -4,7 +4,6 @@ import com.pi4j.context.Context;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBase;
 import com.pi4j.io.spi.SpiConfig;
-import com.pi4j.io.spi.SpiProvider;
 import com.pi4j.plugin.mock.Mock;
 import com.pi4j.util.StringUtil;
 import org.slf4j.Logger;
@@ -34,11 +33,10 @@ public class MockSpi extends SpiBase implements Spi {
      * open with the configured channel and baud rate.
      *
      * @param context  the context that created this instance
-     * @param provider the {@link SpiProvider} that created this instance
      * @param config   the {@link SpiConfig} describing the SPI channel and baud rate
      */
-    public MockSpi(Context context, SpiProvider provider, SpiConfig config) {
-        super(context, provider, config);
+    public MockSpi(Context context, SpiConfig config) {
+        super(context, config);
         logPreamble = "[" + Mock.SPI_PROVIDER_NAME + "::" + this.id + "] ::";
         logger.info("{} OPEN(CHANNEL={}; BAUD={})", logPreamble, config.channel(), config.baud());
     }

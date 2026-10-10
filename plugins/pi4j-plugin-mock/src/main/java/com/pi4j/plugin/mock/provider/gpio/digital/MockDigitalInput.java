@@ -12,8 +12,6 @@ import com.pi4j.io.gpio.digital.*;
  * input level through {@link #mockState(DigitalState)}, which also dispatches a
  * {@link DigitalStateChangeEvent} so that registered listeners behave as if a real
  * hardware transition occurred.
- *
- * @see MockDigitalInputProvider
  */
 public class MockDigitalInput extends DigitalInputBase implements DigitalInput {
 
@@ -23,11 +21,10 @@ public class MockDigitalInput extends DigitalInputBase implements DigitalInput {
      * Creates a mock digital input bound to the given provider and configuration.
      *
      * @param context the context of this instance
-     * @param provider the {@link DigitalInputProvider} that created this instance
      * @param config the {@link DigitalInputConfig} describing the pin, pull resistance and other settings
      */
-    public MockDigitalInput(Context context, DigitalInputProvider provider, DigitalInputConfig config){
-        super(context, provider, config);
+    public MockDigitalInput(Context context, DigitalInputConfig config){
+        super(context, config);
     }
 
     @Override

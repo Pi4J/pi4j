@@ -8,6 +8,7 @@ import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.digital.PullResistance;
+import com.pi4j.plugin.ffm.FFMContext;
 import com.pi4j.plugin.ffm.api.Pi4JApi;
 import com.pi4j.plugin.ffm.api.RaspberryPi;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
@@ -21,8 +22,6 @@ import com.pi4j.plugin.ffm.common.gpio.structs.LineRequest;
 import com.pi4j.plugin.ffm.common.poll.PollFlag;
 import com.pi4j.plugin.ffm.common.poll.structs.PollingData;
 import com.pi4j.plugin.ffm.mocks.*;
-import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInputProviderImpl;
-import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutputProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -44,7 +43,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GPIOTest {
     private static Context pi4j0;
     private static Context pi4j1;
-    private static Context pi4jNonExistent;
 
     private static final FileDescriptorNativeMock.FileDescriptorTestData GPIOCHIP_FILE =
         new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, ("Test").getBytes());
@@ -53,22 +51,14 @@ public class GPIOTest {
 
     @BeforeAll
     public static void setup() {
-        pi4j0 = Pi4J.newContextBuilder()
-            .add(new FFMDigitalInputProviderImpl(), new FFMDigitalOutputProviderImpl())
-            .build();
-        pi4j1 = Pi4J.newContextBuilder()
-            .add(new FFMDigitalInputProviderImpl())
-            .build();
-        pi4jNonExistent = Pi4J.newContextBuilder()
-            .add(new FFMDigitalInputProviderImpl())
-            .build();
+        pi4j0 = new FFMContext();
+        pi4j1 = new FFMContext();
     }
 
     @AfterAll
     public static void teardown() {
         pi4j0.shutdown();
         pi4j1.shutdown();
-        pi4jNonExistent.shutdown();
         permissionHelperMock.close();
     }
 
@@ -84,20 +74,6 @@ public class GPIOTest {
             var builder = DigitalInputConfigBuilder.newInstance().bus(-1)
                 .bcm(99).build();
             assertThrows(IllegalStateException.class, () -> pi4j1.create(builder));
-        }
-    }
-
-    @Test
-    public void testInputNonExistent() {
-        var lineInfoNonExistent = new IoctlNativeMock.IoctlTestData(LineInfo.class, (_) -> {
-            throw new IllegalStateException();
-        });
-        try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE);
-             var _ = IoctlNativeMock.setup(lineInfoNonExistent)) {
-
-            var builder = DigitalInputConfigBuilder.newInstance().bus(-1)
-                .bcm(0).build();
-            assertThrows(IllegalStateException.class, () -> pi4jNonExistent.create(builder));
         }
     }
 

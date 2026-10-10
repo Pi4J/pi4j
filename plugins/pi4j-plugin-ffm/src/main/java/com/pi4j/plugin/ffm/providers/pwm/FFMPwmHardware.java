@@ -28,10 +28,9 @@ import java.util.concurrent.TimeUnit;
  * implementation waits for read/write access to each attribute file before using it.
  *
  * @see com.pi4j.io.pwm.Pwm
- * @see FFMPwmProviderImpl
  */
 public class FFMPwmHardware extends PwmBase implements Pwm {
-    private final Logger logger = LoggerFactory.getLogger(FFMPwmHardware.class);
+    private final static Logger logger = LoggerFactory.getLogger(FFMPwmHardware.class);
 
     private final FileDescriptorNative file = new FileDescriptorNative();
 
@@ -86,18 +85,9 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
     private int dutyCycleFd = -1;
     private int polarityFd = -1;
 
-    /**
-     * Creates a hardware PWM instance for the chip and channel given in the configuration, and verifies
-     * that the corresponding {@code /sys/class/pwm/pwmchipN} path is accessible with the required
-     * permissions.
-     *
-     * @param context  the context of this instance
-     * @param provider the {@link PwmProvider} that created this instance
-     * @param config   the PWM configuration supplying the chip number, channel and optional initial
-     *                 duty cycle, polarity and frequency
-     */
-    public FFMPwmHardware(Context context, PwmProvider provider, PwmConfig config) {
-        super(context, provider, config);
+
+    FFMPwmHardware(Context context, PwmConfig config) {
+        super(context, config);
         this.chip = config.chip();
         this.channel = config.channel();
         FFMPermissionHelper.checkDevicePermissions(CHIP_PATH + chip, config);

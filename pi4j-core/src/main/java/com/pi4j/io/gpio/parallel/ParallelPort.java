@@ -6,7 +6,7 @@ import com.pi4j.io.gpio.Gpio;
 /**
  * A {@link Gpio} which is capable of reading and writing multiple bits to a device.
  */
-public interface ParallelPort extends com.pi4j.io.IO<ParallelPort, ParallelPortConfig, ParallelPortProvider> {
+public interface ParallelPort extends com.pi4j.io.IO<ParallelPort, ParallelPortConfig> {
 
     /**
      * Enumeration representing the direction of the parallel port.

@@ -15,13 +15,11 @@ import java.util.function.Consumer;
  *
  * @param <DIGITAL_TYPE> the concrete digital I/O type, used as the self-referencing return type for fluent methods
  * @param <CONFIG_TYPE> the {@link DigitalConfig} type describing this instance
- * @param <PROVIDER_TYPE> the {@link DigitalProvider} type that created this instance
  */
-public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
-        CONFIG_TYPE extends DigitalConfig,
-        PROVIDER_TYPE extends DigitalProvider>
-        extends IOBase<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>
-        implements Digital<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>
+public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE>,
+        CONFIG_TYPE extends DigitalConfig>
+        extends IOBase<DIGITAL_TYPE, CONFIG_TYPE>
+        implements Digital<DIGITAL_TYPE, CONFIG_TYPE>
 {
     // internal listeners collection
     protected final EventManager<DIGITAL_TYPE, DigitalStateChangeListener, DigitalStateChangeEvent> stateChangeEventManager;
@@ -31,11 +29,10 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
      * the internal event manager used to deliver {@link DigitalStateChangeEvent}s to listeners.
      *
      * @param context the Context this Digital IO belongs to.
-     * @param provider the {@link DigitalProvider} responsible for this instance's underlying I/O
      * @param config the configuration describing this instance (pin, on-state, etc.)
      */
-    protected DigitalBase(Context context, PROVIDER_TYPE provider, CONFIG_TYPE config) {
-        super(context, provider, config);
+    protected DigitalBase(Context context, CONFIG_TYPE config) {
+        super(context, config);
 
         // create an event manager for digital state change events
         stateChangeEventManager  = new EventManager(this,

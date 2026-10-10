@@ -6,7 +6,7 @@ import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfigBuilder;
 import com.pi4j.io.i2c.I2CImplementation;
 import com.pi4j.plugin.BaseSetup;
-import com.pi4j.plugin.ffm.providers.i2c.FFMI2CProviderImpl;
+import com.pi4j.plugin.ffm.FFMContext;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -26,9 +26,7 @@ public class I2CDirectTest extends BaseSetup {
     @BeforeAll
     public static void setup() throws InterruptedException, IOException {
         setup("i2c");
-        pi4j = Pi4J.newContextBuilder()
-            .add(new FFMI2CProviderImpl())
-            .build();
+        pi4j = new FFMContext();
         i2c = pi4j.create(I2CConfigBuilder.newInstance()
                 .bus(99)
                 .device(0x1C)

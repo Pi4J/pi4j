@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  * Concrete providers extend this class and supply the platform-specific logic for
  * actually driving the PWM hardware or software signal.
  */
-public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implements Pwm {
+public abstract class PwmBase extends IOBase<Pwm, PwmConfig> implements Pwm {
 
     /** Staged frequency in hertz applied to the signal the next time it is turned on; defaults to 100 Hz. */
     protected double frequency = 100;
@@ -33,11 +33,10 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig, PwmProvider> implem
      * supplied configuration, keyed by their lower-cased, trimmed names.
      *
      * @param context  the context of this instance
-     * @param provider the PWM provider that created this instance
      * @param config   the configuration describing this PWM channel, including any initial presets
      */
-    protected PwmBase(Context context, PwmProvider provider, PwmConfig config) {
-        super(context, provider, config);
+    protected PwmBase(Context context, PwmConfig config) {
+        super(context, config);
     }
 
     @Override

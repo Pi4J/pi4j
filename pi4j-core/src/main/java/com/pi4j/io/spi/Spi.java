@@ -12,11 +12,11 @@ import java.nio.ByteBuffer;
 /**
  * Represents an open SPI (Serial Peripheral Interface) device on a configured bus and channel,
  * supporting full-duplex byte transfers as well as separate read and write operations. An instance
- * is created from a {@link SpiProvider} using a {@link SpiConfig} produced by a {@link SpiConfigBuilder};
+ * is created using a {@link SpiConfig} produced by a {@link SpiConfigBuilder};
  * it inherits write behaviour from {@link IODataWriter}, read behaviour from {@link IODataReader}, and
  * full-duplex serial exchange behaviour from {@link SerialCircuitIO}.
  */
-public interface Spi extends IO<Spi, SpiConfig, SpiProvider>, AutoCloseable, IODataWriter, IODataReader, SerialCircuitIO {
+public interface Spi extends IO<Spi, SpiConfig>, AutoCloseable, IODataWriter, IODataReader, SerialCircuitIO {
     /**
      * Default SPI bus ({@link SpiBus#BUS_0}) used when no bus is explicitly configured.
      */

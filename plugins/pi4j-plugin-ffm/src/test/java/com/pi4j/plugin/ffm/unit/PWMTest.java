@@ -1,14 +1,13 @@
 package com.pi4j.plugin.ffm.unit;
 
-import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.io.pwm.PwmConfigBuilder;
 import com.pi4j.io.pwm.PwmType;
+import com.pi4j.plugin.ffm.FFMContext;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.mocks.FileDescriptorNativeMock;
 import com.pi4j.plugin.ffm.mocks.PermissionHelperMock;
 import com.pi4j.plugin.ffm.providers.pwm.FFMPwmHardware;
-import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -39,10 +38,7 @@ public class PWMTest {
 
     @BeforeAll
     public static void setup() {
-        pi4j = Pi4J.newContextBuilder()
-            .add(new FFMPwmProviderImpl())
-            .build();
-
+        pi4j = new FFMContext();
     }
 
     @AfterAll

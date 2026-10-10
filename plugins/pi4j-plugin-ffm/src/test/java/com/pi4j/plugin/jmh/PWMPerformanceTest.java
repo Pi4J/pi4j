@@ -2,11 +2,12 @@ package com.pi4j.plugin.jmh;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
+import com.pi4j.context.ContextBuilder;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfigBuilder;
 import com.pi4j.io.pwm.PwmType;
 import com.pi4j.plugin.BaseSetup;
-import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
+import com.pi4j.plugin.ffm.FFMContext;
 import org.openjdk.jmh.annotations.*;
 
 import java.io.IOException;
@@ -27,7 +28,7 @@ public class PWMPerformanceTest extends BaseSetup {
     @Setup
     public void setup() throws InterruptedException, IOException {
         setup("pwm");
-        this.pi4j = Pi4J.newContextBuilder().add(new FFMPwmProviderImpl()).build();
+        this.pi4j = new FFMContext();
         var config = PwmConfigBuilder.newInstance(pi4j)
             .pwmType(PwmType.HARDWARE)
             .chip(0)
