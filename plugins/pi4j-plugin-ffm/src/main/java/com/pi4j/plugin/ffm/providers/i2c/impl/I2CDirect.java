@@ -1,13 +1,14 @@
 package com.pi4j.plugin.ffm.providers.i2c.impl;
 
 import com.pi4j.context.Context;
-import com.pi4j.io.i2c.I2CBase;
+import com.pi4j.io.exception.IOReadException;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.plugin.ffm.common.i2c.I2cConstants;
 import com.pi4j.plugin.ffm.common.i2c.rdwr.I2CMessage;
 import com.pi4j.plugin.ffm.common.i2c.rdwr.RDWRData;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CBus;
+
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -19,7 +20,8 @@ import java.util.Objects;
  * atomic transaction with a repeated start. Used when the adapter reports the
  * {@link com.pi4j.plugin.ffm.providers.i2c.I2CFunctionality#I2C_FUNC_I2C} capability.
  */
-public class I2CDirect extends I2CBase<FFMI2CBus> {
+// extends I2CBase<FFMI2CBus>
+public class I2CDirect extends I2CCommonIntf {
     private final IoctlNative ioctl = new IoctlNative();
 
     /**
@@ -33,7 +35,29 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
         super(context, config, i2CBus);
     }
 
-    private byte[] internalRead(byte[] buffer, int offset, int length) {
+
+
+    @Override
+    public byte internalReadByte() {
+        int actual = read();  // todo  ??????
+        if (actual < 0) throw new IOReadException("I2C READ ERROR; " + actual);
+        return (byte) actual;
+    }
+
+    @Override
+    public int internalRead() {
+        // unsigned, like readRegister(int) and the SMBus implementation: a raw byte would sign-extend 0x80..0xFF
+        return Byte.toUnsignedInt(internalRead(new byte[1], 0, 1)[0]);
+    }
+
+    @Override
+    int internalWriteByte(byte b) {
+        return internalWrite(new byte[]{b}, 0, 1);
+    }
+
+
+    @Override
+    byte[] internalRead(byte[] buffer, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, buffer.length);
         var messages = new I2CMessage[]{
             new I2CMessage(config.device(), I2cConstants.I2C_M_RD.getValue(), length, buffer),
@@ -47,7 +71,84 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
         });
     }
 
-    private byte[] internalRead(byte[] register, byte[] buffer, int offset, int length) {
+
+
+    /**
+     * Write data to the I/O device register.
+     *
+     * @param register the register address to write to
+     * @param data     the data to write
+     * @return the number of data bytes successfully written (excluding register bytes)
+     */
+    int internalWrite(byte[] register, byte[] data) {
+        return internalWrite(register, data, 0, data.length);
+    }
+
+
+
+    /**
+     * Write data to the I/O device register with a specified offset and length from the data array.
+     *
+     * @param register the register address to write to
+     * @param data     the data array to write from
+     * @param offset   starting position in the data array
+     * @param length   number of bytes to write from the data array
+     * @return the number of data bytes successfully written (excluding register bytes)
+     */
+    int internalWrite(byte[] register, byte[] data, int offset, int length) {
+        var buffer = new byte[register.length + length];
+        System.arraycopy(register, 0, buffer, 0, register.length);
+        System.arraycopy(data, offset, buffer, register.length, length);
+        return internalWrite(buffer) - register.length;
+    }
+
+
+
+    @Override
+    /**
+     * Write data to the I/O device.
+     *
+     * @param data the data to write
+     * @return the number of bytes successfully written
+     */
+     int internalWrite(byte[] data) {
+        return internalWrite(data, 0, data.length);
+    }
+
+    @Override
+    /**
+     * Write an array of byte values with given offset (starting position) and length in the provided data array.
+     *
+     * @param data   the data array to write from
+     * @param offset starting position in the data array
+     * @param length number of bytes to write from the data array
+     * @return the number of bytes successfully written
+     */
+     int internalWrite(byte[] data, int offset, int length) {
+        var writeBuffer = new byte[length];
+        System.arraycopy(data, offset, writeBuffer, 0, length);
+        var messages = new I2CMessage[]{
+            new I2CMessage(config.device(), 0, length, writeBuffer)
+        };
+        var packets = new RDWRData(messages, 1);
+        return i2CBus.execute(this, i2cFileDescriptor -> {
+            var result = ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
+            return result.msgs()[0].len();
+        });
+    }
+
+
+
+
+    @Override
+    byte[] internalRead(int register, int size) {
+        byte[] buffer = new byte[size];
+        return internalRead(new byte[]{(byte) register}, buffer, 0, size);
+    }
+
+
+     @Override
+    byte[] internalRead(byte[] register, byte[] buffer, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, buffer.length);
         var messages = new I2CMessage[]{
             new I2CMessage(config.device(), 0, register.length, register),
@@ -62,138 +163,24 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
         });
     }
 
-    /**
-     * Write data to the I/O device register.
-     *
-     * @param register the register address to write to
-     * @param data     the data to write
-     * @return the number of data bytes successfully written (excluding register bytes)
-     */
-    private int internalWrite(byte[] register, byte[] data) {
-        return internalWrite(register, data, 0, data.length);
-    }
 
-    /**
-     * Write data to the I/O device register with a specified offset and length from the data array.
-     *
-     * @param register the register address to write to
-     * @param data     the data array to write from
-     * @param offset   starting position in the data array
-     * @param length   number of bytes to write from the data array
-     * @return the number of data bytes successfully written (excluding register bytes)
-     */
-    private int internalWrite(byte[] register, byte[] data, int offset, int length) {
-        var buffer = new byte[register.length + length];
-        System.arraycopy(register, 0, buffer, 0, register.length);
-        System.arraycopy(data, offset, buffer, register.length, length);
-        return internalWrite(buffer) - register.length;
-    }
-
-    /**
-     * Write data to the I/O device.
-     *
-     * @param data the data to write
-     * @return the number of bytes successfully written
-     */
-    private int internalWrite(byte[] data) {
-        return internalWrite(data, 0, data.length);
-    }
-
-    /**
-     * Write an array of byte values with given offset (starting position) and length in the provided data array.
-     *
-     * @param data   the data array to write from
-     * @param offset starting position in the data array
-     * @param length number of bytes to write from the data array
-     * @return the number of bytes successfully written
-     */
-    private int internalWrite(byte[] data, int offset, int length) {
-        var writeBuffer = new byte[length];
-        System.arraycopy(data, offset, writeBuffer, 0, length);
-        var messages = new I2CMessage[]{
-            new I2CMessage(config.device(), 0, length, writeBuffer)
-        };
-        var packets = new RDWRData(messages, 1);
-        return i2CBus.execute(this, i2cFileDescriptor -> {
-            var result = ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
-            return result.msgs()[0].len();
-        });
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p>
-     * In addition to releasing the device, this closes the underlying {@link FFMI2CBus}, releasing its
-     * I2C bus file descriptor.
-     */
-    @Override
-    public void close() {
-        if (closed) {
-            return;
+        @Override
+        byte[]  internalRead(int register, byte[] buffer, int offset, int length) {
+            return internalRead(new byte[]{(byte) register}, buffer, offset, length);
         }
-        i2CBus.close();
-        super.close();
-    }
+
+
+
+
 
     @Override
-    public int read() {
-        // unsigned, like readRegister(int) and the SMBus implementation: a raw byte would sign-extend 0x80..0xFF
-        return Byte.toUnsignedInt(internalRead(new byte[1], 0, 1)[0]);
-    }
-
-    @Override
-    public int read(byte[] buffer, int offset, int length) {
-        internalRead(buffer, offset, length);
-        return length;
-    }
-
-    @Override
-    public int write(byte b) {
-        return internalWrite(new byte[]{b});
-    }
-
-    @Override
-    public int write(byte[] data, int offset, int length) {
-        return internalWrite(data, offset, length);
-    }
-
-    @Override
-    public int readRegister(int register) {
-        return Byte.toUnsignedInt(internalRead(new byte[]{(byte) register}, new byte[1], 0, 1)[0]);
-    }
-
-    @Override
-    public int readRegister(byte[] register, byte[] buffer, int offset, int length) {
-        internalRead(register, buffer, offset, length);
-        return length;
-    }
-
-    @Override
-    public int readRegister(int register, byte[] buffer, int offset, int length) {
-        internalRead(new byte[]{(byte) register}, buffer, offset, length);
-        return length;
-    }
-
-    @Override
-    public int writeRegister(int register, byte b) {
-        return internalWrite(new byte[]{(byte) register}, new byte[]{b});
-    }
-
-    @Override
-    public int writeRegister(int register, byte[] data, int offset, int length) {
-        return internalWrite(new byte[]{(byte) register}, data, offset, length);
-    }
-
-    @Override
-    public int writeRegister(byte[] register, byte[] data, int offset, int length) {
-        return internalWrite(register, data, offset, length);
-    }
-
-    @Override
-    public void writeThenRead(byte[] writeBuffer, int writeOffset, int writeSize, int readDelayNanos, byte[] readBuffer, int readOffset, int readSize) {
+    public void internalWriteThenRead(byte[] writeBuffer, int writeOffset, int writeSize, int readDelayNanos, byte[] readBuffer, int readOffset, int readSize) {
         if (writeSize != writeBuffer.length) {
             writeBuffer = Arrays.copyOfRange(writeBuffer, writeOffset, writeOffset + writeSize);
         }
         readRegister(writeBuffer, readBuffer, readOffset, readSize);
     }
+
 }
+
+
