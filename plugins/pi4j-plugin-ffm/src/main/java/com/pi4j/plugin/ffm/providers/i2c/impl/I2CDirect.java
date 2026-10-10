@@ -38,7 +38,7 @@ public class I2CDirect extends I2CCommonIntf {
 
     @Override
     public byte internalReadByte() {
-        int actual = read();  // todo  ??????
+        int actual = read();
         if (actual < 0) throw new IOReadException("I2C READ ERROR; " + actual);
         return (byte) actual;
     }

@@ -67,7 +67,7 @@ abstract class I2CCommonIntf extends I2CBase<FFMI2CBus> {
         return  internalReadByte();
     }
 
-    abstract public byte internalReadByte();
+    abstract byte internalReadByte();
 
     @Override
     public int read(byte[] buffer, int offset, int length) {
