@@ -47,14 +47,12 @@ abstract class AbstractI2C extends I2CBase<FFMI2CBus> {
         super.close();
     }
 
-
     @Override
     public int read() {
         return internalRead();
     }
 
     abstract int internalRead();
-
 
     @Override
     /**
@@ -76,7 +74,6 @@ abstract class AbstractI2C extends I2CBase<FFMI2CBus> {
     }
 
     abstract byte[] internalRead(byte[] buffer, int offset, int length);
-
 
     @Override
     public int write(byte b) {
@@ -107,7 +104,6 @@ abstract class AbstractI2C extends I2CBase<FFMI2CBus> {
 
     abstract byte[] internalRead(int register, int size);
 
-
     @Override
     public int readRegister(byte[] register, byte[] buffer, int offset, int length) {
         internalRead(register, buffer, offset, length);
@@ -119,7 +115,6 @@ abstract class AbstractI2C extends I2CBase<FFMI2CBus> {
         internalRead(register, buffer, offset, length);
         return length;
     }
-
 
     abstract byte[] internalRead(int register, byte[] buffer, int offset, int length);
 
@@ -142,7 +137,6 @@ abstract class AbstractI2C extends I2CBase<FFMI2CBus> {
         return internalWrite(register, data, offset, length);
     }
 
-
     abstract int internalWrite(byte[] register, byte[] data, int offset, int length);
 
     @Override
@@ -151,6 +145,5 @@ abstract class AbstractI2C extends I2CBase<FFMI2CBus> {
     }
 
     abstract void internalWriteThenRead(byte[] writeBuffer, int writeOffset, int writeSize, int readDelayNanos, byte[] readBuffer, int readOffset, int readSize);
-
 
 }

@@ -115,7 +115,6 @@ public class I2CSMBus extends AbstractI2C {
         });
     }
 
-
     @Override
     byte[] internalRead(byte[] register, byte[] buffer, int offset, int size) {
         throw new UnsupportedOperationException("SMBus protocol does not support reading multiregister devices. " +
@@ -133,7 +132,6 @@ public class I2CSMBus extends AbstractI2C {
             "Please, use I2CDirect provider instead.");
     }
 
-
     @Override
     public int internalRead() {
         // this is needed, because we are receiving raw bytes, which we have to convert to proper int
@@ -147,7 +145,6 @@ public class I2CSMBus extends AbstractI2C {
         System.arraycopy(result, 0, buffer, offset, length);
         return buffer;
     }
-
 
     @Override
     public byte[] internalRead(byte[] data, int offset, int length) {
@@ -205,7 +202,6 @@ public class I2CSMBus extends AbstractI2C {
         System.arraycopy(data, 0, writeData, register.length - 1, data.length);
         return writeRegister(byteRegister, writeData);
     }
-
 
     @Override
     public void internalWriteThenRead(byte[] writeBuffer, int writeOffset, int writeSize, int readDelayNanos, byte[] readBuffer, int readOffset, int readSize) {

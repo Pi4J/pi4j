@@ -33,7 +33,6 @@ public class I2CDirect extends AbstractI2C {
         super(context, config, i2CBus);
     }
 
-
     @Override
     public byte internalReadByte() {
         int actual = read();
@@ -52,7 +51,6 @@ public class I2CDirect extends AbstractI2C {
         return internalWrite(new byte[]{b}, 0, 1);
     }
 
-
     @Override
     byte[] internalRead(byte[] buffer, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, buffer.length);
@@ -68,7 +66,6 @@ public class I2CDirect extends AbstractI2C {
         });
     }
 
-
     /**
      * Write data to the I/O device register.
      *
@@ -79,7 +76,6 @@ public class I2CDirect extends AbstractI2C {
     int internalWrite(byte[] register, byte[] data) {
         return internalWrite(register, data, 0, data.length);
     }
-
 
     /**
      * Write data to the I/O device register with a specified offset and length from the data array.
@@ -96,7 +92,6 @@ public class I2CDirect extends AbstractI2C {
         System.arraycopy(data, offset, buffer, register.length, length);
         return internalWrite(buffer) - register.length;
     }
-
 
     @Override
     /**
@@ -131,13 +126,11 @@ public class I2CDirect extends AbstractI2C {
         });
     }
 
-
     @Override
     byte[] internalRead(int register, int size) {
         byte[] buffer = new byte[size];
         return internalRead(new byte[]{(byte) register}, buffer, 0, size);
     }
-
 
     @Override
     byte[] internalRead(byte[] register, byte[] buffer, int offset, int length) {
@@ -155,12 +148,10 @@ public class I2CDirect extends AbstractI2C {
         });
     }
 
-
     @Override
     byte[] internalRead(int register, byte[] buffer, int offset, int length) {
         return internalRead(new byte[]{(byte) register}, buffer, offset, length);
     }
-
 
     @Override
     public void internalWriteThenRead(byte[] writeBuffer, int writeOffset, int writeSize, int readDelayNanos, byte[] readBuffer, int readOffset, int readSize) {
