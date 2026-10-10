@@ -20,7 +20,6 @@ import java.util.Objects;
  * atomic transaction with a repeated start. Used when the adapter reports the
  * {@link com.pi4j.plugin.ffm.providers.i2c.I2CFunctionality#I2C_FUNC_I2C} capability.
  */
-// extends I2CBase<FFMI2CBus>
 public class I2CDirect extends I2CCommonIntf {
     private final IoctlNative ioctl = new IoctlNative();
 

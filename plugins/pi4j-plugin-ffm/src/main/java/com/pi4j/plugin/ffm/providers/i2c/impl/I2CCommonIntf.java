@@ -5,7 +5,21 @@ import com.pi4j.io.i2c.I2CBase;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CBus;
 
-
+/**
+ * <p>This interface contains the basic I2C methods shared by classes in this provider
+ * and abstract methods the specific implementations must implement.
+ * </p>
+ * <p>The FFM I2C provider has two possible implementations,
+ * </p>
+ * <ul>
+ *  i2cImplementation(I2CImplementation.DIRECT)
+ *  i2cImplementation(I2CImplementation.SMBUS)
+ * </ul>
+ * <p>
+ *     Both of the associated i2c implementation classes extend this interface.
+ * </p>
+ *
+ */
 abstract class I2CCommonIntf extends I2CBase<FFMI2CBus> {
     /**
      * Creates an I2C device bound to the given provider, configuration and bus, marking it as open.
