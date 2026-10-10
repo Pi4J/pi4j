@@ -20,7 +20,7 @@ import com.pi4j.plugin.ffm.providers.i2c.FFMI2CBus;
  * </p>
  *
  */
-abstract class AbstractI2C extends I2CBase<FFMI2CBus> {
+abstract sealed class AbstractI2C extends I2CBase<FFMI2CBus> permits I2CDirect, I2CSMBus {
     /**
      * Creates an I2C device bound to the given provider, configuration and bus, marking it as open.
      *
