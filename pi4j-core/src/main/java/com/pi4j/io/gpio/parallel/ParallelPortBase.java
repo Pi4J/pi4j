@@ -26,8 +26,8 @@ public abstract class ParallelPortBase
 
     private Direction direction;
 
-    protected final EventManager<ParallelPort, Listener, ValueChangeEvent> events = new EventManager<>(
-        this, Listener::onValueChange
+    protected final EventManager<ParallelPort, Listener, PinStateChangedEvent> events = new EventManager<>(
+        this, Listener::onPinStateChanged
     );
 
     protected ParallelPortBase(Context context, ParallelPortConfig config) {
@@ -47,7 +47,6 @@ public abstract class ParallelPortBase
         }
 
         handleWrite(value);
-        fireEventWithValue(value);
     }
 
     @Override
@@ -77,10 +76,6 @@ public abstract class ParallelPortBase
     @Override
     public ParallelPort removeListener(Listener listener) {
         return events.remove(listener);
-    }
-
-    public void fireEventWithValue(int value) {
-        events.dispatch(new ValueChangeEvent(this, value));
     }
 
     /**

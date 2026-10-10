@@ -1,6 +1,8 @@
 package com.pi4j.io.gpio.parallel;
 
 import com.pi4j.io.IOType;
+import com.pi4j.io.gpio.Gpio;
+import com.pi4j.io.gpio.digital.DigitalState;
 
 /**
  * A {@link Gpio} which is capable of reading and writing multiple bits to a device.
@@ -62,15 +64,18 @@ public interface ParallelPort extends com.pi4j.io.IO<ParallelPort, ParallelPortC
     ParallelPort removeListener(Listener listener);
 
     /**
-     * Event representing a change in the value of the parallel port.
+     * Event representing a change in the state of a pin on the parallel port.
+     * @param source the parallel port instance
+     * @param offset the offset of the pin that changed
+     * @param state the new state of the pin
      */
-    record ValueChangeEvent(ParallelPort source, int value) {}
+    record PinStateChangedEvent(ParallelPort source, int offset, DigitalState state) {}
 
     /**
      * Listener for value change events on the parallel port.
      */
     @FunctionalInterface
     interface Listener extends com.pi4j.event.Listener {
-        void onValueChange(ValueChangeEvent event);
+        void onPinStateChanged(PinStateChangedEvent event);
     }
 }
