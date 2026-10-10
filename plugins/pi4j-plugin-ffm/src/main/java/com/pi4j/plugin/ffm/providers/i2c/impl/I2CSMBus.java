@@ -27,7 +27,7 @@ import java.util.Objects;
  * @see SMBusNative
  * @see FFMI2CBus
  */
-public class I2CSMBus  extends I2CCommonIntf  {
+public class I2CSMBus  extends AbstractI2C {
 
     private static final Logger logger = LoggerFactory.getLogger(I2CSMBus.class);
     private final SMBusNative SMBUS = new SMBusNative();
