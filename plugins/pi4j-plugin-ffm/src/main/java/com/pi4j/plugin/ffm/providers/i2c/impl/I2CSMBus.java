@@ -27,7 +27,7 @@ import java.util.Objects;
  * @see SMBusNative
  * @see FFMI2CBus
  */
-public class I2CSMBus  extends AbstractI2C {
+public class I2CSMBus extends AbstractI2C {
 
     private static final Logger logger = LoggerFactory.getLogger(I2CSMBus.class);
     private final SMBusNative SMBUS = new SMBusNative();
@@ -35,9 +35,9 @@ public class I2CSMBus  extends AbstractI2C {
     /**
      * Creates an SMBus-based I2C device bound to the given bus.
      *
-     * @param context  the context of this instance
-     * @param config   the I2C configuration carrying the bus number and target slave device address
-     * @param i2CBus   the shared {@link FFMI2CBus} wrapping the open {@code /dev/i2c-N} file descriptor
+     * @param context the context of this instance
+     * @param config  the I2C configuration carrying the bus number and target slave device address
+     * @param i2CBus  the shared {@link FFMI2CBus} wrapping the open {@code /dev/i2c-N} file descriptor
      */
     public I2CSMBus(Context context, I2CConfig config, FFMI2CBus i2CBus) {
         super(context, config, i2CBus);
@@ -79,6 +79,7 @@ public class I2CSMBus  extends AbstractI2C {
             }
         });
     }
+
     @Override
     int internalWrite(byte[] register, byte[] data) {
         return writeInternal(register[0], data);
@@ -99,7 +100,7 @@ public class I2CSMBus  extends AbstractI2C {
      * @return the bytes read from the register
      * @throws Pi4JException if the adapter advertises none of the supported SMBus read modes
      */
-     byte[] internalRead(int register, int size) {
+    byte[] internalRead(int register, int size) {
         return i2CBus.execute(this, (i2cFileDescriptor) -> {
             logger.trace("{} - reading from register '{}' data size '{}'", i2CBus.getBusName(), Integer.toHexString(register), size);
             if (i2CBus.hasFunctionality(I2CFunctionality.I2C_FUNC_SMBUS_QUICK) && size == 1) {
@@ -115,7 +116,6 @@ public class I2CSMBus  extends AbstractI2C {
     }
 
 
-
     @Override
     byte[] internalRead(byte[] register, byte[] buffer, int offset, int size) {
         throw new UnsupportedOperationException("SMBus protocol does not support reading multiregister devices. " +
@@ -127,14 +127,11 @@ public class I2CSMBus  extends AbstractI2C {
         return i2CBus.execute(this, SMBUS::readByte).byteValue();
     }
 
-
-
     @Override
     int internalWrite(byte[] data) {
         throw new UnsupportedOperationException("SMBus protocol does not support writing data arrays without register. " +
             "Please, use I2CDirect provider instead.");
     }
-
 
 
     @Override
@@ -152,14 +149,13 @@ public class I2CSMBus  extends AbstractI2C {
     }
 
 
-
     @Override
-     public byte[] internalRead(byte[] data, int offset, int length) {
+    public byte[] internalRead(byte[] data, int offset, int length) {
         throw new UnsupportedOperationException("SMBus protocol does not support reading to data arrays without register. " +
             "Please, use I2CDirect provider instead.");
     }
 
-   @Override
+    @Override
     public int internalWriteByte(byte b) {
         return i2CBus.execute(this, (i2cFileDescriptor) -> SMBUS.writeByte(i2cFileDescriptor, b));
     }
@@ -169,7 +165,8 @@ public class I2CSMBus  extends AbstractI2C {
         throw new UnsupportedOperationException("SMBus protocol does not support writing data arrays without register. " +
             "Please, use I2CDirect provider instead.");
     }
-  @Override
+
+    @Override
     public int readRegister(byte[] register, byte[] data, int offset, int length) {
         throw new UnsupportedOperationException("SMBus protocol does not support reading multiregister devices. " +
             "Please, use I2CDirect provider instead.");
@@ -208,8 +205,6 @@ public class I2CSMBus  extends AbstractI2C {
         System.arraycopy(data, 0, writeData, register.length - 1, data.length);
         return writeRegister(byteRegister, writeData);
     }
-
-
 
 
     @Override

@@ -9,7 +9,6 @@ import com.pi4j.plugin.ffm.common.i2c.rdwr.RDWRData;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CBus;
 
-
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -26,14 +25,13 @@ public class I2CDirect extends AbstractI2C {
     /**
      * Creates a direct-mode I2C device bound to the given bus.
      *
-     * @param context  the context this device belongs to
-     * @param config   the {@link I2CConfig} supplying the target device address
-     * @param i2CBus   the shared {@link FFMI2CBus} whose file descriptor carries the transfers
+     * @param context the context this device belongs to
+     * @param config  the {@link I2CConfig} supplying the target device address
+     * @param i2CBus  the shared {@link FFMI2CBus} whose file descriptor carries the transfers
      */
     public I2CDirect(Context context, I2CConfig config, FFMI2CBus i2CBus) {
         super(context, config, i2CBus);
     }
-
 
 
     @Override
@@ -71,7 +69,6 @@ public class I2CDirect extends AbstractI2C {
     }
 
 
-
     /**
      * Write data to the I/O device register.
      *
@@ -82,7 +79,6 @@ public class I2CDirect extends AbstractI2C {
     int internalWrite(byte[] register, byte[] data) {
         return internalWrite(register, data, 0, data.length);
     }
-
 
 
     /**
@@ -102,7 +98,6 @@ public class I2CDirect extends AbstractI2C {
     }
 
 
-
     @Override
     /**
      * Write data to the I/O device.
@@ -110,7 +105,7 @@ public class I2CDirect extends AbstractI2C {
      * @param data the data to write
      * @return the number of bytes successfully written
      */
-     int internalWrite(byte[] data) {
+    int internalWrite(byte[] data) {
         return internalWrite(data, 0, data.length);
     }
 
@@ -123,7 +118,7 @@ public class I2CDirect extends AbstractI2C {
      * @param length number of bytes to write from the data array
      * @return the number of bytes successfully written
      */
-     int internalWrite(byte[] data, int offset, int length) {
+    int internalWrite(byte[] data, int offset, int length) {
         var writeBuffer = new byte[length];
         System.arraycopy(data, offset, writeBuffer, 0, length);
         var messages = new I2CMessage[]{
@@ -137,8 +132,6 @@ public class I2CDirect extends AbstractI2C {
     }
 
 
-
-
     @Override
     byte[] internalRead(int register, int size) {
         byte[] buffer = new byte[size];
@@ -146,7 +139,7 @@ public class I2CDirect extends AbstractI2C {
     }
 
 
-     @Override
+    @Override
     byte[] internalRead(byte[] register, byte[] buffer, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, buffer.length);
         var messages = new I2CMessage[]{
@@ -163,13 +156,10 @@ public class I2CDirect extends AbstractI2C {
     }
 
 
-        @Override
-        byte[]  internalRead(int register, byte[] buffer, int offset, int length) {
-            return internalRead(new byte[]{(byte) register}, buffer, offset, length);
-        }
-
-
-
+    @Override
+    byte[] internalRead(int register, byte[] buffer, int offset, int length) {
+        return internalRead(new byte[]{(byte) register}, buffer, offset, length);
+    }
 
 
     @Override
