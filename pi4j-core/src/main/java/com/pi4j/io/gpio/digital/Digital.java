@@ -11,12 +11,10 @@ import com.pi4j.io.gpio.Gpio;
  *
  * @param <DIGITAL_TYPE> the concrete digital I/O type, used as the self-referencing return type for fluent methods
  * @param <CONFIG_TYPE> the {@link DigitalConfig} type describing this instance
- * @param <PROVIDER_TYPE> the {@link DigitalProvider} type that created this instance
  */
-public interface Digital<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
-    CONFIG_TYPE extends DigitalConfig,
-    PROVIDER_TYPE extends DigitalProvider>
-    extends Gpio<DIGITAL_TYPE, CONFIG_TYPE, PROVIDER_TYPE>,
+public interface Digital<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE>,
+    CONFIG_TYPE extends DigitalConfig>
+    extends Gpio<DIGITAL_TYPE, CONFIG_TYPE>,
     ListenableOnOffRead<DIGITAL_TYPE> {
 
     /**

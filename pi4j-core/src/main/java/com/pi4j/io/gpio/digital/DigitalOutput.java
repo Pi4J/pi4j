@@ -13,10 +13,9 @@ import java.util.concurrent.TimeUnit;
  * Represents a digital output I/O instance, typically a single GPIO pin driven {@link DigitalState#HIGH} or
  * {@link DigitalState#LOW}. In addition to the basic {@code state(...)} operations it offers higher-level
  * convenience operations such as {@link #toggle()}, timed {@link #pulse(int, TimeUnit)} and repeating
- * {@link #blink(int, TimeUnit)}, each with blocking and asynchronous variants. Instances are obtained from a
- * {@link DigitalOutputProvider} and configured via {@link DigitalOutputConfig}.
+ * {@link #blink(int, TimeUnit)}, each with blocking and asynchronous variants.
  */
-public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfig, DigitalOutputProvider>,
+public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfig>,
         Output,
         OnOff<DigitalOutput> {
 

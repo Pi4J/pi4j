@@ -1,6 +1,5 @@
 package com.pi4j.test;
 
-import com.pi4j.io.IOType;
 import com.pi4j.test.smoketest.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,14 +53,6 @@ public class Main {
         // Fallback in case no providerContext was specified with a parameter
         if (providerContext == null) {
             providerContext = new ProviderContext(ProviderContext.TestProvider.NEWAUTOCONTEXT);
-        }
-
-        // create About class instance
-        About about = new About(providerContext);
-        about.enumerateProviders();
-
-        for (var ioType : IOType.values()) {
-            about.enumerateProviders(ioType);
         }
 
         // Run the tests

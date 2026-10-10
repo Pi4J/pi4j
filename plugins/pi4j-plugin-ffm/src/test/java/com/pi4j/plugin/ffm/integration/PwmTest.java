@@ -2,11 +2,12 @@ package com.pi4j.plugin.ffm.integration;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
+import com.pi4j.context.ContextBuilder;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfigBuilder;
 import com.pi4j.io.pwm.PwmType;
 import com.pi4j.plugin.BaseSetup;
-import com.pi4j.plugin.ffm.providers.pwm.FFMPwmProviderImpl;
+import com.pi4j.plugin.ffm.FFMContext;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -31,9 +32,7 @@ public class PwmTest extends BaseSetup {
     public static void setup() throws InterruptedException, IOException {
         setup("pwm");
 
-        pi4j = Pi4J.newContextBuilder()
-            .add(new FFMPwmProviderImpl())
-            .build();
+        pi4j = new FFMContext();
         pwm = pi4j.create(PwmConfigBuilder.newInstance(pi4j)
             .pwmType(PwmType.HARDWARE)
             .chip(findMockPwmChip())
