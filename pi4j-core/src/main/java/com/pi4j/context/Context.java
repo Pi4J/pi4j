@@ -208,6 +208,20 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
     }
 
     /**
+     * Legacy accessor stub retained to inform legacy callers and diagnostics that providers have been removed.
+     *
+     * @return a {@link Describable} stub representing the discontinued provider subsystem
+     * @deprecated Providers are no longer supported in Pi4J 5.0+. Use {@code Context.create(...)} or {@link #registry()} directly.
+     */
+    @Deprecated(since = "5.0")
+    default Describable providers() {
+        return () -> Descriptor.create()
+            .category("PROVIDERS")
+            .name("I/O Providers")
+            .description("Providers are gone; I/O instances are created directly via Context and managed by Registry");
+    }
+
+    /**
      * Registers an already-constructed I/O instance directly in the {@link Registry}, bypassing the normal
      * provider-based {@link #create(IOConfig, IOType)} flow. Intended primarily for testing.
      *
