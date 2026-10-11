@@ -3,7 +3,6 @@ package com.pi4j.io;
 import com.pi4j.common.Descriptor;
 import com.pi4j.common.IdentityBase;
 import com.pi4j.context.Context;
-import com.pi4j.exception.InitializeException;
 
 import java.io.Closeable;
 
