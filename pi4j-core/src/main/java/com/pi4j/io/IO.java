@@ -18,7 +18,7 @@ import java.io.Closeable;
  * @param <CONFIG_TYPE>   the {@link IOConfig} type that describes and creates this I/O instance
  */
 public interface IO<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig>
-        extends Describable, Lifecycle, Identity, Closeable {
+        extends Describable, Identity, Closeable {
 
     /**
      * Closes this IO instance.
@@ -65,4 +65,15 @@ public interface IO<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig>
      * @return this instance for method chaining
      */
     IO_TYPE description(String description);
+
+    /**
+     * Applies the initial state of this I/O instance as set in the configuration as part of the IO initialization.
+     * This can't be part of the constructor as it typically requires the instance to be fully initialized.
+     * <p>
+     * Note: This is called internally during IO instance registration. This is not intended for outside use.
+     * It might have side effects on the underlying hardware if called outside the expected initialization process.
+     */
+    default IO_TYPE applyInitialState() {
+        return (IO_TYPE) this;
+    }
 }

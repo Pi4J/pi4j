@@ -35,11 +35,6 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
         super(context, config, i2CBus);
     }
 
-    @Override
-    public I2C initialize(Context context) throws InitializeException {
-        return super.initialize(context);
-    }
-
     private byte[] internalRead(byte[] buffer, int offset, int length) {
         Objects.checkFromIndexSize(offset, length, buffer.length);
         var messages = new I2CMessage[]{

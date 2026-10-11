@@ -85,8 +85,8 @@ public class FFMSpi extends SpiBase implements Spi {
      * {@code SPI_IOC_RD_*} ioctls, then reads the driver's {@code bufsiz} to size the transfer chunks.
      */
     @Override
-    public Spi initialize(Context context) throws InitializeException {
-        super.initialize(context);
+    public Spi applyInitialState() throws InitializeException {
+        super.applyInitialState();
 
         logger.info("{} - setting up SPIBus...", path);
         logger.debug("{} - opening device file.", path);

@@ -85,15 +85,6 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig>
         return this.config;
     }
 
-
-    @Override
-    public IO_TYPE initialize(Context context) throws InitializeException {
-        if (context != this.context) {
-            throw new IllegalArgumentException("Context mismatch");
-        }
-        return (IO_TYPE) this;
-    }
-
     @Override
     public Descriptor describe() {
         return super.describe().category("IO");

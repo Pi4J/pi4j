@@ -35,8 +35,8 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
      * @throws InitializeException if base initialization fails or the initial state cannot be written
      */
     @Override
-    public DigitalOutput initialize(Context context) throws InitializeException {
-        super.initialize(context);
+    public DigitalOutput applyInitialState() throws InitializeException {
+        super.applyInitialState();
 
         // update the value to the initial value if an initial value was configured
         if (config().initialState() != null) {
@@ -46,6 +46,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
                 throw new InitializeException(e);
             }
         }
+
         return this;
     }
 
