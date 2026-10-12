@@ -50,10 +50,10 @@ public class I2CSMBus extends I2CBase<FFMI2CBus> {
      * delegating to the superclass initialization.
      */
     @Override
-    public I2C initialize(Context context) throws InitializeException {
+    public I2C applyInitialState() throws InitializeException {
         i2CBus.selectDevice(config.device());
         logger.debug("{} - selected device '{}'", i2CBus.getBusName(), Integer.toHexString(config.device()));
-        return super.initialize(context);
+        return super.applyInitialState();
     }
 
     /**

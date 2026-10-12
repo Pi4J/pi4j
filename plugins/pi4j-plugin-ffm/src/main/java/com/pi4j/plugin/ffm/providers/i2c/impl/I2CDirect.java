@@ -1,8 +1,6 @@
 package com.pi4j.plugin.ffm.providers.i2c.impl;
 
 import com.pi4j.context.Context;
-import com.pi4j.exception.InitializeException;
-import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CBase;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.plugin.ffm.common.i2c.I2cConstants;
@@ -33,11 +31,6 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      */
     public I2CDirect(Context context, I2CConfig config, FFMI2CBus i2CBus) {
         super(context, config, i2CBus);
-    }
-
-    @Override
-    public I2C initialize(Context context) throws InitializeException {
-        return super.initialize(context);
     }
 
     private byte[] internalRead(byte[] buffer, int offset, int length) {

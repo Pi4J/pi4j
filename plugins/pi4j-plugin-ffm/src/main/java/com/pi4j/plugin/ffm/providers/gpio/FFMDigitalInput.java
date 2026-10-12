@@ -80,8 +80,8 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      *                             {@code ioctl}/open call fails
      */
     @Override
-    public DigitalInput initialize(Context context) throws InitializeException {
-        super.initialize(context);
+    public DigitalInput applyInitialState() throws InitializeException {
+        super.applyInitialState();
         var flags = PinFlag.INPUT.getValue() | PinFlag.EDGE_RISING.getValue() | PinFlag.EDGE_FALLING.getValue();
         var attributes = getLineConfigAttributes();
         flags |= switch (pull) {

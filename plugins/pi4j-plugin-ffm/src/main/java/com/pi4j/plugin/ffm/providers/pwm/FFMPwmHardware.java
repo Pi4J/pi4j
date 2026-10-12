@@ -105,7 +105,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
      *                                  exported channel directory does not appear within the timeout
      */
     @Override
-    public Pwm initialize(Context context) throws InitializeException {
+    public Pwm applyInitialState() throws InitializeException {
         var pwmChipFile = CHIP_PATH + chip;
 
         var pwmFile = pwmChipFile + PWM_PATH + channel;
@@ -163,7 +163,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         }
 
         // [INITIALIZE STATE] initialize PWM pin state (via superclass impl)
-        super.initialize(context);
+        super.applyInitialState();
 
         logger.debug("{} - pwm setup finished. Initial state: {}", pwmPath, this.onState ? "on" : "off");
         return this;

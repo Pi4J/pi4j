@@ -50,7 +50,7 @@ public class MutableRegistry implements Registry {
 
         // Add the instance to the collection
         try {
-            instance.initialize(context);
+            instance.applyInitialState();
             instances.put(id, instance);
         } catch (InitializeException e) {
             removeFromMap(instance);

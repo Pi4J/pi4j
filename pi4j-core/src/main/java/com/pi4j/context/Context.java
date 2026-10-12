@@ -211,7 +211,7 @@ public interface Context extends Describable, IOCreator, ProviderProvider, Initi
      * Legacy accessor stub retained to inform legacy callers and diagnostics that providers have been removed.
      *
      * @return a {@link Describable} stub representing the discontinued provider subsystem
-     * @deprecated Providers are no longer supported in Pi4J 5.0+. Use {@code Context.create(...)} or {@link #registry()} directly.
+     * @deprecated Providers are no longer supported in Pi4J 5.0+.
      */
     @Deprecated(since = "5.0")
     default Describable providers() {
