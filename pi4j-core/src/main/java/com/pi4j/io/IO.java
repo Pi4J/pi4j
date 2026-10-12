@@ -2,7 +2,6 @@ package com.pi4j.io;
 
 import com.pi4j.common.Describable;
 import com.pi4j.common.Identity;
-import com.pi4j.common.Lifecycle;
 import com.pi4j.provider.Provider;
 
 import java.io.Closeable;
@@ -10,9 +9,9 @@ import java.io.Closeable;
 /**
  * Base contract for every Pi4J I/O instance (digital input/output, PWM, I2C, SPI, ...).
  * <p>
- * An {@code IO} is created from an {@link IOConfig} by a {@link Provider} and managed through the
- * Pi4J lifecycle ({@link Lifecycle}). It exposes identity ({@link Identity}) and self-description
- * ({@link Describable}) and is closeable so that it can be released when no longer needed.
+ * An {@code IO} is created from an {@link IOConfig} by a context and managed via the registry. It exposes identity
+ * ({@link Identity}) and self-description ({@link Describable}) and is closeable so that it can be released when no
+ * longer needed.
  *
  * @param <IO_TYPE>       the concrete I/O type, returned by the fluent identity setters for chaining
  * @param <CONFIG_TYPE>   the {@link IOConfig} type that describes and creates this I/O instance
