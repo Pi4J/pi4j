@@ -2,7 +2,6 @@ package com.pi4j.io;
 
 import com.pi4j.common.Describable;
 import com.pi4j.common.Identity;
-import com.pi4j.provider.Provider;
 
 import java.io.Closeable;
 
