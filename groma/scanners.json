@@ -1,0 +1,21 @@
+{
+  "scanners": [
+    {
+      "id": "java",
+      "source": "@groma/scanner-java@0.2.1",
+      "include": [
+        "**/*.java",
+        "**/pom.xml",
+        "**/build.gradle",
+        "**/build.gradle.kts",
+        "**/settings.gradle",
+        "**/settings.gradle.kts"
+      ],
+      "exclude": [
+        "target/",
+        "build/",
+        ".gradle/"
+      ]
+    }
+  ]
+}
