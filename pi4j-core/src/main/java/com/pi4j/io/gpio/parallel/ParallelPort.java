@@ -54,28 +54,28 @@ public interface ParallelPort extends com.pi4j.io.IO<ParallelPort, ParallelPortC
      * @param listener the listener to add
      * @return the parallel port instance
      */
-    ParallelPort addListener(Listener listener);
+    ParallelPort addListener(PinStateChangeListener listener);
 
     /**
      * Remove a listener for state changes on the parallel port.
      * @param listener the listener to remove
      * @return the parallel port instance
      */
-    ParallelPort removeListener(Listener listener);
+    ParallelPort removeListener(PinStateChangeListener listener);
 
     /**
      * Event representing a change in the state of a pin on the parallel port.
      * @param source the parallel port instance
      * @param offset the offset of the pin that changed
-     * @param state the new state of the pin
+     * @param newState the new state of the pin
      */
-    record PinStateChangedEvent(ParallelPort source, int offset, DigitalState state) {}
+    record PinStateChangedEvent(ParallelPort source, int offset, DigitalState newState) {}
 
     /**
-     * Listener for value change events on the parallel port.
+     * Listener for low-level pin-state change events on the parallel port.
      */
     @FunctionalInterface
-    interface Listener extends com.pi4j.event.Listener {
+    interface PinStateChangeListener extends com.pi4j.event.Listener {
         void onPinStateChanged(PinStateChangedEvent event);
     }
 }

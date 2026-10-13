@@ -26,8 +26,8 @@ public abstract class ParallelPortBase
 
     private Direction direction;
 
-    protected final EventManager<ParallelPort, Listener, PinStateChangedEvent> events = new EventManager<>(
-        this, Listener::onPinStateChanged
+    protected final EventManager<ParallelPort, PinStateChangeListener, PinStateChangedEvent> events = new EventManager<>(
+        this, PinStateChangeListener::onPinStateChanged
     );
 
     protected ParallelPortBase(Context context, ParallelPortConfig config) {
@@ -69,12 +69,12 @@ public abstract class ParallelPortBase
     }
 
     @Override
-    public ParallelPort addListener(Listener listener) {
+    public ParallelPort addListener(PinStateChangeListener listener) {
         return events.add(listener);
     }
 
     @Override
-    public ParallelPort removeListener(Listener listener) {
+    public ParallelPort removeListener(PinStateChangeListener listener) {
         return events.remove(listener);
     }
 
