@@ -1,6 +1,7 @@
 package com.pi4j.io.gpio.digital.impl;
 
 import com.pi4j.config.BcmConfig;
+import com.pi4j.config.BusConfig;
 import com.pi4j.config.ConfigBase;
 import com.pi4j.config.exception.ConfigMissingRequiredKeyException;
 import com.pi4j.context.Context;
@@ -43,10 +44,10 @@ public class DefaultDigitalInputConfig
         super(properties);
 
         // load address property
-        if (properties.containsKey(BCM_KEY)) {
-            this.bcm = Integer.parseInt(properties.get(BCM_KEY));
+        if (properties.containsKey(BcmConfig.BCM_KEY)) {
+            this.bcm = Integer.parseInt(properties.get(BcmConfig.BCM_KEY));
         } else {
-            throw new ConfigMissingRequiredKeyException(BCM_KEY);
+            throw new ConfigMissingRequiredKeyException(BcmConfig.BCM_KEY);
         }
 
         // load provider property
@@ -59,8 +60,8 @@ public class DefaultDigitalInputConfig
         this.name = StringUtil.setIfNullOrEmpty(this.name, "DIN-" + this.bcm, true);
         this.description = StringUtil.setIfNullOrEmpty(this.description, "DIN-" + this.bcm, true);
 
-        if (properties.containsKey(BUS_KEY)) {
-            this.bus = Integer.parseInt(properties.get(BUS_KEY));
+        if (properties.containsKey(BusConfig.BUS_KEY)) {
+            this.bus = Integer.parseInt(properties.get(BusConfig.BUS_KEY));
         }
 
         // load optional pull resistance from properties
