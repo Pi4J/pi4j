@@ -1,5 +1,6 @@
 package com.pi4j.io.gpio.digital;
 
+import com.pi4j.io.gpio.digital.impl.DefaultDigitalInputConfig;
 import com.pi4j.provider.Provider;
 
 /**
@@ -7,7 +8,7 @@ import com.pi4j.provider.Provider;
  * @deprecated
  */
 @Deprecated(since = "5.0")
-public interface DigitalInputProvider extends Provider<DigitalInput, DigitalInputConfig> {
+public interface DigitalInputProvider extends Provider<DigitalInput, DefaultDigitalInputConfig> {
 
     /**
      * Creates a digital input from the configuration produced by the given builder.

@@ -3,6 +3,7 @@ package com.pi4j.io;
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.gpio.digital.*;
+import com.pi4j.io.gpio.digital.impl.DefaultDigitalInputConfig;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 import com.pi4j.io.gpio.parallel.ParallelPortConfigBuilder;
@@ -30,7 +31,7 @@ import java.lang.reflect.Method;
 public enum IOType {
 
     /** Digital input pin (reads a logic HIGH/LOW state). */
-    DIGITAL_INPUT(DigitalInput.class, DigitalInputConfig.class, DigitalInputConfigBuilder.class),
+    DIGITAL_INPUT(DigitalInput.class, DefaultDigitalInputConfig.class, DigitalInputConfigBuilder.class),
     /** Digital output pin (drives a logic HIGH/LOW state). */
     DIGITAL_OUTPUT(DigitalOutput.class, DigitalOutputConfig.class, DigitalOutputConfigBuilder.class),
     /** Pulse-width modulation output. */

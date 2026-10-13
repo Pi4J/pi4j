@@ -1,15 +1,16 @@
 package com.pi4j.io.gpio.digital;
 
 import com.pi4j.context.Context;
+import com.pi4j.io.gpio.digital.impl.DefaultDigitalInputConfig;
 import com.pi4j.io.gpio.digital.impl.DefaultDigitalInputConfigBuilder;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * Fluent builder for assembling a {@link DigitalInputConfig}, extending {@link DigitalConfigBuilder}
+ * Fluent builder for assembling a {@link DigitalInputConfig}, extending {@link DigitalInputConfigBuilder}
  * with the input-specific pull resistance and debounce settings.
  */
-public interface DigitalInputConfigBuilder extends DigitalConfigBuilder<DigitalInputConfigBuilder, DigitalInputConfig> {
+public interface DigitalInputConfigBuilder extends com.pi4j.io.IOConfigBuilder<DigitalInputConfigBuilder, DefaultDigitalInputConfig>, com.pi4j.config.ConfigBuilder<DigitalInputConfigBuilder, DefaultDigitalInputConfig> {
 
     DigitalInputConfigBuilder bcm(Integer bcm);
 
@@ -59,5 +60,33 @@ public interface DigitalInputConfigBuilder extends DigitalConfigBuilder<DigitalI
      */
     static DigitalInputConfigBuilder newInstance() {
         return DefaultDigitalInputConfigBuilder.newInstance();
+    }
+
+    /**
+     * Sets the {@link DigitalState} to be treated as the logical "on" state for the configuration being built.
+     *
+     * @param state the state that should map to "on"
+     * @return this builder for method chaining
+     */
+    DigitalInputConfigBuilder onState(DigitalState state);
+
+    /**
+     * Sets the bus number on which the GPIO device is addressed.
+     *
+     * @param bus the bus number to associate with the configured GPIO device
+     * @return this builder instance for method chaining
+     */
+    DigitalInputConfigBuilder bus(int bus);
+
+    /**
+     * Sets the target pin using its legacy "address" name.
+     *
+     * @param address the BCM GPIO pin number
+     * @return this builder instance for method chaining
+     * @deprecated use {@link #bcm(Integer)} instead.
+     */
+    @Deprecated(forRemoval = true)
+    default DigitalInputConfigBuilder address(Integer address) {
+        return bcm(address);
     }
 }

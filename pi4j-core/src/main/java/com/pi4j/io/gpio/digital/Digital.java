@@ -1,11 +1,10 @@
 package com.pi4j.io.gpio.digital;
 
 import com.pi4j.io.ListenableOnOffRead;
-import com.pi4j.io.gpio.Gpio;
 
 /**
  * Base contract for a two-state (HIGH/LOW) digital I/O instance in Pi4J, such as a
- * {@link DigitalInput} or digital output. Extends the generic {@link Gpio} contract with
+ * {@link DigitalInput} or digital output. Extends the generic {@link Digital} contract with
  * {@link DigitalState} access and adds listener registration for state-change events, while
  * {@link ListenableOnOffRead} provides the on/off abstraction shared with simpler I/O types.
  *
@@ -14,8 +13,8 @@ import com.pi4j.io.gpio.Gpio;
  */
 public interface Digital<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE>,
     CONFIG_TYPE extends DigitalConfig>
-    extends Gpio<DIGITAL_TYPE, CONFIG_TYPE>,
-    ListenableOnOffRead<DIGITAL_TYPE> {
+    extends
+    ListenableOnOffRead<DIGITAL_TYPE>, com.pi4j.io.IO<DIGITAL_TYPE, CONFIG_TYPE> {
 
     /**
      * Returns the current logic level of this digital I/O instance.

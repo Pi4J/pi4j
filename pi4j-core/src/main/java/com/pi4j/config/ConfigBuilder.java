@@ -16,7 +16,7 @@ import java.util.Properties;
  * @param <BUILDER_TYPE> the concrete builder sub-type, returned by setters to enable type-safe chaining
  * @param <CONFIG_TYPE> the configuration type produced by {@link #build()}
  */
-public interface ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends Builder<CONFIG_TYPE> {
+public interface ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
     /**
      * Sets the unique identifier for the configuration being built.
      *
@@ -143,4 +143,11 @@ public interface ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends Builder<CONFIG
      * @throws java.io.IOException if an error occurs accessing {@code file}.
      */
     BUILDER_TYPE load(File file, String prefixFilter) throws IOException;
+
+    /**
+     * Constructs and returns the configured instance from the state collected on this builder.
+     *
+     * @return the newly built instance
+     */
+    CONFIG_TYPE build();
 }

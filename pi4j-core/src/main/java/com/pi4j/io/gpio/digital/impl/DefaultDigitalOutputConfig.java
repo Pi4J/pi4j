@@ -1,21 +1,28 @@
 package com.pi4j.io.gpio.digital.impl;
 
+import com.pi4j.config.BcmConfig;
+import com.pi4j.config.ConfigBase;
+import com.pi4j.config.exception.ConfigMissingRequiredKeyException;
+import com.pi4j.io.IOConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.gpio.digital.DigitalState;
-import com.pi4j.io.impl.IOBcmConfigBase;
 import com.pi4j.util.StringUtil;
 
 import java.util.Map;
 
 public class DefaultDigitalOutputConfig
-    extends IOBcmConfigBase
-    implements DigitalOutputConfig {
+    extends ConfigBase
+    implements DigitalOutputConfig, IOConfig, BcmConfig {
 
     // private configuration properties
     protected Integer bus = null;
     protected DigitalState shutdownState = null;
     protected DigitalState initialState = null;
     protected DigitalState onState = DigitalState.HIGH;
+    // private configuration variables
+    protected String provider = null;
+    // private configuration properties
+    protected Integer bcm = null;
 
     /**
      * PRIVATE CONSTRUCTOR
@@ -29,6 +36,18 @@ public class DefaultDigitalOutputConfig
      */
     protected DefaultDigitalOutputConfig(Map<String, String> properties) {
         super(properties);
+
+        // load address property
+        if (properties.containsKey(BCM_KEY)) {
+            this.bcm = Integer.parseInt(properties.get(BCM_KEY));
+        } else {
+            throw new ConfigMissingRequiredKeyException(BCM_KEY);
+        }
+
+        // load provider property
+        if (properties.containsKey(PROVIDER_KEY)) {
+            this.provider = properties.get(PROVIDER_KEY);
+        }
 
         // define default property values if any are missing (based on the required address value)
         this.id = StringUtil.setIfNullOrEmpty(this.id, "DOUT-" + this.bcm, true);
@@ -103,5 +122,10 @@ public class DefaultDigitalOutputConfig
     @Override
     public DigitalState onState() {
         return this.onState;
+    }
+
+    @Override
+    public String provider() {
+        return this.provider;
     }
 }

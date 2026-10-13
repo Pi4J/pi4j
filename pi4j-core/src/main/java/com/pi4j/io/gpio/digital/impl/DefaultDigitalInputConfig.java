@@ -1,17 +1,27 @@
 package com.pi4j.io.gpio.digital.impl;
 
-import com.pi4j.io.gpio.digital.DigitalInput;
-import com.pi4j.io.gpio.digital.DigitalInputConfig;
-import com.pi4j.io.gpio.digital.DigitalState;
-import com.pi4j.io.gpio.digital.PullResistance;
-import com.pi4j.io.impl.IOBcmConfigBase;
+import com.pi4j.config.BcmConfig;
+import com.pi4j.config.ConfigBase;
+import com.pi4j.config.exception.ConfigMissingRequiredKeyException;
+import com.pi4j.context.Context;
+import com.pi4j.io.IOConfig;
+import com.pi4j.io.gpio.digital.*;
 import com.pi4j.util.StringUtil;
 
 import java.util.Map;
 
 public class DefaultDigitalInputConfig
-    extends IOBcmConfigBase
-    implements DigitalInputConfig {
+    extends ConfigBase
+    implements DigitalConfig, IOConfig, BcmConfig {
+
+    /** Property key under which the pull resistance value is stored in a configuration map. */
+    public static final String PULL_RESISTANCE_KEY = "pull";
+    /** Property key under which the debounce interval is stored in a configuration map. */
+    public static final String DEBOUNCE_RESISTANCE_KEY = "debounce";
+    // private configuration variables
+    protected String provider = null;
+    // private configuration properties
+    protected Integer bcm = null;
 
     /**
      * PRIVATE CONSTRUCTOR
@@ -31,6 +41,18 @@ public class DefaultDigitalInputConfig
      */
     protected DefaultDigitalInputConfig(Map<String, String> properties) {
         super(properties);
+
+        // load address property
+        if (properties.containsKey(BCM_KEY)) {
+            this.bcm = Integer.parseInt(properties.get(BCM_KEY));
+        } else {
+            throw new ConfigMissingRequiredKeyException(BCM_KEY);
+        }
+
+        // load provider property
+        if (properties.containsKey(PROVIDER_KEY)) {
+            this.provider = properties.get(PROVIDER_KEY);
+        }
 
         // define default property values if any are missing (based on the required address value)
         this.id = StringUtil.setIfNullOrEmpty(this.id, "DIN-" + this.bcm, true);
@@ -55,6 +77,18 @@ public class DefaultDigitalInputConfig
         if (properties.containsKey(ON_STATE_KEY)) {
             this.onState = DigitalState.parse(properties.get(ON_STATE_KEY));
         }
+    }
+
+    /**
+     * Creates a new {@link DigitalInputConfigBuilder}.
+     *
+     * @param context the Pi4J context
+     * @return a new configuration builder instance
+     * @deprecated As of version 5, please use DigitalInput.newConfigBuilder() instead.
+     */
+    @Deprecated(since="5.0")
+    public static DigitalInputConfigBuilder newBuilder(Context context)  {
+        return DigitalInputConfigBuilder.newInstance();
     }
 
     /**
@@ -83,12 +117,10 @@ public class DefaultDigitalInputConfig
         return bcm();
     }
 
-    @Override
     public PullResistance pull() {
         return this.pullResistance;
     }
 
-    @Override
     public Long debounce() {
         return this.debounce;
     }
@@ -96,5 +128,26 @@ public class DefaultDigitalInputConfig
     @Override
     public DigitalState onState() {
         return this.onState;
+    }
+
+    /**
+     * Bean-style accessor equivalent to {@link #pull()}.
+     *
+     * @return the configured {@link PullResistance}
+     */
+    public PullResistance getPull(){
+        return pull();
+    }
+
+    /**
+     * Bean-style accessor equivalent to {@link #debounce()}.
+     *
+     * @return the configured debounce interval in microseconds, or {@code null} if unset
+     */
+    public Long getDebounce(){ return debounce(); }
+
+    @Override
+    public String provider() {
+        return this.provider;
     }
 }

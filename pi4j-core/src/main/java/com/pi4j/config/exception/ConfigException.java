@@ -2,8 +2,7 @@ package com.pi4j.config.exception;
 
 /**
  * Base unchecked exception for all configuration errors raised while building or validating a Pi4J
- * I/O configuration. Subtypes such as {@link ConfigEmptyException}, {@link ConfigMissingPrefixException}
- * and {@link ConfigMissingRequiredKeyException} signal specific configuration faults.
+ * I/O configuration. Subtypes such as {@link ConfigMissingRequiredKeyException} signal specific configuration faults.
  *
  * @see <a href="http://www.pi4j.com/">http://www.pi4j.com/</a>
  */

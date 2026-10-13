@@ -6,6 +6,7 @@ import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.digital.*;
+import com.pi4j.io.gpio.digital.impl.DefaultDigitalInputConfig;
 import com.pi4j.plugin.ffm.common.FFMGpioLine;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.gpio.DetectedEvent;
@@ -58,7 +59,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      * @param config   the {@link DigitalInputConfig} supplying the BCM line offset, bus number,
      *                 pull resistance and debounce period
      */
-    public FFMDigitalInput(Context context, DigitalInputConfig config) {
+    public FFMDigitalInput(Context context, DefaultDigitalInputConfig config) {
         super(context, config);
         this.line = new FFMGpioLine(MaskUtils.mask(config.bcm()), config.bus());
         this.debounce = (config.debounce() != null && config.debounce() >= 0) ? config.debounce() : 0;

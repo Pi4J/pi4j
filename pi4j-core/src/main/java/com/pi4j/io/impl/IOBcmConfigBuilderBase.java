@@ -1,6 +1,5 @@
 package com.pi4j.io.impl;
 
-import com.pi4j.config.BcmConfigBuilder;
 import com.pi4j.config.Config;
 import com.pi4j.config.ConfigBuilder;
 import com.pi4j.config.impl.BcmConfigBuilderBase;
@@ -20,7 +19,7 @@ public abstract class IOBcmConfigBuilderBase<
     >
     extends BcmConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
     implements IOConfigBuilder<BUILDER_TYPE, CONFIG_TYPE>,
-    BcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+        ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
     /**
      * PRIVATE CONSTRUCTOR

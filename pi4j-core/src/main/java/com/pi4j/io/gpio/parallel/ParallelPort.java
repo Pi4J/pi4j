@@ -1,7 +1,6 @@
 package com.pi4j.io.gpio.parallel;
 
 import com.pi4j.io.IOType;
-import com.pi4j.io.gpio.Gpio;
 
 /**
  * A {@link Gpio} which is capable of reading and writing multiple bits to a device.

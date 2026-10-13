@@ -1,8 +1,6 @@
 package com.pi4j.io.pwm;
 
 import com.pi4j.config.BcmConfig;
-import com.pi4j.config.ChannelConfig;
-import com.pi4j.config.ChipConfig;
 import com.pi4j.io.IOConfig;
 
 
@@ -13,7 +11,7 @@ import com.pi4j.io.IOConfig;
  * shutdown values. Instances are assembled with a {@link PwmConfigBuilder} and consumed by a {@link PwmProvider} when
  * creating the PWM I/O.
  */
-public interface PwmConfig extends ChipConfig, ChannelConfig, BcmConfig, IOConfig {
+public interface PwmConfig extends BcmConfig, IOConfig {
 
     /**
      * Property key for the legacy PWM address.
@@ -40,6 +38,14 @@ public interface PwmConfig extends ChipConfig, ChannelConfig, BcmConfig, IOConfi
     String SHUTDOWN_VALUE_KEY = "shutdown";
     /** Property key for the duty-cycle applied when the PWM instance is initialized. */
     String INITIAL_VALUE_KEY = "initial";
+    /**
+     * Property key under which the channel number is stored in the configuration properties map.
+     */
+    String CHANNEL_KEY = "channel";
+    /**
+     * Property key under which the chip number is stored in the configuration properties map.
+     */
+    String CHIP_KEY = "chip";
 
     /**
      * Returns the legacy PWM address value.
@@ -216,5 +222,37 @@ public interface PwmConfig extends ChipConfig, ChannelConfig, BcmConfig, IOConfi
      */
     default Double getInitialValue() {
         return initialValue();
+    }
+
+    /**
+     * Returns the channel number this I/O is assigned to within its bus.
+     *
+     * @return the channel number, or {@code null} if not configured
+     */
+    Integer channel();
+
+    /**
+     * Returns the channel number this I/O is assigned to within its bus.
+     *
+     * @return the channel number, or {@code null} if not configured
+     */
+    default Integer getChannel() {
+        return this.channel();
+    }
+
+    /**
+     * Returns the chip number this I/O is assigned to.
+     *
+     * @return the chip number, or {@code null} if not configured
+     */
+    Integer chip();
+
+    /**
+     * Returns the chip number this I/O is assigned to.
+     *
+     * @return the chip number, or {@code null} if not configured
+     */
+    default Integer getChip() {
+        return this.chip();
     }
 }
