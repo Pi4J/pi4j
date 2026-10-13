@@ -3,7 +3,6 @@ package com.pi4j.io.gpio.digital.impl;
 import com.pi4j.config.BcmConfig;
 import com.pi4j.config.BusConfig;
 import com.pi4j.context.Context;
-import com.pi4j.io.gpio.digital.DigitalConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
