@@ -45,7 +45,7 @@ def status_of(value):
 def label(text):
     """Makes text safe inside a quoted Mermaid label."""
     text = re.sub(r"[\r\n`]", " ", str(text))
-    return text.replace("&", "#amp;").replace('"', "#quot;").replace("<", "#lt;").replace(">", "#gt;")
+    return text.replace("&", "#amp;").replace('"', "#quot;").replace("<", "#lt;").replace(">", "#gt;").replace("|", "#124;")
 
 
 def cell(text):
