@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,7 +28,8 @@ public class MutableRegistry implements Registry {
 
     MutableRegistry(Context context) {
         this.context = context;
-        this.instances = new HashMap<>();
+        // LinkedHashMap keeps creation order, which checkpoint/restore relies on
+        this.instances = new LinkedHashMap<>();
         this.usedAddressesByIoType = new HashMap<>();
     }
 
@@ -157,7 +159,7 @@ public class MutableRegistry implements Registry {
 
     @Override
     public synchronized Map<String, ? extends IO> all() {
-        return new HashMap<>(this.instances);
+        return new LinkedHashMap<>(this.instances);
     }
 
     private String validateId(String id) throws IOInvalidIDException {

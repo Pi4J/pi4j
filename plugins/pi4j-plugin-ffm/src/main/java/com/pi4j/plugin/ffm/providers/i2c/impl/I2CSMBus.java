@@ -3,6 +3,8 @@ package com.pi4j.plugin.ffm.providers.i2c.impl;
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.exception.RestoreException;
+import com.pi4j.io.Checkpointable;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CBase;
 import com.pi4j.io.i2c.I2CConfig;
@@ -28,7 +30,7 @@ import java.util.Objects;
  * @see SMBusNative
  * @see FFMI2CBus
  */
-public class I2CSMBus extends I2CBase<FFMI2CBus> {
+public class I2CSMBus extends I2CBase<FFMI2CBus> implements Checkpointable {
     private static final Logger logger = LoggerFactory.getLogger(I2CSMBus.class);
     private final SMBusNative SMBUS = new SMBusNative();
 
@@ -176,6 +178,33 @@ public class I2CSMBus extends I2CBase<FFMI2CBus> {
         System.arraycopy(Arrays.copyOfRange(register, 1, register.length), 0, writeData, 0, register.length - 1);
         System.arraycopy(data, 0, writeData, register.length - 1, data.length);
         return writeRegister(byteRegister, writeData);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Closes the underlying {@link FFMI2CBus} device file.
+     */
+    @Override
+    public void suspend() {
+        if (!closed) {
+            i2CBus.suspend();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Reopens the underlying {@link FFMI2CBus} device file and selects the configured device again.
+     */
+    @Override
+    public void resume() throws RestoreException {
+        if (closed) {
+            return;
+        }
+        i2CBus.resume();
+        // the I2C_SLAVE selection is bound to the old descriptor
+        i2CBus.selectDevice(config.device());
     }
 
     @Override

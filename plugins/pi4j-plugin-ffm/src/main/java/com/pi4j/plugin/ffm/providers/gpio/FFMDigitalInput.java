@@ -3,7 +3,9 @@ package com.pi4j.plugin.ffm.providers.gpio;
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.exception.RestoreException;
 import com.pi4j.exception.ShutdownException;
+import com.pi4j.io.Checkpointable;
 import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.digital.*;
 import com.pi4j.plugin.ffm.common.FFMGpioLine;
@@ -30,8 +32,11 @@ import java.util.concurrent.TimeUnit;
  * ({@code GPIO_V2_GET_LINE_IOCTL}), reads its level with {@code GPIO_V2_LINE_GET_VALUES_IOCTL}, and
  * watches for edge events by polling the resulting line file descriptor. Configured bias (pull
  * up/down) and optional debounce are applied through GPIO v2 line attributes.
+ * <p>
+ * Around a CRaC checkpoint the event watchers are stopped and the line is released; after the restore the
+ * line is requested again with the same configuration and the watchers are restarted.
  */
-public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
+public class FFMDigitalInput extends DigitalInputBase implements DigitalInput, Checkpointable {
     private static final Logger logger = LoggerFactory.getLogger(FFMDigitalInput.class);
 
 
@@ -47,6 +52,8 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
     private ExecutorService eventTaskProcessor;
     private final List<EventWatcher> watchers = new ArrayList<>();
     private ThreadFactory threadFactory;
+    // number of event watchers to restart after a CRaC restore
+    private int suspendedWatchers = 0;
 
     /**
      * Creates a digital input bound to a GPIO line. Resolves the target device path
@@ -123,12 +130,26 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
     @Override
     public DigitalInput addListener(DigitalStateChangeListener... listener) {
         logger.trace("{}-{} - Adding new listener", line.deviceName, line.mask);
+        // add listener first to avoid race with event dispatch
+        super.addListener(listener);
+        startWatcher();
+        logger.trace("{}-{} - New listener added", line.deviceName, line.mask);
+        return this;
+    }
+
+    /**
+     * Starts a new {@link EventWatcher} on the current line file descriptor, lazily creating the watcher
+     * thread factory and executor.
+     */
+    private void startWatcher() {
         if (threadFactory == null) {
             this.threadFactory = Thread.ofPlatform()
                 .name(line.deviceName + "-event-detection-pin-", line.mask)
                 .daemon(true)
                 .uncaughtExceptionHandler((_, e) -> logger.error(e.getMessage(), e))
                 .factory();
+        }
+        if (eventTaskProcessor == null) {
             this.eventTaskProcessor = Executors.newCachedThreadPool(threadFactory);
         }
         var watcher = new EventWatcher(line.chipFileDescriptor, line.mask, debounce, line.file, PinEvent.BOTH, events -> {
@@ -142,11 +163,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             }
         });
         watchers.add(watcher);
-        // add listener first to avoid race with event dispatch
-        super.addListener(listener);
         eventTaskProcessor.submit(watcher);
-        logger.trace("{}-{} - New listener added", line.deviceName, line.mask);
-        return this;
     }
 
     /**
@@ -179,36 +196,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         }
         logger.info("{}-{} - closing GPIO offset.", line.deviceName, line.mask);
         try {
-            logger.trace("{}-{} - Stopping event watchers", line.deviceName, line.mask);
-            for (EventWatcher watcher : watchers) {
-                watcher.stopWatching();
-            }
-            watchers.clear();
-            // Await the executor whenever it was ever created. removeListener() stops its watcher
-            // and clears the list without waiting for the thread to leave its native poll(); that
-            // thread still holds the line fd. Closing the fd without waiting would leave the GPIO
-            // line flagged USED on the next create attempt.
-            if (eventTaskProcessor != null) {
-                logger.trace("{}-{} - Gracefully shutting down event processor", line.deviceName, line.mask);
-                eventTaskProcessor.shutdown();
-                var terminated = false;
-                for (int attempt = 0;
-                     attempt < EVENT_WATCHER_SHUTDOWN_MAX_ATTEMPTS && !terminated; attempt++) {
-                    terminated = eventTaskProcessor.awaitTermination(
-                        EventWatcher.EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-                    if (!terminated) {
-                        logger.trace("{}-{} - Event processor still running, waiting for watcher threads",
-                            line.deviceName, line.mask);
-                    }
-                }
-                if (!terminated) {
-                    logger.error(
-                        "{}-{} - Event watcher threads did not terminate within {}ms; forcing shutdown",
-                        line.deviceName, line.mask,
-                        (long) EventWatcher.EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS * EVENT_WATCHER_SHUTDOWN_MAX_ATTEMPTS);
-                    eventTaskProcessor.shutdownNow();
-                }
-            }
+            stopWatchers();
         } catch (Exception e) {
             line.closed = true;
             throw new ShutdownException(e);
@@ -217,6 +205,87 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         }
         logger.info("{}-{} - GPIO offset is closed.", line.deviceName, line.mask);
         super.close();
+    }
+
+    /**
+     * Stops all event watchers and waits for their threads to finish their current native {@code poll()}
+     * cycle, so none of them still uses the line file descriptor afterwards.
+     *
+     * @throws InterruptedException if interrupted while waiting for the watcher threads
+     */
+    private void stopWatchers() throws InterruptedException {
+        logger.trace("{}-{} - Stopping event watchers", line.deviceName, line.mask);
+        for (EventWatcher watcher : watchers) {
+            watcher.stopWatching();
+        }
+        watchers.clear();
+        // Await the executor whenever it was ever created. removeListener() stops its watcher
+        // and clears the list without waiting for the thread to leave its native poll(); that
+        // thread still holds the line fd. Closing the fd without waiting would leave the GPIO
+        // line flagged USED on the next create attempt.
+        if (eventTaskProcessor == null) {
+            return;
+        }
+        logger.trace("{}-{} - Gracefully shutting down event processor", line.deviceName, line.mask);
+        eventTaskProcessor.shutdown();
+        var terminated = false;
+        for (int attempt = 0;
+             attempt < EVENT_WATCHER_SHUTDOWN_MAX_ATTEMPTS && !terminated; attempt++) {
+            terminated = eventTaskProcessor.awaitTermination(
+                EventWatcher.EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            if (!terminated) {
+                logger.trace("{}-{} - Event processor still running, waiting for watcher threads",
+                    line.deviceName, line.mask);
+            }
+        }
+        if (!terminated) {
+            logger.error(
+                "{}-{} - Event watcher threads did not terminate within {}ms; forcing shutdown",
+                line.deviceName, line.mask,
+                (long) EventWatcher.EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS * EVENT_WATCHER_SHUTDOWN_MAX_ATTEMPTS);
+            eventTaskProcessor.shutdownNow();
+        }
+        // a shut down executor can't be reused, so a new one is created when watchers are started again
+        eventTaskProcessor = null;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Stops the event watchers, remembering how many were running, and releases the GPIO line file
+     * descriptor. Listeners stay registered.
+     */
+    @Override
+    public void suspend() {
+        if (closed || line.suspended) {
+            return;
+        }
+        suspendedWatchers = watchers.size();
+        try {
+            stopWatchers();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new Pi4JException("Interrupted while stopping event watchers of offset " + line.mask, e);
+        }
+        line.suspend();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Requests the GPIO line again with its original configuration and restarts the event watchers that
+     * were running before the checkpoint.
+     */
+    @Override
+    public void resume() throws RestoreException {
+        if (closed || !line.suspended) {
+            return;
+        }
+        line.resume();
+        for (int i = 0; i < suspendedWatchers; i++) {
+            startWatcher();
+        }
+        suspendedWatchers = 0;
     }
 
     /**

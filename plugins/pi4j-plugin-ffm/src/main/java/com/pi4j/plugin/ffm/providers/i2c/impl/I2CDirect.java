@@ -1,6 +1,8 @@
 package com.pi4j.plugin.ffm.providers.i2c.impl;
 
 import com.pi4j.context.Context;
+import com.pi4j.exception.RestoreException;
+import com.pi4j.io.Checkpointable;
 import com.pi4j.io.i2c.I2CBase;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.plugin.ffm.common.i2c.I2cConstants;
@@ -19,7 +21,7 @@ import java.util.Objects;
  * atomic transaction with a repeated start. Used when the adapter reports the
  * {@link com.pi4j.plugin.ffm.providers.i2c.I2CFunctionality#I2C_FUNC_I2C} capability.
  */
-public class I2CDirect extends I2CBase<FFMI2CBus> {
+public class I2CDirect extends I2CBase<FFMI2CBus> implements Checkpointable {
     private final IoctlNative ioctl = new IoctlNative();
 
     /**
@@ -118,6 +120,31 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
             var result = ioctl.call(i2cFileDescriptor, I2cConstants.I2C_RDWR.getValue(), packets);
             return result.msgs()[0].len();
         });
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Closes the underlying {@link FFMI2CBus} device file.
+     */
+    @Override
+    public void suspend() {
+        if (!closed) {
+            i2CBus.suspend();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Reopens the underlying {@link FFMI2CBus} device file.
+     */
+    @Override
+    public void resume() throws RestoreException {
+        if (closed) {
+            return;
+        }
+        i2CBus.resume();
     }
 
     /**

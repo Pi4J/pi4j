@@ -3,6 +3,8 @@ package com.pi4j.plugin.ffm.providers.spi;
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.exception.RestoreException;
+import com.pi4j.io.Checkpointable;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBase;
 import com.pi4j.io.spi.SpiConfig;
@@ -28,13 +30,15 @@ import java.util.Objects;
  * through the {@code SPI_IOC_WR_*}/{@code SPI_IOC_RD_*} ioctls. Transfers larger than the driver's
  * {@code bufsiz} limit are automatically split into chunks, each issued as its own ioctl, to avoid the
  * kernel rejecting the request with {@code EMSGSIZE}.
+ * <p>
+ * Around a CRaC checkpoint the device file is closed, and reopened and reconfigured after the restore.
  *
  * @see com.pi4j.io.spi.Spi
  * @see IoctlNative
  * @see SpiTransferBuffer
  * @see SpiMultipleTransferBuffer
  */
-public class FFMSpi extends SpiBase implements Spi {
+public class FFMSpi extends SpiBase implements Spi, Checkpointable {
     private static final Logger logger = LoggerFactory.getLogger(FFMSpi.class);
     private static final String SPI_BUS = "/dev/spidev";
 
@@ -62,6 +66,7 @@ public class FFMSpi extends SpiBase implements Spi {
 
 
     private int spiFileDescriptor;
+    private volatile boolean suspended = false;
     private int bufferSize = DEFAULT_BUFFER_SIZE;
     private final String path;
 
@@ -89,6 +94,20 @@ public class FFMSpi extends SpiBase implements Spi {
         super.applyInitialState();
 
         logger.info("{} - setting up SPIBus...", path);
+        openAndConfigure();
+
+        this.bufferSize = readBufferSize();
+        logger.debug("{} - SPI transfer chunk size (bufsiz) is {} bytes.", path, bufferSize);
+
+        logger.info("{} - SPI Bus configured.", path);
+        return this;
+    }
+
+    /**
+     * Opens the spidev device read-write and applies the configured mode, word length, clock frequency
+     * and bit order.
+     */
+    private void openAndConfigure() {
         logger.debug("{} - opening device file.", path);
         this.spiFileDescriptor = FILE.open(path, FileFlag.O_RDWR);
 
@@ -108,12 +127,40 @@ public class FFMSpi extends SpiBase implements Spi {
         IOCTL.call(spiFileDescriptor, Command.getSpiIocWrLsbFirst(), config.getWriteLsbFirst());
         logger.debug("{} - setting readLsbFirst to {}.", path, config.getReadLsbFirst());
         IOCTL.call(spiFileDescriptor, Command.getSpiIocRdLsbFirst(), config.getReadLsbFirst());
+    }
 
-        this.bufferSize = readBufferSize();
-        logger.debug("{} - SPI transfer chunk size (bufsiz) is {} bytes.", path, bufferSize);
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Closes the spidev device file.
+     */
+    @Override
+    public void suspend() {
+        if (closed || suspended) {
+            return;
+        }
+        logger.debug("{} - suspending SPI bus for checkpoint.", path);
+        suspended = true;
+        FILE.close(spiFileDescriptor);
+    }
 
-        logger.info("{} - SPI Bus configured.", path);
-        return this;
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Reopens the spidev device file and reapplies the SPI configuration.
+     */
+    @Override
+    public void resume() throws RestoreException {
+        if (closed || !suspended) {
+            return;
+        }
+        logger.debug("{} - resuming SPI bus after restore.", path);
+        try {
+            openAndConfigure();
+        } catch (RuntimeException e) {
+            throw new RestoreException("Cannot reopen SPI bus '" + path + "': " + e.getMessage(), e);
+        }
+        suspended = false;
     }
 
     /**
@@ -152,7 +199,10 @@ public class FFMSpi extends SpiBase implements Spi {
         if (closed) {
             return;
         }
-        FILE.close(spiFileDescriptor);
+        // a suspended bus has already closed its descriptor, which the OS may have reused since
+        if (!suspended) {
+            FILE.close(spiFileDescriptor);
+        }
         super.close();
     }
 
@@ -304,6 +354,9 @@ public class FFMSpi extends SpiBase implements Spi {
     private void checkClosed() {
         if (!isOpen()) {
             throw new Pi4JException("SPI bus  '" + path + "' is closed");
+        }
+        if (suspended) {
+            throw new Pi4JException("SPI bus '" + path + "' is suspended for a CRaC checkpoint");
         }
     }
 }
