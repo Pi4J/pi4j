@@ -60,6 +60,7 @@ jobs:
       # base commit, which can predate it. Checked out after the scan so Groma never sees it.
       - uses: actions/checkout@v7.0.1
         with:
+          ref: ${{ job.workflow_sha }}
           path: workflow-scripts
           sparse-checkout: .github/scripts
           persist-credentials: false
