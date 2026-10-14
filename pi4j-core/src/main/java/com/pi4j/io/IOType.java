@@ -3,7 +3,6 @@ package com.pi4j.io;
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.gpio.digital.*;
-import com.pi4j.io.gpio.digital.impl.DefaultDigitalInputConfig;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 import com.pi4j.io.gpio.parallel.ParallelPortConfigBuilder;
