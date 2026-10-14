@@ -15,8 +15,11 @@ import sys
 from pathlib import Path
 
 MARKER = "<!-- groma-comparison -->"
-# Beyond this many nodes the diagram is no longer readable, so only the table is shown.
+# Beyond this many nodes or edges the diagram is no longer readable, so only the table is shown.
 MAX_DIAGRAM_NODES = 60
+MAX_DIAGRAM_EDGES = 80
+# GitHub rejects comments over 65,536 characters; keep a margin for the marker and links.
+MAX_COMMENT_CHARS = 60_000
 CHANGED = ("added", "modified", "removed")
 STATUS_LABEL = {"added": "🟢 added", "modified": "🟡 modified", "removed": "🔴 removed"}
 # Colours that stay readable in both GitHub light and dark mode.
@@ -135,7 +138,7 @@ def main():
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
     components, relationships = summary["components"], summary["relationships"]
 
-    out = [
+    counts = [
         MARKER,
         "### Groma architecture comparison",
         "",
@@ -145,20 +148,27 @@ def main():
         f"| Relationships | {relationships['added']} | {relationships['modified']} | {relationships['removed']} |",
         "",
     ]
+    download = [
+        f"[Download the full before/after architecture map]({run_url}) from this run's artifacts (kept 14 days). "
+        "The current map is also published at https://www.pi4j.com/groma/."
+    ]
 
+    diagram, table = [], []
     snapshot_path = summary_path.with_name("snapshot.js")
     try:
         snapshot = load_snapshot(snapshot_path)
-        out.extend(describe_changes(snapshot))
+        diagram, table = describe_changes(snapshot)
     except (OSError, ValueError, KeyError) as e:
         # the counts above are still useful, so never fail the comment on the details
         print(f"Cannot read changes from {snapshot_path}: {e}", file=sys.stderr)
 
-    out.append(
-        f"[Download the full before/after architecture map]({run_url}) from this run's artifacts (kept 14 days). "
-        "The current map is also published at https://www.pi4j.com/groma/."
-    )
-    print("\n".join(out))
+    # drop the diagram, then the table, until the comment fits within GitHub's limit
+    too_long = ["_The list of changes is too long for a comment; download the map below._", ""]
+    for body in (counts + diagram + table + download, counts + table + download, counts + too_long + download):
+        text = "\n".join(body)
+        if len(text) <= MAX_COMMENT_CHARS:
+            break
+    print(text)
 
 
 def describe_changes(snapshot):
@@ -193,7 +203,7 @@ def describe_changes(snapshot):
             changed_relationships.append((relationship, status))
 
     if not changed and not changed_relationships:
-        return ["No components or relationships changed.", ""]
+        return ["No components or relationships changed.", ""], []
 
     out = []
     diagram = Diagram(elements, zones)
@@ -204,12 +214,14 @@ def describe_changes(snapshot):
         diagram.add_node(relationship["target"], "context")
         diagram.edges.append((relationship["source"], relationship["target"], status, relationship.get("description", "")))
 
-    if len(diagram.nodes) <= MAX_DIAGRAM_NODES:
+    if len(diagram.nodes) <= MAX_DIAGRAM_NODES and len(diagram.edges) <= MAX_DIAGRAM_EDGES:
         out += [diagram.render(), ""]
         out += ["<sub>🟢 added · 🟡 modified · 🔴 removed · grey: unchanged component with a changed relationship</sub>", ""]
     else:
-        out += [f"_{len(diagram.nodes)} components are involved, too many to draw; see the table below._", ""]
+        out += [f"_{len(diagram.nodes)} components and {len(diagram.edges)} relationships are involved, "
+                "too many to draw; see the table below._", ""]
 
+    table = []
     if changed:
         rows = []
         for element_id, (status, entry) in sorted(changed.items(), key=lambda item: diagram.title(item[0]).lower()):
@@ -220,7 +232,7 @@ def describe_changes(snapshot):
             names = "<br>".join(cell(f["file"].rsplit("/", 1)[-1]) for f in files) or "—"
             rows.append(f"| {cell(diagram.title(element_id))} | {cell(groups)} | {STATUS_LABEL[status]} "
                         f"| {names} | +{additions} −{deletions} |")
-        out += [
+        table = [
             "<details><summary>Changed components</summary>",
             "",
             "| Component | Location | Change | Files | Lines |",
@@ -230,7 +242,7 @@ def describe_changes(snapshot):
             "</details>",
             "",
         ]
-    return out
+    return out, table
 
 
 if __name__ == "__main__":
