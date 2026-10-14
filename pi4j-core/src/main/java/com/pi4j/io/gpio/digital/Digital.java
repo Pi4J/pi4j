@@ -11,10 +11,8 @@ import com.pi4j.io.ListenableOnOffRead;
  * @param <DIGITAL_TYPE> the concrete digital I/O type, used as the self-referencing return type for fluent methods
  * @param <CONFIG_TYPE> the {@link DigitalConfig} type describing this instance
  */
-public interface Digital<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE>,
-    CONFIG_TYPE extends DigitalConfig>
-    extends
-    ListenableOnOffRead<DIGITAL_TYPE>, com.pi4j.io.IO<DIGITAL_TYPE, CONFIG_TYPE> {
+public interface Digital<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE>, CONFIG_TYPE extends DigitalConfig>
+    extends ListenableOnOffRead<DIGITAL_TYPE>, com.pi4j.io.IO<DIGITAL_TYPE, CONFIG_TYPE> {
 
     /**
      * Returns the current logic level of this digital I/O instance.

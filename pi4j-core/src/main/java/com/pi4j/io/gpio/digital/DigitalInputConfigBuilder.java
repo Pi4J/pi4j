@@ -1,7 +1,8 @@
 package com.pi4j.io.gpio.digital;
 
+import com.pi4j.config.ConfigBuilder;
 import com.pi4j.context.Context;
-import com.pi4j.io.gpio.digital.impl.DefaultDigitalInputConfig;
+import com.pi4j.io.IOConfigBuilder;
 import com.pi4j.io.gpio.digital.impl.DefaultDigitalInputConfigBuilder;
 
 import java.util.concurrent.TimeUnit;
@@ -10,7 +11,8 @@ import java.util.concurrent.TimeUnit;
  * Fluent builder for assembling a {@link DigitalInputConfig}, extending {@link DigitalInputConfigBuilder}
  * with the input-specific pull resistance and debounce settings.
  */
-public interface DigitalInputConfigBuilder extends com.pi4j.io.IOConfigBuilder<DigitalInputConfigBuilder, DefaultDigitalInputConfig>, com.pi4j.config.ConfigBuilder<DigitalInputConfigBuilder, DefaultDigitalInputConfig> {
+public interface DigitalInputConfigBuilder extends IOConfigBuilder<DigitalInputConfigBuilder, DigitalInputConfig>,
+    ConfigBuilder<DigitalInputConfigBuilder, DigitalInputConfig> {
 
     DigitalInputConfigBuilder bcm(Integer bcm);
 

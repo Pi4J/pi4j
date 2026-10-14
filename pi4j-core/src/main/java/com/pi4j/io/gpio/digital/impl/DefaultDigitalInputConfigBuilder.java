@@ -3,13 +3,14 @@ package com.pi4j.io.gpio.digital.impl;
 import com.pi4j.config.BcmConfig;
 import com.pi4j.config.BusConfig;
 import com.pi4j.context.Context;
+import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
 import com.pi4j.io.gpio.digital.PullResistance;
 
 import java.util.concurrent.TimeUnit;
 
 public class DefaultDigitalInputConfigBuilder
-    extends DigitalConfigBuilderBase<DigitalInputConfigBuilder, DefaultDigitalInputConfig>
+    extends DigitalConfigBuilderBase<DigitalInputConfigBuilder, DigitalInputConfig>
     implements DigitalInputConfigBuilder {
 
     /**
@@ -31,8 +32,8 @@ public class DefaultDigitalInputConfigBuilder
     }
 
     @Override
-    public DefaultDigitalInputConfig build() {
-        DefaultDigitalInputConfig config = new DefaultDigitalInputConfig(getResolvedProperties());
+    public DigitalInputConfig build() {
+        DigitalInputConfig config = new DefaultDigitalInputConfig(getResolvedProperties());
         return config;
     }
 

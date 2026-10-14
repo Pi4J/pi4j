@@ -31,7 +31,7 @@ import java.lang.reflect.Method;
 public enum IOType {
 
     /** Digital input pin (reads a logic HIGH/LOW state). */
-    DIGITAL_INPUT(DigitalInput.class, DefaultDigitalInputConfig.class, DigitalInputConfigBuilder.class),
+    DIGITAL_INPUT(DigitalInput.class, DigitalInputConfig.class, DigitalInputConfigBuilder.class),
     /** Digital output pin (drives a logic HIGH/LOW state). */
     DIGITAL_OUTPUT(DigitalOutput.class, DigitalOutputConfig.class, DigitalOutputConfigBuilder.class),
     /** Pulse-width modulation output. */

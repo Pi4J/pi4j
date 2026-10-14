@@ -3,14 +3,13 @@ package com.pi4j.io.gpio.digital;
 
 import com.pi4j.context.Context;
 import com.pi4j.io.Input;
-import com.pi4j.io.gpio.digital.impl.DefaultDigitalInputConfig;
 
 /**
  * Represents a digital input pin that reads a HIGH/LOW logic level from a GPIO source, optionally with
  * a configured pull resistance and debounce interval. This is the read-only digital counterpart configured via
  * {@link DigitalInputConfig}.
  */
-public interface DigitalInput extends Digital<DigitalInput, DefaultDigitalInputConfig>, Input {
+public interface DigitalInput extends Digital<DigitalInput, DigitalInputConfig>, Input {
     /** Default debounce interval in microseconds applied to state-change detection. */
     long DEFAULT_DEBOUNCE = 10000;
 

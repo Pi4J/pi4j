@@ -11,14 +11,8 @@ import com.pi4j.util.StringUtil;
 
 import java.util.Map;
 
-public class DefaultDigitalInputConfig
-    extends ConfigBase
-    implements DigitalConfig, IOConfig, BcmConfig {
+public class DefaultDigitalInputConfig extends ConfigBase implements DigitalInputConfig, IOConfig, BcmConfig {
 
-    /** Property key under which the pull resistance value is stored in a configuration map. */
-    public static final String PULL_RESISTANCE_KEY = "pull";
-    /** Property key under which the debounce interval is stored in a configuration map. */
-    public static final String DEBOUNCE_RESISTANCE_KEY = "debounce";
     // private configuration variables
     protected String provider = null;
     // private configuration properties
@@ -65,13 +59,13 @@ public class DefaultDigitalInputConfig
         }
 
         // load optional pull resistance from properties
-        if (properties.containsKey(PULL_RESISTANCE_KEY)) {
-            this.pullResistance = PullResistance.parse(properties.get(PULL_RESISTANCE_KEY));
+        if (properties.containsKey(DigitalInputConfig.PULL_RESISTANCE_KEY)) {
+            this.pullResistance = PullResistance.parse(properties.get(DigitalInputConfig.PULL_RESISTANCE_KEY));
         }
 
         // load optional pull resistance from properties
-        if (properties.containsKey(DEBOUNCE_RESISTANCE_KEY)) {
-            this.debounce = Long.parseLong(properties.get(DEBOUNCE_RESISTANCE_KEY));
+        if (properties.containsKey(DigitalInputConfig.DEBOUNCE_RESISTANCE_KEY)) {
+            this.debounce = Long.parseLong(properties.get(DigitalInputConfig.DEBOUNCE_RESISTANCE_KEY));
         }
 
         // load on-state value property

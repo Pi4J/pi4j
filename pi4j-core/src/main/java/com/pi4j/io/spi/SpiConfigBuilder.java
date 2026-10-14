@@ -1,15 +1,17 @@
 package com.pi4j.io.spi;
 
+import com.pi4j.config.ConfigBuilder;
 import com.pi4j.context.Context;
+import com.pi4j.io.IOConfigBuilder;
 import com.pi4j.io.spi.impl.DefaultSpiConfigBuilder;
 
 /**
  * Fluent builder for assembling an {@link SpiConfig}. Set the desired bus, channel/chip-select,
  * clock mode, baud rate, and bit-ordering, then call {@code build()} (inherited from
- * {@link SpiConfigBuilder}) to obtain an immutable configuration for use with a {@link SpiProvider}.
+ * {@link SpiConfigBuilder}) to obtain an immutable configuration.
  */
-public interface SpiConfigBuilder extends
-    com.pi4j.io.IOConfigBuilder<SpiConfigBuilder, SpiConfig>, com.pi4j.config.ConfigBuilder<SpiConfigBuilder, SpiConfig> {
+public interface SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiConfig>,
+    ConfigBuilder<SpiConfigBuilder, SpiConfig> {
     /**
      * Creates a new {@code SpiConfigBuilder} instance.
      *

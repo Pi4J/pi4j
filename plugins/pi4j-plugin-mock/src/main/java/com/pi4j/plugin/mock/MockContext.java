@@ -7,7 +7,7 @@ import com.pi4j.io.IO;
 import com.pi4j.io.IOConfig;
 import com.pi4j.io.IOType;
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
-import com.pi4j.io.gpio.digital.impl.DefaultDigitalInputConfig;
+import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.pwm.PwmConfig;
@@ -32,7 +32,7 @@ public class MockContext extends DefaultContext {
     @Override
     protected IO<?, ?> createImpl(IOConfig config, IOType type) {
         return switch (type) {
-            case DIGITAL_INPUT -> new MockDigitalInput(this, (DefaultDigitalInputConfig) config);
+            case DIGITAL_INPUT -> new MockDigitalInput(this, (DigitalInputConfig) config);
             case DIGITAL_OUTPUT -> new MockDigitalOutput(this, (DigitalOutputConfig) config);
             case PWM -> new MockPwm(this, (PwmConfig) config);
             case I2C -> new MockI2C(this, (I2CConfig) config);
