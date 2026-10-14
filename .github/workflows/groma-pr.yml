@@ -56,6 +56,13 @@ jobs:
           name: groma-comparison-${{ steps.pull.outputs.number }}
           path: ${{ steps.map.outputs.output }}
           retention-days: 14
+      # The comment script comes from the workflow's own commit (main), not from the PR's
+      # base commit, which can predate it. Checked out after the scan so Groma never sees it.
+      - uses: actions/checkout@v7.0.1
+        with:
+          path: workflow-scripts
+          sparse-checkout: .github/scripts
+          persist-credentials: false
       - name: Comment the architecture comparison
         env:
           GH_TOKEN: ${{ github.token }}
@@ -63,8 +70,8 @@ jobs:
           SUMMARY: ${{ steps.map.outputs.summary }}
         run: |
           RUN_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          # the script comes from the trusted base checkout, never from the pull request
-          body=$(python3 .github/scripts/groma-comparison-comment.py "$SUMMARY" "$RUN_URL")
+          # the script comes from the trusted workflow checkout, never from the pull request
+          body=$(python3 workflow-scripts/.github/scripts/groma-comparison-comment.py "$SUMMARY" "$RUN_URL")
           existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$NUMBER/comments" --paginate \
             --jq '[.[] | select(.user.login == "github-actions[bot]" and (.body | startswith("<!-- groma-comparison -->")))][0].id // empty')
           if [ -n "$existing" ]; then
