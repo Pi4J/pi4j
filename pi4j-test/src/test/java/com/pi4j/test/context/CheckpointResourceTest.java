@@ -41,7 +41,7 @@ class CheckpointResourceTest {
     void afterTest() {
         try {
             pi4j.shutdown();
-        } catch (Pi4JException e) { /* do nothing */ }
+        } catch (Pi4JException _) { /* do nothing */ }
     }
 
     @Test

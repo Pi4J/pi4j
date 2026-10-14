@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Deque;
 
 /**
@@ -54,8 +53,7 @@ public class CheckpointResource implements Resource {
         }
         logger.info("Suspending Pi4J I/O instances before checkpoint...");
         var instances = new ArrayList<IO>(registry.all().values());
-        Collections.reverse(instances);
-        for (var io : instances) {
+        for (var io : instances.reversed()) {
             if (!(io instanceof Checkpointable checkpointable)) {
                 continue;
             }

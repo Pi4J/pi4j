@@ -8,6 +8,7 @@ package com.pi4j.exception;
  * @see com.pi4j.io.Checkpointable
  * @see <a href="https://docs.azul.com/crac/usage/integrating-crac">Integrating CRaC</a>
  */
+@SuppressWarnings("java:S110") // must stay a LifecycleException, like ShutdownException
 public class RestoreException extends LifecycleException {
 
     /**

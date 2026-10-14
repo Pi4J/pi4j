@@ -55,7 +55,7 @@ import static org.junit.jupiter.api.condition.OS.LINUX;
  * Verifies that FFM I/O instances release their file descriptors before a CRaC checkpoint and reacquire
  * them after a restore, driven through the context's {@link CheckpointResource} with mocked native calls.
  */
-public class CheckpointTest {
+class CheckpointTest {
 
     private static final FileDescriptorNativeMock.FileDescriptorTestData GPIOCHIP_FILE =
         new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 1, ("Test").getBytes());
@@ -72,23 +72,23 @@ public class CheckpointTest {
     private CheckpointResource resource;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         pi4j = new FFMContext();
         resource = pi4j.checkpointResource();
     }
 
     @AfterEach
-    public void teardown() {
+    void teardown() {
         pi4j.shutdown();
     }
 
     @AfterAll
-    public static void closeMocks() {
+    static void closeMocks() {
         permissionHelperMock.close();
     }
 
     @Test
-    public void testOutputRestoresLastState() throws Exception {
+    void testOutputRestoresLastState() throws Exception {
         var requests = new ArrayList<LineRequest>();
         var lineRequest = new IoctlNativeMock.IoctlTestData(LineRequest.class, (answer) -> {
             LineRequest request = answer.getArgument(2);
@@ -119,7 +119,7 @@ public class CheckpointTest {
     }
 
     @Test
-    public void testOutputRestoreFailsWhenLineWasClaimed() throws Exception {
+    void testOutputRestoreFailsWhenLineWasClaimed() throws Exception {
         var claimed = new AtomicReference<>(false);
         var lineInfo = new IoctlNativeMock.IoctlTestData(LineInfo.class, (answer) -> {
             LineInfo info = answer.getArgument(2);
@@ -143,7 +143,7 @@ public class CheckpointTest {
     }
 
     @Test
-    public void testParallelOutputRestoresLastValue() throws Exception {
+    void testParallelOutputRestoresLastValue() throws Exception {
         var requests = new ArrayList<LineRequest>();
         var lineRequest = new IoctlNativeMock.IoctlTestData(LineRequest.class, (answer) -> {
             LineRequest request = answer.getArgument(2);
@@ -173,7 +173,7 @@ public class CheckpointTest {
             resource.afterRestore(null);
             assertEquals(2, requests.size());
             var config = requests.get(1).config();
-            assertTrue((config.flags() & PinFlag.OUTPUT.getValue()) != 0);
+            assertNotEquals(0, config.flags() & PinFlag.OUTPUT.getValue());
             assertEquals(1, config.attrs().length);
             assertEquals(LineAttributeId.GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES.getValue(), config.attrs()[0].attr().id());
             assertEquals(5L, config.attrs()[0].attr().values());
@@ -183,7 +183,7 @@ public class CheckpointTest {
     }
 
     @Test
-    public void testInputRestartsEventWatchers() throws Exception {
+    void testInputRestartsEventWatchers() throws Exception {
         var events = new CountDownLatch[]{new CountDownLatch(1)};
         var pollingCallback = (java.util.function.Function<org.mockito.invocation.InvocationOnMock, PollingData>) (answer) -> {
             PollingData pollingData = answer.getArgument(0);
@@ -222,7 +222,7 @@ public class CheckpointTest {
     }
 
     @Test
-    public void testSpiReopensAndReconfigures() throws Exception {
+    void testSpiReopensAndReconfigures() throws Exception {
         var transfer = new IoctlNativeMock.IoctlTestData(SpiTransferBuffer.class, (answer) -> {
             SpiTransferBuffer buffer = answer.getArgument(2);
             return new SpiTransferBuffer(buffer.getTxBuffer(), buffer.getTxBuffer(), buffer.getTxBuffer().length);
@@ -244,7 +244,7 @@ public class CheckpointTest {
 
     @Test
     @EnabledOnOs(LINUX)
-    public void testI2CReopensBus() throws Exception {
+    void testI2CReopensBus() throws Exception {
         var i2cFile = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/i2c-", 1, ("Test").getBytes());
         var functionalities = I2CFunctionality.I2C_FUNC_I2C.getValue() | I2CFunctionality.I2C_FUNC_SMBUS_BYTE.getValue()
             | I2CFunctionality.I2C_FUNC_SMBUS_BYTE_DATA.getValue() | I2CFunctionality.I2C_FUNC_SMBUS_WORD_DATA.getValue();
@@ -264,7 +264,7 @@ public class CheckpointTest {
     }
 
     @Test
-    public void testPwmReopensAndReappliesSettings() throws Exception {
+    void testPwmReopensAndReappliesSettings() throws Exception {
         var path = "/sys/class/pwm/pwmchip0/pwm3";
         var pwmEnable = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/enable", 1, ("1").getBytes(), (_) -> ("0").getBytes());
         var pwmDutyCycle = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/duty_cycle", 2, ("1").getBytes());
