@@ -62,12 +62,12 @@ jobs:
           NUMBER: ${{ steps.pull.outputs.number }}
           SUMMARY: ${{ steps.map.outputs.summary }}
         run: |
-          C_ADD=$(jq -r '.components.added' <<<"$SUMMARY")
-          C_MOD=$(jq -r '.components.modified' <<<"$SUMMARY")
-          C_REM=$(jq -r '.components.removed' <<<"$SUMMARY")
-          R_ADD=$(jq -r '.relationships.added' <<<"$SUMMARY")
-          R_MOD=$(jq -r '.relationships.modified' <<<"$SUMMARY")
-          R_REM=$(jq -r '.relationships.removed' <<<"$SUMMARY")
+          C_ADD=$(jq -r '.components.added' "$SUMMARY")
+          C_MOD=$(jq -r '.components.modified' "$SUMMARY")
+          C_REM=$(jq -r '.components.removed' "$SUMMARY")
+          R_ADD=$(jq -r '.relationships.added' "$SUMMARY")
+          R_MOD=$(jq -r '.relationships.modified' "$SUMMARY")
+          R_REM=$(jq -r '.relationships.removed' "$SUMMARY")
           RUN_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           body="<!-- groma-comparison -->
           ### Groma architecture comparison
