@@ -15,8 +15,8 @@ import com.pi4j.io.gpio.MaskUtils;
  * An alternative approach could be to declare this class as non-abstract, final, and for the abstract methods
  * to be provided via composition with an `Operations`-like implementation which is able to focus on a simplified
  * set of runtime responsibilities without having to also account for configuration aspects such as
- * {@link com.pi4j.provider.Provider} references and {@link com.pi4j.common.Identity}, whose implementations don't vary
- * significantly between {@link com.pi4j.io.IO} implementations.
+ * {@link com.pi4j.common.Identity}, whose implementations don't vary significantly between
+ * {@link com.pi4j.io.IO} implementations.
  */
 public abstract class ParallelPortBase
     extends IOBase<ParallelPort, ParallelPortConfig>
