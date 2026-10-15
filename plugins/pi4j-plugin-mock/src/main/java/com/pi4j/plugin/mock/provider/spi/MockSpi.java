@@ -1,6 +1,6 @@
 package com.pi4j.plugin.mock.provider.spi;
 
-import com.pi4j.context.Context;
+import com.pi4j.io.IO;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBase;
 import com.pi4j.io.spi.SpiConfig;
@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Mock, in-memory implementation of the pi4j-core {@link Spi} contract, extending {@link SpiBase}.
@@ -35,7 +36,7 @@ public class MockSpi extends SpiBase implements Spi {
      * @param context  the context that created this instance
      * @param config   the {@link SpiConfig} describing the SPI channel and baud rate
      */
-    public MockSpi(Context context, SpiConfig config) {
+    public MockSpi(Consumer<IO<?, ?>> context, SpiConfig config) {
         super(context, config);
         logPreamble = "[" + Mock.SPI_PROVIDER_NAME + "::" + this.id + "] ::";
         logger.info("{} OPEN(CHANNEL={}; BAUD={})", logPreamble, config.channel(), config.baud());

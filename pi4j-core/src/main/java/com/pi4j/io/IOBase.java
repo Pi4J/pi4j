@@ -1,10 +1,12 @@
 package com.pi4j.io;
 
 import com.pi4j.common.Descriptor;
+import com.pi4j.common.Identity;
 import com.pi4j.common.IdentityBase;
 import com.pi4j.context.Context;
 
 import java.io.Closeable;
+import java.util.function.Consumer;
 
 /**
  * Abstract base implementation of {@link IO} that the concrete I/O types build upon.
@@ -16,11 +18,11 @@ import java.io.Closeable;
  * @param <IO_TYPE>       the concrete I/O type, returned by the fluent identity setters for chaining
  * @param <CONFIG_TYPE>   the {@link IOConfig} type describing this instance
  */
-public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig>
-        extends IdentityBase implements IO<IO_TYPE,CONFIG_TYPE>, Closeable {
+public abstract class IOBase<IO_TYPE extends IO<?, ?>, CONFIG_TYPE extends IOConfig>
+        extends IdentityBase implements IO<IO_TYPE, CONFIG_TYPE>, Closeable {
 
     protected final CONFIG_TYPE config;
-    protected final Runnable onClose;
+    protected final Consumer<IO<?, ?>> onClose;
     // close() requires idempotency.
     protected boolean closed = false;
 
@@ -28,10 +30,9 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig>
      * Creates a new I/O instance, copying the id, name and description from the supplied
      * configuration into this instance's identity.
      *
-     * @param onClose called when this instance is closed
-     * @param config  the configuration defining this instance's identity and properties
+     * @param config   the configuration defining this instance's identity and properties
      */
-    protected IOBase(Runnable onClose, CONFIG_TYPE config){
+    protected IOBase(Consumer<IO<?, ?>> onClose, CONFIG_TYPE config){
         super();
         this.id = config.id();
         this.name = config.name();
@@ -71,7 +72,7 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig>
         // The null check accounts for contextless tests or somehow just closing without initializing,
         // although we probably should make context a required ctor parameter, see #719
         if (this.onClose != null) {
-            this.onClose.run();
+            this.onClose.accept(this);
         }
     }
 

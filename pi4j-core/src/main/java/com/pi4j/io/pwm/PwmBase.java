@@ -1,12 +1,13 @@
 package com.pi4j.io.pwm;
 
-import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.ShutdownException;
+import com.pi4j.io.IO;
 import com.pi4j.io.IOBase;
 import com.pi4j.io.exception.IOException;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * Abstract base implementation of the {@link Pwm} interface, providing the common
@@ -35,7 +36,7 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig> implements Pwm {
      * @param context  the context of this instance
      * @param config   the configuration describing this PWM channel, including any initial presets
      */
-    protected PwmBase(Context context, PwmConfig config) {
+    protected PwmBase(Consumer<IO<?, ?>> context, PwmConfig config) {
         super(context, config);
     }
 

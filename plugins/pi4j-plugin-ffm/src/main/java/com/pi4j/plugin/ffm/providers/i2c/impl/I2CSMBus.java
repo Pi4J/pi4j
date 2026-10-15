@@ -1,8 +1,8 @@
 package com.pi4j.plugin.ffm.providers.i2c.impl;
 
-import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.io.IO;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CBase;
 import com.pi4j.io.i2c.I2CConfig;
@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * {@link I2C} implementation that communicates with an I2C device using the Linux SMBus protocol,
@@ -39,7 +40,7 @@ public class I2CSMBus extends I2CBase<FFMI2CBus> {
      * @param config   the I2C configuration carrying the bus number and target slave device address
      * @param i2CBus   the shared {@link FFMI2CBus} wrapping the open {@code /dev/i2c-N} file descriptor
      */
-    public I2CSMBus(Context context, I2CConfig config, FFMI2CBus i2CBus) {
+    public I2CSMBus(Consumer<IO<?, ?>> context, I2CConfig config, FFMI2CBus i2CBus) {
         super(context, config, i2CBus);
     }
 

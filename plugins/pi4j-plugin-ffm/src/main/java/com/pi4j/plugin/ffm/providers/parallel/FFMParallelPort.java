@@ -1,9 +1,9 @@
 package com.pi4j.plugin.ffm.providers.parallel;
 
-import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
+import com.pi4j.io.IO;
 import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortBase;
@@ -16,6 +16,7 @@ import com.pi4j.plugin.ffm.common.gpio.structs.LineConfig;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineConfigAttribute;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
@@ -35,14 +36,14 @@ public sealed class FFMParallelPort
      * @param context the Pi4J context
      * @param config   the configuration describing this I/O
      */
-    public static FFMParallelPort create(Context context, ParallelPortConfig config) {
+    public static FFMParallelPort create(Consumer<IO<?, ?>> context, ParallelPortConfig config) {
         var mappingLogic = new FFMParallelPort.BitmaskMappingLogic(config.offsets());
         return mappingLogic.isRequired()
             ? new FFMParallelPort.WithBitmaskMappingLogic(context, config, mappingLogic)
             : new FFMParallelPort(context, config);
     }
 
-    private FFMParallelPort(Context context, ParallelPortConfig config) {
+    private FFMParallelPort(Consumer<IO<?, ?>> context, ParallelPortConfig config) {
         super(context, config);
         this.inputLineConfig = createInputLineConfigs(config);
         this.outputLineConfig = createOutputLineConfigs(config);
@@ -187,7 +188,7 @@ public sealed class FFMParallelPort
          * @param mappingLogic logic required to map user-defined pins to hardware-friendly values
          */
         WithBitmaskMappingLogic(
-            Context context,
+            Consumer<IO<?, ?>> context,
             ParallelPortConfig config,
             BitmaskMappingLogic mappingLogic
         ) {

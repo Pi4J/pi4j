@@ -1,8 +1,8 @@
 package com.pi4j.plugin.ffm.providers.spi;
 
-import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.io.IO;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBase;
 import com.pi4j.io.spi.SpiConfig;
@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * {@link Spi} implementation that performs full-duplex SPI transfers against a spidev character device
@@ -71,7 +72,7 @@ public class FFMSpi extends SpiBase implements Spi {
      *
      * @param config   the SPI configuration carrying the bus, channel, mode, baud rate and bit order
      */
-    public FFMSpi(Context context, SpiConfig config) {
+    public FFMSpi(Consumer<IO<?, ?>> context, SpiConfig config) {
         super(context, config);
         this.path = SPI_BUS + config.bus().getBus() + "." + config.channel();
         FFMPermissionHelper.checkDevicePermissions(path, config);

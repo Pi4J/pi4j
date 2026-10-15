@@ -1,6 +1,8 @@
 package com.pi4j.io.gpio.digital;
 
-import com.pi4j.context.Context;
+import com.pi4j.io.IO;
+
+import java.util.function.Consumer;
 
 /**
  * Abstract base class for {@link DigitalInput} implementations, specializing {@link DigitalBase}
@@ -14,7 +16,7 @@ public abstract class DigitalInputBase extends DigitalBase<DigitalInput, Digital
      * @param context the context this device belongs to
      * @param config the configuration describing this input (pin, pull resistance, debounce, etc.)
      */
-    protected DigitalInputBase(Context context, DigitalInputConfig config){
+    protected DigitalInputBase(Consumer<IO<?, ?>> context, DigitalInputConfig config){
         super(context, config);
     }
 }

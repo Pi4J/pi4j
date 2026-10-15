@@ -1,12 +1,14 @@
 package com.pi4j.plugin.ffm.providers.pwm;
 
-import com.pi4j.context.Context;
+import com.pi4j.io.IO;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.pwm.PwmType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.function.Consumer;
 
 public class FFMPwm {
     private final static Logger logger = LoggerFactory.getLogger(FFMPwm.class);
@@ -20,7 +22,7 @@ public class FFMPwm {
      * @param config   the PWM configuration supplying the chip number, channel and optional initial
      *                 duty cycle, polarity and frequency
      */
-    public static Pwm create(Context context, PwmConfig config) {
+    public static Pwm create(Consumer<IO<?, ?>> context, PwmConfig config) {
         if (config.pwmType() != PwmType.HARDWARE) {
             throw new IOException("The FFM PWM provider only supports HARDWARE PWM");
         }

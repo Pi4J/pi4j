@@ -32,12 +32,12 @@ public class MockContext extends DefaultContext {
     @Override
     protected IO<?, ?> createImpl(IOConfig config, IOType type) {
         return switch (type) {
-            case DIGITAL_INPUT -> new MockDigitalInput(this, (DigitalInputConfig) config);
-            case DIGITAL_OUTPUT -> new MockDigitalOutput(this, (DigitalOutputConfig) config);
-            case PWM -> new MockPwm(this, (PwmConfig) config);
-            case I2C -> new MockI2C(this, (I2CConfig) config);
-            case SPI -> new MockSpi(this, (SpiConfig) config);
-            case PARALLEL -> new MockParallelPort(this, (ParallelPortConfig) config);
+            case DIGITAL_INPUT -> new MockDigitalInput(this::shutdown, (DigitalInputConfig) config);
+            case DIGITAL_OUTPUT -> new MockDigitalOutput(this::shutdown, (DigitalOutputConfig) config);
+            case PWM -> new MockPwm(this::shutdown, (PwmConfig) config);
+            case I2C -> new MockI2C(this::shutdown, (I2CConfig) config);
+            case SPI -> new MockSpi(this::shutdown, (SpiConfig) config);
+            case PARALLEL -> new MockParallelPort(this::shutdown, (ParallelPortConfig) config);
         };
     }
 }

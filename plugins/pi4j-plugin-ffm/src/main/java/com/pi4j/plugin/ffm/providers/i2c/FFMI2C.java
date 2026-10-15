@@ -1,6 +1,6 @@
 package com.pi4j.plugin.ffm.providers.i2c;
 
-import com.pi4j.context.Context;
+import com.pi4j.io.IO;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CBase;
 import com.pi4j.io.i2c.I2CConfig;
@@ -10,11 +10,13 @@ import com.pi4j.plugin.ffm.providers.i2c.impl.I2CSMBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.Consumer;
+
 /** Static factory for FFM I2C ports */
 public class FFMI2C {
     private static final Logger logger = LoggerFactory.getLogger(FFMI2C.class);
 
-    public static I2C create(Context context, I2CConfig config) {
+    public static I2C create(Consumer<IO<?, ?>> context, I2CConfig config) {
         var bus = new FFMI2CBus(config);
 
         if (logger.isDebugEnabled()) {

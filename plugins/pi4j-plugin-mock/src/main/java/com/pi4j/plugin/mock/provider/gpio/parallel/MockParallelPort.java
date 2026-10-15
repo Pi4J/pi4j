@@ -1,12 +1,13 @@
 package com.pi4j.plugin.mock.provider.gpio.parallel;
 
-import com.pi4j.context.Context;
+import com.pi4j.io.IO;
 import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortBase;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 /**
  * Placeholder mock implementation of a {@link ParallelPort}
@@ -23,7 +24,7 @@ public class MockParallelPort
      * @param context  the context of this instance
      * @param config   the {@link ParallelPortConfig} describing this I/O, including its BCM pin numbers
      */
-    public MockParallelPort(Context context, ParallelPortConfig config) {
+    public MockParallelPort(Consumer<IO<?, ?>> context, ParallelPortConfig config) {
         super(context, config);
         this.value = new AtomicInteger((int) (config.initialValue() & MaskUtils.packed(config.mask())));
     }

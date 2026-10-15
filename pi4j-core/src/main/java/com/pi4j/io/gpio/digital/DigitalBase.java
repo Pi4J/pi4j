@@ -1,8 +1,8 @@
 package com.pi4j.io.gpio.digital;
 
-import com.pi4j.context.Context;
 import com.pi4j.event.EventDelegate;
 import com.pi4j.event.EventManager;
+import com.pi4j.io.IO;
 import com.pi4j.io.IOBase;
 
 import java.util.function.Consumer;
@@ -31,7 +31,7 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
      * @param context the Context this Digital IO belongs to.
      * @param config the configuration describing this instance (pin, on-state, etc.)
      */
-    protected DigitalBase(Context context, CONFIG_TYPE config) {
+    protected DigitalBase(Consumer<IO<?, ?>> context, CONFIG_TYPE config) {
         super(context, config);
 
         // create an event manager for digital state change events

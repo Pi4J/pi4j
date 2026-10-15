@@ -1,9 +1,11 @@
 package com.pi4j.io.gpio.digital;
 
-import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.ShutdownException;
+import com.pi4j.io.IO;
 import com.pi4j.io.exception.IOException;
+
+import java.util.function.Consumer;
 
 
 /**
@@ -22,7 +24,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
      * @param context  the context this DigitalOutput belongs to
      * @param config   the configuration describing the pin address, initial state, shutdown state and identity
      */
-    protected DigitalOutputBase(Context context, DigitalOutputConfig config) {
+    protected DigitalOutputBase(Consumer<IO<?, ?>> context, DigitalOutputConfig config) {
         super(context, config);
     }
 

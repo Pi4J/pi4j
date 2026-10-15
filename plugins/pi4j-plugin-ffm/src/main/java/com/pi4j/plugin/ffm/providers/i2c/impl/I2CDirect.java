@@ -1,6 +1,6 @@
 package com.pi4j.plugin.ffm.providers.i2c.impl;
 
-import com.pi4j.context.Context;
+import com.pi4j.io.IO;
 import com.pi4j.io.i2c.I2CBase;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.plugin.ffm.common.i2c.I2cConstants;
@@ -11,6 +11,7 @@ import com.pi4j.plugin.ffm.providers.i2c.FFMI2CBus;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Direct (plain I2C) device implementation for the FFM backend. Performs every read and write as one
@@ -29,7 +30,7 @@ public class I2CDirect extends I2CBase<FFMI2CBus> {
      * @param config   the {@link I2CConfig} supplying the target device address
      * @param i2CBus   the shared {@link FFMI2CBus} whose file descriptor carries the transfers
      */
-    public I2CDirect(Context context, I2CConfig config, FFMI2CBus i2CBus) {
+    public I2CDirect(Consumer<IO<?, ?>> context, I2CConfig config, FFMI2CBus i2CBus) {
         super(context, config, i2CBus);
     }
 

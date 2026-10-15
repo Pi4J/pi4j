@@ -1,10 +1,11 @@
 package com.pi4j.io.i2c;
 
-import com.pi4j.context.Context;
+import com.pi4j.io.IO;
 import com.pi4j.io.IOBase;
 import com.pi4j.io.i2c.impl.DefaultI2CRegister;
 
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 /**
  * Base class for {@link I2C} device implementations, tracking the open/closed state and delegating bus-level
@@ -24,7 +25,7 @@ public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig> i
      * @param config   the configuration describing the bus and device address
      * @param i2CBus   the bus instance used to serialize access for this device
      */
-    protected I2CBase(Context context, I2CConfig config, T i2CBus) {
+    protected I2CBase(Consumer<IO<?, ?>> context, I2CConfig config, T i2CBus) {
         super(context, config);
         this.i2CBus = i2CBus;
     }
