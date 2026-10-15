@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  * @param <IO_TYPE>       the concrete I/O type, returned by the fluent identity setters for chaining
  * @param <CONFIG_TYPE>   the {@link IOConfig} type describing this instance
  */
-public abstract class IOBase<IO_TYPE extends IO<?, ?>, CONFIG_TYPE extends IOConfig>
+public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig>
         extends IdentityBase implements IO<IO_TYPE, CONFIG_TYPE>, Closeable {
 
     protected final CONFIG_TYPE config;
