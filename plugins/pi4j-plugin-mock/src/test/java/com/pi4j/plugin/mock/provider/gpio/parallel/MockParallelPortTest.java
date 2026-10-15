@@ -9,11 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static com.pi4j.io.gpio.digital.DigitalState.HIGH;
-import static com.pi4j.io.gpio.digital.DigitalState.LOW;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MockParallelPortTest {
@@ -22,13 +21,6 @@ class MockParallelPortTest {
         .id("parallel-port")
         .bcm(1)
         .bcm(3);
-
-    private final List<DigitalExpectation> digitalExpectations = List.of(
-        new DigitalExpectation(0, LOW, LOW),
-        new DigitalExpectation(1, HIGH, LOW),
-        new DigitalExpectation(2, LOW, HIGH),
-        new DigitalExpectation(3, HIGH, HIGH)
-    );
 
     /**
      * Write a value to the port and assert that the value is reflected
@@ -85,16 +77,16 @@ class MockParallelPortTest {
         var port = (MockParallelPort) context.create(configBuilder.initialDirection(ParallelPort.Direction.INPUT).build());
         var events = new ArrayList<ParallelPort.PinStateChangedEvent>();
 
-        port.addListener(events::add);
+        port.addListener(notification -> events.addAll(Arrays.asList(notification.events())));
 
         port.mockValue(1);
-        assertTrue(events.contains(new ParallelPort.PinStateChangedEvent(port, 0, DigitalState.HIGH)));
+        assertTrue(events.contains(new ParallelPort.PinStateChangedEvent(0, DigitalState.HIGH)));
 
         events.clear();
 
         port.mockValue(2);
-        assertTrue(events.contains(new ParallelPort.PinStateChangedEvent(port, 0, DigitalState.LOW)));
-        assertTrue(events.contains(new ParallelPort.PinStateChangedEvent(port, 1, DigitalState.HIGH)));
+        assertTrue(events.contains(new ParallelPort.PinStateChangedEvent(0, DigitalState.LOW)));
+        assertTrue(events.contains(new ParallelPort.PinStateChangedEvent(1, DigitalState.HIGH)));
     }
 
     @Test
@@ -102,7 +94,7 @@ class MockParallelPortTest {
         var context = new MockContext();
         var port = (MockParallelPort) context.create(configBuilder.initialDirection(ParallelPort.Direction.OUTPUT).build());
         var events = new ArrayList<ParallelPort.PinStateChangedEvent>();
-        port.addListener(events::add);
+        port.addListener(notification -> events.addAll(Arrays.asList(notification.events())));
         port.mockValue(1);
         assertTrue(events.isEmpty());
     }
@@ -112,7 +104,7 @@ class MockParallelPortTest {
         var context = new MockContext();
         var port = (MockParallelPort) context.create(configBuilder.initialDirection(ParallelPort.Direction.INPUT).build());
         var events = new ArrayList<ParallelPort.PinStateChangedEvent>();
-        port.addListener(events::add);
+        port.addListener(notification -> events.addAll(Arrays.asList(notification.events())));
 
         port.mockValue(0);
         assertTrue(events.isEmpty());
@@ -127,33 +119,25 @@ class MockParallelPortTest {
 
         return Stream.of(
             new Expectation(0b1010, 0b1111, List.of(
-                new ParallelPort.PinStateChangedEvent(null, 0, DigitalState.LOW),
-                new ParallelPort.PinStateChangedEvent(null, 2, DigitalState.LOW)
+                new ParallelPort.PinStateChangedEvent(0, DigitalState.LOW),
+                new ParallelPort.PinStateChangedEvent(2, DigitalState.LOW)
             )),
             new Expectation(0b1111, 0b1010, List.of(
-                new ParallelPort.PinStateChangedEvent(null, 0, DigitalState.HIGH),
-                new ParallelPort.PinStateChangedEvent(null, 2, DigitalState.HIGH)
+                new ParallelPort.PinStateChangedEvent(0, DigitalState.HIGH),
+                new ParallelPort.PinStateChangedEvent(2, DigitalState.HIGH)
             )),
             new Expectation(0b1010, 0b0101, List.of(
-                new ParallelPort.PinStateChangedEvent(null, 0, DigitalState.LOW),
-                new ParallelPort.PinStateChangedEvent(null, 1, DigitalState.HIGH),
-                new ParallelPort.PinStateChangedEvent(null, 2, DigitalState.LOW),
-                new ParallelPort.PinStateChangedEvent(null, 3, DigitalState.HIGH)
+                new ParallelPort.PinStateChangedEvent(0, DigitalState.LOW),
+                new ParallelPort.PinStateChangedEvent(1, DigitalState.HIGH),
+                new ParallelPort.PinStateChangedEvent(2, DigitalState.LOW),
+                new ParallelPort.PinStateChangedEvent(3, DigitalState.HIGH)
             ))
         ).map(expectation -> DynamicTest.dynamicTest(expectation.previous() + " -> " + expectation.value(), () -> {
-            var events = MockParallelPort.eventsForChange(null, expectation.value(), expectation.previous());
+            var notification = MockParallelPort.eventsForChange(null, expectation.value(), expectation.previous());
             var expected = expectation.expected();
 
-            assertEquals(expected.size(), events.size());
-            assertTrue(events.containsAll(expected));
+            assertEquals(expected.size(), notification.events().length);
+            assertTrue(Arrays.asList(notification.events()).containsAll(expected));
         }));
     }
-
-    /**
-     * Container for test expectations
-     * @param portValue the value on the port
-     * @param state0 the state of the first output
-     * @param state1 the state of the second output
-     */
-    record DigitalExpectation(int portValue, DigitalState state0, DigitalState state1) {}
 }

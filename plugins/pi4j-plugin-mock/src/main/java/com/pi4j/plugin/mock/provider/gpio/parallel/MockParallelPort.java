@@ -9,7 +9,6 @@ import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -44,7 +43,7 @@ public class MockParallelPort
 
         var changeEvents = eventsForChange(this, value, this.value.get());
         handleWrite(value);
-        changeEvents.forEach(events::dispatch);
+        events.dispatch(changeEvents);
     }
 
     @Override
@@ -64,15 +63,19 @@ public class MockParallelPort
      * @param previous the previous value
      * @return the list of pin state change events
      */
-    static List<PinStateChangedEvent> eventsForChange(ParallelPort source, int value, int previous) {
+    static PinStateChangedNotification eventsForChange(ParallelPort source, int value, int previous) {
         var diff = value ^ previous;
-        return Arrays.stream(MaskUtils.offsets(diff))
-            .mapToObj(offset -> new PinStateChangedEvent(
-                source,
-                offset,
-                (((1 << offset) & value) == 0) ? DigitalState.LOW : DigitalState.HIGH)
-            )
-            .sorted(Comparator.comparingInt(PinStateChangedEvent::offset))
-            .toList();
+
+        return new PinStateChangedNotification(
+            source,
+            false,
+            Arrays.stream(MaskUtils.offsets(diff))
+                .mapToObj(offset -> new PinStateChangedEvent(
+                    offset,
+                    (((1 << offset) & value) == 0) ? DigitalState.LOW : DigitalState.HIGH)
+                )
+                .sorted(Comparator.comparingInt(PinStateChangedEvent::offset))
+                .toArray(PinStateChangedEvent[]::new)
+        );
     }
 }

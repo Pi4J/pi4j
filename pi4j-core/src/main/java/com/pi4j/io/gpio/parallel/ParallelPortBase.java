@@ -26,7 +26,7 @@ public abstract class ParallelPortBase
 
     private Direction direction;
 
-    protected final EventManager<ParallelPort, PinStateChangeListener, PinStateChangedEvent> events = new EventManager<>(
+    protected final EventManager<ParallelPort, PinStateChangeListener, PinStateChangedNotification> events = new EventManager<>(
         this, PinStateChangeListener::onPinStateChanged
     );
 
