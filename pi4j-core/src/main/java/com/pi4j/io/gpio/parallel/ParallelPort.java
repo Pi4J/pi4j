@@ -91,6 +91,15 @@ public interface ParallelPort extends com.pi4j.io.IO<ParallelPort, ParallelPortC
         public int hashCode() {
             return Objects.hash(source, eventsMissing, Arrays.hashCode(events));
         }
+
+        @Override
+        public String toString() {
+            return "PinStateChangedNotification{" +
+                "source=" + source +
+                ", eventsMissing=" + eventsMissing +
+                ", events=" + Arrays.toString(events) +
+                '}';
+        }
     }
 
     /**
