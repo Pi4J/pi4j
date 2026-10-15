@@ -19,9 +19,7 @@ import com.pi4j.io.exception.IONotFoundException;
 import com.pi4j.io.exception.IOShutdownException;
 import com.pi4j.registry.Registry;
 
-
 import java.util.concurrent.Future;
-import java.util.function.Consumer;
 
 /**
  * Central runtime state of a Pi4J application. The {@code Context} is created once (typically via
