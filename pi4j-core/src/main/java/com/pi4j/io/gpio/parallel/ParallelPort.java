@@ -1,14 +1,13 @@
 package com.pi4j.io.gpio.parallel;
 
 import com.pi4j.io.IOType;
-import com.pi4j.io.gpio.Gpio;
 import com.pi4j.io.gpio.digital.DigitalState;
 
 import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * A {@link Gpio} which is capable of reading and writing multiple bits to a device.
+ * A {@link com.pi4j.io.IO} which is capable of reading and writing multiple bits to a device.
  */
 public interface ParallelPort extends com.pi4j.io.IO<ParallelPort, ParallelPortConfig> {
 
