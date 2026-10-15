@@ -4,6 +4,9 @@ import com.pi4j.io.IOType;
 import com.pi4j.io.gpio.Gpio;
 import com.pi4j.io.gpio.digital.DigitalState;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * A {@link Gpio} which is capable of reading and writing multiple bits to a device.
  */
@@ -76,7 +79,19 @@ public interface ParallelPort extends com.pi4j.io.IO<ParallelPort, ParallelPortC
      * @param eventsMissing whether any events are missing
      * @param events the events that occurred
      */
-    record PinStateChangedNotification(ParallelPort source, boolean eventsMissing, PinStateChangedEvent... events) {}
+    record PinStateChangedNotification(ParallelPort source, boolean eventsMissing, PinStateChangedEvent... events) {
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof PinStateChangedNotification other)) return false;
+            return eventsMissing == other.eventsMissing &&
+                Objects.equals(source, other.source) && Objects.deepEquals(events, other.events);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(source, eventsMissing, Arrays.hashCode(events));
+        }
+    }
 
     /**
      * Listener for low-level pin-state change events on the parallel port.
