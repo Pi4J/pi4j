@@ -56,28 +56,23 @@ jobs:
           name: groma-comparison-${{ steps.pull.outputs.number }}
           path: ${{ steps.map.outputs.output }}
           retention-days: 14
+      # The comment script comes from the workflow's own commit (main), not from the PR's
+      # base commit, which can predate it. Checked out after the scan so Groma never sees it.
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ job.workflow_sha }}
+          path: workflow-scripts
+          sparse-checkout: .github/scripts
+          persist-credentials: false
       - name: Comment the architecture comparison
         env:
           GH_TOKEN: ${{ github.token }}
           NUMBER: ${{ steps.pull.outputs.number }}
           SUMMARY: ${{ steps.map.outputs.summary }}
         run: |
-          C_ADD=$(jq -r '.components.added' <<<"$SUMMARY")
-          C_MOD=$(jq -r '.components.modified' <<<"$SUMMARY")
-          C_REM=$(jq -r '.components.removed' <<<"$SUMMARY")
-          R_ADD=$(jq -r '.relationships.added' <<<"$SUMMARY")
-          R_MOD=$(jq -r '.relationships.modified' <<<"$SUMMARY")
-          R_REM=$(jq -r '.relationships.removed' <<<"$SUMMARY")
           RUN_URL="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          body="<!-- groma-comparison -->
-          ### Groma architecture comparison
-
-          | Changes | Added | Modified | Removed |
-          | --- | ---: | ---: | ---: |
-          | Components | $C_ADD | $C_MOD | $C_REM |
-          | Relationships | $R_ADD | $R_MOD | $R_REM |
-
-          [Download the full before/after architecture map]($RUN_URL) from this run's artifacts (kept 14 days). The current map is also published at https://www.pi4j.com/groma/."
+          # the script comes from the trusted workflow checkout, never from the pull request
+          body=$(python3 workflow-scripts/.github/scripts/groma-comparison-comment.py "$SUMMARY" "$RUN_URL")
           existing=$(gh api "repos/$GITHUB_REPOSITORY/issues/$NUMBER/comments" --paginate \
             --jq '[.[] | select(.user.login == "github-actions[bot]" and (.body | startswith("<!-- groma-comparison -->")))][0].id // empty')
           if [ -n "$existing" ]; then
