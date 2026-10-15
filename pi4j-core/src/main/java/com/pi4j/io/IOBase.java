@@ -20,7 +20,7 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig>
         extends IdentityBase implements IO<IO_TYPE,CONFIG_TYPE>, Closeable {
 
     protected final CONFIG_TYPE config;
-    protected final Context context;
+    protected final Runnable onClose;
     // close() requires idempotency.
     protected boolean closed = false;
 
@@ -28,15 +28,16 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig>
      * Creates a new I/O instance, copying the id, name and description from the supplied
      * configuration into this instance's identity.
      *
-     * @param config   the configuration defining this instance's identity and properties
+     * @param onClose called when this instance is closed
+     * @param config  the configuration defining this instance's identity and properties
      */
-    protected IOBase(Context context, CONFIG_TYPE config){
+    protected IOBase(Runnable onClose, CONFIG_TYPE config){
         super();
         this.id = config.id();
         this.name = config.name();
         this.description = config.description();
         this.config = config;
-        this.context = context;
+        this.onClose = onClose;
     }
 
     @Override
@@ -69,8 +70,8 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig>
         closed = true;
         // The null check accounts for contextless tests or somehow just closing without initializing,
         // although we probably should make context a required ctor parameter, see #719
-        if (this.context != null) {
-            this.context.shutdown(this);
+        if (this.onClose != null) {
+            this.onClose.run();
         }
     }
 
