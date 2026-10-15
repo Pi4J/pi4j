@@ -1,6 +1,5 @@
 package com.pi4j.context;
 
-import com.pi4j.config.Builder;
 import com.pi4j.context.impl.DefaultContext;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.provider.Provider;
@@ -19,7 +18,7 @@ import java.util.*;
  * @see Context
  * @see ContextConfig
  */
-public class ContextBuilder implements Builder<Context> {
+public class ContextBuilder {
     protected Logger logger = LoggerFactory.getLogger(ContextBuilder.class);
 
     // auto detection flags
@@ -161,7 +160,6 @@ public class ContextBuilder implements Builder<Context> {
         };
     }
 
-    @Override
     public Context build() throws Pi4JException {
         logger.trace("invoked 'build()'");
 

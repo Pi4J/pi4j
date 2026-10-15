@@ -1,12 +1,14 @@
 package com.pi4j.io.gpio.digital;
 
-import com.pi4j.io.gpio.GpioConfig;
+import com.pi4j.config.BcmConfig;
+import com.pi4j.config.BusConfig;
+import com.pi4j.io.IOConfig;
 
 /**
- * Configuration contract for a {@link Digital} I/O instance, extending the generic {@link GpioConfig}
+ * Configuration contract for a {@link Digital} I/O instance, extending the generic {@link DigitalConfig}
  * with the {@link DigitalState} that is considered the logical "on" state.
  */
-public interface DigitalConfig extends GpioConfig {
+public interface DigitalConfig extends BusConfig, BcmConfig, IOConfig {
 
     /**
      * Property key under which the on-state value is stored in a configuration map.
@@ -28,5 +30,16 @@ public interface DigitalConfig extends GpioConfig {
      */
     default DigitalState getOnState() {
         return this.onState();
+    }
+
+    /**
+     * Returns the unique identifier used to distinguish GPIO devices, derived from the configured
+     * BCM pin number so that each physical GPIO pin maps to a distinct identifier.
+     *
+     * @return the BCM GPIO pin number serving as this device's unique identifier
+     */
+    @Override
+    default int getUniqueIdentifier() {
+        return bcm();
     }
 }

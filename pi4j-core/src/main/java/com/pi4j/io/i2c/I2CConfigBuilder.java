@@ -8,7 +8,7 @@ import com.pi4j.io.i2c.impl.DefaultI2CConfigBuilder;
 /**
  * Fluent builder for assembling an {@link I2CConfig}. Callers set the bus number, device address and optional
  * {@link I2CImplementation}, then call {@code build()} (inherited from {@link ConfigBuilder}) to produce the
- * immutable configuration passed to an {@link I2CProvider}.
+ * immutable configuration.
  */
 public interface I2CConfigBuilder extends
         IOConfigBuilder<I2CConfigBuilder, I2CConfig>,

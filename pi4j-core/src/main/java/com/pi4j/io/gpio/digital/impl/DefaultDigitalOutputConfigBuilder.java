@@ -1,7 +1,8 @@
 package com.pi4j.io.gpio.digital.impl;
 
+import com.pi4j.config.BcmConfig;
+import com.pi4j.config.BusConfig;
 import com.pi4j.context.Context;
-import com.pi4j.io.gpio.GpioConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
@@ -31,13 +32,19 @@ public class DefaultDigitalOutputConfigBuilder
 
     @Override
     public DigitalOutputConfigBuilder address(Integer address) {
-        this.properties.put(GpioConfig.BCM_KEY, String.valueOf(address));
+        this.properties.put(BcmConfig.BCM_KEY, String.valueOf(address));
+        return this;
+    }
+
+    @Override
+    public DigitalOutputConfigBuilder bcm(Integer bcm) {
+        this.properties.put(BcmConfig.BCM_KEY, String.valueOf(bcm));
         return this;
     }
 
     @Override
     public DigitalOutputConfigBuilder bus(int bus) {
-        this.properties.put(GpioConfig.BUS_KEY, String.valueOf(bus));
+        this.properties.put(BusConfig.BUS_KEY, String.valueOf(bus));
         return this;
     }
 

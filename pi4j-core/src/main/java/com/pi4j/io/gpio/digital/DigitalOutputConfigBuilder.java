@@ -5,9 +5,9 @@ import com.pi4j.io.gpio.digital.impl.DefaultDigitalOutputConfigBuilder;
 
 /**
  * Fluent builder for assembling a {@link DigitalOutputConfig}, adding output-specific settings (pin address,
- * initial state and shutdown state) on top of the shared {@link DigitalConfigBuilder} options.
+ * initial state and shutdown state) on top of the shared {@link DigitalOutputConfigBuilder} options.
  */
-public interface DigitalOutputConfigBuilder extends DigitalConfigBuilder<DigitalOutputConfigBuilder, DigitalOutputConfig> {
+public interface DigitalOutputConfigBuilder extends com.pi4j.io.IOConfigBuilder<DigitalOutputConfigBuilder, DigitalOutputConfig>, com.pi4j.config.ConfigBuilder<DigitalOutputConfigBuilder, DigitalOutputConfig> {
 
     /**
      * Sets the BCM pin number the output controls.
@@ -55,4 +55,31 @@ public interface DigitalOutputConfigBuilder extends DigitalConfigBuilder<Digital
         return DefaultDigitalOutputConfigBuilder.newInstance();
     }
 
+    /**
+     * Sets the {@link DigitalState} to be treated as the logical "on" state for the configuration being built.
+     *
+     * @param state the state that should map to "on"
+     * @return this builder for method chaining
+     */
+    DigitalOutputConfigBuilder onState(DigitalState state);
+
+    /**
+     * Sets the bus number on which the GPIO device is addressed.
+     *
+     * @param bus the bus number to associate with the configured GPIO device
+     * @return this builder instance for method chaining
+     */
+    DigitalOutputConfigBuilder bus(int bus);
+
+    /**
+     * Sets the target pin using its legacy "address" name.
+     *
+     * @param address the BCM GPIO pin number
+     * @return this builder instance for method chaining
+     * @deprecated use {@link #bcm(Integer)} instead.
+     */
+    @Deprecated(forRemoval = true)
+    default DigitalOutputConfigBuilder address(Integer address) {
+        return bcm(address);
+    }
 }

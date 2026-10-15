@@ -6,9 +6,8 @@ import com.pi4j.provider.Provider;
 /**
  * Builder contract shared by all Pi4J I/O configuration builders.
  * <p>
- * It extends the generic {@link ConfigBuilder} with the ability to select the {@link Provider} that
- * will service the resulting {@link IOConfig}, and is the common parent of the more specific
- * device- and pin-addressed builders such as {@link IODeviceConfigBuilder} and {@link IOBcmConfigBuilder}.
+ * It extends the generic {@link ConfigBuilder}, and is the common parent of the more specific
+ * device- and pin-addressed builders.
  *
  * @param <BUILDER_TYPE> the concrete builder type, returned for fluent method chaining
  * @param <CONFIG_TYPE>  the configuration type produced by this builder

@@ -1,16 +1,17 @@
 package com.pi4j.io.spi;
 
+import com.pi4j.config.ConfigBuilder;
 import com.pi4j.context.Context;
-import com.pi4j.io.IOBcmConfigBuilder;
+import com.pi4j.io.IOConfigBuilder;
 import com.pi4j.io.spi.impl.DefaultSpiConfigBuilder;
 
 /**
  * Fluent builder for assembling an {@link SpiConfig}. Set the desired bus, channel/chip-select,
  * clock mode, baud rate, and bit-ordering, then call {@code build()} (inherited from
- * {@link IOBcmConfigBuilder}) to obtain an immutable configuration for use with a {@link SpiProvider}.
+ * {@link SpiConfigBuilder}) to obtain an immutable configuration.
  */
-public interface SpiConfigBuilder extends
-    IOBcmConfigBuilder<SpiConfigBuilder, SpiConfig> {
+public interface SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiConfig>,
+    ConfigBuilder<SpiConfigBuilder, SpiConfig> {
     /**
      * Creates a new {@code SpiConfigBuilder} instance.
      *
@@ -119,4 +120,24 @@ public interface SpiConfigBuilder extends
      * @return this builder instance for method chaining
      */
     SpiConfigBuilder chipSelect(SpiChipSelect chipSelect);
+
+    /**
+     * Sets the target pin using its legacy "address" name.
+     *
+     * @param address the BCM GPIO pin number
+     * @return this builder instance for method chaining
+     * @deprecated use {@link #bcm(Integer)} instead.
+     */
+    @Deprecated(forRemoval = true)
+    default SpiConfigBuilder address(Integer address) {
+        return bcm(address);
+    }
+
+    /**
+     * Sets the Broadcom (BCM) GPIO pin number this I/O is bound to.
+     *
+     * @param bcm the BCM GPIO pin number
+     * @return this builder instance for method chaining
+     */
+    SpiConfigBuilder bcm(Integer bcm);
 }

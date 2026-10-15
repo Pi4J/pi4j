@@ -7,8 +7,7 @@ import com.pi4j.io.IOConfig;
 
 /**
  * Immutable configuration for an {@link I2C} device, combining the bus number, device (slave) address and the
- * desired {@link I2CImplementation}. Instances are produced by an {@link I2CConfigBuilder} and consumed by an
- * {@link I2CProvider} when creating a device.
+ * desired {@link I2CImplementation}. Instances are produced by an {@link I2CConfigBuilder} when creating a device.
  */
 public interface I2CConfig extends IOConfig, BusConfig, DeviceConfig {
 

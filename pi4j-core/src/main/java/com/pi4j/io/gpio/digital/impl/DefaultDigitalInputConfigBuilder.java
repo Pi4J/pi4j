@@ -1,7 +1,8 @@
 package com.pi4j.io.gpio.digital.impl;
 
+import com.pi4j.config.BcmConfig;
+import com.pi4j.config.BusConfig;
 import com.pi4j.context.Context;
-import com.pi4j.io.gpio.GpioConfig;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
 import com.pi4j.io.gpio.digital.PullResistance;
@@ -44,26 +45,32 @@ public class DefaultDigitalInputConfigBuilder
     @Override
     @Deprecated(forRemoval = true)
     public DigitalInputConfigBuilder address(Integer address) {
-        this.properties.put(GpioConfig.BCM_KEY, String.valueOf(address));
+        this.properties.put(BcmConfig.BCM_KEY, String.valueOf(address));
+        return this;
+    }
+
+    @Override
+    public DigitalInputConfigBuilder bcm(Integer bcm) {
+        this.properties.put(BcmConfig.BCM_KEY, String.valueOf(bcm));
         return this;
     }
 
     @Override
     public DigitalInputConfigBuilder bus(int bus) {
-        this.properties.put(GpioConfig.BUS_KEY, String.valueOf(bus));
+        this.properties.put(BusConfig.BUS_KEY, String.valueOf(bus));
         return this;
     }
 
     @Override
     public DigitalInputConfigBuilder pull(PullResistance value) {
-        this.properties.put(DigitalInputConfig.PULL_RESISTANCE_KEY, value.toString());
+        this.properties.put(DefaultDigitalInputConfig.PULL_RESISTANCE_KEY, value.toString());
         return this;
     }
 
     @Override
     public DigitalInputConfigBuilder debounce(Long microseconds) {
         if (microseconds != null) {
-            this.properties.put(DigitalInputConfig.DEBOUNCE_RESISTANCE_KEY, microseconds.toString());
+            this.properties.put(DefaultDigitalInputConfig.DEBOUNCE_RESISTANCE_KEY, microseconds.toString());
         }
         return this;
     }

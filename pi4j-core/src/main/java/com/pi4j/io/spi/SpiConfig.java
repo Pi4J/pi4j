@@ -1,6 +1,5 @@
 package com.pi4j.io.spi;
 
-import com.pi4j.config.ChannelConfig;
 import com.pi4j.context.Context;
 import com.pi4j.io.IOConfig;
 
@@ -9,7 +8,7 @@ import com.pi4j.io.IOConfig;
  * mode, baud rate, bit ordering, and provider flags. Instances are produced by a {@link SpiConfigBuilder}
  * and consumed by a {@link SpiProvider} when creating an SPI device.
  */
-public interface SpiConfig extends ChannelConfig, IOConfig {
+public interface SpiConfig extends IOConfig {
     /**
      * Configuration property key for the legacy SPI address.
      *
@@ -29,6 +28,10 @@ public interface SpiConfig extends ChannelConfig, IOConfig {
     String WRITE_LSB_KEY = "write_lsb";
     /** Configuration property key for the read bit-order (LSB-first) setting. */
     String READ_LSB_KEY = "read_lsb";
+    /**
+     * Property key under which the channel number is stored in the configuration properties map.
+     */
+    String CHANNEL_KEY = "channel";
 
     /**
      * Creates a new {@link SpiConfigBuilder}.

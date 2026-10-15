@@ -1,7 +1,6 @@
 package com.pi4j.config.impl;
 
 import com.pi4j.config.BcmConfig;
-import com.pi4j.config.BcmConfigBuilder;
 import com.pi4j.config.Config;
 import com.pi4j.config.ConfigBuilder;
 
@@ -16,7 +15,7 @@ public abstract class BcmConfigBuilderBase<
     CONFIG_TYPE extends Config
     >
     extends ConfigBuilderBase<BUILDER_TYPE, CONFIG_TYPE>
-    implements BcmConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
+    implements ConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> {
 
     /**
      * PRIVATE CONSTRUCTOR
@@ -25,9 +24,20 @@ public abstract class BcmConfigBuilderBase<
     }
 
     @SuppressWarnings("unchecked")
-    @Override
     public BUILDER_TYPE bcm(Integer bcm) {
         this.properties.put(BcmConfig.BCM_KEY, bcm.toString());
         return (BUILDER_TYPE) this;
+    }
+
+    /**
+     * Sets the target pin using its legacy "address" name.
+     *
+     * @param address the BCM GPIO pin number
+     * @return this builder instance for method chaining
+     * @deprecated use {@link #bcm(Integer)} instead.
+     */
+    @Deprecated(forRemoval = true)
+    public BUILDER_TYPE address(Integer address) {
+        return bcm(address);
     }
 }
