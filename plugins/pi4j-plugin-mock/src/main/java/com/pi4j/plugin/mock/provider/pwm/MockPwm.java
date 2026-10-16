@@ -1,10 +1,12 @@
 package com.pi4j.plugin.mock.provider.pwm;
 
-import com.pi4j.context.Context;
+import com.pi4j.io.IO;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmBase;
 import com.pi4j.io.pwm.PwmConfig;
+
+import java.util.function.Consumer;
 
 
 /**
@@ -17,10 +19,11 @@ public class MockPwm extends PwmBase implements Pwm {
     /**
      * Creates a mock PWM instance for the given provider and configuration.
      *
-     * @param context  the context of this instance     * @param config   the {@link PwmConfig} describing the PWM channel, frequency and duty cycle
+     * @param onClose the close handler
+     * @param config the {@link PwmConfig} describing the PWM channel, frequency and duty cycle
      */
-    public MockPwm(Context context, PwmConfig config){
-        super(context, config);
+    public MockPwm(Consumer<IO<?, ?>> onClose, PwmConfig config){
+        super(onClose, config);
     }
 
     /**

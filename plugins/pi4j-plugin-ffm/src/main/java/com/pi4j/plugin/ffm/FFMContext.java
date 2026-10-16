@@ -20,6 +20,7 @@ import com.pi4j.plugin.ffm.providers.parallel.FFMParallelPort;
 import com.pi4j.plugin.ffm.providers.pwm.FFMPwm;
 import com.pi4j.plugin.ffm.providers.spi.FFMSpi;
 
+
 public class FFMContext extends DefaultContext {
 
     public FFMContext() {
@@ -34,12 +35,12 @@ public class FFMContext extends DefaultContext {
     public IO<?, ?> createImpl(IOConfig config, IOType type) {
         FFMPermissionHelper.checkUserPermissions(type);
         return switch (type) {
-            case DIGITAL_INPUT -> new FFMDigitalInput(this, (DigitalInputConfig) config);
-            case DIGITAL_OUTPUT -> new FFMDigitalOutput( this, (DigitalOutputConfig) config);
-            case PWM -> FFMPwm.create(this, (PwmConfig) config);
-            case I2C -> FFMI2C.create(this, (I2CConfig) config);
-            case SPI -> new FFMSpi(this, (SpiConfig) config);
-            case PARALLEL -> FFMParallelPort.create(this, (ParallelPortConfig) config);
+            case DIGITAL_INPUT -> new FFMDigitalInput(this::shutdown, (DigitalInputConfig) config);
+            case DIGITAL_OUTPUT -> new FFMDigitalOutput( this::shutdown, (DigitalOutputConfig) config);
+            case PWM -> FFMPwm.create(this::shutdown, (PwmConfig) config);
+            case I2C -> FFMI2C.create(this::shutdown, (I2CConfig) config);
+            case SPI -> new FFMSpi(this::shutdown, (SpiConfig) config);
+            case PARALLEL -> FFMParallelPort.create(this::shutdown, (ParallelPortConfig) config);
         };
     }
 

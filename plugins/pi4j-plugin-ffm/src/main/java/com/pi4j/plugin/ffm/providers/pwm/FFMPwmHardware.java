@@ -3,6 +3,7 @@ package com.pi4j.plugin.ffm.providers.pwm;
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.io.IO;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.pwm.*;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
@@ -17,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * Hardware {@link Pwm} implementation backed by the Linux sysfs PWM interface under
@@ -86,8 +88,8 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
     private int polarityFd = -1;
 
 
-    FFMPwmHardware(Context context, PwmConfig config) {
-        super(context, config);
+    FFMPwmHardware(Consumer<IO<?, ?>> onClose, PwmConfig config) {
+        super(onClose, config);
         this.chip = config.chip();
         this.channel = config.channel();
         FFMPermissionHelper.checkDevicePermissions(CHIP_PATH + chip, config);

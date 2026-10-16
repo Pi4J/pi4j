@@ -1,8 +1,8 @@
 package com.pi4j.plugin.ffm.providers.gpio;
 
-import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.ShutdownException;
+import com.pi4j.io.IO;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.digital.*;
@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 /**
  * Native {@link DigitalOutput} implementation for the FFM backend. Requests a single GPIO line from a
@@ -35,8 +36,8 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
      * @param config   the {@link DigitalOutputConfig} supplying the BCM line offset, bus number and
      *                 initial state
      */
-    public FFMDigitalOutput(Context context, DigitalOutputConfig config) {
-        super(context, config);
+    public FFMDigitalOutput(Consumer<IO<?, ?>> onClose, DigitalOutputConfig config) {
+        super(onClose, config);
         this.line = new FFMGpioLine(MaskUtils.mask(config.bcm()), config.bus());
         FFMPermissionHelper.checkDevicePermissions(line.deviceName, config);
     }

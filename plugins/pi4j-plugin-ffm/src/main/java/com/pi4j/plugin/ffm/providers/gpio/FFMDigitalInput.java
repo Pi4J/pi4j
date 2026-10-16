@@ -1,9 +1,9 @@
 package com.pi4j.plugin.ffm.providers.gpio;
 
-import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
+import com.pi4j.io.IO;
 import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.digital.*;
 import com.pi4j.plugin.ffm.common.FFMGpioLine;
@@ -23,6 +23,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * Native {@link DigitalInput} implementation for the FFM backend. Requests a single GPIO line from a
@@ -58,8 +59,8 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      * @param config   the {@link DigitalInputConfig} supplying the BCM line offset, bus number,
      *                 pull resistance and debounce period
      */
-    public FFMDigitalInput(Context context, DigitalInputConfig config) {
-        super(context, config);
+    public FFMDigitalInput(Consumer<IO<?, ?>> onClose, DigitalInputConfig config) {
+        super(onClose, config);
         this.line = new FFMGpioLine(MaskUtils.mask(config.bcm()), config.bus());
         this.debounce = (config.debounce() != null && config.debounce() >= 0) ? config.debounce() : 0;
         this.pull = config.pull();
