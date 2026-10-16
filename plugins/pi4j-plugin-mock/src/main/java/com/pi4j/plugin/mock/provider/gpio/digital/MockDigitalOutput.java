@@ -10,7 +10,6 @@ import com.pi4j.io.gpio.digital.DigitalState;
 
 import java.util.function.Consumer;
 
-
 /**
  * Mock, in-memory implementation of the pi4j-core {@link DigitalOutput} contract.
  * <p>
