@@ -76,12 +76,12 @@ public sealed class FFMParallelPort
     }
 
     @Override
-    public ParallelPort addListener(Listener listener) {
+    public ParallelPort addListener(PinStateChangeListener listener) {
         throw new UnsupportedOperationException("TBD");
     }
 
     @Override
-    public ParallelPort removeListener(Listener listener) {
+    public ParallelPort removeListener(PinStateChangeListener listener) {
         throw new UnsupportedOperationException("TBD");
     }
 
