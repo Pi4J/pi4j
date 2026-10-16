@@ -69,8 +69,7 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig>
             return;
         }
         closed = true;
-        // The null check accounts for contextless tests or somehow just closing without initializing,
-        // although we probably should make context a required ctor parameter, see #719
+        // The null check accounts for tests without an onClose callback
         if (this.onClose != null) {
             this.onClose.accept(this);
         }
