@@ -5,17 +5,26 @@ import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.gpio.MaskUtils;
+import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortBase;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 import com.pi4j.plugin.ffm.common.FFMGpioLine;
+import com.pi4j.plugin.ffm.common.gpio.DetectedEvent;
+import com.pi4j.plugin.ffm.common.gpio.PinEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.enums.LineAttributeId;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineAttribute;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineConfig;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineConfigAttribute;
+import com.pi4j.plugin.ffm.common.gpio.structs.LineEvent;
+import com.pi4j.plugin.ffm.providers.gpio.EventWatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.UnaryOperator;
 
 /**
@@ -29,8 +38,22 @@ public sealed class FFMParallelPort
     private final LineConfig outputLineConfig;
     private final FFMGpioLine gpioLine;
 
+    private EventWatcher eventWatcher;
     /**
-     * Creates a new GPIO parallel port instance bound to the given provider and configuration.
+     * Executor service for the event watcher thread.
+     * @see <a href="https://github.com/Pi4J/pi4j/issues/804">Pi4J issue 804</a>
+     */
+    private final ExecutorService watcherService;
+    /**
+     * Executor service for dispatching events to listeners.
+     * @see <a href="https://github.com/Pi4J/pi4j/issues/805">Pi4J issue 805</a>
+     */
+    private final ExecutorService dispatcherService;
+
+    private final Logger logger = LoggerFactory.getLogger(FFMParallelPort.class);
+
+    /**
+     * Creates a new GPIO parallel port instance bound to the given context and configuration.
      *
      * @param context the Pi4J context
      * @param config   the configuration describing this I/O
@@ -47,12 +70,50 @@ public sealed class FFMParallelPort
         this.inputLineConfig = createInputLineConfigs(config);
         this.outputLineConfig = createOutputLineConfigs(config);
         this.gpioLine = new FFMGpioLine(MaskUtils.mask(config.offsets()), config.bus());
+
+        // Events are only available if the initial direction is INPUT. No need to create these for OUTPUT ports
+        if (config.initialDirection() == Direction.INPUT) {
+            this.watcherService = Executors.newSingleThreadExecutor(Thread.ofPlatform()
+                .name(config.id() + "-watcher-", 0)
+                .daemon(true)
+                .uncaughtExceptionHandler((_, e) -> logger.error("Uncaught exception in watcher thread", e))
+                .factory()
+            );
+            this.dispatcherService = Executors.newCachedThreadPool(Thread.ofPlatform()
+                .name(config.id() + "-dispatcher-", 0)
+                .uncaughtExceptionHandler((_, e) -> logger.error("Uncaught exception in dispatcher thread", e))
+                .factory()
+            );
+        } else {
+            this.watcherService = null;
+            this.dispatcherService = null;
+        }
     }
 
     @Override
-    public ParallelPort applyInitialState() throws InitializeException {
+    public ParallelPort applyInitialState() {
+        if (gpioLine.chipFileDescriptor != 0) {
+            throw new IllegalStateException("Port is already initialized");
+        }
+
         if (config.initialDirection() == Direction.INPUT) {
             gpioLine.openAndRequest(inputLineConfig.flags(), List.of(inputLineConfig.attrs()), config.id());
+            if (this.eventWatcher == null) {
+                this.eventWatcher = new EventWatcher(
+                    gpioLine.chipFileDescriptor,
+                    gpioLine.mask,
+                    0,
+                    gpioLine.file,
+                    PinEvent.BOTH,
+                    eventList -> {
+                        var notification = eventsAsNotification(eventList);
+                        if (!dispatcherService.isShutdown()) {
+                            dispatcherService.submit(() -> events.dispatch(notification));
+                        }
+                    }
+                );
+            }
+
         } else {
             gpioLine.openAndRequest(outputLineConfig.flags(), List.of(outputLineConfig.attrs()), config.id());
         }
@@ -75,14 +136,48 @@ public sealed class FFMParallelPort
         return direction;
     }
 
+    /**
+     * Map a gpio offset to its pin offset in this port
+     * @param gpio the gpio offset
+     * @return the pin offset
+     */
+    protected int mapGpioToPin(int gpio) {
+        return MaskUtils.packOffsetByMask(config.mask(), gpio);
+    }
+
     @Override
     public ParallelPort addListener(PinStateChangeListener listener) {
-        throw new UnsupportedOperationException("TBD");
+        if (config.initialDirection() != Direction.INPUT) {
+            throw new IllegalStateException("Cannot add listener to a port not primarily configured as an input");
+        }
+
+        if (this.eventWatcher != null) {
+            boolean startRequired = !events.hasListeners();
+            super.addListener(listener);
+            if (startRequired) {
+                watcherService.submit(eventWatcher);
+            }
+        } else {
+            throw new IllegalStateException("Event watcher is not initialized");
+        }
+        return this;
     }
 
     @Override
     public ParallelPort removeListener(PinStateChangeListener listener) {
-        throw new UnsupportedOperationException("TBD");
+        if (config.initialDirection() != Direction.INPUT) {
+            throw new IllegalStateException("Cannot remove listener from a port not primarily configured as an input");
+        }
+
+        if (this.eventWatcher != null) {
+            super.removeListener(listener);
+            if (!events.hasListeners()) {
+                eventWatcher.stopWatching();
+            }
+        } else {
+            throw new IllegalStateException("Event watcher is not initialized");
+        }
+        return this;
     }
 
     @Override
@@ -91,6 +186,15 @@ public sealed class FFMParallelPort
             return;
         }
         super.close();
+        if (eventWatcher != null) {
+            if (events.hasListeners()) {
+                eventWatcher.stopWatching();
+            }
+        }
+        if (watcherService != null) {
+            watcherService.shutdown();
+            dispatcherService.shutdown();
+        }
         if (config.shutdownValue() != null && getDirection() == Direction.OUTPUT) {
             write(config.shutdownValue());
         }
@@ -106,7 +210,7 @@ public sealed class FFMParallelPort
      * @param config the parallel port configuration
      * @return the line configuration for the input mode
      */
-    private LineConfig createInputLineConfigs(ParallelPortConfig config) {
+    private static LineConfig createInputLineConfigs(ParallelPortConfig config) {
         var eventFlags = 0;
         var modeFlags = PinFlag.INPUT.getValue();
         var attributes = new LineConfigAttribute[0];
@@ -119,6 +223,9 @@ public sealed class FFMParallelPort
                 case OFF -> 0;
             };
 
+            /*
+             Configuration might want to allow the user not to forced to listen to both edges.
+             */
             eventFlags |= PinFlag.EDGE_RISING.getValue() | PinFlag.EDGE_FALLING.getValue();
 
             if (config.debounce() * 1000 > Integer.MAX_VALUE) {
@@ -147,7 +254,7 @@ public sealed class FFMParallelPort
      * @param config the parallel port configuration
      * @return the line configuration for the output mode
      */
-    private LineConfig createOutputLineConfigs(ParallelPortConfig config) {
+    private static LineConfig createOutputLineConfigs(ParallelPortConfig config) {
         var modeFlags = PinFlag.OUTPUT.getValue();
         var attributes = new LineConfigAttribute[0];
 
@@ -166,6 +273,45 @@ public sealed class FFMParallelPort
         }
 
         return  new LineConfig(modeFlags, attributes.length, attributes);
+    }
+
+    /**
+     * Convert a list of {@link DetectedEvent} to a {@link PinStateChangedNotification}
+     * <p>
+     * TODO: This does not currently detect missing events. This requires monitoring {@link LineEvent#lineSeqno()} for
+     *  each line and maybe raises a question as to whether we really need a {@link DetectedEvent} abstraction here
+     *  or just consume {@link LineEvent} directly.
+     * <p>
+     * TODO: Additionally, we then need to ask whether it is necessary to track {@link LineEvent#lineSeqno()} across
+     *  {@link ParallelPort.PinStateChangedNotification}s to capture dropping of first and last events. This might
+     *  have to consider any downside in introducing mutable state to this class.
+     *
+     * @param eventList the list of detected events
+     * @return a {@link PinStateChangedNotification} representing the state changes
+     */
+    private ParallelPort.PinStateChangedNotification eventsAsNotification(List<DetectedEvent> eventList) {
+        PinStateChangedEvent[] changeEvents = new PinStateChangedEvent[eventList.size()];
+        for (int i = 0; i < eventList.size(); i++) {
+            changeEvents[i] = eventAsChangeEvent(eventList.get(i));
+        }
+
+        return new PinStateChangedNotification(this, false, changeEvents);
+    }
+
+    /**
+     * Map a {@link DetectedEvent} to a {@link PinStateChangedEvent}
+     * @param event the detected event
+     * @return a {@link PinStateChangedEvent} representing the state change
+     */
+    private ParallelPort.PinStateChangedEvent eventAsChangeEvent(DetectedEvent event) {
+        // convert the hardware offset to the logical user-specified offset
+        int offset = mapGpioToPin(event.offset());
+        // represent the change type by its resulting digital state value
+        var state = event.pinEvent() == PinEvent.RISING
+            ? DigitalState.HIGH
+            : DigitalState.LOW;
+
+        return new PinStateChangedEvent(offset, state);
     }
 
     /**
@@ -203,6 +349,11 @@ public sealed class FFMParallelPort
         @Override
         protected int handleRead() {
             return mappingLogic.unmap(super.handleRead());
+        }
+
+        @Override
+        protected int mapGpioToPin(int offset) {
+            return mappingLogic.getUserOffset(super.mapGpioToPin(offset));
         }
     }
 
@@ -280,6 +431,19 @@ public sealed class FFMParallelPort
                 result |= ((value >> offsets[i]) & 1) << i;
             }
             return result;
+        }
+
+        /**
+         * Find the user-specified offset for an in-sequence offset
+         * @param inSequenceOffset the in-sequence offset as maybe packed from a {@link LineEvent#offset()}
+         * @return the logical offset according to the user-specified sequence
+         */
+        public int getUserOffset(int inSequenceOffset) {
+            if (inSequenceOffset < offsets.length) {
+                return offsets[inSequenceOffset];
+            } else {
+                return -1;
+            }
         }
     }
 }

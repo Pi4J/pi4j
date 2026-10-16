@@ -23,7 +23,7 @@ import java.util.List;
  * debounce, and hands the resulting {@link DetectedEvent} list to a {@link PinEventProcessing}
  * callback. It runs until {@link #stopWatching()} is called.
  */
-class EventWatcher implements Runnable {
+public class EventWatcher implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(EventWatcher.class);
 
     private final PollNative poll = new PollNative();
@@ -41,7 +41,7 @@ class EventWatcher implements Runnable {
 
     private volatile boolean stopWatching = false;
 
-    EventWatcher(int fd, long mask, long debounce, FileDescriptorNative file, PinEvent pinEvent, PinEventProcessing eventProcessor) {
+    public EventWatcher(int fd, long mask, long debounce, FileDescriptorNative file, PinEvent pinEvent, PinEventProcessing eventProcessor) {
         this.fd = fd;
         this.mask = mask;
         this.file = file;
@@ -116,7 +116,7 @@ class EventWatcher implements Runnable {
                             logger.trace("{} - Processing event on offset {}: {}",
                                 Thread.currentThread().getName(), mask, pinEventType);
                             DetectedEvent detectedEvent =
-                                new DetectedEvent(event.timestampNs(), pinEventType, event.lineSeqno());
+                                new DetectedEvent(event.timestampNs(), pinEventType, event.lineSeqno(), event.offset());
                             if (debounceNs > 0) {
                                 if (lastDebouncedEvent == null) {
                                     logger.trace("{} - Starting debounce period on offset {} for {}",

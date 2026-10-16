@@ -8,6 +8,12 @@ package com.pi4j.plugin.ffm.common.gpio;
  * @param timestampInNanos kernel-supplied event timestamp in nanoseconds (best-effort estimate, from the realtime or HTE clock)
  * @param pinEvent         the detected edge type, {@link PinEvent#RISING} or {@link PinEvent#FALLING}
  * @param sequenceNumber   monotonically increasing event counter for the line since edge detection was enabled
+ * @param offset           the line offset within the GPIO chip that generated this event
  */
-public record DetectedEvent(long timestampInNanos, PinEvent pinEvent, int sequenceNumber) {
+/*
+ The more fields we add to this record, the more we might consider simply exposing the {@link LineEvent} struct
+  it represents. The utility of the abstraction degrades as we add more fields. **or** we could deserialise
+  directly to the type natively understood by the API.
+ */
+public record DetectedEvent(long timestampInNanos, PinEvent pinEvent, int sequenceNumber, int offset) {
 }
