@@ -19,10 +19,11 @@ public class MockPwm extends PwmBase implements Pwm {
     /**
      * Creates a mock PWM instance for the given provider and configuration.
      *
-     * @param context  the context of this instance     * @param config   the {@link PwmConfig} describing the PWM channel, frequency and duty cycle
+     * @param onClose the close handler
+     * @param config the {@link PwmConfig} describing the PWM channel, frequency and duty cycle
      */
-    public MockPwm(Consumer<IO<?, ?>> context, PwmConfig config){
-        super(context, config);
+    public MockPwm(Consumer<IO<?, ?>> onClose, PwmConfig config){
+        super(onClose, config);
     }
 
     /**

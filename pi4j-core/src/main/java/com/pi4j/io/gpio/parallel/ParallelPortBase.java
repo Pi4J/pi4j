@@ -32,8 +32,8 @@ public abstract class ParallelPortBase
         this, Listener::onValueChange
     );
 
-    protected ParallelPortBase(Consumer<IO<?, ?>> context, ParallelPortConfig config) {
-        super(context, config);
+    protected ParallelPortBase(Consumer<IO<?, ?>> onClose, ParallelPortConfig config) {
+        super(onClose, config);
         this.mask = (int) MaskUtils.packed(config.mask());
         this.direction = config.initialDirection();
     }

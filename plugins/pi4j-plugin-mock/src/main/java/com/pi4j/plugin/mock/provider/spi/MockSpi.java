@@ -33,11 +33,11 @@ public class MockSpi extends SpiBase implements Spi {
      * Creates a mock SPI instance for the given provider and configuration, logging the simulated
      * open with the configured channel and baud rate.
      *
-     * @param context  the context that created this instance
-     * @param config   the {@link SpiConfig} describing the SPI channel and baud rate
+     * @param onClose the close handler
+     * @param config the {@link SpiConfig} describing the SPI channel and baud rate
      */
-    public MockSpi(Consumer<IO<?, ?>> context, SpiConfig config) {
-        super(context, config);
+    public MockSpi(Consumer<IO<?, ?>> onClose, SpiConfig config) {
+        super(onClose, config);
         logPreamble = "[" + Mock.SPI_PROVIDER_NAME + "::" + this.id + "] ::";
         logger.info("{} OPEN(CHANNEL={}; BAUD={})", logPreamble, config.channel(), config.baud());
     }

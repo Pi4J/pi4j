@@ -12,8 +12,8 @@ import java.util.function.Consumer;
  * Abstract base implementation of {@link IO} that the concrete I/O types build upon.
  * <p>
  * It stores the originating {@link IOConfig}, initializes its {@link Identity}
- * (id, name, description) from that configuration, and integrates with the Pi4J {@link Context}
- * lifecycle so that {@link #close()} reliably unregisters and shuts the instance down exactly once.
+ * (id, name, description) from that configuration, and stores an onClose callback so that {@link #close()} reliably
+ * unregisters and shuts the instance down exactly once.
  *
  * @param <IO_TYPE>       the concrete I/O type, returned by the fluent identity setters for chaining
  * @param <CONFIG_TYPE>   the {@link IOConfig} type describing this instance

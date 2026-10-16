@@ -18,11 +18,11 @@ public class FFMPwm {
      * that the corresponding {@code /sys/class/pwm/pwmchipN} path is accessible with the required
      * permissions.
      *
-     * @param context  the context of this instance
+     * @param onClose  the close handler
      * @param config   the PWM configuration supplying the chip number, channel and optional initial
      *                 duty cycle, polarity and frequency
      */
-    public static Pwm create(Consumer<IO<?, ?>> context, PwmConfig config) {
+    public static Pwm create(Consumer<IO<?, ?>> onClose, PwmConfig config) {
         if (config.pwmType() != PwmType.HARDWARE) {
             throw new IOException("The FFM PWM provider only supports HARDWARE PWM");
         }
@@ -38,7 +38,7 @@ public class FFMPwm {
         }
 
         // create new I/O instance based on I/O config
-        return new FFMPwmHardware(context, config);
+        return new FFMPwmHardware(onClose, config);
     }
 
 }

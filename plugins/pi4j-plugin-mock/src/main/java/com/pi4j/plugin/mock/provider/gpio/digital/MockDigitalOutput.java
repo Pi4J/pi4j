@@ -24,8 +24,8 @@ public class MockDigitalOutput extends DigitalOutputBase implements DigitalOutpu
      *
      * @param config the {@link DigitalOutputConfig} describing the pin and its initial/shutdown states
      */
-    public MockDigitalOutput(Consumer<IO<?, ?>> context, DigitalOutputConfig config){
-        super(context, config);
+    public MockDigitalOutput(Consumer<IO<?, ?>> onClose, DigitalOutputConfig config){
+        super(onClose, config);
     }
 
     /**

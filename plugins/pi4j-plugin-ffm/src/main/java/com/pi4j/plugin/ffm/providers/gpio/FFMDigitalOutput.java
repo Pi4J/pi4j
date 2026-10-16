@@ -36,8 +36,8 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
      * @param config   the {@link DigitalOutputConfig} supplying the BCM line offset, bus number and
      *                 initial state
      */
-    public FFMDigitalOutput(Consumer<IO<?, ?>> context, DigitalOutputConfig config) {
-        super(context, config);
+    public FFMDigitalOutput(Consumer<IO<?, ?>> onClose, DigitalOutputConfig config) {
+        super(onClose, config);
         this.line = new FFMGpioLine(MaskUtils.mask(config.bcm()), config.bus());
         FFMPermissionHelper.checkDevicePermissions(line.deviceName, config);
     }

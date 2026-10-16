@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 public class FFMI2C {
     private static final Logger logger = LoggerFactory.getLogger(FFMI2C.class);
 
-    public static I2C create(Consumer<IO<?, ?>> context, I2CConfig config) {
+    public static I2C create(Consumer<IO<?, ?>> onClose, I2CConfig config) {
         var bus = new FFMI2CBus(config);
 
         if (logger.isDebugEnabled()) {
@@ -35,10 +35,10 @@ public class FFMI2C {
         I2CBase<?> i2c;
         if (impl.equals(I2CImplementation.SMBUS) && bus.supportsSMBus()) {
             logger.debug("{} - creating SMBus adapter based on default implementation and functions", bus.getBusName());
-            i2c = new I2CSMBus( context, config, bus);
+            i2c = new I2CSMBus(onClose, config, bus);
         } else {
             logger.debug("{} - creating Direct ioctl adapter based on default implementation and functions", bus.getBusName());
-            i2c = new I2CDirect(context, config, bus);
+            i2c = new I2CDirect(onClose, config, bus);
         }
 
         return i2c;

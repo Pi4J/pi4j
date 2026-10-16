@@ -21,11 +21,11 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
     /**
      * Creates a new digital output bound to the given provider and configuration.
      *
-     * @param context  the context this DigitalOutput belongs to
+     * @param onClose  the close handler
      * @param config   the configuration describing the pin address, initial state, shutdown state and identity
      */
-    protected DigitalOutputBase(Consumer<IO<?, ?>> context, DigitalOutputConfig config) {
-        super(context, config);
+    protected DigitalOutputBase(Consumer<IO<?, ?>> onClose, DigitalOutputConfig config) {
+        super(onClose, config);
     }
 
     /**

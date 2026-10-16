@@ -33,11 +33,11 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig> implements Pwm {
      * Creates a new PWM base instance and registers any presets defined in the
      * supplied configuration, keyed by their lower-cased, trimmed names.
      *
-     * @param context  the context of this instance
+     * @param onClose
      * @param config   the configuration describing this PWM channel, including any initial presets
      */
-    protected PwmBase(Consumer<IO<?, ?>> context, PwmConfig config) {
-        super(context, config);
+    protected PwmBase(Consumer<IO<?, ?>> onClose, PwmConfig config) {
+        super(onClose, config);
     }
 
     @Override

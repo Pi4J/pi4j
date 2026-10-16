@@ -59,8 +59,8 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      * @param config   the {@link DigitalInputConfig} supplying the BCM line offset, bus number,
      *                 pull resistance and debounce period
      */
-    public FFMDigitalInput(Consumer<IO<?, ?>> context, DigitalInputConfig config) {
-        super(context, config);
+    public FFMDigitalInput(Consumer<IO<?, ?>> onClose, DigitalInputConfig config) {
+        super(onClose, config);
         this.line = new FFMGpioLine(MaskUtils.mask(config.bcm()), config.bus());
         this.debounce = (config.debounce() != null && config.debounce() >= 0) ? config.debounce() : 0;
         this.pull = config.pull();
