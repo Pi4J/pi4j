@@ -26,7 +26,7 @@ public abstract class DefaultContext implements Context {
     protected static final Logger logger = LoggerFactory.getLogger(DefaultContext.class);
 
     private final ContextConfig config;
-    private BoardInfo boardInfo = null;
+    private volatile BoardInfo boardInfo = null;
 
     private final EventManager<Context, ShutdownListener, ShutdownEvent> shutdownEventManager =new EventManager(this,
         (EventDelegate<ShutdownListener, ShutdownEvent>) (listener, event) -> listener.onShutdown(event));
@@ -36,6 +36,8 @@ public abstract class DefaultContext implements Context {
     private final ExecutorPool executorPool = new ExecutorPool();
     private final ExecutorService runtimeExecutor = this.executorPool.getExecutor("Pi4J.RUNTIME");
     private final MutableRegistry mutableRegistry = new MutableRegistry(this);
+    // The CRaC global context only holds weak references, so the context must keep this one alive.
+    private final CheckpointResource checkpointResource = new CheckpointResource(this, mutableRegistry);
 
     private volatile boolean isShutdown = false;
 
@@ -108,6 +110,9 @@ public abstract class DefaultContext implements Context {
         logger.info("Running on: {}", boardInfo.getOperatingSystem());
         logger.info("With Java version: {}", boardInfo.getJavaInfo());
 
+        // release and reacquire native resources around a CRaC checkpoint (no-op without CRaC support)
+        org.crac.Core.getGlobalContext().register(checkpointResource);
+
         // initialize runtime now
         logger.info("Initializing Pi4J context/runtime...");
 
@@ -127,6 +132,23 @@ public abstract class DefaultContext implements Context {
 
     @Override
     public BoardInfo boardInfo() { return this.boardInfo; }
+
+    /**
+     * Returns the CRaC {@link org.crac.Resource} that suspends and resumes this context's I/O instances around
+     * a checkpoint. It is registered automatically; it's exposed so tests and custom CRaC setups can drive it.
+     *
+     * @return the checkpoint resource of this context
+     */
+    public CheckpointResource checkpointResource() { return this.checkpointResource; }
+
+    /**
+     * Re-detects the board information, as the JVM may be restored from a checkpoint on a different board.
+     */
+    void redetectBoardInfo() {
+        BoardInfoHelper.reinitialize();
+        this.boardInfo = BoardInfoHelper.current();
+        logger.info("Re-detected board model after restore: {}", boardInfo.getBoardModel().getLabel());
+    }
 
     @Override
     public Future<?> submitTask(Runnable task) {

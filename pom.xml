@@ -252,6 +252,7 @@
         <jsch.version>0.1.55</jsch.version>
         <junit.jupiter.version>5.12.1</junit.jupiter.version>
         <slf4j.version>2.0.17</slf4j.version>
+        <crac.version>1.5.0</crac.version>
         <jna.version>5.15.0</jna.version>
         <checkstyle.version>13.10.0</checkstyle.version>
 
@@ -333,6 +334,13 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.version}</version>
+            </dependency>
+
+            <!-- COORDINATED RESTORE AT CHECKPOINT (CRaC) -->
+            <dependency>
+                <groupId>org.crac</groupId>
+                <artifactId>crac</artifactId>
+                <version>${crac.version}</version>
             </dependency>
 
             <!-- UNIT TESTING DEPENDENCIES -->

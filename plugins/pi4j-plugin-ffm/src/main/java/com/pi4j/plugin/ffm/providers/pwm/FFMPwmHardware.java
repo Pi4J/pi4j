@@ -3,6 +3,8 @@ package com.pi4j.plugin.ffm.providers.pwm;
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.exception.RestoreException;
+import com.pi4j.io.Checkpointable;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.pwm.*;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
@@ -26,10 +28,13 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * Because sysfs attributes appear asynchronously after an export (the udev rules must apply first), the
  * implementation waits for read/write access to each attribute file before using it.
+ * <p>
+ * Around a CRaC checkpoint the attribute files are closed; after the restore the channel is exported again if
+ * needed, the files are reopened and, when the PWM was on, its settings are written again.
  *
  * @see com.pi4j.io.pwm.Pwm
  */
-public class FFMPwmHardware extends PwmBase implements Pwm {
+public class FFMPwmHardware extends PwmBase implements Pwm, Checkpointable {
     private final static Logger logger = LoggerFactory.getLogger(FFMPwmHardware.class);
 
     private final FileDescriptorNative file = new FileDescriptorNative();
@@ -85,6 +90,8 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
     private int dutyCycleFd = -1;
     private int polarityFd = -1;
 
+    private volatile boolean suspended = false;
+
 
     FFMPwmHardware(Context context, PwmConfig config) {
         super(context, config);
@@ -106,40 +113,8 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
      */
     @Override
     public Pwm applyInitialState() throws InitializeException {
-        var pwmChipFile = CHIP_PATH + chip;
-
-        var pwmFile = pwmChipFile + PWM_PATH + channel;
-        if (deviceNotExists(pwmFile)) {
-            logger.trace("{} - no PWM Bus found... will try to export PWM Bus first.", pwmFile);
-            try (var pwmFileWatcher = new FileWatcher(Path.of(pwmChipFile), PWM_PATH + channel, 100)) {
-                var npwmFd = file.open(pwmChipFile + CHIP_NPWM_PATH, FileFlag.O_RDONLY);
-                var maxChannel = getLongContent(file.read(npwmFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
-                file.close(npwmFd);
-                if (channel > maxChannel - 1) {
-                    throw new IllegalArgumentException("PWM channel " + channel + " at path '" + pwmFile + "' cannot be exported! Max available channel is " + maxChannel);
-                }
-                var exportFd = file.open(pwmChipFile + CHIP_EXPORT_PATH, FileFlag.O_WRONLY);
-                file.write(exportFd, getByteContent(channel));
-                file.close(exportFd);
-                if (!pwmFileWatcher.waitForCreation()) {
-                    throw new IllegalArgumentException("PWM channel " + channel + " at path '" + pwmFile + "' haven't created within timeout!");
-                }
-            } catch (java.io.IOException e) {
-                throw new Pi4JException(e);
-            }
-        }
-        this.pwmPath = pwmFile;
-
-        // Wait for udev to grant read+write access to the exported attribute files exactly once. Once
-        // granted, the permissions are stable, so on()/off() no longer need to poll access() per call.
-        ensureAttributesAccessible();
-
-        // Open the attribute files once and keep them open for the life of this instance, so the hot
-        // on()/off() paths only read/write (rewinding to 0) instead of open/write/close per attribute.
-        this.enableFd = file.open(this.pwmPath + ENABLE_PATH, FileFlag.O_RDWR);
-        this.periodFd = file.open(this.pwmPath + PERIOD_PATH, FileFlag.O_RDWR);
-        this.dutyCycleFd = file.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_RDWR);
-        this.polarityFd = file.open(this.pwmPath + POLARITY_PATH, FileFlag.O_RDWR);
+        this.pwmPath = exportChannelIfNeeded();
+        openAttributeFds();
 
         this.onState = getLongContent(readAttribute(enableFd)) == 1;
 
@@ -170,6 +145,106 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
     }
 
     /**
+     * Exports the configured PWM channel if it is not already present, writing the channel number to the
+     * chip's {@code export} file after validating it against {@code npwm}, then waiting for the channel
+     * directory to appear.
+     *
+     * @return the path of the exported channel directory
+     * @throws IllegalArgumentException if the channel exceeds the chip's number of channels or the
+     *                                  exported channel directory does not appear within the timeout
+     */
+    private String exportChannelIfNeeded() {
+        var pwmChipFile = CHIP_PATH + chip;
+
+        var pwmFile = pwmChipFile + PWM_PATH + channel;
+        if (deviceNotExists(pwmFile)) {
+            logger.trace("{} - no PWM Bus found... will try to export PWM Bus first.", pwmFile);
+            // the access rules of a fresh export must be awaited again
+            attributesAccessible = false;
+            try (var pwmFileWatcher = new FileWatcher(Path.of(pwmChipFile), PWM_PATH + channel, 100)) {
+                var npwmFd = file.open(pwmChipFile + CHIP_NPWM_PATH, FileFlag.O_RDONLY);
+                var maxChannel = getLongContent(file.read(npwmFd, new byte[MAX_FILE_SIZE], MAX_FILE_SIZE));
+                file.close(npwmFd);
+                if (channel > maxChannel - 1) {
+                    throw new IllegalArgumentException("PWM channel " + channel + " at path '" + pwmFile + "' cannot be exported! Max available channel is " + maxChannel);
+                }
+                var exportFd = file.open(pwmChipFile + CHIP_EXPORT_PATH, FileFlag.O_WRONLY);
+                file.write(exportFd, getByteContent(channel));
+                file.close(exportFd);
+                if (!pwmFileWatcher.waitForCreation()) {
+                    throw new IllegalArgumentException("PWM channel " + channel + " at path '" + pwmFile + "' haven't created within timeout!");
+                }
+            } catch (java.io.IOException e) {
+                throw new Pi4JException(e);
+            }
+        }
+        return pwmFile;
+    }
+
+    /**
+     * Waits for access to the exported attribute files and opens them, keeping them open for the life of
+     * this instance, so the hot on()/off() paths only read/write (rewinding to 0) instead of
+     * open/write/close per attribute.
+     */
+    private void openAttributeFds() {
+        // Wait for udev to grant read+write access to the exported attribute files exactly once. Once
+        // granted, the permissions are stable, so on()/off() no longer need to poll access() per call.
+        ensureAttributesAccessible();
+
+        this.enableFd = file.open(this.pwmPath + ENABLE_PATH, FileFlag.O_RDWR);
+        this.periodFd = file.open(this.pwmPath + PERIOD_PATH, FileFlag.O_RDWR);
+        this.dutyCycleFd = file.open(this.pwmPath + DUTY_CYCLE_PATH, FileFlag.O_RDWR);
+        this.polarityFd = file.open(this.pwmPath + POLARITY_PATH, FileFlag.O_RDWR);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Closes the sysfs attribute files. The channel stays exported and keeps its current output.
+     */
+    @Override
+    public void suspend() {
+        if (closed || suspended) {
+            return;
+        }
+        logger.debug("{} - suspending PWM for checkpoint.", pwmPath);
+        suspended = true;
+        closeAttributeFds();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Exports the channel again if it disappeared, reopens the sysfs attribute files and, when the PWM
+     * was on, writes its period, duty cycle and polarity again.
+     */
+    @Override
+    public void resume() throws RestoreException {
+        if (closed || !suspended) {
+            return;
+        }
+        logger.debug("{} - resuming PWM after restore.", pwmPath);
+        try {
+            exportChannelIfNeeded();
+            openAttributeFds();
+            suspended = false;
+            if (onState) {
+                on();
+            }
+        } catch (RuntimeException e) {
+            closeAttributeFds();
+            suspended = true;
+            throw new RestoreException("Cannot reopen PWM '" + pwmPath + "': " + e.getMessage(), e);
+        }
+    }
+
+    private void checkSuspended() {
+        if (suspended) {
+            throw new Pi4JException("PWM '" + pwmPath + "' is suspended for a CRaC checkpoint");
+        }
+    }
+
+    /**
      * {@inheritDoc}
      * <p>
      * Recomputes the {@code period} from the configured frequency and the {@code duty_cycle} from the
@@ -181,6 +256,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
      */
     @Override
     public Pwm on() throws IOException {
+        checkSuspended();
         if (onState) {
             logger.debug("{} - PWM Bus is already enabled. Settings will be re-applied to apply any change.", pwmPath);
         }
@@ -214,6 +290,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
 
     @Override
     public Pwm off() throws IOException {
+        checkSuspended();
         if (!onState) {
             logger.warn("{} - PWM is already disabled.", pwmPath);
             return this;

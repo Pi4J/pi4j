@@ -3,7 +3,9 @@ package com.pi4j.plugin.ffm.providers.parallel;
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.exception.RestoreException;
 import com.pi4j.exception.ShutdownException;
+import com.pi4j.io.Checkpointable;
 import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortBase;
@@ -19,15 +21,20 @@ import java.util.List;
 import java.util.function.UnaryOperator;
 
 /**
- * FFM implementation of {@link ParallelPort}
+ * FFM implementation of {@link ParallelPort}.
+ * <p>
+ * Around a CRaC checkpoint the lines are released and requested again in their current direction; outputs
+ * are driven to the values they had before the checkpoint.
  */
 public sealed class FFMParallelPort
     extends ParallelPortBase
-    implements ParallelPort {
+    implements ParallelPort, Checkpointable {
 
     private final LineConfig inputLineConfig;
     private final LineConfig outputLineConfig;
     private final FFMGpioLine gpioLine;
+    // raw line values when suspended as output, driven again on resume
+    private int suspendedOutputValue = -1;
 
     /**
      * Creates a new GPIO parallel port instance bound to the given provider and configuration.
@@ -99,6 +106,46 @@ public sealed class FFMParallelPort
         } catch (Pi4JException e) {
             throw new ShutdownException(e);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Remembers the driven values when the port is an output and releases the GPIO lines.
+     */
+    @Override
+    public void suspend() {
+        if (closed || gpioLine.suspended) {
+            return;
+        }
+        suspendedOutputValue = isOutput() ? gpioLine.readValue() : -1;
+        gpioLine.suspend();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Requests the GPIO lines again in their current direction, driving outputs to the values they had
+     * before the checkpoint.
+     */
+    @Override
+    public void resume() throws RestoreException {
+        if (closed || !gpioLine.suspended) {
+            return;
+        }
+        if (suspendedOutputValue < 0) {
+            gpioLine.resume();
+            return;
+        }
+        var outputValues = new LineAttribute(
+            LineAttributeId.GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES.getValue(), 0, suspendedOutputValue, 0);
+        gpioLine.resume(gpioLine.requestFlags(),
+            List.of(new LineConfigAttribute(outputValues, MaskUtils.packed(config.mask()))));
+        suspendedOutputValue = -1;
+    }
+
+    private boolean isOutput() {
+        return (gpioLine.requestFlags() & PinFlag.OUTPUT.getValue()) != 0;
     }
 
     /**

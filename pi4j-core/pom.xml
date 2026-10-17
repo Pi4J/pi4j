@@ -226,4 +226,12 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <!-- CRaC API; a no-op on JVMs without Coordinated Restore at Checkpoint support -->
+        <dependency>
+            <groupId>org.crac</groupId>
+            <artifactId>crac</artifactId>
+        </dependency>
+    </dependencies>
 </project>

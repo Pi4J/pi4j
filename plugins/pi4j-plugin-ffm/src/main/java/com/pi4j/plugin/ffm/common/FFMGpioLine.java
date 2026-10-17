@@ -2,6 +2,7 @@ package com.pi4j.plugin.ffm.common;
 
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.exception.RestoreException;
 import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
@@ -20,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,6 +31,9 @@ import java.util.List;
  * A line is opened via {@link #openAndRequest} (which issues the {@code GPIO_V2_GET_LINE_IOCTL}
  * and retains the resulting per-request file descriptor), read via {@link #readValue()}, written
  * via {@link #writeValue(int)}, and released via {@link #close}.
+ * <p>
+ * For CRaC checkpoints, {@link #suspend()} releases the line file descriptor while remembering the request,
+ * and {@link #resume(long, List)} requests the line again.
  */
 public class FFMGpioLine {
     private static final Logger logger = LoggerFactory.getLogger(FFMGpioLine.class);
@@ -41,6 +46,12 @@ public class FFMGpioLine {
 
     public int chipFileDescriptor;
     public boolean closed = false;
+    public volatile boolean suspended = false;
+
+    // Last requested line configuration, reused when the line is requested again after a restore.
+    private long requestFlags;
+    private List<LineConfigAttribute> requestAttributes = List.of();
+    private String consumer;
 
     /**
      * Construct an instance of this helper with the specified mask and bus.
@@ -107,6 +118,10 @@ public class FFMGpioLine {
             var result = ioctl.call(fd, Command.getGpioV2GetLineIoctl(), lineRequest);
             this.chipFileDescriptor = result.fd();
             this.closed = false;
+            this.suspended = false;
+            this.requestFlags = flags;
+            this.requestAttributes = List.copyOf(attributes);
+            this.consumer = consumer;
             logger.info("{}-{} - GPIO line configured: {}", deviceName, mask, result);
         } finally {
             file.close(fd);
@@ -158,6 +173,8 @@ public class FFMGpioLine {
         logger.trace("{}-{} - reconfiguring GPIO offset.", deviceName, mask);
         try {
             ioctl.call(chipFileDescriptor, Command.getGpioV2LineSetConfigIoctl(), config);
+            this.requestFlags = config.flags();
+            this.requestAttributes = List.of(config.attrs());
         } catch (Exception e) {
             throw new Pi4JException(e);
         }
@@ -174,9 +191,74 @@ public class FFMGpioLine {
         this.closed = true;
     }
 
+    /**
+     * Releases the line file descriptor ahead of a CRaC checkpoint, remembering the last requested
+     * configuration so {@link #resume(long, List)} can request the line again. No-op when the line is
+     * closed or already suspended.
+     */
+    public void suspend() {
+        if (closed || suspended) {
+            return;
+        }
+        logger.debug("{}-{} - suspending GPIO line for checkpoint.", deviceName, mask);
+        suspended = true;
+        if (chipFileDescriptor > 0) {
+            file.close(chipFileDescriptor);
+        }
+        chipFileDescriptor = -1;
+    }
+
+    /**
+     * Requests the line again after a CRaC restore with the given flags and attributes. No-op when the
+     * line isn't suspended.
+     *
+     * @param flags      OR-combination of {@link PinFlag} values to request the line with
+     * @param attributes line-config attributes to request the line with
+     * @throws RestoreException if the line cannot be requested, e.g. because another process claimed it
+     */
+    public void resume(long flags, List<LineConfigAttribute> attributes) throws RestoreException {
+        if (closed || !suspended) {
+            return;
+        }
+        logger.debug("{}-{} - resuming GPIO line after restore.", deviceName, mask);
+        try {
+            openAndRequest(flags, attributes, consumer);
+        } catch (RuntimeException e) {
+            throw new RestoreException("Cannot request GPIO offset(s) " + Arrays.toString(MaskUtils.offsets(mask))
+                + " on " + deviceName + ": " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Requests the line again after a CRaC restore with the configuration it had before it was suspended.
+     *
+     * @throws RestoreException if the line cannot be requested
+     * @see #resume(long, List)
+     */
+    public void resume() throws RestoreException {
+        resume(requestFlags, requestAttributes);
+    }
+
+    /**
+     * @return the flags the line was last requested or reconfigured with
+     */
+    public long requestFlags() {
+        return requestFlags;
+    }
+
+    /**
+     * @return the attributes the line was last requested or reconfigured with
+     */
+    public List<LineConfigAttribute> requestAttributes() {
+        return requestAttributes;
+    }
+
     public void checkClosed() {
         if (closed) {
             throw new Pi4JException("Offset " + mask + " is closed");
+        }
+        if (suspended) {
+            throw new Pi4JException("Offset " + mask + " is suspended for a CRaC checkpoint");
         }
     }
 

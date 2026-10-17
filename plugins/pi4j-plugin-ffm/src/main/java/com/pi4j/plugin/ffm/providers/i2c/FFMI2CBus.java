@@ -3,6 +3,7 @@ package com.pi4j.plugin.ffm.providers.i2c;
 import com.pi4j.common.CheckedFunction;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.exception.RestoreException;
 import com.pi4j.io.i2c.*;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
@@ -28,6 +29,9 @@ import java.util.concurrent.Callable;
  * {@code I2C_SLAVE} (and {@code I2C_TENBIT}) ioctls. It serves as the shared, synchronized access
  * point to the underlying file descriptor for the I2C device implementations
  * ({@code I2CDirect}, {@code I2CSMBus}, {@code I2CFile}).
+ * <p>
+ * Around a CRaC checkpoint the device file is closed with {@link #suspend()} and reopened with
+ * {@link #resume()}.
  */
 public class FFMI2CBus extends I2CBusBase {
     private static final Logger logger = LoggerFactory.getLogger(FFMI2CBus.class);
@@ -36,7 +40,8 @@ public class FFMI2CBus extends I2CBusBase {
     private static final String I2C_BUS = "/dev/i2c-";
 
     private final String busName;
-    private final int i2cFileDescriptor;
+    private int i2cFileDescriptor;
+    private volatile boolean suspended = false;
     private final Map<I2CFunctionality, Boolean> functionalityMap = new HashMap<>();
 
     // selected device
@@ -198,6 +203,7 @@ public class FFMI2CBus extends I2CBusBase {
      * @throws Pi4JException if the action throws while executing
      */
     public <R> R execute(I2C i2c, CheckedFunction<Integer, R> action) {
+        checkSuspended();
         return _execute(i2c, () -> {
             try {
                 return action.apply(this.i2cFileDescriptor);
@@ -210,7 +216,47 @@ public class FFMI2CBus extends I2CBusBase {
 
     @Override
     public <R> R execute(I2C i2c, Callable<R> action) {
+        checkSuspended();
         return _execute(i2c, action);
+    }
+
+    /**
+     * Closes the I2C bus device file ahead of a CRaC checkpoint. No-op when already suspended.
+     */
+    public void suspend() {
+        if (suspended) {
+            return;
+        }
+        logger.debug("{} - suspending I2C bus for checkpoint.", busName);
+        suspended = true;
+        file.close(i2cFileDescriptor);
+    }
+
+    /**
+     * Reopens the I2C bus device file after a CRaC restore. The slave address selection is lost with the
+     * old descriptor, so the next {@link #selectDevice(int)} issues the {@code I2C_SLAVE} ioctl again.
+     * No-op when not suspended.
+     *
+     * @throws RestoreException if the device file cannot be reopened
+     */
+    public void resume() throws RestoreException {
+        if (!suspended) {
+            return;
+        }
+        logger.debug("{} - resuming I2C bus after restore.", busName);
+        try {
+            this.i2cFileDescriptor = file.open(busName, FileFlag.O_RDWR);
+        } catch (RuntimeException e) {
+            throw new RestoreException("Cannot reopen I2C bus '" + busName + "': " + e.getMessage(), e);
+        }
+        this.selectedDevice = -1;
+        suspended = false;
+    }
+
+    private void checkSuspended() {
+        if (suspended) {
+            throw new Pi4JException("I2C bus '" + busName + "' is suspended for a CRaC checkpoint");
+        }
     }
 
     /**
@@ -219,6 +265,10 @@ public class FFMI2CBus extends I2CBusBase {
      * @throws Pi4JException if the native close call fails
      */
     public void close() {
+        // a suspended bus has already closed its descriptor, which the OS may have reused since
+        if (suspended) {
+            return;
+        }
         try {
             file.close(i2cFileDescriptor);
         } catch (Exception e) {

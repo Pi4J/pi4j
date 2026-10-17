@@ -2,7 +2,9 @@ package com.pi4j.plugin.ffm.providers.gpio;
 
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
+import com.pi4j.exception.RestoreException;
 import com.pi4j.exception.ShutdownException;
+import com.pi4j.io.Checkpointable;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.digital.*;
@@ -15,13 +17,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Native {@link DigitalOutput} implementation for the FFM backend. Requests a single GPIO line from a
  * {@code /dev/gpiochipN} character device as an output via the GPIO v2 character-device ioctl
  * ({@code GPIO_V2_GET_LINE_IOCTL}) and drives its level with {@code GPIO_V2_LINE_SET_VALUES_IOCTL}.
+ * <p>
+ * Around a CRaC checkpoint the line is released and requested again, driven to the last written state.
  */
-public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput {
+public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput, Checkpointable {
     private static final Logger logger = LoggerFactory.getLogger(FFMDigitalOutput.class);
 
     private final FFMGpioLine line;
@@ -55,27 +60,59 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
      */
     @Override
     public DigitalOutput applyInitialState() throws InitializeException {
-        var flags = PinFlag.OUTPUT.getValue();
-        var attributes = new ArrayList<LineConfigAttribute>();
-        var initialState = config().initialState();
-        if (initialState != null) {
-            // Supply the initial state as part of the line request so the pin is driven to it the
-            // moment the line is claimed — without this the kernel drives a newly requested output
-            // low by default, producing a transient glitch (issue #654).
-            var values = initialState.isHigh() ? 1L : 0L;
-            var outputValues = new LineAttribute(
-                LineAttributeId.GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES.getValue(), 0, values, 0);
-            attributes.add(new LineConfigAttribute(outputValues, 1L));
-            logger.trace("{}-{} - DigitalOutput BCM initial state: {}", line.deviceName, line.mask, initialState);
-        }
         try {
-            line.openAndRequest(flags, attributes, getClass().getSimpleName());
+            line.openAndRequest(PinFlag.OUTPUT.getValue(), outputValueAttributes(config().initialState()),
+                getClass().getSimpleName());
         } catch (InitializeException e) {
             logger.error("{}-{} - DigitalOutput BCM Initialization error: {}", line.deviceName, line.mask, e.getMessage());
             throw e;
         }
         logger.info("{}-{} - DigitalOutput BCM configured.", line.deviceName, line.mask);
         return super.applyInitialState();
+    }
+
+    /**
+     * Builds the line attributes that drive the pin to the given state the moment the line is requested.
+     * Without them the kernel drives a newly requested output low by default, producing a transient
+     * glitch (issue #654).
+     *
+     * @param state the state to request the line with; {@code null} or {@link DigitalState#UNKNOWN} for none
+     * @return the {@code GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES} attribute, or an empty list
+     */
+    private List<LineConfigAttribute> outputValueAttributes(DigitalState state) {
+        var attributes = new ArrayList<LineConfigAttribute>();
+        if (state != null && state != DigitalState.UNKNOWN) {
+            var values = state.isHigh() ? 1L : 0L;
+            var outputValues = new LineAttribute(
+                LineAttributeId.GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES.getValue(), 0, values, 0);
+            attributes.add(new LineConfigAttribute(outputValues, 1L));
+            logger.trace("{}-{} - DigitalOutput BCM requested state: {}", line.deviceName, line.mask, state);
+        }
+        return attributes;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Releases the GPIO line file descriptor; the cached state is kept.
+     */
+    @Override
+    public void suspend() {
+        if (!closed) {
+            line.suspend();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Requests the GPIO line again, driving it to the state it had before the checkpoint.
+     */
+    @Override
+    public void resume() throws RestoreException {
+        if (!closed) {
+            line.resume(PinFlag.OUTPUT.getValue(), outputValueAttributes(state));
+        }
     }
 
     /**
