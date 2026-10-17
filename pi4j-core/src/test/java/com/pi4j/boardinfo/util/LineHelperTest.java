@@ -69,4 +69,38 @@ class LineHelperTest {
         assertEquals(8, LineHelper.bankIndex('I'));
         assertEquals(25, LineHelper.bankIndex('Z'));
     }
+
+    @Test
+    void shouldDefaultToAllwinnerFamily() {
+        assertEquals(271, LineHelper.getAddress(GpioLineFamily.ALLWINNER, 'I', 15));
+        assertEquals(271, LineHelper.getAddress(GpioLineFamily.ALLWINNER, 8, 15));
+    }
+
+    @Test
+    void shouldCalculateTegraFirstPinOfBankA() {
+        assertEquals(0, LineHelper.getAddress(GpioLineFamily.TEGRA, 'A', 0));
+        assertEquals(0, LineHelper.getAddress(GpioLineFamily.TEGRA, 0, 0));
+    }
+
+    @Test
+    void shouldCalculateTegraLastPinOfBankA() {
+        assertEquals(7, LineHelper.getAddress(GpioLineFamily.TEGRA, 'A', 7));
+    }
+
+    @Test
+    void shouldCalculateTegraFirstPinOfBankB() {
+        assertEquals(8, LineHelper.getAddress(GpioLineFamily.TEGRA, 'B', 0));
+    }
+
+    @Test
+    void shouldCalculateTegraPortOffsetAsDescribedInForumPost() {
+        // Tegra multiplies by 8 per port instead of 32: port index 8 ('I'), pin 5 -> 8 * 8 + 5 = 69
+        assertEquals(69, LineHelper.getAddress(GpioLineFamily.TEGRA, 'I', 5));
+    }
+
+    @Test
+    void shouldRejectTegraLineOutOfRange() {
+        assertThrows(IllegalArgumentException.class, () -> LineHelper.getAddress(GpioLineFamily.TEGRA, 'A', 8));
+        assertThrows(IllegalArgumentException.class, () -> LineHelper.getAddress(GpioLineFamily.TEGRA, 'A', -1));
+    }
 }
