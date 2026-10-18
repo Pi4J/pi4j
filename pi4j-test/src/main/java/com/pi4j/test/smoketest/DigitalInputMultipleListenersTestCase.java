@@ -58,6 +58,10 @@ public class DigitalInputMultipleListenersTestCase extends TestCase {
             Thread.sleep(500);
 
             return new TestResult(TEST_NAME, true, "All events were received");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.error("Test interrupted", e);
+            return new TestResult(TEST_NAME, false, "Test interrupted: " + e.getMessage());
         } catch (Exception e) {
             logger.error("Test failure", e);
             return new TestResult(TEST_NAME, false, "Test failure: " + e.getMessage());
