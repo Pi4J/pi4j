@@ -17,8 +17,8 @@ public class DigitalInputMultipleListenersTestCase extends TestCase {
     public static TestResult run(ProviderContext providerContext) {
         logger.info("Starting " + TEST_NAME + " test");
 
-        try(DigitalOutput gpioOutTest = createDigitalOutput(providerContext.getContext(), 24, DigitalState.LOW, DigitalState.LOW);
-            DigitalInput gpioInMonitor = createDigitalInput(providerContext.getContext(), 25, PullResistance.PULL_DOWN, 0)
+        try(DigitalOutput gpioOutTest = createDigitalOutput(providerContext.getContext(), 22, DigitalState.LOW, DigitalState.LOW);
+            DigitalInput gpioInMonitor = createDigitalInput(providerContext.getContext(), 27, PullResistance.PULL_DOWN, 0)
         ) {
             if (gpioOutTest.state() != DigitalState.LOW) {
                 return new TestResult(TEST_NAME, false, "Output has not the correct initial state");
