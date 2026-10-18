@@ -193,10 +193,8 @@ public sealed class FFMParallelPort
             return;
         }
         super.close();
-        if (eventWatcher != null) {
-            if (events.hasListeners()) {
-                eventWatcher.stopWatching();
-            }
+        if (eventWatcher != null && events.hasListeners()) {
+            eventWatcher.stopWatching();
         }
         if (watcherService != null) {
             watcherService.shutdown();
