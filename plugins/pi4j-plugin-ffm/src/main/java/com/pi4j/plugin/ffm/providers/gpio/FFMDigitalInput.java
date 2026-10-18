@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -45,7 +44,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
     private final PullResistance pull;
 
     private ExecutorService eventTaskProcessor;
-    private final List<EventWatcher> watchers = new ArrayList<>();
+    private EventWatcher watcher;
     private ThreadFactory threadFactory;
 
     /**
@@ -123,28 +122,29 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
     @Override
     public DigitalInput addListener(DigitalStateChangeListener... listener) {
         logger.trace("{}-{} - Adding new listener", line.deviceName, line.mask);
+        // add listener first to avoid race with event dispatch
+        super.addListener(listener);
         if (threadFactory == null) {
             this.threadFactory = Thread.ofPlatform()
                 .name(line.deviceName + "-event-detection-pin-", line.mask)
                 .daemon(true)
                 .uncaughtExceptionHandler((_, e) -> logger.error(e.getMessage(), e))
                 .factory();
-            this.eventTaskProcessor = Executors.newCachedThreadPool(threadFactory);
+            this.eventTaskProcessor = Executors.newSingleThreadExecutor(threadFactory);
         }
-        var watcher = new EventWatcher(line.chipFileDescriptor, line.mask, debounce, line.file, PinEvent.BOTH, events -> {
-            for (DetectedEvent detectedEvent : events) {
-                var state = switch (detectedEvent.pinEvent()) {
-                    case RISING -> DigitalState.HIGH;
-                    case FALLING -> DigitalState.LOW;
-                    default -> DigitalState.UNKNOWN;
-                };
-                this.dispatch(new DigitalStateChangeEvent<DigitalInput>(this, state));
-            }
-        });
-        watchers.add(watcher);
-        // add listener first to avoid race with event dispatch
-        super.addListener(listener);
-        eventTaskProcessor.submit(watcher);
+        if (watcher == null) {
+            watcher = new EventWatcher(line.chipFileDescriptor, line.mask, debounce, line.file, PinEvent.BOTH, events -> {
+                for (DetectedEvent detectedEvent : events) {
+                    var state = switch (detectedEvent.pinEvent()) {
+                        case RISING -> DigitalState.HIGH;
+                        case FALLING -> DigitalState.LOW;
+                        default -> DigitalState.UNKNOWN;
+                    };
+                    this.dispatch(new DigitalStateChangeEvent<DigitalInput>(this, state));
+                }
+            });
+            eventTaskProcessor.submit(watcher);
+        }
         logger.trace("{}-{} - New listener added", line.deviceName, line.mask);
         return this;
     }
@@ -157,11 +157,11 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      */
     @Override
     public DigitalInput removeListener(DigitalStateChangeListener... listeners) {
-        for (EventWatcher watcher : watchers) {
+        super.removeListener(listeners);
+        if (!stateChangeEventManager.hasListeners()) {
             watcher.stopWatching();
         }
-        watchers.clear();
-        return super.removeListener(listeners);
+        return this;
     }
 
     /**
@@ -179,11 +179,10 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         }
         logger.info("{}-{} - closing GPIO offset.", line.deviceName, line.mask);
         try {
-            logger.trace("{}-{} - Stopping event watchers", line.deviceName, line.mask);
-            for (EventWatcher watcher : watchers) {
+            logger.trace("{}-{} - Stopping event watcher", line.deviceName, line.mask);
+            if (watcher != null) {
                 watcher.stopWatching();
             }
-            watchers.clear();
             // Await the executor whenever it was ever created. removeListener() stops its watcher
             // and clears the list without waiting for the thread to leave its native poll(); that
             // thread still holds the line fd. Closing the fd without waiting would leave the GPIO

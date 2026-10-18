@@ -3,6 +3,7 @@ package com.pi4j.test;
 import com.pi4j.test.smoketest.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.simple.SimpleLogger;
 
 import java.util.List;
 
@@ -25,7 +26,9 @@ public class Main {
     public static void main(String[] args) {
         // Use the line below if you want to store the output of the smoke test in a file
         // System.setProperty(org.slf4j.simple.SimpleLogger.LOG_FILE_KEY, "trace.log");
-        System.setProperty(org.slf4j.simple.SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "DEBUG");
+        System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
+        // Include millis since start. Useful when observing events
+        System.setProperty(SimpleLogger.SHOW_DATE_TIME_KEY, "true");
         logger = LoggerFactory.getLogger(Main.class);
 
         logger.info("==============================================================");
@@ -69,6 +72,7 @@ public class Main {
             //DigitalInputDebounceMonitorTestCase.run(providerContext), // This test needs a Logic Analyzer
             DigitalInputDebounceTimeTestCase.run(providerContext),
             DigitalInputDebounceCountTestCase.run(providerContext),
+            DigitalInputMultipleListenersTestCase.run(providerContext),
             ParallelPortTestCase.run(providerContext)
         );
 
