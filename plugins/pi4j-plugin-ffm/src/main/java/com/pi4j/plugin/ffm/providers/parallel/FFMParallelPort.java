@@ -19,8 +19,6 @@ import com.pi4j.plugin.ffm.common.gpio.structs.LineConfig;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineConfigAttribute;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineEvent;
 import com.pi4j.plugin.ffm.providers.gpio.EventWatcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -49,8 +47,6 @@ public sealed class FFMParallelPort
      * @see <a href="https://github.com/Pi4J/pi4j/issues/805">Pi4J issue 805</a>
      */
     private final ExecutorService dispatcherService;
-
-    private final Logger logger = LoggerFactory.getLogger(FFMParallelPort.class);
 
     /**
      * Creates a new GPIO parallel port instance bound to the given context and configuration.
