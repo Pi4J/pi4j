@@ -102,6 +102,13 @@ public sealed class FFMParallelPort
                 this.eventWatcher = new EventWatcher(
                     gpioLine.chipFileDescriptor,
                     gpioLine.mask,
+                    /* TODO: No software debounce for now and leaving this to hardware debounce if configured.
+                        Current software debounce is designed for Digital devices and does not differentiate between
+                        offsets. As such, it's likely to skip events when multiple offsets are configured in a single port.
+                        -
+                        Recommendation will probably be to apply debounce as a filter at the port level to allow
+                        a strategy to be configured by the user.
+                     */
                     0,
                     gpioLine.file,
                     PinEvent.BOTH,
