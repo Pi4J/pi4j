@@ -17,11 +17,11 @@ import java.util.function.Consumer;
  * @param <IO_TYPE>       the concrete I/O type, returned by the fluent identity setters for chaining
  * @param <CONFIG_TYPE>   the {@link IOConfig} type describing this instance
  */
-public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig>
+public abstract class IOBase<IO_TYPE extends IO<IO_TYPE, CONFIG_TYPE>, CONFIG_TYPE extends IOConfig>
         extends IdentityBase implements IO<IO_TYPE, CONFIG_TYPE>, Closeable {
 
     protected final CONFIG_TYPE config;
-    protected final Consumer<IO> onClose;
+    protected final Consumer<? super IO_TYPE> onClose;
     // close() requires idempotency.
     protected boolean closed = false;
 
@@ -31,7 +31,7 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig>
      *
      * @param config the configuration defining this instance's identity and properties
      */
-    protected IOBase(CONFIG_TYPE config, Consumer<IO> onClose){
+    protected IOBase(CONFIG_TYPE config, Consumer<? super IO_TYPE> onClose){
         super();
         this.id = config.id();
         this.name = config.name();
@@ -70,7 +70,7 @@ public abstract class IOBase<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig>
         closed = true;
         // The null check accounts for tests without an onClose callback
         if (this.onClose != null) {
-            this.onClose.accept(this);
+            this.onClose.accept((IO_TYPE) this);
         }
     }
 
