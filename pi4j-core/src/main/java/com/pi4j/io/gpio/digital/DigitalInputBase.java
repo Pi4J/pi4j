@@ -1,7 +1,5 @@
 package com.pi4j.io.gpio.digital;
 
-import com.pi4j.io.IO;
-
 import java.util.function.Consumer;
 
 /**

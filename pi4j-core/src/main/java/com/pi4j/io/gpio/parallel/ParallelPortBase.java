@@ -1,7 +1,6 @@
 package com.pi4j.io.gpio.parallel;
 
 import com.pi4j.event.EventManager;
-import com.pi4j.io.IO;
 import com.pi4j.io.IOBase;
 import com.pi4j.io.gpio.MaskUtils;
 

@@ -1,7 +1,5 @@
 package com.pi4j.plugin.mock.provider.gpio.digital;
 
-
-import com.pi4j.io.IO;
 import com.pi4j.io.gpio.digital.*;
 
 import java.util.function.Consumer;

@@ -1,6 +1,5 @@
 package com.pi4j.io.spi;
 
-import com.pi4j.io.IO;
 import com.pi4j.io.IOBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

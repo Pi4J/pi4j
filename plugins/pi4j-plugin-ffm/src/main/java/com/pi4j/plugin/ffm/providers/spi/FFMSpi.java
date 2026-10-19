@@ -2,7 +2,6 @@ package com.pi4j.plugin.ffm.providers.spi;
 
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
-import com.pi4j.io.IO;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBase;
 import com.pi4j.io.spi.SpiConfig;

@@ -1,6 +1,5 @@
 package com.pi4j.plugin.mock.provider.pwm;
 
-import com.pi4j.io.IO;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmBase;

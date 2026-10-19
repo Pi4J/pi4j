@@ -1,6 +1,5 @@
 package com.pi4j.plugin.mock.provider.gpio.parallel;
 
-import com.pi4j.io.IO;
 import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.parallel.ParallelPort;

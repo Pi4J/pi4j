@@ -2,7 +2,6 @@ package com.pi4j.io.gpio.digital;
 
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.ShutdownException;
-import com.pi4j.io.IO;
 import com.pi4j.io.exception.IOException;
 
 import java.util.function.Consumer;

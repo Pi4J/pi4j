@@ -1,6 +1,5 @@
 package com.pi4j.io.i2c;
 
-import com.pi4j.io.IO;
 import com.pi4j.io.IOBase;
 import com.pi4j.io.i2c.impl.DefaultI2CRegister;
 
