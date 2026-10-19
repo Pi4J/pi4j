@@ -21,11 +21,11 @@ public class MockParallelPort
     /**
      * Creates a new GPIO I/O instance bound to the given provider and configuration.
      *
-     * @param onClose the close handler
      * @param config  the {@link ParallelPortConfig} describing this I/O, including its BCM pin numbers
+     * @param onClose an optional close handler
      */
-    public MockParallelPort(Consumer<IO<?, ?>> onClose, ParallelPortConfig config) {
-        super(onClose, config);
+    public MockParallelPort(ParallelPortConfig config, Consumer<IO> onClose) {
+        super(config, onClose);
         this.value = new AtomicInteger((int) (config.initialValue() & MaskUtils.packed(config.mask())));
     }
 

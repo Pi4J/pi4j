@@ -28,11 +28,11 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
      * Creates a digital I/O instance bound to the given provider and configuration, and initializes
      * the internal event manager used to deliver {@link DigitalStateChangeEvent}s to listeners.
      *
-     * @param onClose the close handler
      * @param config  the configuration describing this instance (pin, on-state, etc.)
+     * @param onClose an optional close handler
      */
-    protected DigitalBase(Consumer<IO<?, ?>> onClose, CONFIG_TYPE config) {
-        super(onClose, config);
+    protected DigitalBase(CONFIG_TYPE config, Consumer<IO> onClose) {
+        super(config, onClose);
 
         // create an event manager for digital state change events
         stateChangeEventManager  = new EventManager(this,

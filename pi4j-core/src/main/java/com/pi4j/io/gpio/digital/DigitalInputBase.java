@@ -13,10 +13,10 @@ public abstract class DigitalInputBase extends DigitalBase<DigitalInput, Digital
     /**
      * Creates a digital input bound to the given provider and configuration.
      *
-     * @param onClose the close handler
-     * @param config the configuration describing this input (pin, pull resistance, debounce, etc.)
+     * @param config  the configuration describing this input (pin, pull resistance, debounce, etc.)
+     * @param onClose an optional close handler
      */
-    protected DigitalInputBase(Consumer<IO<?, ?>> onClose, DigitalInputConfig config){
-        super(onClose, config);
+    protected DigitalInputBase(DigitalInputConfig config, Consumer<IO> onClose){
+        super(config, onClose);
     }
 }

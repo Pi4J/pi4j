@@ -33,11 +33,11 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
      * configuration, and verifies that the current user has the required permissions on the device
      * file. The line itself is not requested until {@link com.pi4j.io.IOBase#initialize()} is called.
      *
-     * @param config   the {@link DigitalOutputConfig} supplying the BCM line offset, bus number and
-     *                 initial state
+     * @param config the {@link DigitalOutputConfig} supplying the BCM line offset, bus number and
+     *               initial state
      */
-    public FFMDigitalOutput(Consumer<IO<?, ?>> onClose, DigitalOutputConfig config) {
-        super(onClose, config);
+    public FFMDigitalOutput(DigitalOutputConfig config, Consumer<IO> onClose) {
+        super(config, onClose);
         this.line = new FFMGpioLine(MaskUtils.mask(config.bcm()), config.bus());
         FFMPermissionHelper.checkDevicePermissions(line.deviceName, config);
     }

@@ -33,18 +33,18 @@ public sealed class FFMParallelPort
     /**
      * Creates a new GPIO parallel port instance bound to the given provider and configuration.
      *
-     * @param onClose the close handler
      * @param config  the configuration describing this I/O
+     * @param onClose an optional close handler
      */
-    public static FFMParallelPort create(Consumer<IO<?, ?>> onClose, ParallelPortConfig config) {
+    public static FFMParallelPort create(ParallelPortConfig config, Consumer<IO> onClose) {
         var mappingLogic = new FFMParallelPort.BitmaskMappingLogic(config.offsets());
         return mappingLogic.isRequired()
-            ? new FFMParallelPort.WithBitmaskMappingLogic(onClose, config, mappingLogic)
-            : new FFMParallelPort(onClose, config);
+            ? new FFMParallelPort.WithBitmaskMappingLogic(config, mappingLogic, onClose)
+            : new FFMParallelPort(config, onClose);
     }
 
-    private FFMParallelPort(Consumer<IO<?, ?>> onClose, ParallelPortConfig config) {
-        super(onClose, config);
+    private FFMParallelPort(ParallelPortConfig config, Consumer<IO> onClose) {
+        super(config, onClose);
         this.inputLineConfig = createInputLineConfigs(config);
         this.outputLineConfig = createOutputLineConfigs(config);
         this.gpioLine = new FFMGpioLine(MaskUtils.mask(config.offsets()), config.bus());
@@ -183,16 +183,14 @@ public sealed class FFMParallelPort
         /**
          * Creates a new GPIO parallel port instance bound to the given provider and configuration.
          *
-         * @param onClose the close handler
-         * @param config the configuration describing this I/O
+         * @param config       the configuration describing this I/O
          * @param mappingLogic logic required to map user-defined pins to hardware-friendly values
+         * @param onClose      an optional close handler
          */
         WithBitmaskMappingLogic(
-            Consumer<IO<?, ?>> onClose,
-            ParallelPortConfig config,
-            BitmaskMappingLogic mappingLogic
+            ParallelPortConfig config, BitmaskMappingLogic mappingLogic, Consumer<IO> onClose
         ) {
-            super(onClose, config);
+            super(config, onClose);
             this.mappingLogic = mappingLogic;
         }
 

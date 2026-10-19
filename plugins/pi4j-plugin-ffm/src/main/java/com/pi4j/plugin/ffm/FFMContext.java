@@ -35,12 +35,12 @@ public class FFMContext extends DefaultContext {
     public IO<?, ?> createImpl(IOConfig config, IOType type) {
         FFMPermissionHelper.checkUserPermissions(type);
         return switch (type) {
-            case DIGITAL_INPUT -> new FFMDigitalInput(this::shutdown, (DigitalInputConfig) config);
-            case DIGITAL_OUTPUT -> new FFMDigitalOutput( this::shutdown, (DigitalOutputConfig) config);
+            case DIGITAL_INPUT -> new FFMDigitalInput((DigitalInputConfig) config, this::shutdown);
+            case DIGITAL_OUTPUT -> new FFMDigitalOutput((DigitalOutputConfig) config, this::shutdown);
             case PWM -> FFMPwm.create(this::shutdown, (PwmConfig) config);
-            case I2C -> FFMI2C.create(this::shutdown, (I2CConfig) config);
-            case SPI -> new FFMSpi(this::shutdown, (SpiConfig) config);
-            case PARALLEL -> FFMParallelPort.create(this::shutdown, (ParallelPortConfig) config);
+            case I2C -> FFMI2C.create((I2CConfig) config, this::shutdown);
+            case SPI -> new FFMSpi((SpiConfig) config, this::shutdown);
+            case PARALLEL -> FFMParallelPort.create((ParallelPortConfig) config, this::shutdown);
         };
     }
 

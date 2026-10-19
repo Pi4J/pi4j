@@ -50,11 +50,11 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
     /**
      * Creates a mock I2C device, wiring it to a {@link MockI2CBus} built from the same config.
      *
-     * @param onClose the close handler
-     * @param config the {@link I2CConfig} identifying the simulated bus and device address
+     * @param config  the {@link I2CConfig} identifying the simulated bus and device address
+     * @param onClose an optional close handler
      */
-    public MockI2C(Consumer<IO<?, ?>> onClose, I2CConfig config){
-        super(onClose, config, new MockI2CBus(config));
+    public MockI2C(I2CConfig config, Consumer<IO> onClose){
+        super(config, new MockI2CBus(config), onClose);
         logger.debug("[{}::{}] :: CREATE(BUS={}; DEVICE={})",
             Mock.I2C_PROVIDER_NAME, this.id, config.bus(), config.device());
     }

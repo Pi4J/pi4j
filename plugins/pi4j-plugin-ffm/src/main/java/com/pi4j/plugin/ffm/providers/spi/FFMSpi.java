@@ -70,10 +70,10 @@ public class FFMSpi extends SpiBase implements Spi {
      * Creates an SPI instance, resolving the spidev device path ({@code /dev/spidevB.C}) from the bus
      * and channel in the configuration and verifying that it is accessible with the required permissions.
      *
-     * @param config   the SPI configuration carrying the bus, channel, mode, baud rate and bit order
+     * @param config the SPI configuration carrying the bus, channel, mode, baud rate and bit order
      */
-    public FFMSpi(Consumer<IO<?, ?>> onClose, SpiConfig config) {
-        super(onClose, config);
+    public FFMSpi(SpiConfig config, Consumer<IO> onClose) {
+        super(config, onClose);
         this.path = SPI_BUS + config.bus().getBus() + "." + config.channel();
         FFMPermissionHelper.checkDevicePermissions(path, config);
     }

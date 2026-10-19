@@ -56,11 +56,11 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      * the required permissions on the device file. The line itself is not requested until
      * {@link #applyInitialState()} is called.
      *
-     * @param config   the {@link DigitalInputConfig} supplying the BCM line offset, bus number,
-     *                 pull resistance and debounce period
+     * @param config the {@link DigitalInputConfig} supplying the BCM line offset, bus number,
+     *               pull resistance and debounce period
      */
-    public FFMDigitalInput(Consumer<IO<?, ?>> onClose, DigitalInputConfig config) {
-        super(onClose, config);
+    public FFMDigitalInput(DigitalInputConfig config, Consumer<IO> onClose) {
+        super(config, onClose);
         this.line = new FFMGpioLine(MaskUtils.mask(config.bcm()), config.bus());
         this.debounce = (config.debounce() != null && config.debounce() >= 0) ? config.debounce() : 0;
         this.pull = config.pull();

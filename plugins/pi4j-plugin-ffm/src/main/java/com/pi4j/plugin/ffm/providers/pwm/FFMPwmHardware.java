@@ -88,8 +88,8 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
     private int polarityFd = -1;
 
 
-    FFMPwmHardware(Consumer<IO<?, ?>> onClose, PwmConfig config) {
-        super(onClose, config);
+    FFMPwmHardware(PwmConfig config, Consumer<IO> onClose) {
+        super(config, onClose);
         this.chip = config.chip();
         this.channel = config.channel();
         FFMPermissionHelper.checkDevicePermissions(CHIP_PATH + chip, config);

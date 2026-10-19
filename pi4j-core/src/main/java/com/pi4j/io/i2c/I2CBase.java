@@ -21,12 +21,12 @@ public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig> i
     /**
      * Creates an I2C device bound to the given provider, configuration and bus, marking it as open.
      *
-     * @param onClose  the close handler
-     * @param config   the configuration describing the bus and device address
-     * @param i2CBus   the bus instance used to serialize access for this device
+     * @param config  the configuration describing the bus and device address
+     * @param i2CBus  the bus instance used to serialize access for this device
+     * @param onClose an optional close handler
      */
-    protected I2CBase(Consumer<IO<?, ?>> onClose, I2CConfig config, T i2CBus) {
-        super(onClose, config);
+    protected I2CBase(I2CConfig config, T i2CBus, Consumer<IO> onClose) {
+        super(config, onClose);
         this.i2CBus = i2CBus;
     }
 

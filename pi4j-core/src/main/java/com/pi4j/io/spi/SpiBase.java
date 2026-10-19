@@ -19,11 +19,11 @@ public abstract class SpiBase extends IOBase<Spi, SpiConfig> implements Spi {
     /**
      * Creates a new SPI device instance bound to the given provider and configuration.
      *
-     * @param onClose the close handler
      * @param config  the {@link SpiConfig} describing the bus, channel, mode, and clock settings to use
+     * @param onClose an optional close handler
      */
-    protected SpiBase(Consumer<IO<?, ?>> onClose, SpiConfig config) {
-        super(onClose, config);
+    protected SpiBase(SpiConfig config, Consumer<IO> onClose) {
+        super(config, onClose);
     }
 
     @Override
