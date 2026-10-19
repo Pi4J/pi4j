@@ -31,7 +31,7 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
      * @param config  the configuration describing this instance (pin, on-state, etc.)
      * @param onClose an optional close handler
      */
-    protected DigitalBase(CONFIG_TYPE config, Consumer<IO> onClose) {
+    protected DigitalBase(CONFIG_TYPE config, Consumer<DIGITAL_TYPE> onClose) {
         super(config, onClose);
 
         // create an event manager for digital state change events

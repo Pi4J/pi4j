@@ -1,6 +1,7 @@
 package com.pi4j.plugin.ffm.providers.i2c.impl;
 
 import com.pi4j.io.IO;
+import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CBase;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CBus;
@@ -30,7 +31,7 @@ abstract sealed class AbstractI2C extends I2CBase<FFMI2CBus> permits I2CDirect, 
      * @param i2CBus  the bus instance used to serialize access for this device
      * @param onClose an optional close handler
      */
-    protected AbstractI2C(I2CConfig config, FFMI2CBus i2CBus, Consumer<IO> onClose) {
+    protected AbstractI2C(I2CConfig config, FFMI2CBus i2CBus, Consumer<I2C> onClose) {
         super(config, i2CBus, onClose);
     }
 

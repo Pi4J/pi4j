@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 public class FFMI2C {
     private static final Logger logger = LoggerFactory.getLogger(FFMI2C.class);
 
-    public static I2C create(I2CConfig config, Consumer<IO> onClose) {
+    public static I2C create(I2CConfig config, Consumer<I2C> onClose) {
         var bus = new FFMI2CBus(config);
 
         if (logger.isDebugEnabled()) {

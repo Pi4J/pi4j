@@ -36,14 +36,14 @@ public sealed class FFMParallelPort
      * @param config  the configuration describing this I/O
      * @param onClose an optional close handler
      */
-    public static FFMParallelPort create(ParallelPortConfig config, Consumer<IO> onClose) {
+    public static FFMParallelPort create(ParallelPortConfig config, Consumer<ParallelPort> onClose) {
         var mappingLogic = new FFMParallelPort.BitmaskMappingLogic(config.offsets());
         return mappingLogic.isRequired()
             ? new FFMParallelPort.WithBitmaskMappingLogic(config, mappingLogic, onClose)
             : new FFMParallelPort(config, onClose);
     }
 
-    private FFMParallelPort(ParallelPortConfig config, Consumer<IO> onClose) {
+    private FFMParallelPort(ParallelPortConfig config, Consumer<ParallelPort> onClose) {
         super(config, onClose);
         this.inputLineConfig = createInputLineConfigs(config);
         this.outputLineConfig = createOutputLineConfigs(config);
@@ -188,7 +188,7 @@ public sealed class FFMParallelPort
          * @param onClose      an optional close handler
          */
         WithBitmaskMappingLogic(
-            ParallelPortConfig config, BitmaskMappingLogic mappingLogic, Consumer<IO> onClose
+            ParallelPortConfig config, BitmaskMappingLogic mappingLogic, Consumer<ParallelPort> onClose
         ) {
             super(config, onClose);
             this.mappingLogic = mappingLogic;

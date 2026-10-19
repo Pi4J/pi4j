@@ -27,7 +27,7 @@ public class MockParallelPort
      * @param config  the {@link ParallelPortConfig} describing this I/O, including its BCM pin numbers
      * @param onClose an optional close handler
      */
-    public MockParallelPort(ParallelPortConfig config, Consumer<IO> onClose) {
+    public MockParallelPort(ParallelPortConfig config, Consumer<ParallelPort> onClose) {
         super(config, onClose);
         this.value = new AtomicInteger((int) (config.initialValue() & MaskUtils.packed(config.mask())));
     }

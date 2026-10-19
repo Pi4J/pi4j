@@ -40,7 +40,7 @@ public final class I2CSMBus extends AbstractI2C {
      * @param i2CBus  the shared {@link FFMI2CBus} wrapping the open {@code /dev/i2c-N} file descriptor
      * @param onClose an optional close handler
      */
-    public I2CSMBus(I2CConfig config, FFMI2CBus i2CBus, Consumer<IO> onClose) {
+    public I2CSMBus(I2CConfig config, FFMI2CBus i2CBus, Consumer<I2C> onClose) {
         super(config, i2CBus, onClose);
     }
 

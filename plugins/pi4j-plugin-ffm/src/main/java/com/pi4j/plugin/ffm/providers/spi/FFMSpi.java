@@ -72,7 +72,7 @@ public class FFMSpi extends SpiBase implements Spi {
      *
      * @param config the SPI configuration carrying the bus, channel, mode, baud rate and bit order
      */
-    public FFMSpi(SpiConfig config, Consumer<IO> onClose) {
+    public FFMSpi(SpiConfig config, Consumer<Spi> onClose) {
         super(config, onClose);
         this.path = SPI_BUS + config.bus().getBus() + "." + config.channel();
         FFMPermissionHelper.checkDevicePermissions(path, config);

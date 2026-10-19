@@ -36,7 +36,7 @@ public abstract class PwmBase extends IOBase<Pwm, PwmConfig> implements Pwm {
      * @param config  the configuration describing this PWM channel, including any initial presets
      * @param onClose
      */
-    protected PwmBase(PwmConfig config, Consumer<IO> onClose) {
+    protected PwmBase(PwmConfig config, Consumer<Pwm> onClose) {
         super(config, onClose);
     }
 

@@ -32,7 +32,7 @@ public abstract class ParallelPortBase
         this, PinStateChangeListener::onPinStateChanged
     );
 
-    protected ParallelPortBase(ParallelPortConfig config, Consumer<IO> onClose) {
+    protected ParallelPortBase(ParallelPortConfig config, Consumer<ParallelPort> onClose) {
         super(config, onClose);
         this.mask = (int) MaskUtils.packed(config.mask());
         this.direction = config.initialDirection();

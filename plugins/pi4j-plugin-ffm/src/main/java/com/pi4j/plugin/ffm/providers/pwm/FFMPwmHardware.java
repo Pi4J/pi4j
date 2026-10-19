@@ -88,7 +88,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
     private int polarityFd = -1;
 
 
-    FFMPwmHardware(PwmConfig config, Consumer<IO> onClose) {
+    FFMPwmHardware(PwmConfig config, Consumer<Pwm> onClose) {
         super(config, onClose);
         this.chip = config.chip();
         this.channel = config.channel();

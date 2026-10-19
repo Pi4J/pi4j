@@ -21,7 +21,7 @@ public abstract class IOBase<IO_TYPE extends IO<IO_TYPE, CONFIG_TYPE>, CONFIG_TY
         extends IdentityBase implements IO<IO_TYPE, CONFIG_TYPE>, Closeable {
 
     protected final CONFIG_TYPE config;
-    protected final Consumer<? super IO_TYPE> onClose;
+    protected final Consumer<IO_TYPE> onClose;
     // close() requires idempotency.
     protected boolean closed = false;
 
@@ -31,7 +31,7 @@ public abstract class IOBase<IO_TYPE extends IO<IO_TYPE, CONFIG_TYPE>, CONFIG_TY
      *
      * @param config the configuration defining this instance's identity and properties
      */
-    protected IOBase(CONFIG_TYPE config, Consumer<? super IO_TYPE> onClose){
+    protected IOBase(CONFIG_TYPE config, Consumer<IO_TYPE> onClose){
         super();
         this.id = config.id();
         this.name = config.name();

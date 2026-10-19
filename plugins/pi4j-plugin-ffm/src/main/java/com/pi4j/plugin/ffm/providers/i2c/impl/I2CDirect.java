@@ -2,6 +2,7 @@ package com.pi4j.plugin.ffm.providers.i2c.impl;
 
 import com.pi4j.io.IO;
 import com.pi4j.io.exception.IOReadException;
+import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.plugin.ffm.common.i2c.I2cConstants;
 import com.pi4j.plugin.ffm.common.i2c.rdwr.I2CMessage;
@@ -30,7 +31,7 @@ public final class I2CDirect extends AbstractI2C {
      * @param i2CBus  the shared {@link FFMI2CBus} whose file descriptor carries the transfers
      * @param onClose the optional close handler
      */
-    public I2CDirect(I2CConfig config, FFMI2CBus i2CBus, Consumer<IO> onClose) {
+    public I2CDirect(I2CConfig config, FFMI2CBus i2CBus, Consumer<I2C> onClose) {
         super(config, i2CBus, onClose);
     }
 

@@ -24,7 +24,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
      * @param config  the configuration describing the pin address, initial state, shutdown state and identity
      * @param onClose optional close handler
      */
-    protected DigitalOutputBase(DigitalOutputConfig config, Consumer<IO> onClose) {
+    protected DigitalOutputBase(DigitalOutputConfig config, Consumer<DigitalOutput> onClose) {
         super(config, onClose);
     }
 

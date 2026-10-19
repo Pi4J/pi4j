@@ -25,7 +25,7 @@ public class MockDigitalInput extends DigitalInputBase implements DigitalInput {
      * @param config  the {@link DigitalInputConfig} describing the pin, pull resistance and other settings
      * @param onClose an optional close handler
      */
-    public MockDigitalInput(DigitalInputConfig config, Consumer<IO> onClose){
+    public MockDigitalInput(DigitalInputConfig config, Consumer<DigitalInput> onClose){
         super(config, onClose);
     }
 
