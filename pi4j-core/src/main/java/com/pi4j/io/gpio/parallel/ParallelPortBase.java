@@ -17,8 +17,8 @@ import java.util.function.Consumer;
  * An alternative approach could be to declare this class as non-abstract, final, and for the abstract methods
  * to be provided via composition with an `Operations`-like implementation which is able to focus on a simplified
  * set of runtime responsibilities without having to also account for configuration aspects such as
- * {@link com.pi4j.provider.Provider} references and {@link com.pi4j.common.Identity}, whose implementations don't vary
- * significantly between {@link com.pi4j.io.IO} implementations.
+ * {@link com.pi4j.common.Identity}, whose implementations don't vary significantly between
+ * {@link com.pi4j.io.IO} implementations.
  */
 public abstract class ParallelPortBase
     extends IOBase<ParallelPort, ParallelPortConfig>
@@ -28,8 +28,8 @@ public abstract class ParallelPortBase
 
     private Direction direction;
 
-    protected final EventManager<ParallelPort, Listener, ValueChangeEvent> events = new EventManager<>(
-        this, Listener::onValueChange
+    protected final EventManager<ParallelPort, PinStateChangeListener, PinStateChangedNotification> events = new EventManager<>(
+        this, PinStateChangeListener::onPinStateChanged
     );
 
     protected ParallelPortBase(ParallelPortConfig config, Consumer<IO> onClose) {
@@ -49,7 +49,6 @@ public abstract class ParallelPortBase
         }
 
         handleWrite(value);
-        fireEventWithValue(value);
     }
 
     @Override
@@ -72,17 +71,13 @@ public abstract class ParallelPortBase
     }
 
     @Override
-    public ParallelPort addListener(Listener listener) {
+    public ParallelPort addListener(PinStateChangeListener listener) {
         return events.add(listener);
     }
 
     @Override
-    public ParallelPort removeListener(Listener listener) {
+    public ParallelPort removeListener(PinStateChangeListener listener) {
         return events.remove(listener);
-    }
-
-    public void fireEventWithValue(int value) {
-        events.dispatch(new ValueChangeEvent(this, value));
     }
 
     /**

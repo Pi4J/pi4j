@@ -22,7 +22,7 @@ public class MockPwm extends PwmBase implements Pwm {
      * @param onClose an optional close handler
      * @param config the {@link PwmConfig} describing the PWM channel, frequency and duty cycle
      */
-    public MockPwm(Consumer<IO<?, ?>> onClose, PwmConfig config){
+    public MockPwm(Consumer<IO> onClose, PwmConfig config){
         super(config, onClose);
     }
 

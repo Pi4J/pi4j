@@ -2,10 +2,13 @@ package com.pi4j.plugin.mock.provider.gpio.parallel;
 
 import com.pi4j.io.IO;
 import com.pi4j.io.gpio.MaskUtils;
+import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortBase;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -34,8 +37,14 @@ public class MockParallelPort
      * @param value the value to set
      */
     public void mockValue(int value) {
+        // don't raise events for output ports
+        if (this.getDirection() == Direction.OUTPUT) {
+            return;
+        }
+
+        var changeEvents = eventsForChange(this, value, this.value.get());
         handleWrite(value);
-        fireEventWithValue(value);
+        events.dispatch(changeEvents);
     }
 
     @Override
@@ -46,5 +55,28 @@ public class MockParallelPort
     @Override
     protected int handleRead() {
         return value.get();
+    }
+
+    /**
+     * Calculates the list of pin state change events based on the difference between the current and previous values.
+     * @param source the port to attach to the event
+     * @param value the value being set
+     * @param previous the previous value
+     * @return the list of pin state change events
+     */
+    static PinStateChangedNotification eventsForChange(ParallelPort source, int value, int previous) {
+        var diff = value ^ previous;
+
+        return new PinStateChangedNotification(
+            source,
+            false,
+            Arrays.stream(MaskUtils.offsets(diff))
+                .mapToObj(offset -> new PinStateChangedEvent(
+                    offset,
+                    (((1 << offset) & value) == 0) ? DigitalState.LOW : DigitalState.HIGH)
+                )
+                .sorted(Comparator.comparingInt(PinStateChangedEvent::offset))
+                .toArray(PinStateChangedEvent[]::new)
+        );
     }
 }
