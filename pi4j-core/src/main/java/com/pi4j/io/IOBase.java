@@ -40,16 +40,26 @@ public abstract class IOBase<IO_TYPE extends IO<IO_TYPE, CONFIG_TYPE>, CONFIG_TY
         this.onClose = onClose;
     }
 
+    /**
+     * Returns this builder instance cast to the generic type {@code T}.
+     * This supports method chaining in subclasses without requiring explicit casts.
+     *
+     * @return this builder instance
+     */
+    protected IO_TYPE self() {
+        return (IO_TYPE) this;
+    }
+
     @Override
     public IO_TYPE name(String name){
         this.name = name;
-        return (IO_TYPE)this;
+        return self();
     }
 
     @Override
     public IO_TYPE description(String description){
         this.description = description;
-        return (IO_TYPE)this;
+        return self();
     }
 
     /**
@@ -70,7 +80,7 @@ public abstract class IOBase<IO_TYPE extends IO<IO_TYPE, CONFIG_TYPE>, CONFIG_TY
         closed = true;
         // The null check accounts for tests without an onClose callback
         if (this.onClose != null) {
-            this.onClose.accept((IO_TYPE) this);
+            this.onClose.accept(self());
         }
     }
 
