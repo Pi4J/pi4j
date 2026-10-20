@@ -150,7 +150,7 @@ public sealed class FFMParallelPort
 
     @Override
     public ParallelPort addListener(PinStateChangeListener listener) {
-        if (config.initialDirection() != Direction.INPUT) {
+        if (config.initialDirection() == Direction.OUTPUT) {
             throw new IllegalStateException("Cannot add listener to a port not primarily configured as an input");
         }
 
@@ -168,7 +168,7 @@ public sealed class FFMParallelPort
 
     @Override
     public ParallelPort removeListener(PinStateChangeListener listener) {
-        if (config.initialDirection() != Direction.INPUT) {
+        if (config.initialDirection() == Direction.OUTPUT) {
             throw new IllegalStateException("Cannot remove listener from a port not primarily configured as an input");
         }
 
