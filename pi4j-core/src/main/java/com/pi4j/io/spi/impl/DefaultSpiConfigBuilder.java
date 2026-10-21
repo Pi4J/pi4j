@@ -40,9 +40,9 @@ public class DefaultSpiConfigBuilder
     }
 
     /**
-     * @deprecated use {@link #bus(Integer)} instead.
-     * <p>
      * {@inheritDoc}
+     *
+     * @deprecated use {@link #bus(Integer)} instead.
      */
     @Override
     @Deprecated(forRemoval = true)

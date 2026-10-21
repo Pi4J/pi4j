@@ -28,9 +28,9 @@ public class DefaultPwmConfigBuilder
     }
 
     /**
-     * @deprecated use {@link #channel(Integer)} instead.
-     * <p>
      * {@inheritDoc}
+     *
+     * @deprecated use {@link #channel(Integer)} instead.
      */
     @Override
     @Deprecated(forRemoval = true)

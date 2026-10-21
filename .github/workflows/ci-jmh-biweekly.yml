@@ -22,7 +22,7 @@ jobs:
       should_run: ${{ steps.check.outputs.should_run }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: "main"
 
@@ -54,19 +54,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: develop
 
       - name: Install dependencies
         run: |
           sudo apt-get remove --purge man-db
-          sudo apt-get install --yes build-essential linux-headers-$(uname -r) sudo libi2c-dev linux-modules-extra-$(uname -r)
+          sudo apt-get install --yes build-essential linux-headers-$(uname -r) libi2c-dev
+          # Kernels 7.0+ ship spidev/i2c-dev in linux-modules, older ones need the extra package
+          if apt-cache show linux-modules-extra-$(uname -r) >/dev/null 2>&1; then
+            sudo apt-get install --yes linux-modules-extra-$(uname -r)
+          fi
 
       - name: Install JDK25
-        uses: sfesenko/setup-sdkman@v1
+        uses: actions/setup-java@v6
         with:
-          deps: java:25-zulu
+          java-version: '25'
+          distribution: 'zulu'
 
       - name: Create and add current user to suitable groups
         run: |
@@ -81,7 +86,7 @@ jobs:
           sudo udevadm control --reload-rules && sudo udevadm trigger
 
       - name: Cache local Maven repository
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -97,8 +102,7 @@ jobs:
           RUN_DATE=$(date -u +%F)
           echo "RUN_DATE=$RUN_DATE" >> "$GITHUB_ENV"
           OUT="$GITHUB_WORKSPACE/jmh-results/jmh-$RUN_DATE.json"
-          sudo -u $USER bash -c "source ~/.sdkman/bin/sdkman-init.sh && \
-            ./mvnw jmh:benchmark -Djmh.rf=json -Djmh.rff='$OUT'"
+          sudo -u $USER env JAVA_HOME="$JAVA_HOME" ./mvnw jmh:benchmark -Djmh.rf=json -Djmh.rff="$OUT"
 
       - name: Register run in manifest.json
         run: |
