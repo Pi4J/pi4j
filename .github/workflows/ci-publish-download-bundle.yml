@@ -17,7 +17,11 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get remove --purge man-db
-          sudo apt-get install --yes build-essential linux-headers-$(uname -r) sudo libi2c-dev linux-modules-extra-$(uname -r)
+          sudo apt-get install --yes build-essential linux-headers-$(uname -r) libi2c-dev
+          # Kernels 7.0+ ship spidev/i2c-dev in linux-modules, older ones need the extra package
+          if apt-cache show linux-modules-extra-$(uname -r) >/dev/null 2>&1; then
+            sudo apt-get install --yes linux-modules-extra-$(uname -r)
+          fi
 
       - name: Install JDK25
         uses: sfesenko/setup-sdkman@v1
