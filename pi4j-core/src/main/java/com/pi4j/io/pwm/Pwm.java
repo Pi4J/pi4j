@@ -97,7 +97,7 @@ public interface Pwm extends IO<PwmConfig>, OnOff {
      * @throws IOException if fails to communicate with the PWM pin
      */
     @Override
-    Pwm on() throws IOException;
+    void on() throws IOException;
 
     /**
      * Turn the PWM signal [OFF] by applying a zero frequency and zero duty-cycle to the PWM pin.
@@ -105,7 +105,7 @@ public interface Pwm extends IO<PwmConfig>, OnOff {
      * @throws IOException if fails to communicate with the PWM pin
      */
     @Override
-    Pwm off() throws IOException;
+    void off() throws IOException;
 
     /**
      * Get the PWM type of this PWM instance. (Hardware/Software)
@@ -157,12 +157,12 @@ public interface Pwm extends IO<PwmConfig>, OnOff {
      * @return returns this PWM instance
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default Pwm on(double dutyCycle) throws IOException {
+    default void on(double dutyCycle) throws IOException {
         if (dutyCycle > 0) {
             setDutyCycle(dutyCycle);
-            return on();
+            on();
         } else {
-            return off();
+            off();
         }
     }
 
@@ -185,16 +185,15 @@ public interface Pwm extends IO<PwmConfig>, OnOff {
      *                  check the 'Pwm::actualFrequency()' or 'Pwm::getActualFrequency()'
      *                  properties to determine what frequency the PWM generator actually
      *                  applied.
-     * @return returns this PWM instance
      * @throws IOException if fails to communicate with the PWM pin
      */
-    default Pwm on(double dutyCycle, double frequency) throws IOException {
+    default void on(double dutyCycle, double frequency) throws IOException {
         if (dutyCycle > 0 && frequency > 0) {
             setDutyCycle(dutyCycle);
             setFrequency(frequency);
-            return on();
+            on();
         } else {
-            return off();
+            off();
         }
     }
 

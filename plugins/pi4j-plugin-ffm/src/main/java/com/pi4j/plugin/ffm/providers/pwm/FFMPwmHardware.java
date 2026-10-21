@@ -179,7 +179,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
      * @throws Pi4JException if the configured frequency is negative
      */
     @Override
-    public Pwm on() throws IOException {
+    public void on() throws IOException {
         if (onState) {
             logger.debug("{} - PWM Bus is already enabled. Settings will be re-applied to apply any change.", pwmPath);
         }
@@ -207,19 +207,16 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         writeAttribute(enableFd, ENABLE);
 
         this.onState = true;
-
-        return this;
     }
 
     @Override
-    public Pwm off() throws IOException {
+    public void off() throws IOException {
         if (!onState) {
             logger.warn("{} - PWM is already disabled.", pwmPath);
-            return this;
+            return;
         }
         writeAttribute(enableFd, DISABLE);
         this.onState = false;
-        return this;
     }
 
     /**

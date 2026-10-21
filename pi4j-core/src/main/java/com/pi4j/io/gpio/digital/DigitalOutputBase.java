@@ -101,7 +101,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutputConfig>
      * {@link DigitalState#HIGH} when none is configured.
      */
     @Override
-    public DigitalOutput on() throws IOException {
+    public void on() throws IOException {
 
         // the default ON state is HIGH
         DigitalState onState = DigitalState.HIGH;
@@ -112,7 +112,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutputConfig>
         }
 
         // set the current state to the configured ON state
-        return state(onState);
+        state(onState);
     }
 
     /**
@@ -122,7 +122,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutputConfig>
      * {@link DigitalState#LOW} when no on-state is configured.
      */
     @Override
-    public DigitalOutput off() throws IOException {
+    public void off() throws IOException {
         // the default OFF state is LOW
         DigitalState offState = DigitalState.LOW;
 
@@ -132,7 +132,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutputConfig>
         }
 
         // set the current state to the configured OFF state
-        return state(offState);
+        state(offState);
     }
 
 }

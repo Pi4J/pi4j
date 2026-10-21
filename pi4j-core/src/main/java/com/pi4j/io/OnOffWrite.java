@@ -34,6 +34,5 @@ public interface OnOffWrite {
         } else {
             off();
         }
-        return (T) this;
     }
 }

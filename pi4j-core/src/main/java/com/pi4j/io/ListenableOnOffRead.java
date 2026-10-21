@@ -60,24 +60,23 @@ public interface ListenableOnOffRead extends OnOffRead {
         }
 
         @Override
-        public Impl on() throws IOException {
-            return setState(true);
+        public void on() throws IOException {
+            setState(true);
         }
 
         @Override
-        public Impl off() throws IOException {
-            return setState(false);
+        public void off() throws IOException {
+            setState(false);
         }
 
         @Override
-        public Impl setState(boolean newState) {
+        public void setState(boolean newState) {
             if (state != newState) {
                 state = newState;
                 for (Consumer<Boolean> listener: listeners) {
                     listener.accept(newState);
                 }
             }
-            return this;
         }
 
         @Override

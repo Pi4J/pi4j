@@ -75,6 +75,7 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
             throw e;
         }
         logger.info("{}-{} - DigitalOutput BCM configured.", line.deviceName, line.mask);
+        super.applyInitialState();
     }
 
     /**
