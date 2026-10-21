@@ -78,9 +78,9 @@ public class DefaultDigitalOutputConfig
     }
 
     /**
-     * @deprecated use {@link #bus()} instead.
-     * <p>
      * {@inheritDoc}
+     *
+     * @deprecated use {@link #bus()} instead.
      */
     @Override
     @Deprecated(forRemoval = true)

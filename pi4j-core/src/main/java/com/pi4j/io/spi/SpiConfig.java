@@ -6,7 +6,7 @@ import com.pi4j.io.IOConfig;
 /**
  * Immutable configuration for an {@link Spi} device, describing the bus, channel/chip-select, clock
  * mode, baud rate, bit ordering, and provider flags. Instances are produced by a {@link SpiConfigBuilder}
- * and consumed by a {@link SpiProvider} when creating an SPI device.
+ * and consumed by the {@link Context} when creating an SPI device.
  */
 public interface SpiConfig extends IOConfig {
     /**

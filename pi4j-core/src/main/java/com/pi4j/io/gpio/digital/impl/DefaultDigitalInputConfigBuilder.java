@@ -38,9 +38,9 @@ public class DefaultDigitalInputConfigBuilder
     }
 
     /**
-     * @deprecated use {@link #bus(int)} instead.
-     * <p>
      * {@inheritDoc}
+     *
+     * @deprecated use {@link #bus(int)} instead.
      */
     @Override
     @Deprecated(forRemoval = true)
