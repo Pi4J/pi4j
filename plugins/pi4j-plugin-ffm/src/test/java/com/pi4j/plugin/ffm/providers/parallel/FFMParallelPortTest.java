@@ -16,7 +16,7 @@ class FFMParallelPortTest {
      * Control test case
      */
     @Test
-    void mapsWhenBitsAreInOrder() {
+    void mapsValueWhenBitsAreInOrder() {
         var pinAllocation = List.of(0, 1, 2);
         FFMParallelPort.BitmaskMappingLogic operation = new FFMParallelPort.BitmaskMappingLogic(pinAllocation);
 
@@ -29,19 +29,19 @@ class FFMParallelPortTest {
     }
 
     /**
-     * Dynamic tests for all {@link Expectation}s
+     * Dynamic tests for all {@link ValuesExpectation}s
      */
     @TestFactory
-    Stream<DynamicTest> mapsWhenBitsAreOutOfOrder() {
-        return EXPECTATIONS.stream()
-            .flatMap(expectation -> {
-                FFMParallelPort.BitmaskMappingLogic operation = new FFMParallelPort.BitmaskMappingLogic(expectation.userPinAllocations);
+    Stream<DynamicTest> mapsValueWhenBitsAreOutOfOrder() {
+        return VALUES_EXPECTATIONS.stream()
+            .flatMap(valuesExpectation -> {
+                FFMParallelPort.BitmaskMappingLogic operation = new FFMParallelPort.BitmaskMappingLogic(valuesExpectation.userPinAllocations);
 
-                assertEquals(expectation.required, operation.isRequired());
+                assertEquals(valuesExpectation.required, operation.isRequired());
 
                 return IntStream.range(0, 8)
                     .mapToObj(inputValue -> {
-                        var expectedValue = expectation.expectedValues.get(inputValue);
+                        var expectedValue = valuesExpectation.expectedValues.get(inputValue);
                         var testName = String.format("User input: %s (%d) -> Hardware value: %s (%d)",
                             Integer.toBinaryString(inputValue),
                             inputValue,
@@ -51,7 +51,7 @@ class FFMParallelPortTest {
 
                         return DynamicTest.dynamicTest(testName, () -> {
                             int mappedValue = operation.map(inputValue);
-                            assertEquals(expectation.expectedValues.get(inputValue), mappedValue);
+                            assertEquals(valuesExpectation.expectedValues.get(inputValue), mappedValue);
 
                             int unmappedValue = operation.unmap(mappedValue);
                             assertEquals(inputValue, unmappedValue);
@@ -60,19 +60,19 @@ class FFMParallelPortTest {
             });
     }
 
-    static final List<Expectation> EXPECTATIONS = List.of(
+    static final List<ValuesExpectation> VALUES_EXPECTATIONS = List.of(
         // User specified values in hardware-compatible order
-        new Expectation(List.of(0, 1, 2),   List.of(0, 1, 2, 3, 4, 5, 6, 7), false),
-        new Expectation(List.of(5, 10, 20), List.of(0, 1, 2, 3, 4, 5, 6, 7), false),
+        new ValuesExpectation(List.of(0, 1, 2),   List.of(0, 1, 2, 3, 4, 5, 6, 7), false),
+        new ValuesExpectation(List.of(5, 10, 20), List.of(0, 1, 2, 3, 4, 5, 6, 7), false),
         // User specified values with bits 0 and 1 out of order
-        new Expectation(List.of(1, 0, 2),   List.of(0, 2, 1, 3, 4, 6, 5, 7), true),
-        new Expectation(List.of(18, 5, 22), List.of(0, 2, 1, 3, 4, 6, 5, 7), true),
+        new ValuesExpectation(List.of(1, 0, 2),   List.of(0, 2, 1, 3, 4, 6, 5, 7), true),
+        new ValuesExpectation(List.of(18, 5, 22), List.of(0, 2, 1, 3, 4, 6, 5, 7), true),
         // User specified values with bit 2 out of order
-        new Expectation(List.of(2, 0, 1),   List.of(0, 2, 4, 6, 1, 3, 5, 7), true),
-        new Expectation(List.of(22, 5, 18), List.of(0, 2, 4, 6, 1, 3, 5, 7), true),
+        new ValuesExpectation(List.of(2, 0, 1),   List.of(0, 2, 4, 6, 1, 3, 5, 7), true),
+        new ValuesExpectation(List.of(22, 5, 18), List.of(0, 2, 4, 6, 1, 3, 5, 7), true),
         // User specified values with bits in reverse order
-        new Expectation(List.of(2, 1, 0),   List.of(0, 4, 2, 6, 1, 5, 3, 7), true),
-        new Expectation(List.of(22, 18, 5), List.of(0, 4, 2, 6, 1, 5, 3, 7), true)
+        new ValuesExpectation(List.of(2, 1, 0),   List.of(0, 4, 2, 6, 1, 5, 3, 7), true),
+        new ValuesExpectation(List.of(22, 18, 5), List.of(0, 4, 2, 6, 1, 5, 3, 7), true)
     );
 
     /**
@@ -81,9 +81,53 @@ class FFMParallelPortTest {
      * @param expectedValues the value of the bit mask required by hardware
      * @param required whether the remapping process is necessary
      */
-    record Expectation(
+    record ValuesExpectation(
         List<Integer> userPinAllocations,
         List<Integer> expectedValues,
         boolean required
+    ) {}
+
+    @TestFactory
+    Stream<DynamicTest> mapsOffsetWhenBitsAreOutOfOrder() {
+        return OFFSETS_EXPECTATIONS.stream()
+            .flatMap(offsetsExpectation -> {
+                FFMParallelPort.BitmaskMappingLogic operation = new FFMParallelPort.BitmaskMappingLogic(offsetsExpectation.userPinAllocations);
+
+                return IntStream.range(0, 3)
+                    .mapToObj(inputOffset -> {
+                        var expectedOffset = offsetsExpectation.expectedOffsets.get(inputOffset);
+                        var testName = String.format("%s: %d -> %d",
+                            offsetsExpectation.userPinAllocations,
+                            inputOffset,
+                            expectedOffset
+                        );
+
+                        return DynamicTest.dynamicTest(testName, () -> {
+                            int mappedOffset = operation.getUserOffset(inputOffset);
+                            assertEquals(expectedOffset, mappedOffset);
+                        });
+                    });
+            });
+    }
+
+    static final List<OffsetsExpectation> OFFSETS_EXPECTATIONS = List.of(
+        new OffsetsExpectation(List.of(0, 1, 2),   List.of(0, 1, 2)),
+        new OffsetsExpectation(List.of(5, 10, 20), List.of(0, 1, 2)),
+        new OffsetsExpectation(List.of(1, 0, 2),   List.of(1, 0, 2)),
+        new OffsetsExpectation(List.of(18, 5, 22), List.of(1, 0, 2)),
+        new OffsetsExpectation(List.of(2, 0, 1),   List.of(1, 2, 0)),
+        new OffsetsExpectation(List.of(22, 5, 18), List.of(1, 2, 0)),
+        new OffsetsExpectation(List.of(2, 1, 0),   List.of(2, 1, 0)),
+        new OffsetsExpectation(List.of(22, 18, 5), List.of(2, 1, 0))
+    );
+
+    /**
+     * Expected function outputs for specific input offsets
+     * @param userPinAllocations pin allocations as might be provided by the user
+     * @param expectedOffsets the offset within the bit mask as required by hardware
+     */
+    record OffsetsExpectation(
+        List<Integer> userPinAllocations,
+        List<Integer> expectedOffsets
     ) {}
 }
