@@ -53,7 +53,7 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-        run: sudo -u $USER JAVA_HOME="$JAVA_HOME" bash -c './mvnw clean package'
+        run: sudo -u $USER env JAVA_HOME="$JAVA_HOME" ./mvnw clean package
 
       - name: Make staging directory
         run: mkdir staging

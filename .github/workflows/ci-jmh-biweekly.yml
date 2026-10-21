@@ -102,7 +102,7 @@ jobs:
           RUN_DATE=$(date -u +%F)
           echo "RUN_DATE=$RUN_DATE" >> "$GITHUB_ENV"
           OUT="$GITHUB_WORKSPACE/jmh-results/jmh-$RUN_DATE.json"
-          sudo -u $USER JAVA_HOME="$JAVA_HOME" bash -c "./mvnw jmh:benchmark -Djmh.rf=json -Djmh.rff='$OUT'"
+          sudo -u $USER env JAVA_HOME="$JAVA_HOME" ./mvnw jmh:benchmark -Djmh.rf=json -Djmh.rff="$OUT"
 
       - name: Register run in manifest.json
         run: |
