@@ -10,7 +10,7 @@ jobs:
     name: Build Snapshot
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install dependencies
         run: |
@@ -23,9 +23,10 @@ jobs:
           fi
 
       - name: Install JDK25
-        uses: sfesenko/setup-sdkman@v1
+        uses: actions/setup-java@v6
         with:
-          deps: java:25-zulu
+          java-version: '25'
+          distribution: 'zulu'
 
       - name: Create and add current user to suitable groups
         run: |
@@ -40,7 +41,7 @@ jobs:
           sudo udevadm control --reload-rules && sudo udevadm trigger
 
       - name: Cache local Maven repository
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
@@ -51,13 +52,13 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
-        run: sudo -u $USER bash -c 'source ~/.sdkman/bin/sdkman-init.sh && ./mvnw clean package'
+        run: sudo -u $USER JAVA_HOME="$JAVA_HOME" bash -c './mvnw clean package'
 
       - name: Make staging directory
         run: mkdir staging
 
       - name: Upload distribution files to staging
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pi4j-dist
           path: staging
