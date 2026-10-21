@@ -135,7 +135,7 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         run: |
           git clone --single-branch --branch main \
-            https://${API_TOKEN_GITHUB}@github.com/pi4j/download.git /tmp/download-repo
+            https://x-access-token:${API_TOKEN_GITHUB}@github.com/Pi4J/download.git /tmp/download-repo
           cp pi4j-*.zip /tmp/download-repo/
           cd /tmp/download-repo
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
