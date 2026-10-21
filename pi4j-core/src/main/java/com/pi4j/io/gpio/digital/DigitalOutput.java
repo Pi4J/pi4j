@@ -191,8 +191,6 @@ public interface DigitalOutput extends Digital<DigitalOutputConfig>,
     /**
      * Inverts the current output state, switching {@link DigitalState#HIGH} to {@link DigitalState#LOW} and
      * vice versa.
-     *
-     * @return this instance for method chaining
      * @throws IOException if the underlying hardware cannot be written
      */
     default void toggle() throws IOException {

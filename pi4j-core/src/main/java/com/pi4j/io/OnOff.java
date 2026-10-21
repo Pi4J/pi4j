@@ -10,7 +10,6 @@ public interface OnOff extends OnOffRead, OnOffWrite {
     /**
      * Inverts the current state: turns off if currently on, otherwise turns on.
      *
-     * @return this instance for method chaining
      * @throws IOException if the underlying I/O operation fails
      */
     default void toggle() throws IOException {

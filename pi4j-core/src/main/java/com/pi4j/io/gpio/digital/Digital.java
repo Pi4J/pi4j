@@ -33,7 +33,6 @@ public interface Digital<CONFIG_TYPE extends DigitalConfig>
      * Registers one or more listeners to be notified whenever this instance's {@link DigitalState} changes.
      *
      * @param listener one or more {@link DigitalStateChangeListener} instances to register
-     * @return this instance for method chaining
      */
     void addListener(DigitalStateChangeListener... listener);
 
@@ -41,7 +40,6 @@ public interface Digital<CONFIG_TYPE extends DigitalConfig>
      * Unregisters one or more previously added state-change listeners.
      *
      * @param listener one or more {@link DigitalStateChangeListener} instances to remove
-     * @return this instance for method chaining
      */
     void removeListener(DigitalStateChangeListener... listener);
 
