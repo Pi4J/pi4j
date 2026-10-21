@@ -10,8 +10,6 @@ import java.util.function.Consumer;
  * It provides a lightweight {@link com.pi4j.io.gpio.digital.DigitalInput} abstraction that can stand in
  * for a "real" digital input, for example when exposing I/O pins managed by I/O expanders to drivers.
  * A ready-made {@link Impl} implementation is supplied for that purpose.
- *
- * @param <T> the concrete type returned by the fluent operations; see {@link OnOffRead}
  */
 public interface ListenableOnOffRead extends OnOffRead {
 
@@ -30,7 +28,6 @@ public interface ListenableOnOffRead extends OnOffRead {
      * Removes a previously registered listener.
      *
      * @param listener the listener to remove
-     * @return this instance for method chaining
      */
     void removeConsumer(Consumer<Boolean> listener);
 

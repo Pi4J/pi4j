@@ -93,7 +93,6 @@ public interface Pwm extends IO<PwmConfig>, OnOff {
     /**
      * Turn the PWM signal [ON] using the configured frequency and duty-cycle.
      *
-     * @return returns this PWM instance
      * @throws IOException if fails to communicate with the PWM pin
      */
     @Override
@@ -154,7 +153,6 @@ public interface Pwm extends IO<PwmConfig>, OnOff {
      *                  The duty-cycle range is valid from 0 to 100.
      *                  (Values above 50% mean the signal will remain HIGH more
      *                  time than LOW.)
-     * @return returns this PWM instance
      * @throws IOException if fails to communicate with the PWM pin
      */
     default void on(double dutyCycle) throws IOException {
