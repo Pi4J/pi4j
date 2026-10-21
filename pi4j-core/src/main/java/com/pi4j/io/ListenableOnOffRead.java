@@ -13,7 +13,7 @@ import java.util.function.Consumer;
  *
  * @param <T> the concrete type returned by the fluent operations; see {@link OnOffRead}
  */
-public interface ListenableOnOffRead<T> extends OnOffRead<T> {
+public interface ListenableOnOffRead extends OnOffRead {
 
     /**
      * Registers a listener to be notified with the new on/off state whenever the state changes.
@@ -32,14 +32,14 @@ public interface ListenableOnOffRead<T> extends OnOffRead<T> {
      * @param listener the listener to remove
      * @return this instance for method chaining
      */
-    T removeConsumer(Consumer<Boolean> listener);
+    void removeConsumer(Consumer<Boolean> listener);
 
     /**
      * A simple in-memory {@link ListenableOnOffRead} that also supports writing via {@link OnOff},
      * notifying registered listeners whenever a state-changing {@code on()}/{@code off()}/{@code setState()}
      * call actually changes the current state.
      */
-    final class Impl implements ListenableOnOffRead<Impl>, OnOff<Impl> {
+    final class Impl implements ListenableOnOffRead, OnOff {
         private List<Consumer<Boolean>> listeners = new ArrayList<>();
         private boolean state;
 
@@ -92,9 +92,8 @@ public interface ListenableOnOffRead<T> extends OnOffRead<T> {
         }
 
         @Override
-        public Impl removeConsumer(Consumer<Boolean> listener) {
+        public void removeConsumer(Consumer<Boolean> listener) {
             listeners.remove(listener);
-            return this;
         }
     }
 }

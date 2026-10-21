@@ -30,7 +30,7 @@ public class MockContext extends DefaultContext {
     }
 
     @Override
-    protected IO<?, ?> createImpl(IOConfig config, IOType type) {
+    protected IO<?> createImpl(IOConfig config, IOType type) {
         return switch (type) {
             case DIGITAL_INPUT -> new MockDigitalInput(this, (DigitalInputConfig) config);
             case DIGITAL_OUTPUT -> new MockDigitalOutput(this, (DigitalOutputConfig) config);

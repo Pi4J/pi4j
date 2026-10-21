@@ -13,11 +13,10 @@ import java.io.Closeable;
  * (id, name, description) from that configuration, and integrates with the Pi4J {@link Context}
  * lifecycle so that {@link #close()} reliably unregisters and shuts the instance down exactly once.
  *
- * @param <IO_TYPE>       the concrete I/O type, returned by the fluent identity setters for chaining
  * @param <CONFIG_TYPE>   the {@link IOConfig} type describing this instance
  */
-public abstract class IOBase<IO_TYPE extends IO<IO_TYPE, CONFIG_TYPE>, CONFIG_TYPE extends IOConfig>
-        extends IdentityBase implements IO<IO_TYPE,CONFIG_TYPE>, Closeable {
+public abstract class IOBase<CONFIG_TYPE extends IOConfig>
+        extends IdentityBase implements IO<CONFIG_TYPE>, Closeable {
 
     protected final CONFIG_TYPE config;
     protected final Context context;
@@ -37,18 +36,6 @@ public abstract class IOBase<IO_TYPE extends IO<IO_TYPE, CONFIG_TYPE>, CONFIG_TY
         this.description = config.description();
         this.config = config;
         this.context = context;
-    }
-
-    @Override
-    public IO_TYPE name(String name){
-        this.name = name;
-        return (IO_TYPE)this;
-    }
-
-    @Override
-    public IO_TYPE description(String description){
-        this.description = description;
-        return (IO_TYPE)this;
     }
 
     /**

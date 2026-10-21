@@ -85,7 +85,7 @@ public class FFMSpi extends SpiBase implements Spi {
      * {@code SPI_IOC_RD_*} ioctls, then reads the driver's {@code bufsiz} to size the transfer chunks.
      */
     @Override
-    public Spi applyInitialState() throws InitializeException {
+    public void applyInitialState() throws InitializeException {
         super.applyInitialState();
 
         logger.info("{} - setting up SPIBus...", path);
@@ -113,7 +113,6 @@ public class FFMSpi extends SpiBase implements Spi {
         logger.debug("{} - SPI transfer chunk size (bufsiz) is {} bytes.", path, bufferSize);
 
         logger.info("{} - SPI Bus configured.", path);
-        return this;
     }
 
     /**

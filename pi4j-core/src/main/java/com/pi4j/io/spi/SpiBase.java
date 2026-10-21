@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * {@link IOBase}. Concrete providers extend this class and implement the actual byte-transfer logic
  * defined by {@link Spi}.
  */
-public abstract class SpiBase extends IOBase<Spi, SpiConfig> implements Spi {
+public abstract class SpiBase extends IOBase<SpiConfig> implements Spi {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 

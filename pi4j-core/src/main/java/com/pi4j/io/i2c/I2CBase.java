@@ -13,7 +13,7 @@ import java.util.concurrent.Callable;
  *
  * @param <T> the concrete {@link I2CBus} type this device communicates over
  */
-public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig> implements I2C {
+public abstract class I2CBase<T extends I2CBus> extends IOBase<I2CConfig> implements I2C {
 
     protected final T i2CBus;
 

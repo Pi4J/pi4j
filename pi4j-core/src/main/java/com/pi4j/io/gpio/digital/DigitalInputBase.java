@@ -7,7 +7,7 @@ import com.pi4j.context.Context;
  * with the digital-input type parameters. Provider-specific subclasses extend this to supply the
  * actual hardware or expander read behaviour.
  */
-public abstract class DigitalInputBase extends DigitalBase<DigitalInput, DigitalInputConfig> implements DigitalInput {
+public abstract class DigitalInputBase extends DigitalBase<DigitalInputConfig> implements DigitalInput {
     /**
      * Creates a digital input bound to the given provider and configuration.
      *

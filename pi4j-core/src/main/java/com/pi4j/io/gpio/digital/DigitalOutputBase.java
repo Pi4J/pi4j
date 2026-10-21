@@ -11,7 +11,7 @@ import com.pi4j.io.exception.IOException;
  * configured initial and shutdown states. Concrete providers extend this class and override {@link #state(DigitalState)} to
  * actually drive the hardware.
  */
-public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, DigitalOutputConfig> implements DigitalOutput {
+public abstract class DigitalOutputBase extends DigitalBase<DigitalOutputConfig> implements DigitalOutput {
 
     /** The current cached state of this output; {@link DigitalState#UNKNOWN} until first set. */
     protected DigitalState state = DigitalState.UNKNOWN;
@@ -35,7 +35,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
      * @throws InitializeException if base initialization fails or the initial state cannot be written
      */
     @Override
-    public DigitalOutput applyInitialState() throws InitializeException {
+    public void applyInitialState() throws InitializeException {
         super.applyInitialState();
 
         // update the value to the initial value if an initial value was configured
@@ -46,8 +46,6 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
                 throw new InitializeException(e);
             }
         }
-
-        return this;
     }
 
     /**
@@ -58,7 +56,6 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
      */
     @Override
     public DigitalOutput state(DigitalState state) throws IOException {
-
         if (!this.state.equals(state)) {
             this.state = state;
             if (this.hasListenersOrBindings()) {

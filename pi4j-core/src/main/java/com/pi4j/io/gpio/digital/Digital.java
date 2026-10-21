@@ -8,11 +8,10 @@ import com.pi4j.io.ListenableOnOffRead;
  * {@link DigitalState} access and adds listener registration for state-change events, while
  * {@link ListenableOnOffRead} provides the on/off abstraction shared with simpler I/O types.
  *
- * @param <DIGITAL_TYPE> the concrete digital I/O type, used as the self-referencing return type for fluent methods
  * @param <CONFIG_TYPE> the {@link DigitalConfig} type describing this instance
  */
-public interface Digital<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE>, CONFIG_TYPE extends DigitalConfig>
-    extends ListenableOnOffRead<DIGITAL_TYPE>, com.pi4j.io.IO<DIGITAL_TYPE, CONFIG_TYPE> {
+public interface Digital<CONFIG_TYPE extends DigitalConfig>
+    extends ListenableOnOffRead, com.pi4j.io.IO<CONFIG_TYPE> {
 
     /**
      * Returns the current logic level of this digital I/O instance.
@@ -36,7 +35,7 @@ public interface Digital<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE>
      * @param listener one or more {@link DigitalStateChangeListener} instances to register
      * @return this instance for method chaining
      */
-    DIGITAL_TYPE addListener(DigitalStateChangeListener... listener);
+    void addListener(DigitalStateChangeListener... listener);
 
     /**
      * Unregisters one or more previously added state-change listeners.
@@ -44,7 +43,7 @@ public interface Digital<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE>
      * @param listener one or more {@link DigitalStateChangeListener} instances to remove
      * @return this instance for method chaining
      */
-    DIGITAL_TYPE removeListener(DigitalStateChangeListener... listener);
+    void removeListener(DigitalStateChangeListener... listener);
 
     /**
      * Tests whether this instance's current state equals the given {@link DigitalState}.

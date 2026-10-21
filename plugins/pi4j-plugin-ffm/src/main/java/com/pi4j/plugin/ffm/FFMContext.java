@@ -31,7 +31,7 @@ public class FFMContext extends DefaultContext {
     }
 
     @Override
-    public IO<?, ?> createImpl(IOConfig config, IOType type) {
+    public IO<?> createImpl(IOConfig config, IOType type) {
         FFMPermissionHelper.checkUserPermissions(type);
         return switch (type) {
             case DIGITAL_INPUT -> new FFMDigitalInput(this, (DigitalInputConfig) config);

@@ -13,7 +13,7 @@ import com.pi4j.util.Frequency;
  * supports both hardware and software generators (see {@link PwmType}). As an {@link OnOff}
  * device it can be enabled and disabled.
  */
-public interface Pwm extends IO<Pwm, PwmConfig>, OnOff<Pwm> {
+public interface Pwm extends IO<PwmConfig>, OnOff {
 
     /** Multiplier for expressing a frequency in megahertz (cycles per second). */
     static final long MEGAHERTZ = Frequency.MEGAHERTZ;

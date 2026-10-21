@@ -50,13 +50,12 @@ public sealed class FFMParallelPort
     }
 
     @Override
-    public ParallelPort applyInitialState() throws InitializeException {
+    public void applyInitialState() throws InitializeException {
         if (config.initialDirection() == Direction.INPUT) {
             gpioLine.openAndRequest(inputLineConfig.flags(), List.of(inputLineConfig.attrs()), config.id());
         } else {
             gpioLine.openAndRequest(outputLineConfig.flags(), List.of(outputLineConfig.attrs()), config.id());
         }
-        return super.applyInitialState();
     }
 
     @Override

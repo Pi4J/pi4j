@@ -16,7 +16,7 @@ import java.nio.ByteBuffer;
  * it inherits write behaviour from {@link IODataWriter}, read behaviour from {@link IODataReader}, and
  * full-duplex serial exchange behaviour from {@link SerialCircuitIO}.
  */
-public interface Spi extends IO<Spi, SpiConfig>, AutoCloseable, IODataWriter, IODataReader, SerialCircuitIO {
+public interface Spi extends IO<SpiConfig>, AutoCloseable, IODataWriter, IODataReader, SerialCircuitIO {
     /**
      * Default SPI bus ({@link SpiBus#BUS_0}) used when no bus is explicitly configured.
      */

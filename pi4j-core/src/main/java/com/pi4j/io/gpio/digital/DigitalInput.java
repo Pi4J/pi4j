@@ -9,7 +9,7 @@ import com.pi4j.io.Input;
  * a configured pull resistance and debounce interval. This is the read-only digital counterpart configured via
  * {@link DigitalInputConfig}.
  */
-public interface DigitalInput extends Digital<DigitalInput, DigitalInputConfig>, Input {
+public interface DigitalInput extends Digital<DigitalInputConfig>, Input {
     /** Default debounce interval in microseconds applied to state-change detection. */
     long DEFAULT_DEBOUNCE = 10000;
 
