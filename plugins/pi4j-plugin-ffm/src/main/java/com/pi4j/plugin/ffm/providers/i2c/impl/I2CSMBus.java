@@ -39,7 +39,7 @@ public final class I2CSMBus extends AbstractI2C {
      * @param i2CBus  the shared {@link FFMI2CBus} wrapping the open {@code /dev/i2c-N} file descriptor
      * @param onClose an optional close handler
      */
-    public I2CSMBus(I2CConfig config, FFMI2CBus i2CBus, Consumer<I2C> onClose) {
+    public I2CSMBus(I2CConfig config, FFMI2CBus i2CBus, Consumer<? super I2CSMBus> onClose) {
         super(config, i2CBus, onClose);
     }
 
@@ -50,10 +50,10 @@ public final class I2CSMBus extends AbstractI2C {
      * delegating to the superclass initialization.
      */
     @Override
-    public I2C applyInitialState() throws InitializeException {
+    public void applyInitialState() throws InitializeException {
         i2CBus.selectDevice(config.device());
         logger.debug("{} - selected device '{}'", i2CBus.getBusName(), Integer.toHexString(config.device()));
-        return super.applyInitialState();
+        super.applyInitialState();
     }
 
     /**

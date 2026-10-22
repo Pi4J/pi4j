@@ -14,14 +14,18 @@ import java.util.function.Consumer;
  * (id, name, description) from that configuration, and stores an onClose callback so that {@link #close()} reliably
  * unregisters and shuts the instance down exactly once.
  *
- * @param <IO_TYPE>       the concrete I/O type, returned by the fluent identity setters for chaining
  * @param <CONFIG_TYPE>   the {@link IOConfig} type describing this instance
  */
-public abstract class IOBase<IO_TYPE extends IO<IO_TYPE, CONFIG_TYPE>, CONFIG_TYPE extends IOConfig>
-        extends IdentityBase implements IO<IO_TYPE, CONFIG_TYPE>, Closeable {
+public abstract class IOBase<CONFIG_TYPE extends IOConfig>
+        extends IdentityBase implements IO<CONFIG_TYPE>, Closeable {
 
     protected final CONFIG_TYPE config;
-    protected final Consumer<IO_TYPE> onClose;
+
+    // Consumer is contravariant, so we can set the concrete type only in concrete subclasses. There, it should be
+    // Consumer<? super MySpecificImplementationType>. The type needs to be as "special" as possible, so all super
+    // classes including itself can be used in the consuming method.
+    @SuppressWarnings("rawtypes")
+    protected final Consumer onClose;
     // close() requires idempotency.
     protected boolean closed = false;
 
@@ -31,35 +35,13 @@ public abstract class IOBase<IO_TYPE extends IO<IO_TYPE, CONFIG_TYPE>, CONFIG_TY
      *
      * @param config the configuration defining this instance's identity and properties
      */
-    protected IOBase(CONFIG_TYPE config, Consumer<IO_TYPE> onClose){
+    protected IOBase(CONFIG_TYPE config, Consumer<?> onClose){
         super();
         this.id = config.id();
         this.name = config.name();
         this.description = config.description();
         this.config = config;
         this.onClose = onClose;
-    }
-
-    /**
-     * Returns this builder instance cast to the generic type {@code T}.
-     * This supports method chaining in subclasses without requiring explicit casts.
-     *
-     * @return this builder instance
-     */
-    protected IO_TYPE self() {
-        return (IO_TYPE) this;
-    }
-
-    @Override
-    public IO_TYPE name(String name){
-        this.name = name;
-        return self();
-    }
-
-    @Override
-    public IO_TYPE description(String description){
-        this.description = description;
-        return self();
     }
 
     /**
@@ -80,7 +62,7 @@ public abstract class IOBase<IO_TYPE extends IO<IO_TYPE, CONFIG_TYPE>, CONFIG_TY
         closed = true;
         // The null check accounts for tests without an onClose callback
         if (this.onClose != null) {
-            this.onClose.accept(self());
+            this.onClose.accept(this);
         }
     }
 

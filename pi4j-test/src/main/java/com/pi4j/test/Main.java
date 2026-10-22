@@ -73,7 +73,8 @@ public class Main {
             DigitalInputDebounceTimeTestCase.run(providerContext),
             DigitalInputDebounceCountTestCase.run(providerContext),
             DigitalInputMultipleListenersTestCase.run(providerContext),
-            ParallelPortTestCase.run(providerContext)
+            ParallelPortTestCase.run(providerContext),
+            ParallelPortTestEventsCase.run(providerContext)
         );
 
         // Overall results

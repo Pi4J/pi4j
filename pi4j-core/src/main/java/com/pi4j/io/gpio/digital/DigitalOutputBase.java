@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  * configured initial and shutdown states. Concrete providers extend this class and override {@link #state(DigitalState)} to
  * actually drive the hardware.
  */
-public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, DigitalOutputConfig> implements DigitalOutput {
+public abstract class DigitalOutputBase extends DigitalBase<DigitalOutputConfig> implements DigitalOutput {
 
     /** The current cached state of this output; {@link DigitalState#UNKNOWN} until first set. */
     protected DigitalState state = DigitalState.UNKNOWN;
@@ -23,7 +23,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
      * @param config  the configuration describing the pin address, initial state, shutdown state and identity
      * @param onClose optional close handler
      */
-    protected DigitalOutputBase(DigitalOutputConfig config, Consumer<DigitalOutput> onClose) {
+    protected DigitalOutputBase(DigitalOutputConfig config, Consumer<?> onClose) {
         super(config, onClose);
     }
 
@@ -36,7 +36,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
      * @throws InitializeException if base initialization fails or the initial state cannot be written
      */
     @Override
-    public DigitalOutput applyInitialState() throws InitializeException {
+    public void applyInitialState() throws InitializeException {
         super.applyInitialState();
 
         // update the value to the initial value if an initial value was configured
@@ -47,8 +47,6 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
                 throw new InitializeException(e);
             }
         }
-
-        return this;
     }
 
     /**
@@ -59,7 +57,6 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
      */
     @Override
     public DigitalOutput state(DigitalState state) throws IOException {
-
         if (!this.state.equals(state)) {
             this.state = state;
             if (this.hasListenersOrBindings()) {
@@ -105,7 +102,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
      * {@link DigitalState#HIGH} when none is configured.
      */
     @Override
-    public DigitalOutput on() throws IOException {
+    public void on() throws IOException {
 
         // the default ON state is HIGH
         DigitalState onState = DigitalState.HIGH;
@@ -116,7 +113,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
         }
 
         // set the current state to the configured ON state
-        return state(onState);
+        state(onState);
     }
 
     /**
@@ -126,7 +123,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
      * {@link DigitalState#LOW} when no on-state is configured.
      */
     @Override
-    public DigitalOutput off() throws IOException {
+    public void off() throws IOException {
         // the default OFF state is LOW
         DigitalState offState = DigitalState.LOW;
 
@@ -136,7 +133,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutput, Digit
         }
 
         // set the current state to the configured OFF state
-        return state(offState);
+        state(offState);
     }
 
 }

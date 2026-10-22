@@ -7,14 +7,14 @@ import java.util.function.Consumer;
  * with the digital-input type parameters. Provider-specific subclasses extend this to supply the
  * actual hardware or expander read behaviour.
  */
-public abstract class DigitalInputBase extends DigitalBase<DigitalInput, DigitalInputConfig> implements DigitalInput {
+public abstract class DigitalInputBase extends DigitalBase<DigitalInputConfig> implements DigitalInput {
     /**
      * Creates a digital input bound to the given provider and configuration.
      *
      * @param config  the configuration describing this input (pin, pull resistance, debounce, etc.)
      * @param onClose an optional close handler
      */
-    protected DigitalInputBase(DigitalInputConfig config, Consumer<DigitalInput> onClose){
+    protected DigitalInputBase(DigitalInputConfig config, Consumer<?> onClose){
         super(config, onClose);
     }
 }

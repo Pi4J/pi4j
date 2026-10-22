@@ -30,7 +30,7 @@ public final class I2CDirect extends AbstractI2C {
      * @param i2CBus  the shared {@link FFMI2CBus} whose file descriptor carries the transfers
      * @param onClose the optional close handler
      */
-    public I2CDirect(I2CConfig config, FFMI2CBus i2CBus, Consumer<I2C> onClose) {
+    public I2CDirect(I2CConfig config, FFMI2CBus i2CBus, Consumer<? super I2CDirect> onClose) {
         super(config, i2CBus, onClose);
     }
 

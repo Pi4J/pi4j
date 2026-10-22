@@ -11,7 +11,7 @@ import java.util.function.Consumer;
  * {@link IOBase}. Concrete providers extend this class and implement the actual byte-transfer logic
  * defined by {@link Spi}.
  */
-public abstract class SpiBase extends IOBase<Spi, SpiConfig> implements Spi {
+public abstract class SpiBase extends IOBase<SpiConfig> implements Spi {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -21,7 +21,7 @@ public abstract class SpiBase extends IOBase<Spi, SpiConfig> implements Spi {
      * @param config  the {@link SpiConfig} describing the bus, channel, mode, and clock settings to use
      * @param onClose an optional close handler
      */
-    protected SpiBase(SpiConfig config, Consumer<Spi> onClose) {
+    protected SpiBase(SpiConfig config, Consumer<?> onClose) {
         super(config, onClose);
     }
 

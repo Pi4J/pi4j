@@ -35,7 +35,7 @@ public class MockSpi extends SpiBase implements Spi {
      * @param config  the {@link SpiConfig} describing the SPI channel and baud rate
      * @param onClose an optional close handler
      */
-    public MockSpi(SpiConfig config, Consumer<Spi> onClose) {
+    public MockSpi(SpiConfig config, Consumer<? super MockSpi> onClose) {
         super(config, onClose);
         logPreamble = "[" + Mock.SPI_PROVIDER_NAME + "::" + this.id + "] ::";
         logger.info("{} OPEN(CHANNEL={}; BAUD={})", logPreamble, config.channel(), config.baud());

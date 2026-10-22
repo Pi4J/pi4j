@@ -9,7 +9,7 @@ import com.pi4j.event.Event;
  * @param <DIGITAL_TYPE> the concrete {@link Digital} type that is the source of the event
  * @param <CONFIG_TYPE> the {@link DigitalConfig} type of the source
  */
-public interface DigitalEvent<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE>,
+public interface DigitalEvent<DIGITAL_TYPE extends Digital<CONFIG_TYPE>,
         CONFIG_TYPE extends DigitalConfig>
         extends Event {
     /**

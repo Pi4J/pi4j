@@ -21,7 +21,7 @@ public class FFMPwm {
      * @param config   the PWM configuration supplying the chip number, channel and optional initial
      *                 duty cycle, polarity and frequency
      */
-    public static Pwm create(Consumer<Pwm> onClose, PwmConfig config) {
+    public static Pwm create(PwmConfig config, Consumer<? super Pwm> onClose) {
         if (config.pwmType() != PwmType.HARDWARE) {
             throw new IOException("The FFM PWM provider only supports HARDWARE PWM");
         }

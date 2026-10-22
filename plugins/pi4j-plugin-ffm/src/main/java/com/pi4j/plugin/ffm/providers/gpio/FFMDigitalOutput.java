@@ -30,12 +30,12 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
      * Creates a digital output bound to a GPIO line. Resolves the target device path
      * ({@code /dev/gpiochip} + the configured bus number), captures the BCM line offset from the
      * configuration, and verifies that the current user has the required permissions on the device
-     * file. The line itself is not requested until {@link com.pi4j.io.IOBase#initialize()} is called.
+     * file. The line itself is not requested until {@link #applyInitialState()} is called.
      *
      * @param config the {@link DigitalOutputConfig} supplying the BCM line offset, bus number and
      *               initial state
      */
-    public FFMDigitalOutput(DigitalOutputConfig config, Consumer<DigitalOutput> onClose) {
+    public FFMDigitalOutput(DigitalOutputConfig config, Consumer<? super FFMDigitalOutput> onClose) {
         super(config, onClose);
         this.line = new FFMGpioLine(MaskUtils.mask(config.bcm()), config.bus());
         FFMPermissionHelper.checkDevicePermissions(line.deviceName, config);
@@ -54,7 +54,7 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
      *                             native {@code ioctl}/open call fails
      */
     @Override
-    public DigitalOutput applyInitialState() throws InitializeException {
+    public void applyInitialState() throws InitializeException {
         var flags = PinFlag.OUTPUT.getValue();
         var attributes = new ArrayList<LineConfigAttribute>();
         var initialState = config().initialState();
@@ -75,7 +75,7 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
             throw e;
         }
         logger.info("{}-{} - DigitalOutput BCM configured.", line.deviceName, line.mask);
-        return super.applyInitialState();
+        super.applyInitialState();
     }
 
     /**

@@ -20,7 +20,7 @@ import java.util.function.Consumer;
  * {@link com.pi4j.io.IO} implementations.
  */
 public abstract class ParallelPortBase
-    extends IOBase<ParallelPort, ParallelPortConfig>
+    extends IOBase<ParallelPortConfig>
     implements ParallelPort {
 
     private final int mask;
@@ -31,7 +31,7 @@ public abstract class ParallelPortBase
         this, PinStateChangeListener::onPinStateChanged
     );
 
-    protected ParallelPortBase(ParallelPortConfig config, Consumer<ParallelPort> onClose) {
+    protected ParallelPortBase(ParallelPortConfig config, Consumer onClose) {
         super(config, onClose);
         this.mask = (int) MaskUtils.packed(config.mask());
         this.direction = config.initialDirection();

@@ -52,7 +52,7 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
      * @param config  the {@link I2CConfig} identifying the simulated bus and device address
      * @param onClose an optional close handler
      */
-    public MockI2C(I2CConfig config, Consumer<I2C> onClose){
+    public MockI2C(I2CConfig config, Consumer<? super MockI2C> onClose){
         super(config, new MockI2CBus(config), onClose);
         logger.debug("[{}::{}] :: CREATE(BUS={}; DEVICE={})",
             Mock.I2C_PROVIDER_NAME, this.id, config.bus(), config.device());

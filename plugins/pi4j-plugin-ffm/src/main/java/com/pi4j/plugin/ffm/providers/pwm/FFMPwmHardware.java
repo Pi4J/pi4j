@@ -87,7 +87,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
     private int polarityFd = -1;
 
 
-    FFMPwmHardware(PwmConfig config, Consumer<Pwm> onClose) {
+    FFMPwmHardware(PwmConfig config, Consumer<? super FFMPwmHardware> onClose) {
         super(config, onClose);
         this.chip = config.chip();
         this.channel = config.channel();
@@ -106,7 +106,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
      *                                  exported channel directory does not appear within the timeout
      */
     @Override
-    public Pwm applyInitialState() throws InitializeException {
+    public void applyInitialState() throws InitializeException {
         var pwmChipFile = CHIP_PATH + chip;
 
         var pwmFile = pwmChipFile + PWM_PATH + channel;
@@ -167,7 +167,6 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         super.applyInitialState();
 
         logger.debug("{} - pwm setup finished. Initial state: {}", pwmPath, this.onState ? "on" : "off");
-        return this;
     }
 
     /**
@@ -181,7 +180,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
      * @throws Pi4JException if the configured frequency is negative
      */
     @Override
-    public Pwm on() throws IOException {
+    public void on() throws IOException {
         if (onState) {
             logger.debug("{} - PWM Bus is already enabled. Settings will be re-applied to apply any change.", pwmPath);
         }
@@ -209,19 +208,16 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         writeAttribute(enableFd, ENABLE);
 
         this.onState = true;
-
-        return this;
     }
 
     @Override
-    public Pwm off() throws IOException {
+    public void off() throws IOException {
         if (!onState) {
             logger.warn("{} - PWM is already disabled.", pwmPath);
-            return this;
+            return;
         }
         writeAttribute(enableFd, DISABLE);
         this.onState = false;
-        return this;
     }
 
     /**

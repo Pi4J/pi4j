@@ -18,10 +18,10 @@ public class MockPwm extends PwmBase implements Pwm {
     /**
      * Creates a mock PWM instance for the given provider and configuration.
      *
-     * @param onClose an optional close handler
      * @param config the {@link PwmConfig} describing the PWM channel, frequency and duty cycle
+     * @param onClose an optional close handler
      */
-    public MockPwm(Consumer<Pwm> onClose, PwmConfig config){
+    public MockPwm(PwmConfig config, Consumer<? super MockPwm> onClose){
         super(config, onClose);
     }
 
@@ -32,9 +32,8 @@ public class MockPwm extends PwmBase implements Pwm {
      * is produced.
      */
     @Override
-    public Pwm on() throws IOException {
+    public void on() throws IOException {
         this.onState = true;
-        return this;
     }
 
     /**
@@ -44,8 +43,7 @@ public class MockPwm extends PwmBase implements Pwm {
      * is produced.
      */
     @Override
-    public Pwm off() throws IOException {
+    public void off() throws IOException {
         this.onState = false;
-        return this;
     }
 }

@@ -13,7 +13,7 @@ import java.util.function.Consumer;
  *
  * @param <T> the concrete {@link I2CBus} type this device communicates over
  */
-public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig> implements I2C {
+public abstract class I2CBase<T extends I2CBus> extends IOBase<I2CConfig> implements I2C {
 
     protected final T i2CBus;
 
@@ -24,7 +24,7 @@ public abstract class I2CBase<T extends I2CBus> extends IOBase<I2C, I2CConfig> i
      * @param i2CBus  the bus instance used to serialize access for this device
      * @param onClose an optional close handler
      */
-    protected I2CBase(I2CConfig config, T i2CBus, Consumer<I2C> onClose) {
+    protected I2CBase(I2CConfig config, T i2CBus, Consumer<?> onClose) {
         super(config, onClose);
         this.i2CBus = i2CBus;
     }

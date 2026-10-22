@@ -30,7 +30,7 @@ abstract sealed class AbstractI2C extends I2CBase<FFMI2CBus> permits I2CDirect, 
      * @param i2CBus  the bus instance used to serialize access for this device
      * @param onClose an optional close handler
      */
-    protected AbstractI2C(I2CConfig config, FFMI2CBus i2CBus, Consumer<I2C> onClose) {
+    protected AbstractI2C(I2CConfig config, FFMI2CBus i2CBus, Consumer<?> onClose) {
         super(config, i2CBus, onClose);
     }
 

@@ -8,7 +8,7 @@ import com.pi4j.io.IOConfig;
  * Immutable configuration for a {@link Pwm} instance. It carries the addressing
  * (chip, channel and/or BCM pin), the generator {@link PwmType}, the
  * {@link PwmPolarity}, the initial frequency and duty-cycle, optional initial and
- * shutdown values. Instances are assembled with a {@link PwmConfigBuilder} and consumed by a {@link PwmProvider} when
+ * shutdown values. Instances are assembled with a {@link PwmConfigBuilder} and consumed by the {@link com.pi4j.context.Context} when
  * creating the PWM I/O.
  */
 public interface PwmConfig extends BcmConfig, IOConfig {
