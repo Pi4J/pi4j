@@ -2,7 +2,6 @@ package com.pi4j.plugin.ffm.providers.gpio;
 
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
-import com.pi4j.plugin.ffm.common.gpio.DetectedEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinEventProcessing;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineEvent;
@@ -20,7 +19,7 @@ import java.util.List;
 /**
  * Runnable that blocks in a native {@code poll()} on the requested GPIO line file descriptor,
  * reads {@code struct gpio_v2_line_event} records as they arrive, applies optional software
- * debounce, and hands the resulting {@link DetectedEvent} list to a {@link PinEventProcessing}
+ * debounce, and hands the resulting {@link LineEvent} list to a {@link PinEventProcessing}
  * callback. It runs until {@link #stopWatching()} is called.
  */
 public class EventWatcher implements Runnable {
@@ -55,8 +54,8 @@ public class EventWatcher implements Runnable {
     public void run() {
         var eventSize = (int) LineEvent.LAYOUT.byteSize();
         var timestamp = Instant.now();
-        List<DetectedEvent> eventList = new ArrayList<>();
-        DetectedEvent lastDebouncedEvent = null;
+        List<LineEvent> eventList = new ArrayList<>();
+        LineEvent lastDebouncedEvent = null;
         PinEvent lastDebouncedState = null;
         long lastEventReceivedTimeNs = 0;
         logger.trace("{} - Start polling GPIO data on offset {} at {}",
@@ -115,15 +114,13 @@ public class EventWatcher implements Runnable {
                             var pinEventType = PinEvent.getByValue(event.id());
                             logger.trace("{} - Processing event on offset {}: {}",
                                 Thread.currentThread().getName(), mask, pinEventType);
-                            DetectedEvent detectedEvent =
-                                new DetectedEvent(event.timestampNs(), pinEventType, event.lineSeqno(), event.offset());
                             if (debounceNs > 0) {
                                 if (lastDebouncedEvent == null) {
                                     logger.trace("{} - Starting debounce period on offset {} for {}",
                                         Thread.currentThread().getName(), mask, pinEventType);
                                 } else {
                                     long timeSinceLastEventNs =
-                                        detectedEvent.timestampInNanos() - lastDebouncedEvent.timestampInNanos();
+                                        event.timestampNs() - lastDebouncedEvent.timestampNs();
                                     if (timeSinceLastEventNs < debounceNs) {
                                         logger.trace(
                                             "{} - Event on offset {} within debounce period ({}ns < {}ns), updating to latest",
@@ -139,11 +136,11 @@ public class EventWatcher implements Runnable {
                                         }
                                     }
                                 }
-                                lastDebouncedEvent = detectedEvent;
+                                lastDebouncedEvent = event;
                                 lastDebouncedState = pinEventType;
                                 lastEventReceivedTimeNs = System.nanoTime();
                             } else {
-                                eventList.add(detectedEvent);
+                                eventList.add(event);
                             }
                         }
                     }

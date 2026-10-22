@@ -1,14 +1,12 @@
 package com.pi4j.plugin.ffm.common.gpio;
 
 
-import java.util.Arrays;
-
 /**
  * GPIO line edge event types that can be subscribed to and reported back on a pin state change. The integer values
  * correspond to the kernel {@code GPIOEVENT_EVENT_*}/{@code GPIOEVENT_REQUEST_*} bits in {@link GpioConstants}.
  *
  * @see PinEventProcessing
- * @see DetectedEvent
+ * @see com.pi4j.plugin.ffm.common.gpio.structs.LineEvent
  */
 public enum PinEvent {
     /**
@@ -52,6 +50,11 @@ public enum PinEvent {
      * @throws java.util.NoSuchElementException if no constant has the given value
      */
     public static PinEvent getByValue(int value) {
-        return Arrays.stream(values()).filter(v -> v.getValue() == value).findFirst().orElseThrow();
+        return switch (value) {
+            case 1 -> RISING;
+            case 2 -> FALLING;
+            case 3 -> BOTH;
+            default -> throw new IllegalArgumentException("Invalid PinEvent value: " + value);
+        };
     }
 }
