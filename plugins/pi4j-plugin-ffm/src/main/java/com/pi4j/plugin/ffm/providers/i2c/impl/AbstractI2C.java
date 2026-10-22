@@ -1,6 +1,5 @@
 package com.pi4j.plugin.ffm.providers.i2c.impl;
 
-import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CBase;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CBus;

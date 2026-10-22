@@ -1,7 +1,6 @@
 package com.pi4j.plugin.ffm.providers.i2c.impl;
 
 import com.pi4j.io.exception.IOReadException;
-import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.plugin.ffm.common.i2c.I2cConstants;
 import com.pi4j.plugin.ffm.common.i2c.rdwr.I2CMessage;
