@@ -9,7 +9,7 @@ import java.util.Objects;
 /**
  * A {@link com.pi4j.io.IO} which is capable of reading and writing multiple bits to a device.
  */
-public interface ParallelPort extends com.pi4j.io.IO<ParallelPort, ParallelPortConfig> {
+public interface ParallelPort extends com.pi4j.io.IO<ParallelPortConfig> {
 
     /**
      * Enumeration representing the direction of the parallel port.

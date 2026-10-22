@@ -50,10 +50,10 @@ public final class I2CSMBus extends AbstractI2C {
      * delegating to the superclass initialization.
      */
     @Override
-    public I2C applyInitialState() throws InitializeException {
+    public void applyInitialState() throws InitializeException {
         i2CBus.selectDevice(config.device());
         logger.debug("{} - selected device '{}'", i2CBus.getBusName(), Integer.toHexString(config.device()));
-        return super.applyInitialState();
+        super.applyInitialState();
     }
 
     /**

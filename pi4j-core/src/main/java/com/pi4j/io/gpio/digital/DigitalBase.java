@@ -13,16 +13,14 @@ import java.util.function.Consumer;
  * {@link DigitalInputBase} build on this to add their specific I/O behaviour, while the
  * generic {@link IOBase} supplies the common GPIO lifecycle support.
  *
- * @param <DIGITAL_TYPE> the concrete digital I/O type, used as the self-referencing return type for fluent methods
  * @param <CONFIG_TYPE> the {@link DigitalConfig} type describing this instance
  */
-public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CONFIG_TYPE>,
-        CONFIG_TYPE extends DigitalConfig>
-        extends IOBase<DIGITAL_TYPE, CONFIG_TYPE>
-        implements Digital<DIGITAL_TYPE, CONFIG_TYPE>
+public abstract class DigitalBase<CONFIG_TYPE extends DigitalConfig>
+        extends IOBase<CONFIG_TYPE>
+        implements Digital<CONFIG_TYPE>
 {
     // internal listeners collection
-    protected final EventManager<DIGITAL_TYPE, DigitalStateChangeListener, DigitalStateChangeEvent> stateChangeEventManager;
+    protected final EventManager<Digital, DigitalStateChangeListener, DigitalStateChangeEvent> stateChangeEventManager;
 
     /**
      * Creates a digital I/O instance bound to the given provider and configuration, and initializes
@@ -47,23 +45,20 @@ public abstract class DigitalBase<DIGITAL_TYPE extends Digital<DIGITAL_TYPE, CON
     }
 
     @Override
-    public DIGITAL_TYPE removeConsumer(Consumer<Boolean> listener) {
+    public void removeConsumer(Consumer<Boolean> listener) {
         stateChangeEventManager.remove(
             (candidate) -> (candidate instanceof ConsumerAdapter)
                 && ((ConsumerAdapter) candidate).consumer == listener);
-        return (DIGITAL_TYPE) this;
     }
 
     @Override
-    public DIGITAL_TYPE addListener(DigitalStateChangeListener... listener) {
+    public void addListener(DigitalStateChangeListener... listener) {
         stateChangeEventManager.add(listener);
-        return (DIGITAL_TYPE)this;
     }
 
     @Override
-    public DIGITAL_TYPE removeListener(DigitalStateChangeListener... listener) {
+    public void removeListener(DigitalStateChangeListener... listener) {
         stateChangeEventManager.remove(listener);
-        return (DIGITAL_TYPE)this;
     }
 
     /**

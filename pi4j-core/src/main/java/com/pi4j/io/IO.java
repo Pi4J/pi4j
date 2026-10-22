@@ -12,10 +12,9 @@ import java.io.Closeable;
  * ({@link Identity}) and self-description ({@link Describable}) and is closeable so that it can be released when no
  * longer needed.
  *
- * @param <IO_TYPE>       the concrete I/O type, returned by the fluent identity setters for chaining
  * @param <CONFIG_TYPE>   the {@link IOConfig} type that describes and creates this I/O instance
  */
-public interface IO<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig>
+public interface IO<CONFIG_TYPE extends IOConfig>
         extends Describable, Identity, Closeable {
 
     /**
@@ -46,24 +45,6 @@ public interface IO<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig>
      */
     default IOType type() { return IOType.getByIOClass(this.getClass()); }
 
-    // TODO :: RECONCILE IDENTITY PROPERTIES BETWEEN IO INSTANCE AND UNDERLYING CONFIG; PROBABLY NEED TO REMOVE THESE SETTERS
-
-    /**
-     * Sets the human-readable name of this I/O instance.
-     *
-     * @param name the display name to assign
-     * @return this instance for method chaining
-     */
-    IO_TYPE name(String name);
-
-    /**
-     * Sets the human-readable description of this I/O instance.
-     *
-     * @param description the descriptive text to assign
-     * @return this instance for method chaining
-     */
-    IO_TYPE description(String description);
-
     /**
      * Applies the initial state of this I/O instance as set in the configuration as part of the IO initialization.
      * This can't be part of the constructor as it typically requires the instance to be fully initialized.
@@ -71,7 +52,5 @@ public interface IO<IO_TYPE extends IO, CONFIG_TYPE extends IOConfig>
      * Note: This is called internally during IO instance registration. This is not intended for outside use.
      * It might have side effects on the underlying hardware if called outside the expected initialization process.
      */
-    default IO_TYPE applyInitialState() {
-        return (IO_TYPE) this;
-    }
+    default void applyInitialState() { }
 }

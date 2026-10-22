@@ -244,7 +244,7 @@ public abstract class DefaultContext implements Context {
     }
 
     @Override
-    public <I extends IO<?, ?>> I create(IOConfig config, IOType type) {
+    public <I extends IO<?>> I create(IOConfig config, IOType type) {
         I io = (I) createImpl(config, type);
         register(io);
         return io;
@@ -254,5 +254,5 @@ public abstract class DefaultContext implements Context {
      * Context implementations must override this method to crate IO instances. Registration is handled by
      * the caller.
      */
-    protected abstract IO<?,?> createImpl(IOConfig config, IOType type);
+    protected abstract IO<?> createImpl(IOConfig config, IOType type);
 }

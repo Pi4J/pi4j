@@ -79,7 +79,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      *                             {@code ioctl}/open call fails
      */
     @Override
-    public DigitalInput applyInitialState() throws InitializeException {
+    public void applyInitialState() throws InitializeException {
         super.applyInitialState();
         var flags = PinFlag.INPUT.getValue() | PinFlag.EDGE_RISING.getValue() | PinFlag.EDGE_FALLING.getValue();
         var attributes = getLineConfigAttributes();
@@ -95,7 +95,6 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             throw e;
         }
         logger.info("{}-{} - DigitalInput offset configured.", line.deviceName, line.mask);
-        return this;
     }
 
     private ArrayList<LineConfigAttribute> getLineConfigAttributes() {
@@ -120,7 +119,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      * factory and executor; each call adds a new watcher.
      */
     @Override
-    public DigitalInput addListener(DigitalStateChangeListener... listener) {
+    public void addListener(DigitalStateChangeListener... listener) {
         logger.trace("{}-{} - Adding new listener", line.deviceName, line.mask);
         // add listener first to avoid race with event dispatch
         super.addListener(listener);
@@ -146,7 +145,6 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             eventTaskProcessor.submit(watcher);
         }
         logger.trace("{}-{} - New listener added", line.deviceName, line.mask);
-        return this;
     }
 
     /**
@@ -156,12 +154,11 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      * removal of the listeners to the superclass.
      */
     @Override
-    public DigitalInput removeListener(DigitalStateChangeListener... listeners) {
+    public void removeListener(DigitalStateChangeListener... listeners) {
         super.removeListener(listeners);
         if (!stateChangeEventManager.hasListeners()) {
             watcher.stopWatching();
         }
-        return this;
     }
 
     /**

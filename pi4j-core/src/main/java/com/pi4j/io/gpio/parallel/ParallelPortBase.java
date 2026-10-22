@@ -19,7 +19,7 @@ import com.pi4j.io.gpio.MaskUtils;
  * {@link com.pi4j.io.IO} implementations.
  */
 public abstract class ParallelPortBase
-    extends IOBase<ParallelPort, ParallelPortConfig>
+    extends IOBase<ParallelPortConfig>
     implements ParallelPort {
 
     private final int mask;

@@ -15,9 +15,9 @@ import java.util.concurrent.TimeUnit;
  * convenience operations such as {@link #toggle()}, timed {@link #pulse(int, TimeUnit)} and repeating
  * {@link #blink(int, TimeUnit)}, each with blocking and asynchronous variants.
  */
-public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfig>,
+public interface DigitalOutput extends Digital<DigitalOutputConfig>,
         Output,
-        OnOff<DigitalOutput> {
+        OnOff {
 
     /**
      * Creates a new {@link DigitalOutputConfigBuilder} for assembling a {@link DigitalOutputConfig}.
@@ -191,12 +191,10 @@ public interface DigitalOutput extends Digital<DigitalOutput, DigitalOutputConfi
     /**
      * Inverts the current output state, switching {@link DigitalState#HIGH} to {@link DigitalState#LOW} and
      * vice versa.
-     *
-     * @return this instance for method chaining
      * @throws IOException if the underlying hardware cannot be written
      */
-    default DigitalOutput toggle() throws IOException {
-        return this.state(DigitalState.getInverseState(this.state()));
+    default void toggle() throws IOException {
+        this.state(DigitalState.getInverseState(this.state()));
     }
 
     /**

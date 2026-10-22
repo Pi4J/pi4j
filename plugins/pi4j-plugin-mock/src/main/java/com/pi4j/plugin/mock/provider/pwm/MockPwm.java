@@ -30,9 +30,8 @@ public class MockPwm extends PwmBase implements Pwm {
      * is produced.
      */
     @Override
-    public Pwm on() throws IOException {
+    public void on() throws IOException {
         this.onState = true;
-        return this;
     }
 
     /**
@@ -42,8 +41,7 @@ public class MockPwm extends PwmBase implements Pwm {
      * is produced.
      */
     @Override
-    public Pwm off() throws IOException {
+    public void off() throws IOException {
         this.onState = false;
-        return this;
     }
 }

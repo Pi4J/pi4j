@@ -14,7 +14,7 @@ import java.util.concurrent.Callable;
  * bus operations through {@link #execute(Callable)}.
  */
 public interface I2C
-    extends IO<I2C, I2CConfig>, IODataWriter, IODataReader, I2CRegisterDataReaderWriter, SerialCircuitIO, AutoCloseable {
+    extends IO<I2CConfig>, IODataWriter, IODataReader, I2CRegisterDataReaderWriter, SerialCircuitIO, AutoCloseable {
 
     // Override to remove checked exception declaration
     @Override

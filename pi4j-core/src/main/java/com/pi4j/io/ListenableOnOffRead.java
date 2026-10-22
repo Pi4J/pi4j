@@ -10,10 +10,8 @@ import java.util.function.Consumer;
  * It provides a lightweight {@link com.pi4j.io.gpio.digital.DigitalInput} abstraction that can stand in
  * for a "real" digital input, for example when exposing I/O pins managed by I/O expanders to drivers.
  * A ready-made {@link Impl} implementation is supplied for that purpose.
- *
- * @param <T> the concrete type returned by the fluent operations; see {@link OnOffRead}
  */
-public interface ListenableOnOffRead<T> extends OnOffRead<T> {
+public interface ListenableOnOffRead extends OnOffRead {
 
     /**
      * Registers a listener to be notified with the new on/off state whenever the state changes.
@@ -30,16 +28,15 @@ public interface ListenableOnOffRead<T> extends OnOffRead<T> {
      * Removes a previously registered listener.
      *
      * @param listener the listener to remove
-     * @return this instance for method chaining
      */
-    T removeConsumer(Consumer<Boolean> listener);
+    void removeConsumer(Consumer<Boolean> listener);
 
     /**
      * A simple in-memory {@link ListenableOnOffRead} that also supports writing via {@link OnOff},
      * notifying registered listeners whenever a state-changing {@code on()}/{@code off()}/{@code setState()}
      * call actually changes the current state.
      */
-    final class Impl implements ListenableOnOffRead<Impl>, OnOff<Impl> {
+    final class Impl implements ListenableOnOffRead, OnOff {
         private List<Consumer<Boolean>> listeners = new ArrayList<>();
         private boolean state;
 
@@ -60,24 +57,23 @@ public interface ListenableOnOffRead<T> extends OnOffRead<T> {
         }
 
         @Override
-        public Impl on() throws IOException {
-            return setState(true);
+        public void on() throws IOException {
+            setState(true);
         }
 
         @Override
-        public Impl off() throws IOException {
-            return setState(false);
+        public void off() throws IOException {
+            setState(false);
         }
 
         @Override
-        public Impl setState(boolean newState) {
+        public void setState(boolean newState) {
             if (state != newState) {
                 state = newState;
                 for (Consumer<Boolean> listener: listeners) {
                     listener.accept(newState);
                 }
             }
-            return this;
         }
 
         @Override
@@ -92,9 +88,8 @@ public interface ListenableOnOffRead<T> extends OnOffRead<T> {
         }
 
         @Override
-        public Impl removeConsumer(Consumer<Boolean> listener) {
+        public void removeConsumer(Consumer<Boolean> listener) {
             listeners.remove(listener);
-            return this;
         }
     }
 }

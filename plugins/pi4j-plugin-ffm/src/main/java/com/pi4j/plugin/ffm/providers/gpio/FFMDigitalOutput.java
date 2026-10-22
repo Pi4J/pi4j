@@ -54,7 +54,7 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
      *                             native {@code ioctl}/open call fails
      */
     @Override
-    public DigitalOutput applyInitialState() throws InitializeException {
+    public void applyInitialState() throws InitializeException {
         var flags = PinFlag.OUTPUT.getValue();
         var attributes = new ArrayList<LineConfigAttribute>();
         var initialState = config().initialState();
@@ -75,7 +75,7 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
             throw e;
         }
         logger.info("{}-{} - DigitalOutput BCM configured.", line.deviceName, line.mask);
-        return super.applyInitialState();
+        super.applyInitialState();
     }
 
     /**

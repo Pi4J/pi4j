@@ -87,11 +87,7 @@ public sealed class FFMParallelPort
     }
 
     @Override
-    public ParallelPort applyInitialState() {
-        if (gpioLine.chipFileDescriptor != 0) {
-            throw new IllegalStateException("Port is already initialized");
-        }
-
+    public void applyInitialState() throws InitializeException {
         if (config.initialDirection() == Direction.INPUT) {
             gpioLine.openAndRequest(inputLineConfig.flags(), List.of(inputLineConfig.attrs()), config.id());
             if (this.eventWatcher == null) {
@@ -120,7 +116,6 @@ public sealed class FFMParallelPort
         } else {
             gpioLine.openAndRequest(outputLineConfig.flags(), List.of(outputLineConfig.attrs()), config.id());
         }
-        return super.applyInitialState();
     }
 
     @Override
