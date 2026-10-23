@@ -1,6 +1,6 @@
 package com.pi4j.io.gpio.digital;
 
-import com.pi4j.context.Context;
+import java.util.function.Consumer;
 
 /**
  * Abstract base class for {@link DigitalInput} implementations, specializing {@link DigitalBase}
@@ -11,10 +11,10 @@ public abstract class DigitalInputBase extends DigitalBase<DigitalInputConfig> i
     /**
      * Creates a digital input bound to the given provider and configuration.
      *
-     * @param context the context this device belongs to
-     * @param config the configuration describing this input (pin, pull resistance, debounce, etc.)
+     * @param config  the configuration describing this input (pin, pull resistance, debounce, etc.)
+     * @param onClose an optional close handler
      */
-    protected DigitalInputBase(Context context, DigitalInputConfig config){
-        super(context, config);
+    protected DigitalInputBase(DigitalInputConfig config, Consumer<?> onClose){
+        super(config, onClose);
     }
 }

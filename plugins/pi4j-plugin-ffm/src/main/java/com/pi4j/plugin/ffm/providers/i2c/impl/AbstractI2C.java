@@ -1,9 +1,10 @@
 package com.pi4j.plugin.ffm.providers.i2c.impl;
 
-import com.pi4j.context.Context;
 import com.pi4j.io.i2c.I2CBase;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2CBus;
+
+import java.util.function.Consumer;
 
 /**
  * <p>This interface contains the basic I2C methods shared by classes in this provider
@@ -24,12 +25,12 @@ abstract sealed class AbstractI2C extends I2CBase<FFMI2CBus> permits I2CDirect, 
     /**
      * Creates an I2C device bound to the given provider, configuration and bus, marking it as open.
      *
-     * @param context the context this device belongs to
      * @param config  the configuration describing the bus and device address
      * @param i2CBus  the bus instance used to serialize access for this device
+     * @param onClose an optional close handler
      */
-    protected AbstractI2C(Context context, I2CConfig config, FFMI2CBus i2CBus) {
-        super(context, config, i2CBus);
+    protected AbstractI2C(I2CConfig config, FFMI2CBus i2CBus, Consumer<?> onClose) {
+        super(config, i2CBus, onClose);
     }
 
     /**

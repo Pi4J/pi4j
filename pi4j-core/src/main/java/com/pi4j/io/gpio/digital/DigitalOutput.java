@@ -193,6 +193,7 @@ public interface DigitalOutput extends Digital<DigitalOutputConfig>,
      * vice versa.
      * @throws IOException if the underlying hardware cannot be written
      */
+    @Override
     default void toggle() throws IOException {
         this.state(DigitalState.getInverseState(this.state()));
     }

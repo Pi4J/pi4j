@@ -1,13 +1,12 @@
 package com.pi4j.plugin.mock.provider.gpio.digital;
 
-
-import com.pi4j.context.Context;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.gpio.digital.DigitalOutputBase;
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.gpio.digital.DigitalState;
 
+import java.util.function.Consumer;
 
 /**
  * Mock, in-memory implementation of the pi4j-core {@link DigitalOutput} contract.
@@ -22,8 +21,8 @@ public class MockDigitalOutput extends DigitalOutputBase implements DigitalOutpu
      *
      * @param config the {@link DigitalOutputConfig} describing the pin and its initial/shutdown states
      */
-    public MockDigitalOutput(Context context, DigitalOutputConfig config){
-        super(context, config);
+    public MockDigitalOutput(DigitalOutputConfig config, Consumer<? super MockDigitalOutput> onClose){
+        super(config, onClose);
     }
 
     /**

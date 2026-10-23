@@ -1,17 +1,18 @@
 package com.pi4j.io;
 
 import com.pi4j.common.Descriptor;
+import com.pi4j.common.Identity;
 import com.pi4j.common.IdentityBase;
-import com.pi4j.context.Context;
 
 import java.io.Closeable;
+import java.util.function.Consumer;
 
 /**
  * Abstract base implementation of {@link IO} that the concrete I/O types build upon.
  * <p>
- * It stores the originating {@link IOConfig}, initializes its {@link com.pi4j.common.Identity}
- * (id, name, description) from that configuration, and integrates with the Pi4J {@link Context}
- * lifecycle so that {@link #close()} reliably unregisters and shuts the instance down exactly once.
+ * It stores the originating {@link IOConfig}, initializes its {@link Identity}
+ * (id, name, description) from that configuration, and stores an onClose callback so that {@link #close()} reliably
+ * unregisters and shuts the instance down exactly once.
  *
  * @param <CONFIG_TYPE>   the {@link IOConfig} type describing this instance
  */
@@ -19,7 +20,12 @@ public abstract class IOBase<CONFIG_TYPE extends IOConfig>
         extends IdentityBase implements IO<CONFIG_TYPE>, Closeable {
 
     protected final CONFIG_TYPE config;
-    protected final Context context;
+
+    // Consumer is contravariant, so we can set the concrete type only in concrete subclasses. There, it should be
+    // Consumer<? super MySpecificImplementationType>. The type needs to be as "special" as possible, so all super
+    // classes including itself can be used in the consuming method.
+    @SuppressWarnings("rawtypes")
+    protected final Consumer onClose;
     // close() requires idempotency.
     protected boolean closed = false;
 
@@ -27,15 +33,15 @@ public abstract class IOBase<CONFIG_TYPE extends IOConfig>
      * Creates a new I/O instance, copying the id, name and description from the supplied
      * configuration into this instance's identity.
      *
-     * @param config   the configuration defining this instance's identity and properties
+     * @param config the configuration defining this instance's identity and properties
      */
-    protected IOBase(Context context, CONFIG_TYPE config){
+    protected IOBase(CONFIG_TYPE config, Consumer<?> onClose){
         super();
         this.id = config.id();
         this.name = config.name();
         this.description = config.description();
         this.config = config;
-        this.context = context;
+        this.onClose = onClose;
     }
 
     /**
@@ -54,10 +60,9 @@ public abstract class IOBase<CONFIG_TYPE extends IOConfig>
             return;
         }
         closed = true;
-        // The null check accounts for contextless tests or somehow just closing without initializing,
-        // although we probably should make context a required ctor parameter, see #719
-        if (this.context != null) {
-            this.context.shutdown(this);
+        // The null check accounts for tests without an onClose callback
+        if (this.onClose != null) {
+            this.onClose.accept(this);
         }
     }
 

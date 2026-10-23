@@ -1,9 +1,10 @@
 package com.pi4j.io.gpio.parallel;
 
-import com.pi4j.context.Context;
 import com.pi4j.event.EventManager;
 import com.pi4j.io.IOBase;
 import com.pi4j.io.gpio.MaskUtils;
+
+import java.util.function.Consumer;
 
 /**
  * Abstract base class for parallel port implementations.
@@ -30,8 +31,8 @@ public abstract class ParallelPortBase
         this, PinStateChangeListener::onPinStateChanged
     );
 
-    protected ParallelPortBase(Context context, ParallelPortConfig config) {
-        super(context, config);
+    protected ParallelPortBase(ParallelPortConfig config, Consumer onClose) {
+        super(config, onClose);
         this.mask = (int) MaskUtils.packed(config.mask());
         this.direction = config.initialDirection();
     }

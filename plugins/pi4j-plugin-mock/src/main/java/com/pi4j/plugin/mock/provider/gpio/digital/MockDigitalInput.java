@@ -1,8 +1,8 @@
 package com.pi4j.plugin.mock.provider.gpio.digital;
 
-
-import com.pi4j.context.Context;
 import com.pi4j.io.gpio.digital.*;
+
+import java.util.function.Consumer;
 
 /**
  * Mock, in-memory implementation of the pi4j-core {@link DigitalInput} contract.
@@ -20,11 +20,11 @@ public class MockDigitalInput extends DigitalInputBase implements DigitalInput {
     /**
      * Creates a mock digital input bound to the given provider and configuration.
      *
-     * @param context the context of this instance
-     * @param config the {@link DigitalInputConfig} describing the pin, pull resistance and other settings
+     * @param config  the {@link DigitalInputConfig} describing the pin, pull resistance and other settings
+     * @param onClose an optional close handler
      */
-    public MockDigitalInput(Context context, DigitalInputConfig config){
-        super(context, config);
+    public MockDigitalInput(DigitalInputConfig config, Consumer<? super MockDigitalInput> onClose){
+        super(config, onClose);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.pi4j.io.gpio.digital;
 
-import com.pi4j.context.Context;
 import com.pi4j.event.EventDelegate;
 import com.pi4j.event.EventManager;
 import com.pi4j.io.IOBase;
@@ -26,11 +25,11 @@ public abstract class DigitalBase<CONFIG_TYPE extends DigitalConfig>
      * Creates a digital I/O instance bound to the given provider and configuration, and initializes
      * the internal event manager used to deliver {@link DigitalStateChangeEvent}s to listeners.
      *
-     * @param context the Context this Digital IO belongs to.
-     * @param config the configuration describing this instance (pin, on-state, etc.)
+     * @param config  the configuration describing this instance (pin, on-state, etc.)
+     * @param onClose an optional close handler
      */
-    protected DigitalBase(Context context, CONFIG_TYPE config) {
-        super(context, config);
+    protected DigitalBase(CONFIG_TYPE config, Consumer<?> onClose) {
+        super(config, onClose);
 
         // create an event manager for digital state change events
         stateChangeEventManager  = new EventManager(this,

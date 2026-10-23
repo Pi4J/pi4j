@@ -1,6 +1,5 @@
 package com.pi4j.plugin.ffm.providers.spi;
 
-import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.spi.Spi;
@@ -19,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * {@link Spi} implementation that performs full-duplex SPI transfers against a spidev character device
@@ -69,10 +69,10 @@ public class FFMSpi extends SpiBase implements Spi {
      * Creates an SPI instance, resolving the spidev device path ({@code /dev/spidevB.C}) from the bus
      * and channel in the configuration and verifying that it is accessible with the required permissions.
      *
-     * @param config   the SPI configuration carrying the bus, channel, mode, baud rate and bit order
+     * @param config the SPI configuration carrying the bus, channel, mode, baud rate and bit order
      */
-    public FFMSpi(Context context, SpiConfig config) {
-        super(context, config);
+    public FFMSpi(SpiConfig config, Consumer<? super FFMSpi> onClose) {
+        super(config, onClose);
         this.path = SPI_BUS + config.bus().getBus() + "." + config.channel();
         FFMPermissionHelper.checkDevicePermissions(path, config);
     }

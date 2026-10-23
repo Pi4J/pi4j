@@ -1,6 +1,5 @@
 package com.pi4j.plugin.mock.provider.i2c;
 
-import com.pi4j.context.Context;
 import com.pi4j.io.i2c.*;
 import com.pi4j.plugin.mock.Mock;
 import com.pi4j.util.StringUtil;
@@ -11,6 +10,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Mock, in-memory implementation of the pi4j-core {@link I2C} contract (also implementing
@@ -49,11 +49,11 @@ public class MockI2C extends I2CBase<MockI2CBus> implements I2C, I2CRegisterData
     /**
      * Creates a mock I2C device, wiring it to a {@link MockI2CBus} built from the same config.
      *
-     * @param context the context of this instance
-     * @param config the {@link I2CConfig} identifying the simulated bus and device address
+     * @param config  the {@link I2CConfig} identifying the simulated bus and device address
+     * @param onClose an optional close handler
      */
-    public MockI2C(Context context, I2CConfig config){
-        super(context, config, new MockI2CBus(config));
+    public MockI2C(I2CConfig config, Consumer<? super MockI2C> onClose){
+        super(config, new MockI2CBus(config), onClose);
         logger.debug("[{}::{}] :: CREATE(BUS={}; DEVICE={})",
             Mock.I2C_PROVIDER_NAME, this.id, config.bus(), config.device());
     }

@@ -1,6 +1,5 @@
 package com.pi4j.plugin.ffm.providers.parallel;
 
-import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
@@ -22,6 +21,7 @@ import com.pi4j.plugin.ffm.providers.gpio.EventWatcher;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 /**
@@ -50,18 +50,18 @@ public sealed class FFMParallelPort
     /**
      * Creates a new GPIO parallel port instance bound to the given context and configuration.
      *
-     * @param context the Pi4J context
-     * @param config   the configuration describing this I/O
+     * @param config  the configuration describing this I/O
+     * @param onClose an optional close handler
      */
-    public static FFMParallelPort create(Context context, ParallelPortConfig config) {
+    public static FFMParallelPort create(ParallelPortConfig config, Consumer<? super ParallelPort> onClose) {
         var mappingLogic = new FFMParallelPort.BitmaskMappingLogic(config.offsets());
         return mappingLogic.isRequired()
-            ? new FFMParallelPort.WithBitmaskMappingLogic(context, config, mappingLogic)
-            : new FFMParallelPort(context, config);
+            ? new FFMParallelPort.WithBitmaskMappingLogic(config, mappingLogic, onClose)
+            : new FFMParallelPort(config, onClose);
     }
 
-    private FFMParallelPort(Context context, ParallelPortConfig config) {
-        super(context, config);
+    private FFMParallelPort(ParallelPortConfig config, Consumer<? super ParallelPort> onClose) {
+        super(config, onClose);
         this.inputLineConfig = createInputLineConfigs(config);
         this.outputLineConfig = createOutputLineConfigs(config);
         this.gpioLine = new FFMGpioLine(MaskUtils.mask(config.offsets()), config.bus());
@@ -115,6 +115,7 @@ public sealed class FFMParallelPort
         } else {
             gpioLine.openAndRequest(outputLineConfig.flags(), List.of(outputLineConfig.attrs()), config.id());
         }
+        super.applyInitialState();
     }
 
     @Override
@@ -321,16 +322,14 @@ public sealed class FFMParallelPort
         /**
          * Creates a new GPIO parallel port instance bound to the given provider and configuration.
          *
-         * @param context the Pi4J context
-         * @param config   the configuration describing this I/O
+         * @param config       the configuration describing this I/O
          * @param mappingLogic logic required to map user-defined pins to hardware-friendly values
+         * @param onClose      an optional close handler
          */
         WithBitmaskMappingLogic(
-            Context context,
-            ParallelPortConfig config,
-            BitmaskMappingLogic mappingLogic
+            ParallelPortConfig config, BitmaskMappingLogic mappingLogic, Consumer<? super ParallelPort> onClose
         ) {
-            super(context, config);
+            super(config, onClose);
             this.mappingLogic = mappingLogic;
         }
 
