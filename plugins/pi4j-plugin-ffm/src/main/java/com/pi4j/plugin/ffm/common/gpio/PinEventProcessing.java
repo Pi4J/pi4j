@@ -1,10 +1,12 @@
 package com.pi4j.plugin.ffm.common.gpio;
 
+import com.pi4j.plugin.ffm.common.gpio.structs.LineEvent;
+
 import java.util.List;
 
 /**
  * Functional callback invoked by the native GPIO event loop whenever edge events are read from a watched line.
- * Implementations receive the {@link DetectedEvent}s decoded after a {@code poll}/{@code read} cycle on a
+ * Implementations receive the {@link LineEvent}s decoded after a {@code poll}/{@code read} cycle on a
  * {@code /dev/gpiochipN} line file descriptor.
  */
 @FunctionalInterface
@@ -17,5 +19,5 @@ public interface PinEventProcessing {
      *
      * @param eventList the edge events detected in the most recent read, in the order reported by the kernel
      */
-    void process(List<DetectedEvent> eventList);
+    void process(List<LineEvent> eventList);
 }

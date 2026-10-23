@@ -8,12 +8,12 @@ import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.digital.*;
 import com.pi4j.plugin.ffm.common.FFMGpioLine;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
-import com.pi4j.plugin.ffm.common.gpio.DetectedEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.enums.LineAttributeId;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineAttribute;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineConfigAttribute;
+import com.pi4j.plugin.ffm.common.gpio.structs.LineEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,7 +133,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
         }
         if (watcher == null) {
             watcher = new EventWatcher(line.chipFileDescriptor, line.mask, debounce, line.file, PinEvent.BOTH, events -> {
-                for (DetectedEvent detectedEvent : events) {
+                for (LineEvent detectedEvent : events) {
                     var state = switch (detectedEvent.pinEvent()) {
                         case RISING -> DigitalState.HIGH;
                         case FALLING -> DigitalState.LOW;

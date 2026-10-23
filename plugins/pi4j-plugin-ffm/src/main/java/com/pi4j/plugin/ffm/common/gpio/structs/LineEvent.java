@@ -1,6 +1,7 @@
 package com.pi4j.plugin.ffm.common.gpio.structs;
 
 import com.pi4j.plugin.ffm.common.Pi4JLayout;
+import com.pi4j.plugin.ffm.common.gpio.PinEvent;
 
 import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
@@ -58,6 +59,10 @@ public record LineEvent(long timestampNs, int id, int offset, int seqno, int lin
             lineeventInstance = lineeventInstance.from(memorySegment);
         }
         return lineeventInstance;
+    }
+
+    public PinEvent pinEvent() {
+        return PinEvent.getByValue(id);
     }
 
     /**

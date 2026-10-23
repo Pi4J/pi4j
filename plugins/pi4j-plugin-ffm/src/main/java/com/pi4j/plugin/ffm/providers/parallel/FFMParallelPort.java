@@ -10,7 +10,6 @@ import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortBase;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 import com.pi4j.plugin.ffm.common.FFMGpioLine;
-import com.pi4j.plugin.ffm.common.gpio.DetectedEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.enums.LineAttributeId;
@@ -272,11 +271,9 @@ public sealed class FFMParallelPort
     }
 
     /**
-     * Convert a list of {@link DetectedEvent} to a {@link PinStateChangedNotification}
+     * Convert a list of {@link LineEvent} to a {@link PinStateChangedNotification}
      * <p>
-     * TODO: This does not currently detect missing events. This requires monitoring {@link LineEvent#lineSeqno()} for
-     *  each line and maybe raises a question as to whether we really need a {@link DetectedEvent} abstraction here
-     *  or just consume {@link LineEvent} directly.
+     * TODO: This does not currently detect missing events.
      * <p>
      * TODO: Additionally, we then need to ask whether it is necessary to track {@link LineEvent#lineSeqno()} across
      *  {@link ParallelPort.PinStateChangedNotification}s to capture dropping of first and last events. This might
@@ -285,7 +282,7 @@ public sealed class FFMParallelPort
      * @param eventList the list of detected events
      * @return a {@link PinStateChangedNotification} representing the state changes
      */
-    private ParallelPort.PinStateChangedNotification eventsAsNotification(List<DetectedEvent> eventList) {
+    private ParallelPort.PinStateChangedNotification eventsAsNotification(List<LineEvent> eventList) {
         PinStateChangedEvent[] changeEvents = new PinStateChangedEvent[eventList.size()];
         for (int i = 0; i < eventList.size(); i++) {
             changeEvents[i] = eventAsChangeEvent(eventList.get(i));
@@ -295,11 +292,11 @@ public sealed class FFMParallelPort
     }
 
     /**
-     * Map a {@link DetectedEvent} to a {@link PinStateChangedEvent}
+     * Map a {@link LineEvent} to a {@link PinStateChangedEvent}
      * @param event the detected event
      * @return a {@link PinStateChangedEvent} representing the state change
      */
-    private ParallelPort.PinStateChangedEvent eventAsChangeEvent(DetectedEvent event) {
+    private ParallelPort.PinStateChangedEvent eventAsChangeEvent(LineEvent event) {
         // convert the hardware offset to the logical user-specified offset
         int offset = mapGpioToPin(event.offset());
         // represent the change type by its resulting digital state value
