@@ -6,8 +6,6 @@ import com.pi4j.util.MaskUtils;
 
 import java.util.function.Consumer;
 
-import java.util.function.Consumer;
-
 /**
  * Abstract base class for parallel port implementations.
  * <p>
