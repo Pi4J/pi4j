@@ -45,6 +45,7 @@ public record ParallelPortConfig(
     }
 
     @Override
+    @Deprecated(since = "5.0")
     public String provider() {
         return null;
     }

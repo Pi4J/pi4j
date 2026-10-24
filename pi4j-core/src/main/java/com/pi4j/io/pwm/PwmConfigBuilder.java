@@ -24,12 +24,6 @@ public class PwmConfigBuilder extends IOConfigBuilderBase<PwmConfigBuilder, PwmC
     private Double initialValue = null;
 
     /**
-     * Default constructor for creating a new PWM configuration builder.
-     */
-    public PwmConfigBuilder() {
-    }
-
-    /**
      * Creates a new PWM configuration builder instance.
      *
      * @param context the Pi4J context the configuration will be bound to

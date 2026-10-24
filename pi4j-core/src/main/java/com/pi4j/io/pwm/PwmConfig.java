@@ -27,7 +27,7 @@ public record PwmConfig(
     @Override String id,
     @Override String name,
     @Override String description,
-    @Deprecated @Override String provider,
+    @Deprecated(since = "5.0") @Override String provider,
     Integer chip,
     Integer channel,
     Integer bcm,
