@@ -84,7 +84,11 @@ public record PwmConfig(
     /**
      * Get the configured duty-cycle value as a decimal value that represents
      * the percentage of the ON vs OFF time of the PWM signal for each period.
-     * The duty-cycle range is valid from 0 to 100 including fractional values.
+     * The duty-cycle range is valid from 0 to 100 including factional values.
+     * (Values above 50% mean the signal will remain HIGH more time than LOW.)
+     * <p>
+     * Example: A value of 50 represents a duty-cycle where half of
+     * the time period the signal is LOW and the other half is HIGH.
      *
      * @return duty-cycle value expressed as a percentage (range: 0-100)
      */
@@ -105,6 +109,9 @@ public record PwmConfig(
 
     /**
      * Get the configured PwmType of this PWM instance. (Hardware/Software)
+     * Please note that not all PWM providers support both hardware and software
+     * PWM generators.  Please consult the documentation for your PWM provider
+     * to determine what support is available and what limitations may apply.
      *
      * @return the PwmType for this PWM instance
      */
@@ -122,7 +129,7 @@ public record PwmConfig(
     }
 
     /**
-     * Get configured PWM duty-cycle value that is automatically applied
+     * Get the configured PWM duty-cycle value that is automatically applied
      * to the PWM instance when the Pi4J context is shutdown.
      *
      * @return optional duty-cycle value expressed as a percentage (range: 0-100)
@@ -133,7 +140,7 @@ public record PwmConfig(
     }
 
     /**
-     * Get configured PWM duty-cycle value that is automatically applied to
+     * Get the configured PWM duty-cycle value that is automatically applied to
      * the PWM instance when this PWM instance is created and initialized.
      *
      * @return duty-cycle value expressed as a percentage (range: 0-100)
