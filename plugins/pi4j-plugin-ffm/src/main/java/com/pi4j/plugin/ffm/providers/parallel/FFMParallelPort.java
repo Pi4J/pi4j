@@ -3,7 +3,7 @@ package com.pi4j.plugin.ffm.providers.parallel;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
-import com.pi4j.io.gpio.MaskUtils;
+import com.pi4j.util.MaskUtils;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortBase;
@@ -93,8 +93,6 @@ public sealed class FFMParallelPort
                 this.eventWatcher = new EventWatcher(
                     gpioLine.chipFileDescriptor,
                     gpioLine.mask,
-                    gpioLine.file,
-                    PinEvent.BOTH,
                     /* TODO: No software debounce for now and leaving this to hardware debounce if configured.
                         Current software debounce is designed for Digital devices and does not differentiate between
                         offsets. As such, it's likely to skip events when multiple offsets are configured in a single port.
@@ -102,7 +100,15 @@ public sealed class FFMParallelPort
                         Recommendation will probably be to apply debounce as a filter at the port level to allow
                         a strategy to be configured by the user.
                      */
-                    this::handleEvents
+                    0,
+                    gpioLine.file,
+                    PinEvent.BOTH,
+                    eventList -> {
+                        var notification = eventsAsNotification(eventList);
+                        if (!dispatcherService.isShutdown()) {
+                            dispatcherService.submit(() -> events.dispatch(notification));
+                        }
+                    }
                 );
             }
 
@@ -192,17 +198,6 @@ public sealed class FFMParallelPort
             gpioLine.close();
         } catch (Pi4JException e) {
             throw new ShutdownException(e);
-        }
-    }
-
-    /**
-     * Handle the events detected by the {@link EventWatcher} and dispatch them to the registered listeners.
-     * @param eventList the list of line events detected
-     */
-    private void handleEvents(List<LineEvent> eventList) {
-        var notification = eventsAsNotification(eventList);
-        if (!dispatcherService.isShutdown()) {
-            dispatcherService.submit(() -> events.dispatch(notification));
         }
     }
 

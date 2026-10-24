@@ -3,7 +3,7 @@ package com.pi4j.plugin.ffm.providers.gpio;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.exception.IOException;
-import com.pi4j.io.gpio.MaskUtils;
+import com.pi4j.util.MaskUtils;
 import com.pi4j.io.gpio.digital.*;
 import com.pi4j.plugin.ffm.common.FFMGpioLine;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;

@@ -20,11 +20,7 @@ public enum PinEvent {
     /**
      * Either edge: the state changed in either direction (combines {@link #RISING} and {@link #FALLING}).
      */
-    BOTH((1) | (1 << 1)),
-    /**
-     * No recognised value
-     */
-    NONE(0);
+    BOTH((1) | (1 << 1));
 
     private final int value;
 
@@ -58,7 +54,7 @@ public enum PinEvent {
             case 1 -> RISING;
             case 2 -> FALLING;
             case 3 -> BOTH;
-            default -> NONE;
+            default -> throw new IllegalArgumentException("Invalid PinEvent value: " + value);
         };
     }
 }
