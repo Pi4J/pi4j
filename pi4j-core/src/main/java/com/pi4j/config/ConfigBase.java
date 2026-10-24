@@ -50,7 +50,6 @@ public class ConfigBase implements Config {
             this.description = properties.get(DESCRIPTION_KEY);
     }
 
-    @Override
     public Map<String, String> properties() {
         return Collections.unmodifiableMap(this.properties);
     }
