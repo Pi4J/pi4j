@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.foreign.Arena;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,19 +44,16 @@ public class EventWatcher implements Runnable {
      * Constructor.
      * @param fd file descriptor of the GPIO line
      * @param mask bitmask of the GPIO line
-     * @param debounceUs debounce time in microseconds (0 for no debounce)
      * @param file file operations
      * @param pinEvent the pin even type to capture (RISING, FALLING, BOTH)
      * @param eventProcessor callback to process the events
      */
-    public EventWatcher(int fd, long mask, long debounceUs, FileDescriptorNative file, PinEvent pinEvent, PinEventProcessing eventProcessor) {
+    public EventWatcher(int fd, long mask, FileDescriptorNative file, PinEvent pinEvent, PinEventProcessing eventProcessor) {
         this.fd = fd;
         this.mask = mask;
         this.file = file;
         this.pinEvent = pinEvent;
-        this.eventProcessor = debounceUs != 0
-            ? new RateLimitingDebounceProcessing(debounceUs * 1000L, eventProcessor)
-            : eventProcessor;
+        this.eventProcessor = eventProcessor;
     }
 
     @Override
@@ -74,6 +72,7 @@ public class EventWatcher implements Runnable {
                 var pollData = new PollingData(fd, (short) (PollFlag.POLLIN | PollFlag.POLLPRI), (short) 0);
                 pollData = poll.poll(pollData, 1, EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS / 2);
                 if (pollData == null) {
+                    eventProcessor.process(Collections.emptyList());
                     continue;
                 }
                 if ((pollData.revents() & (PollFlag.POLLERR | PollFlag.POLLHUP | PollFlag.POLLNVAL)) != 0) {
