@@ -1,7 +1,6 @@
 package com.pi4j.io.gpio.parallel;
 
 import com.pi4j.config.Config;
-import com.pi4j.io.IOConfig;
 import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.io.impl.IOConfigBuilderBase;
 
