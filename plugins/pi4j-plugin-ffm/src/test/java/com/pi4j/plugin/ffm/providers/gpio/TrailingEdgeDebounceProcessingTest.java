@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -12,16 +13,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class TrailingEdgeDebounceProcessingTest {
 
     @Test
-    void retainsLatestEventUntilPollTimeoutAfterQuietInterval() throws InterruptedException {
+    void retainsLatestEventUntilPollTimeoutAfterQuietInterval() {
         var first = new LineEvent(100, 1, 0, 0, 0);
         var latest = new LineEvent(150, 2, 0, 1, 1);
         var processed = new ArrayList<LineEvent>();
-        var processing = new TrailingEdgeDebounceProcessing(20_000_000, processed::addAll);
+        var clock = new AtomicLong();
+        var processing = new TrailingEdgeDebounceProcessing(20, processed::addAll, clock::get);
 
         processing.process(List.of(first, latest));
         assertTrue(processed.isEmpty());
 
-        Thread.sleep(30);
+        clock.set(19);
+        processing.process(List.of());
+        assertTrue(processed.isEmpty());
+
+        clock.set(20);
         processing.process(List.of());
         assertEquals(List.of(latest), processed);
     }
