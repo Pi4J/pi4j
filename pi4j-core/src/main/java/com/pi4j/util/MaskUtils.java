@@ -57,11 +57,8 @@ public class MaskUtils {
      * @return a packed mask with the same number of bits set as the set bits of input mask
      */
     public static long packed(long mask) {
-        long packed = 0;
-        for (int i = 0; i < Long.bitCount(mask); i++) {
-            packed |= 1L << i;
-        }
-        return packed;
+        // Corner case: 1 << 64 = 0; 0 - 1 = -1 = ~0
+        return (1L << Long.bitCount(mask)) - 1;
     }
 
     /**
