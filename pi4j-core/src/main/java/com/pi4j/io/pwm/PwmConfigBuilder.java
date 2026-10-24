@@ -189,6 +189,9 @@ public class PwmConfigBuilder extends IOConfigBuilderBase<PwmConfigBuilder, PwmC
 
     /**
      * Set the {@link PwmPolarity} of this PWM instance (normal or inversed).
+     * Please note that not all PWM providers support polarity.  Please
+     * consult the documentation for your PWM provider to determine
+     * what support is available and what limitations may apply.
      *
      * @param polarity the signal polarity to apply ({@link PwmPolarity#NORMAL} or {@link PwmPolarity#INVERSED})
      * @return this builder instance for method chaining
