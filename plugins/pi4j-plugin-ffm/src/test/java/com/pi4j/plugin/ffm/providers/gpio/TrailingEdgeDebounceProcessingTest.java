@@ -18,16 +18,16 @@ class TrailingEdgeDebounceProcessingTest {
         var latest = new LineEvent(150, 2, 0, 1, 1);
         var processed = new ArrayList<LineEvent>();
         var clock = new AtomicLong();
-        var processing = new TrailingEdgeDebounceProcessing(20, processed::addAll, clock::get);
+        var processing = new TrailingEdgeDebounceProcessing(100, processed::addAll, clock::get);
 
         processing.process(List.of(first, latest));
         assertTrue(processed.isEmpty());
 
-        clock.set(19);
+        clock.set(99);
         processing.process(List.of());
         assertTrue(processed.isEmpty());
 
-        clock.set(20);
+        clock.set(100);
         processing.process(List.of());
         assertEquals(List.of(latest), processed);
     }
