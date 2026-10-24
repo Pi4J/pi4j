@@ -23,19 +23,4 @@ public abstract class IOBcmConfigBuilderBase<BUILDER_TYPE
      */
     protected IOBcmConfigBuilderBase() {
     }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public BUILDER_TYPE provider(String provider) {
-        this.properties.put(IOConfig.PROVIDER_KEY, provider);
-        return (BUILDER_TYPE) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public BUILDER_TYPE provider(Class<? extends Provider> providerClass) {
-        this.properties.put(IOConfig.PROVIDER_KEY, providerClass.getName());
-        return (BUILDER_TYPE) this;
-    }
-
 }

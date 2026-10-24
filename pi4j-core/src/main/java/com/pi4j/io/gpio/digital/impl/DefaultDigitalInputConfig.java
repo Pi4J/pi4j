@@ -13,8 +13,6 @@ import java.util.Map;
 
 public class DefaultDigitalInputConfig extends ConfigBase implements DigitalInputConfig, IOConfig, BcmConfig {
 
-    // private configuration variables
-    protected String provider = null;
     // private configuration properties
     protected Integer bcm = null;
 
@@ -42,11 +40,6 @@ public class DefaultDigitalInputConfig extends ConfigBase implements DigitalInpu
             this.bcm = Integer.parseInt(properties.get(BcmConfig.BCM_KEY));
         } else {
             throw new ConfigMissingRequiredKeyException(BcmConfig.BCM_KEY);
-        }
-
-        // load provider property
-        if (properties.containsKey(PROVIDER_KEY)) {
-            this.provider = properties.get(PROVIDER_KEY);
         }
 
         // define default property values if any are missing (based on the required address value)
@@ -140,9 +133,4 @@ public class DefaultDigitalInputConfig extends ConfigBase implements DigitalInpu
      * @return the configured debounce interval in microseconds, or {@code null} if unset
      */
     public Long getDebounce(){ return debounce(); }
-
-    @Override
-    public String provider() {
-        return this.provider;
-    }
 }

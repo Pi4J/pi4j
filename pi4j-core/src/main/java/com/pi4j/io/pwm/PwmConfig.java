@@ -12,7 +12,6 @@ import com.pi4j.io.IOConfig;
  * @param id the configuration identifier
  * @param name the configuration name
  * @param description the configuration description
- * @param provider the optional provider id
  * @param chip the PWM chip number (hardware PWM)
  * @param channel the PWM channel number (hardware PWM)
  * @param bcm the BCM GPIO pin number (software PWM)
@@ -27,7 +26,6 @@ public record PwmConfig(
     @Override String id,
     @Override String name,
     @Override String description,
-    @Deprecated(since = "5.0") @Override String provider,
     Integer chip,
     Integer channel,
     Integer bcm,

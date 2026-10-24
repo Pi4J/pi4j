@@ -290,7 +290,6 @@ public class PwmConfigBuilder extends IOConfigBuilderBase<PwmConfigBuilder, PwmC
             id,
             name,
             description,
-            this.properties.get(IOConfig.PROVIDER_KEY),
             this.chip,
             this.channel,
             this.bcm,

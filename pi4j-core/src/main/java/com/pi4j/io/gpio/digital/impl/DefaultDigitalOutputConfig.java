@@ -44,11 +44,6 @@ public class DefaultDigitalOutputConfig
             throw new ConfigMissingRequiredKeyException(BCM_KEY);
         }
 
-        // load provider property
-        if (properties.containsKey(PROVIDER_KEY)) {
-            this.provider = properties.get(PROVIDER_KEY);
-        }
-
         // define default property values if any are missing (based on the required address value)
         this.id = StringUtil.setIfNullOrEmpty(this.id, "DOUT-" + this.bcm, true);
         this.name = StringUtil.setIfNullOrEmpty(this.name, "DOUT-" + this.bcm, true);
@@ -122,10 +117,5 @@ public class DefaultDigitalOutputConfig
     @Override
     public DigitalState onState() {
         return this.onState;
-    }
-
-    @Override
-    public String provider() {
-        return this.provider;
     }
 }

@@ -25,17 +25,4 @@ public abstract class IOConfigBuilderBase<
      */
     protected IOConfigBuilderBase(){
     }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public BUILDER_TYPE provider(String provider){
-        this.properties.put(IOConfig.PROVIDER_KEY, provider);
-        return (BUILDER_TYPE) this;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public BUILDER_TYPE provider(Class<? extends Provider> providerClass){
-        return provider(providerClass.getName());
-    }
 }
