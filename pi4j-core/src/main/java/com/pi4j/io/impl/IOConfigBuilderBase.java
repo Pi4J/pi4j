@@ -36,7 +36,6 @@ public abstract class IOConfigBuilderBase<
     @SuppressWarnings("unchecked")
     @Override
     public BUILDER_TYPE provider(Class<? extends Provider> providerClass){
-        this.properties.put(IOConfig.PROVIDER_KEY, providerClass.getName());
-        return (BUILDER_TYPE) this;
+        return provider(providerClass.getName());
     }
 }

@@ -17,6 +17,7 @@ public interface IOConfig extends Config {
      *
      * @return the configured provider id, or {@code null} if none was specified
      */
+    @Deprecated
     String provider();
 
     /**
@@ -24,6 +25,7 @@ public interface IOConfig extends Config {
      *
      * @return the configured provider id, or {@code null} if none was specified
      */
+    @Deprecated
     default String getProvider() {
         return provider();
     }

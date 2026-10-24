@@ -19,6 +19,7 @@ public interface IOConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuilde
      * @param provider the provider id (e.g. a plugin's registered provider name)
      * @return this builder for method chaining
      */
+    @Deprecated
     BUILDER_TYPE provider(String provider);
 
     /**
@@ -27,5 +28,6 @@ public interface IOConfigBuilder<BUILDER_TYPE, CONFIG_TYPE> extends ConfigBuilde
      * @param providerClass the {@link Provider} implementation class to resolve
      * @return this builder for method chaining
      */
+    @Deprecated
     BUILDER_TYPE provider(Class<? extends Provider> providerClass);
 }
