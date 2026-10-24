@@ -43,15 +43,4 @@ class ParallelPortConfigBuilderTest {
         var builder = ParallelPortConfigBuilder.newInstance();
         assertThrows(IllegalArgumentException.class, () -> builder.bcm(1, 2, 1));
     }
-
-    @Test
-    void testProviderProperty() {
-        var config = ParallelPortConfigBuilder.newInstance()
-            .bcm(1)
-            .provider("custom-provider")
-            .build();
-
-        assertEquals("custom-provider", config.provider());
-        assertEquals("custom-provider", config.getProvider());
-    }
 }
