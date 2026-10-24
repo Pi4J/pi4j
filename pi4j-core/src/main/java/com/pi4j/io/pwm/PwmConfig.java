@@ -89,8 +89,12 @@ public record PwmConfig(
      * <p>
      * Example: A value of 50 represents a duty-cycle where half of
      * the time period the signal is LOW and the other half is HIGH.
+     * <p>
+     * Note that (in contrast to initialValue), setting this will not turn the PWM on
+     * implicitly
+     * <p>
      *
-     * @return duty-cycle value expressed as a percentage (range: 0-100)
+     * @return duty-cycle value expressed as a percentage (rage: 0-100)
      */
     public Double getDutyCycle() {
         return dutyCycle;
