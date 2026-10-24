@@ -41,7 +41,6 @@ public class EventWatcher implements Runnable {
     private volatile boolean stopWatching = false;
 
     /**
-     * Constructor.
      * @param fd file descriptor of the GPIO line
      * @param mask bitmask of the GPIO line
      * @param file file operations
@@ -116,7 +115,7 @@ public class EventWatcher implements Runnable {
                     }
 
                     if (logger.isTraceEnabled()) {
-                    logger.trace("Total processing on offset {} took {}ms", mask, timestamp.until(Instant.now()).toMillis());
+                        logger.trace("Total processing on offset {} took {}ms", mask, timestamp.until(Instant.now()).toMillis());
                     }
 
                     timestamp = Instant.now();
