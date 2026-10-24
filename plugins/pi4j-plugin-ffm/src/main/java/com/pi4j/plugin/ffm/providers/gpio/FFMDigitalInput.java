@@ -3,7 +3,6 @@ package com.pi4j.plugin.ffm.providers.gpio;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
-import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.digital.*;
 import com.pi4j.plugin.ffm.common.FFMGpioLine;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
@@ -13,6 +12,7 @@ import com.pi4j.plugin.ffm.common.gpio.enums.LineAttributeId;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineAttribute;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineConfigAttribute;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineEvent;
+import com.pi4j.util.MaskUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

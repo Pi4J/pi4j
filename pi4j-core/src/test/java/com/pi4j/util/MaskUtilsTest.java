@@ -1,4 +1,4 @@
-package com.pi4j.io.gpio;
+package com.pi4j.util;
 
 import org.junit.jupiter.api.Test;
 

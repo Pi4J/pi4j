@@ -1,7 +1,7 @@
 package com.pi4j.io.gpio.parallel;
 
 import com.pi4j.io.IOConfig;
-import com.pi4j.io.gpio.MaskUtils;
+import com.pi4j.util.MaskUtils;
 import com.pi4j.io.gpio.digital.PullResistance;
 
 import java.util.List;
