@@ -1,9 +1,9 @@
 package com.pi4j.io.pwm;
 
-import com.pi4j.config.ConfigBuilder;
+import com.pi4j.config.Config;
 import com.pi4j.context.Context;
-import com.pi4j.io.IOConfigBuilder;
-import com.pi4j.io.pwm.impl.DefaultPwmConfigBuilder;
+import com.pi4j.io.impl.IOConfigBuilderBase;
+import com.pi4j.util.StringUtil;
 
 /**
  * Fluent builder for assembling a {@link PwmConfig}. It exposes chained setters for
@@ -11,9 +11,16 @@ import com.pi4j.io.pwm.impl.DefaultPwmConfigBuilder;
  * frequency, duty-cycle, and initial/shutdown values, and produces an immutable configuration via its {@code build()}
  * method.
  */
-public interface PwmConfigBuilder extends
-    IOConfigBuilder<PwmConfigBuilder, PwmConfig>,
-    ConfigBuilder<PwmConfigBuilder, PwmConfig> {
+public class PwmConfigBuilder extends IOConfigBuilderBase<PwmConfigBuilder, PwmConfig> {
+    private Integer chip = null;
+    private Integer channel = null;
+    private Integer bcm = null;
+    private Double frequency = null;
+    private Double dutyCycle = null;
+    private PwmType pwmType = PwmType.HARDWARE;
+    private PwmPolarity polarity = PwmPolarity.NORMAL;
+    private Double shutdownValue = null;
+    private Double initialValue = null;
 
     /**
      * Creates a new PWM configuration builder instance.
@@ -22,9 +29,9 @@ public interface PwmConfigBuilder extends
      * @return a new, empty PWM configuration builder
      * @deprecated Please use Pwm.newConfigBuilder() instead.
      */
-    @Deprecated(since="5.0")
-    static PwmConfigBuilder newInstance(Context context) {
-        return DefaultPwmConfigBuilder.newInstance();
+    @Deprecated(since = "5.0")
+    public static PwmConfigBuilder newInstance(Context context) {
+        return new PwmConfigBuilder();
     }
 
     /**
@@ -33,10 +40,9 @@ public interface PwmConfigBuilder extends
      * @return a new, empty PWM configuration builder
      * @deprecated Please use Pwm.newConfigBuilder() instead.
      */
-    static PwmConfigBuilder newInstance() {
-        return DefaultPwmConfigBuilder.newInstance();
+    public static PwmConfigBuilder newInstance() {
+        return new PwmConfigBuilder();
     }
-
 
     /**
      * Sets the chip number for the PWM configuration.
@@ -45,7 +51,10 @@ public interface PwmConfigBuilder extends
      *             to identify the specific hardware interface or connection point.
      * @return the current PwmConfigBuilder instance for method chaining
      */
-    PwmConfigBuilder chip(Integer chip);
+    public PwmConfigBuilder chip(Integer chip) {
+        this.chip = chip;
+        return this;
+    }
 
     /**
      * Sets the channel number for the PWM configuration.
@@ -55,15 +64,33 @@ public interface PwmConfigBuilder extends
      *                for the PWM signal.
      * @return the current PwmConfigBuilder instance for method chaining
      */
-    PwmConfigBuilder channel(Integer channel);
+    public PwmConfigBuilder channel(Integer channel) {
+        this.channel = channel;
+        return this;
+    }
 
     /**
-     * Sets the bcm number for the PWM configuration.
+     * Sets the BCM number for the PWM configuration.
      *
-     * @param bcm the bcm number to be configured, used for software PWM signals.
+     * @param bcm the BCM number to be configured, used for software PWM signals.
      * @return the current PwmConfigBuilder instance for method chaining
      */
-    PwmConfigBuilder bcm(Integer bcm);
+    public PwmConfigBuilder bcm(Integer bcm) {
+        this.bcm = bcm;
+        return this;
+    }
+
+    /**
+     * Sets the legacy address value, delegating to {@link #channel(Integer)}.
+     *
+     * @param address the legacy address
+     * @return this builder instance
+     * @deprecated use {@link #channel(Integer)} instead.
+     */
+    @Deprecated(forRemoval = true)
+    public PwmConfigBuilder address(Integer address) {
+        return channel(address);
+    }
 
     /**
      * Set the configured frequency value in Hertz (number of cycles per second)
@@ -75,11 +102,13 @@ public interface PwmConfigBuilder extends
      * After enabling the PWM signal using the 'on(...)' method, you can check the
      * 'Pwm::frequency()' or 'Pwm::getFrequency()' properties to determine what
      * frequency the PWM generator actually applied.
-     *
      * @param frequency the number of cycles per second (Hertz)
      * @return this builder instance
      */
-    PwmConfigBuilder frequency(Double frequency);
+    public PwmConfigBuilder frequency(Double frequency) {
+        this.frequency = frequency;
+        return this;
+    }
 
     /**
      * Sets the configured frequency from an integer hertz value. Provided for
@@ -88,13 +117,11 @@ public interface PwmConfigBuilder extends
      * @param frequency the number of cycles per second (Hertz), or {@code null} to leave unset
      * @return this builder instance for method chaining
      */
-    default PwmConfigBuilder frequency(Integer frequency) {
+    public PwmConfigBuilder frequency(Integer frequency) {
         return frequency(frequency == null ? null : frequency.doubleValue());
     }
 
     /**
-     * Set the duty-cycle value as a decimal value that represents the
-     * percentage of the ON vs OFF time of the PWM signal for each
      * period.  The duty-cycle range is valid from 0 to 100 including
      * factional values.  (Values above 50% mean the signal will
      * remain HIGH more time than LOW.)
@@ -105,10 +132,24 @@ public interface PwmConfigBuilder extends
      * Note that setting this value does not turn PWM on at construction time. For this purpose,
      * use initial() instead.
      * <p>
-     * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
+     * @param dutyCycle duty-cycle value expressed as a percentage (range: 0-100)
      * @return this builder instance
      */
-    PwmConfigBuilder dutyCycle(Double dutyCycle);
+    public PwmConfigBuilder dutyCycle(Double dutyCycle) {
+        if (dutyCycle == null) {
+            this.dutyCycle = null;
+        } else {
+            double dc = dutyCycle;
+            if (dc < 0) {
+                dc = 0;
+            }
+            if (dc > 100) {
+                dc = 100;
+            }
+            this.dutyCycle = dc;
+        }
+        return this;
+    }
 
     /**
      * Sets the duty-cycle from an integer percentage value. Provided for backward
@@ -120,12 +161,13 @@ public interface PwmConfigBuilder extends
      * @param dutyCycle duty-cycle value expressed as a percentage (range: 0-100), or {@code null} to leave unset
      * @return this builder instance for method chaining
      */
-    default PwmConfigBuilder dutyCycle(Integer dutyCycle) {
+    public PwmConfigBuilder dutyCycle(Integer dutyCycle) {
         return dutyCycle(dutyCycle == null ? null : (double) dutyCycle);
     }
 
     /**
      * Set the {@link PwmType} of this PWM instance (hardware or software).
+     * <p>
      * Please note that not all PWM providers support both hardware and software
      * PWM generators.  Please consult the documentation for your PWM provider
      * to determine what support is available and what limitations may apply.
@@ -133,7 +175,10 @@ public interface PwmConfigBuilder extends
      * @param pwmType the PWM generator type to use ({@link PwmType#HARDWARE} or {@link PwmType#SOFTWARE})
      * @return this builder instance for method chaining
      */
-    PwmConfigBuilder pwmType(PwmType pwmType);
+    public PwmConfigBuilder pwmType(PwmType pwmType) {
+        this.pwmType = pwmType;
+        return this;
+    }
 
     /**
      * Set the {@link PwmPolarity} of this PWM instance (normal or inversed).
@@ -144,7 +189,10 @@ public interface PwmConfigBuilder extends
      * @param polarity the signal polarity to apply ({@link PwmPolarity#NORMAL} or {@link PwmPolarity#INVERSED})
      * @return this builder instance for method chaining
      */
-    PwmConfigBuilder polarity(PwmPolarity polarity);
+    public PwmConfigBuilder polarity(PwmPolarity polarity) {
+        this.polarity = polarity;
+        return this;
+    }
 
     /**
      * Optionally configure a PWM duty-cycle value that should automatically
@@ -153,10 +201,24 @@ public interface PwmConfigBuilder extends
      * signal (by configuring this 'shutdown' value to zero) when your application
      * is terminated an Pi4J is shutdown.
      *
-     * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
+     * @param dutyCycle duty-cycle value expressed as a percentage (range: 0-100)
      * @return this builder instance
      */
-    PwmConfigBuilder shutdown(Double dutyCycle);
+    public PwmConfigBuilder shutdown(Double dutyCycle) {
+        if (dutyCycle == null) {
+            this.shutdownValue = null;
+        } else {
+            double dc = dutyCycle;
+            if (dc < 0) {
+                dc = 0.0;
+            }
+            if (dc > 100) {
+                dc = 100.0;
+            }
+            this.shutdownValue = dc;
+        }
+        return this;
+    }
 
     /**
      * Configures the shutdown duty-cycle from an integer percentage value;
@@ -165,12 +227,14 @@ public interface PwmConfigBuilder extends
      * @param dutyCycle duty-cycle value expressed as a percentage (range: 0-100), or {@code null} to leave unset
      * @return this builder instance for method chaining
      */
-    default PwmConfigBuilder shutdown(Integer dutyCycle) {
+    public PwmConfigBuilder shutdown(Integer dutyCycle) {
         return shutdown(dutyCycle == null ? null : (double) dutyCycle);
-    };
+    }
+
     /**
      * Optionally configure a PWM duty-cycle value that should automatically
      * be applied to the PWM instance when this PWM instance is created and initialized.
+     *
      * This option can be helpful if you wish to do something like set a default PWM
      * signal (by configuring this 'initial' value to 50%) when your application
      * creates the PWM instance.  This just helps eliminate a second line of code
@@ -179,10 +243,24 @@ public interface PwmConfigBuilder extends
      * Note that this method (in contrast to dutyCycle()) will turn on PWM at construction
      * time if the value is greater than 0. If both are set, this value will win.
      *
-     * @param dutyCycle duty-cycle value expressed as a percentage (rage: 0-100)
+     * @param dutyCycle duty-cycle value expressed as a percentage (range: 0-100)
      * @return this builder instance
      */
-    PwmConfigBuilder initial(Double dutyCycle);
+    public PwmConfigBuilder initial(Double dutyCycle) {
+        if (dutyCycle == null) {
+            this.initialValue = null;
+        } else {
+            double dc = dutyCycle;
+            if (dc < 0) {
+                dc = 0.0;
+            }
+            if (dc > 100) {
+                dc = 100.0;
+            }
+            this.initialValue = dc;
+        }
+        return this;
+    }
 
     /**
      * Configures the initial duty-cycle from an integer percentage value;
@@ -191,7 +269,35 @@ public interface PwmConfigBuilder extends
      * @param dutyCycle duty-cycle value expressed as a percentage (range: 0-100), or {@code null} to leave unset
      * @return this builder instance for method chaining
      */
-    default PwmConfigBuilder initial(Integer dutyCycle) {
+    public PwmConfigBuilder initial(Integer dutyCycle) {
         return initial(dutyCycle == null ? null : (double) dutyCycle);
+    }
+
+    /**
+     * Construct the {@link PwmConfig} instance.
+     *
+     * @return the constructed {@link PwmConfig} instance
+     */
+    @Override
+    public PwmConfig build() {
+        String defaultId = channel != null ? "PWM-" + channel : (bcm != null ? "PWM-" + bcm : "PWM");
+        String id = StringUtil.setIfNullOrEmpty(this.id(), defaultId, true);
+        String name = StringUtil.setIfNullOrEmpty(this.properties.get(Config.NAME_KEY), id, true);
+        String description = StringUtil.setIfNullOrEmpty(this.properties.get(Config.DESCRIPTION_KEY), id, true);
+
+        return new PwmConfig(
+            id,
+            name,
+            description,
+            this.chip,
+            this.channel,
+            this.bcm,
+            this.pwmType,
+            this.polarity,
+            this.frequency,
+            this.dutyCycle,
+            this.initialValue,
+            this.shutdownValue
+        );
     }
 }

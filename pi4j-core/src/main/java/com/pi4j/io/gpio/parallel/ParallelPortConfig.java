@@ -5,7 +5,6 @@ import com.pi4j.util.MaskUtils;
 import com.pi4j.io.gpio.digital.PullResistance;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Configuration for a parallel port
@@ -43,11 +42,6 @@ public record ParallelPortConfig(
     @Override
     public int getUniqueIdentifier() {
         return (int) mask();
-    }
-
-    @Override
-    public String provider() {
-        return null;
     }
 
     @Override

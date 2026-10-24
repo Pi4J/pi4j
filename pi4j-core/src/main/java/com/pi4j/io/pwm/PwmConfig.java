@@ -1,8 +1,6 @@
 package com.pi4j.io.pwm;
 
-import com.pi4j.config.BcmConfig;
 import com.pi4j.io.IOConfig;
-
 
 /**
  * Immutable configuration for a {@link Pwm} instance. It carries the addressing
@@ -10,42 +8,34 @@ import com.pi4j.io.IOConfig;
  * {@link PwmPolarity}, the initial frequency and duty-cycle, optional initial and
  * shutdown values. Instances are assembled with a {@link PwmConfigBuilder} and consumed by the {@link com.pi4j.context.Context} when
  * creating the PWM I/O.
+ *
+ * @param id the configuration identifier
+ * @param name the configuration name
+ * @param description the configuration description
+ * @param chip the PWM chip number (hardware PWM)
+ * @param channel the PWM channel number (hardware PWM)
+ * @param bcm the BCM GPIO pin number (software PWM)
+ * @param pwmType the generator type (hardware/software)
+ * @param polarity the signal polarity (normal/inversed)
+ * @param frequency the configured frequency in hertz
+ * @param dutyCycle the configured duty-cycle percentage (0-100)
+ * @param initialValue optional initial duty-cycle applied when initialized
+ * @param shutdownValue optional duty-cycle applied when shut down
  */
-public interface PwmConfig extends BcmConfig, IOConfig {
-
-    /**
-     * Property key for the legacy PWM address.
-     *
-     * @deprecated use {@link #channel()} instead.
-     */
-    @Deprecated(forRemoval = true)
-    String PWM_ADDRESS = "address";
-    /** Property key for the PWM chip number (hardware PWM). */
-    String PWM_CHIP = "chip";
-    /** Property key for the PWM channel number (hardware PWM). */
-    String PWM_CHANNEL = "channel";
-    /** Property key for the BCM GPIO pin number (software PWM). */
-    String PWM_BCM = "bcm";
-    /** Property key for the PWM generator type (hardware/software). */
-    String PWM_TYPE_KEY = "pwm-type";
-    /** Property key for the PWM signal polarity (normal/inversed). */
-    String POLARITY_KEY = "polarity";
-    /** Property key for the configured frequency in hertz. */
-    String FREQUENCY_KEY = "frequency";
-    /** Property key for the configured duty-cycle percentage. */
-    String DUTY_CYCLE_KEY = "duty-cycle";
-    /** Property key for the duty-cycle applied when the Pi4J context is shut down. */
-    String SHUTDOWN_VALUE_KEY = "shutdown";
-    /** Property key for the duty-cycle applied when the PWM instance is initialized. */
-    String INITIAL_VALUE_KEY = "initial";
-    /**
-     * Property key under which the channel number is stored in the configuration properties map.
-     */
-    String CHANNEL_KEY = "channel";
-    /**
-     * Property key under which the chip number is stored in the configuration properties map.
-     */
-    String CHIP_KEY = "chip";
+public record PwmConfig(
+    @Override String id,
+    @Override String name,
+    @Override String description,
+    Integer chip,
+    Integer channel,
+    Integer bcm,
+    PwmType pwmType,
+    PwmPolarity polarity,
+    Double frequency,
+    Double dutyCycle,
+    Double initialValue,
+    Double shutdownValue
+) implements IOConfig {
 
     /**
      * Returns the legacy PWM address value.
@@ -54,7 +44,20 @@ public interface PwmConfig extends BcmConfig, IOConfig {
      * @deprecated use {@link #channel()} instead.
      */
     @Deprecated(forRemoval = true)
-    Integer address();
+    public Integer address() {
+        return channel;
+    }
+
+    /**
+     * Returns the legacy PWM address value.
+     *
+     * @return the configured address, or {@code null} if not set
+     * @deprecated use {@link #channel()} instead.
+     */
+    @Deprecated(forRemoval = true)
+    public Integer getAddress() {
+        return address();
+    }
 
     /**
      * Returns a unique identifier for this PWM device, derived by combining the
@@ -63,10 +66,17 @@ public interface PwmConfig extends BcmConfig, IOConfig {
      * @return a unique integer identifier for this PWM device
      */
     @Override
-    default int getUniqueIdentifier() {
-        return (chip() == null ? 0 : (chip() << 16))
-            + (channel() == null ? 0 : (channel() << 8))
-            + (bcm() == null ? 0 : bcm());
+    public int getUniqueIdentifier() {
+        return (chip == null ? 0 : (chip << 16))
+            + (channel == null ? 0 : (channel << 8))
+            + (bcm == null ? 0 : bcm);
+    }
+
+    @Override
+    public void validate() {
+        if (id == null) {
+            throw new IllegalStateException("ID cannot be null");
+        }
     }
 
     /**
@@ -84,21 +94,8 @@ public interface PwmConfig extends BcmConfig, IOConfig {
      *
      * @return duty-cycle value expressed as a percentage (rage: 0-100)
      */
-    Double dutyCycle();
-
-    /**
-     * Get the configured duty-cycle value as a decimal value that represents
-     * the percentage of the ON vs OFF time of the PWM signal for each period.
-     * The duty-cycle range is valid from 0 to 100 including factional values.
-     * (Values above 50% mean the signal will remain HIGH more time than LOW.)
-     * <p>
-     * Example: A value of 50 represents a duty-cycle where half of
-     * the time period the signal is LOW and the other half is HIGH.
-     *
-     * @return duty-cycle value expressed as a percentage (rage: 0-100)
-     */
-    default Double getDutyCycle() {
-        return dutyCycle();
+    public Double getDutyCycle() {
+        return dutyCycle;
     }
 
     /**
@@ -108,17 +105,8 @@ public interface PwmConfig extends BcmConfig, IOConfig {
      *
      * @return frequency value in Hz (number of cycles per second)
      */
-    Double frequency();
-
-    /**
-     * Get the configured frequency value in Hertz (number of cycles per second)
-     * that the PWM signal generator should attempt to output when the PWM state is
-     * enabled.
-     *
-     * @return frequency value in Hz (number of cycles per second)
-     */
-    default Double getFrequency() {
-        return frequency();
+    public Double getFrequency() {
+        return frequency;
     }
 
     /**
@@ -129,99 +117,39 @@ public interface PwmConfig extends BcmConfig, IOConfig {
      *
      * @return the PwmType for this PWM instance
      */
-    PwmType pwmType();
-
-    /**
-     * Get the configured PwmType of this PWM instance. (Hardware/Software)
-     * Please note that not all PWM providers support both hardware and software
-     * PWM generators.  Please consult the documentation for your PWM provider
-     * to determine what support is available and what limitations may apply.
-     *
-     * @return the PwmType for this PWM instance
-     */
-    default PwmType getPwmType() {
-        return pwmType();
+    public PwmType getPwmType() {
+        return pwmType;
     }
 
     /**
      * Get the configured polarity of this PWM instance. (Normal/Inversed)
-     * Please note that not all PWM providers support polarity. Please
-     * consult the documentation for your PWM provider to determine what
-     * support is available and what limitations may apply.
      *
      * @return the PwmPolarity for this PWM instance
      */
-    PwmPolarity polarity();
-
-    /**
-     * Get the configured polarity of this PWM instance. (Normal/Inversed)
-     * Please note that not all PWM providers support polarity. Please
-     * consult the documentation for your PWM provider to determine what
-     * support is available and what limitations may apply.
-     *
-     * @return the PwmPolarity for this PWM instance
-     */
-    default PwmPolarity getPolarity() {
-        return polarity();
+    public PwmPolarity getPolarity() {
+        return polarity;
     }
 
     /**
-     * Get configured PWM duty-cycle value that is automatically applied
+     * Get the configured PWM duty-cycle value that is automatically applied
      * to the PWM instance when the Pi4J context is shutdown.
-     * <p>
-     * This option can be helpful if you wish to do something like stop a PWM
-     * signal (by configuring this 'shutdown' value to zero) when your application
-     * is terminated an Pi4J is shutdown.
      *
-     * @return optional duty-cycle value expressed as a percentage (rage: 0-100)
+     * @return optional duty-cycle value expressed as a percentage (range: 0-100)
      * that is applied when shutting down the Pi4J context.
      */
-    Double shutdownValue();
-
-    /**
-     * Get configured PWM duty-cycle value that is automatically applied
-     * to the PWM instance when the Pi4J context is shutdown.
-     * <p>
-     * This option can be helpful if you wish to do something like stop a PWM
-     * signal (by configuring this 'shutdown' value to zero) when your application
-     * is terminated an Pi4J is shutdown.
-     *
-     * @return duty-cycle value expressed as a percentage (rage: 0-100)
-     * that is applied when shutting down the Pi4J context.
-     */
-    default Double getShutdownValue() {
-        return shutdownValue();
+    public Double getShutdownValue() {
+        return shutdownValue;
     }
 
-
     /**
-     * Get configured PWM duty-cycle value that is automatically applied to
+     * Get the configured PWM duty-cycle value that is automatically applied to
      * the PWM instance when this PWM instance is created and initialized.
-     * <p>
-     * This option can be helpful if you wish to do something like set a default PWM
-     * signal (by configuring this 'initial' value to 50%) when your application
-     * creates the PWM instance.  This just helps eliminate a second line of code
-     * to manually start the PWM signal for cases where you prefer it is auto-started.
      *
-     * @return duty-cycle value expressed as a percentage (rage: 0-100)
+     * @return duty-cycle value expressed as a percentage (range: 0-100)
      * that is applied when creating and initializing the PWM instance.
      */
-    Double initialValue();
-
-    /**
-     * Get configured PWM duty-cycle value that is automatically applied to
-     * the PWM instance when this PWM instance is created and initialized.
-     * <p>
-     * This option can be helpful if you wish to do something like set a default PWM
-     * signal (by configuring this 'initial' value to 50%) when your application
-     * creates the PWM instance.  This just helps eliminate a second line of code
-     * to manually start the PWM signal for cases where you prefer it is auto-started.
-     *
-     * @return duty-cycle value expressed as a percentage (rage: 0-100)
-     * that is applied when creating and initializing the PWM instance.
-     */
-    default Double getInitialValue() {
-        return initialValue();
+    public Double getInitialValue() {
+        return initialValue;
     }
 
     /**
@@ -229,15 +157,8 @@ public interface PwmConfig extends BcmConfig, IOConfig {
      *
      * @return the channel number, or {@code null} if not configured
      */
-    Integer channel();
-
-    /**
-     * Returns the channel number this I/O is assigned to within its bus.
-     *
-     * @return the channel number, or {@code null} if not configured
-     */
-    default Integer getChannel() {
-        return this.channel();
+    public Integer getChannel() {
+        return channel;
     }
 
     /**
@@ -245,14 +166,16 @@ public interface PwmConfig extends BcmConfig, IOConfig {
      *
      * @return the chip number, or {@code null} if not configured
      */
-    Integer chip();
+    public Integer getChip() {
+        return chip;
+    }
 
     /**
-     * Returns the chip number this I/O is assigned to.
+     * Returns the BCM pin number this I/O is bound to.
      *
-     * @return the chip number, or {@code null} if not configured
+     * @return the BCM pin number, or {@code null} if not configured
      */
-    default Integer getChip() {
-        return this.chip();
+    public Integer getBcm() {
+        return bcm;
     }
 }
