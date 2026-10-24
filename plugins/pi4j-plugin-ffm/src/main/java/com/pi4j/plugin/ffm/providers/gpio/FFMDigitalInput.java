@@ -3,7 +3,7 @@ package com.pi4j.plugin.ffm.providers.gpio;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.exception.ShutdownException;
-import com.pi4j.util.MaskUtils;
+import com.pi4j.io.gpio.MaskUtils;
 import com.pi4j.io.gpio.digital.*;
 import com.pi4j.plugin.ffm.common.FFMGpioLine;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -132,16 +133,10 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             this.eventTaskProcessor = Executors.newSingleThreadExecutor(threadFactory);
         }
         if (watcher == null) {
-            watcher = new EventWatcher(line.chipFileDescriptor, line.mask, debounce, line.file, PinEvent.BOTH, events -> {
-                for (LineEvent detectedEvent : events) {
-                    var state = switch (detectedEvent.pinEvent()) {
-                        case RISING -> DigitalState.HIGH;
-                        case FALLING -> DigitalState.LOW;
-                        default -> DigitalState.UNKNOWN;
-                    };
-                    this.dispatch(new DigitalStateChangeEvent<DigitalInput>(this, state));
-                }
-            });
+            watcher = new EventWatcher(line.chipFileDescriptor, line.mask, line.file, PinEvent.BOTH, (this.debounce > 0)
+                ? new TrailingEdgeDebounceProcessing(this.debounce * 1000L, this::handleEvents)
+                : this::handleEvents
+            );
             eventTaskProcessor.submit(watcher);
         }
         logger.trace("{}-{} - New listener added", line.deviceName, line.mask);
@@ -226,5 +221,21 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
     @Override
     public DigitalState state() {
         return DigitalState.getState(line.readValue());
+    }
+
+    /**
+     * Default event processing which handles a list of {@link LineEvent} objects by mapping each event to a
+     * {@link DigitalState} and dispatching a {@link DigitalStateChangeEvent} to all registered listeners.
+     * @param events the list of {@link LineEvent} objects to handle
+     */
+    private void handleEvents(List<LineEvent> events) {
+        for (LineEvent event : events) {
+            var state = switch (event.pinEvent()) {
+                case RISING -> DigitalState.HIGH;
+                case FALLING -> DigitalState.LOW;
+                default -> DigitalState.UNKNOWN;
+            };
+            this.dispatch(new DigitalStateChangeEvent<DigitalInput>(this, state));
+        }
     }
 }
