@@ -2,7 +2,6 @@ package com.pi4j.io.pwm;
 
 import com.pi4j.config.Config;
 import com.pi4j.context.Context;
-import com.pi4j.io.IOConfig;
 import com.pi4j.io.impl.IOConfigBuilderBase;
 import com.pi4j.util.StringUtil;
 

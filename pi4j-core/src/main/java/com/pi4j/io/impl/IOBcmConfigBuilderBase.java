@@ -3,9 +3,7 @@ package com.pi4j.io.impl;
 import com.pi4j.config.Config;
 import com.pi4j.config.ConfigBuilder;
 import com.pi4j.config.impl.BcmConfigBuilderBase;
-import com.pi4j.io.IOConfig;
 import com.pi4j.io.IOConfigBuilder;
-import com.pi4j.provider.Provider;
 
 /**
  * <p>Abstract AddressConfigBuilderBase class.</p>

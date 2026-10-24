@@ -1,7 +1,6 @@
 package com.pi4j.io;
 
 import com.pi4j.config.ConfigBuilder;
-import com.pi4j.provider.Provider;
 
 /**
  * Builder marker interface shared by all Pi4J I/O configuration builders.
