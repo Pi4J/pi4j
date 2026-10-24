@@ -1,7 +1,5 @@
 package com.pi4j.config;
 
-import java.util.Map;
-
 /**
  * Root contract for all Pi4J I/O configuration objects. A {@code Config} carries the common
  * identity properties ({@code id}, {@code name}, {@code description}) shared by every I/O, exposes
@@ -22,13 +20,6 @@ public interface Config {
      * Property key under which the configuration description is stored in the properties map.
      */
     String DESCRIPTION_KEY = "description";
-
-    /**
-     * Returns the underlying raw configuration properties backing this instance.
-     *
-     * @return an unmodifiable map of raw property keys to their string values
-     */
-    Map<String, String> properties();
 
     /**
      * Returns the unique identifier of this configuration.
