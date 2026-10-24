@@ -8,7 +8,7 @@ class PwmConfigBuilderTest {
 
     @Test
     void testDefaultValues() {
-        var config = PwmConfigBuilder.newInstance().build();
+        var config = Pwm.newConfigBuilder().build();
 
         assertNotNull(config.id());
         assertEquals("PWM", config.id());
@@ -27,7 +27,7 @@ class PwmConfigBuilderTest {
 
     @Test
     void testChannelGeneratesDefaultId() {
-        var config = PwmConfigBuilder.newInstance()
+        var config = Pwm.newConfigBuilder()
             .channel(2)
             .build();
 
@@ -42,7 +42,7 @@ class PwmConfigBuilderTest {
 
     @Test
     void testBcmGeneratesDefaultIdWhenChannelNull() {
-        var config = PwmConfigBuilder.newInstance()
+        var config = Pwm.newConfigBuilder()
             .bcm(18)
             .build();
 
@@ -54,18 +54,8 @@ class PwmConfigBuilderTest {
     }
 
     @Test
-    void testProviderProperty() {
-        var config = PwmConfigBuilder.newInstance()
-            .provider("custom-provider")
-            .build();
-
-        assertEquals("custom-provider", config.provider());
-        assertEquals("custom-provider", config.getProvider());
-    }
-
-    @Test
     void testCustomIdAndProperties() {
-        var config = PwmConfigBuilder.newInstance()
+        var config = Pwm.newConfigBuilder()
             .id("custom-id")
             .name("custom-name")
             .description("custom-desc")
@@ -108,7 +98,7 @@ class PwmConfigBuilderTest {
 
     @Test
     void testDutyCycleClamping() {
-        var configNegative = PwmConfigBuilder.newInstance()
+        var configNegative = Pwm.newConfigBuilder()
             .dutyCycle(-10.0)
             .initial(-5)
             .shutdown(-1)
@@ -118,7 +108,7 @@ class PwmConfigBuilderTest {
         assertEquals(0.0, configNegative.initialValue());
         assertEquals(0.0, configNegative.shutdownValue());
 
-        var configOverMax = PwmConfigBuilder.newInstance()
+        var configOverMax = Pwm.newConfigBuilder()
             .dutyCycle(150.0)
             .initial(120)
             .shutdown(200)
@@ -131,7 +121,7 @@ class PwmConfigBuilderTest {
 
     @Test
     void testUniqueIdentifier() {
-        var config = PwmConfigBuilder.newInstance()
+        var config = Pwm.newConfigBuilder()
             .chip(2)
             .channel(1)
             .bcm(18)
@@ -143,18 +133,18 @@ class PwmConfigBuilderTest {
 
     @Test
     void testValidate() {
-        var config = PwmConfigBuilder.newInstance().build();
+        var config = Pwm.newConfigBuilder().build();
         assertDoesNotThrow(config::validate);
 
-        var nullIdConfig = new PwmConfig(null, "name", "desc", null, null, null, null,
+        var nullIdConfig = new PwmConfig(null, "name", "desc", null, null, null,
             PwmType.HARDWARE, PwmPolarity.NORMAL, null, null, null, null);
         assertThrows(IllegalStateException.class, nullIdConfig::validate);
     }
 
     @Test
     void testRecordEquality() {
-        var config1 = PwmConfigBuilder.newInstance().chip(0).channel(1).frequency(500.0).build();
-        var config2 = PwmConfigBuilder.newInstance().chip(0).channel(1).frequency(500.0).build();
+        var config1 = Pwm.newConfigBuilder().chip(0).channel(1).frequency(500.0).build();
+        var config2 = Pwm.newConfigBuilder().chip(0).channel(1).frequency(500.0).build();
 
         assertEquals(config1, config2);
         assertEquals(config1.hashCode(), config2.hashCode());
