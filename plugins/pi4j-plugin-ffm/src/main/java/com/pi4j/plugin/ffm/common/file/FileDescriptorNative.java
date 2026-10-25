@@ -3,6 +3,7 @@ package com.pi4j.plugin.ffm.common.file;
 import com.pi4j.exception.Pi4JException;
 
 import java.lang.foreign.Arena;
+import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
 
 import static com.pi4j.plugin.ffm.common.Pi4JNativeContext.CAPTURED_STATE_LAYOUT;
@@ -76,6 +77,24 @@ public class FileDescriptorNative {
             var callResult = (int) FileDescriptorContext.READ.invoke(capturedState, fd, bufferMemorySegment, size);
             processError(callResult, capturedState, "read", fd, buffer, size);
             return bufferMemorySegment.toArray(ValueLayout.JAVA_BYTE);
+        } catch (Throwable e) {
+            throw new Pi4JException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Reads from a file directly into a {@link MemorySegment} buffer, avoiding the intermediate byte array.
+     * @param fd file descriptor of the file to read
+     * @param buffer the {@link MemorySegment} buffer to read into
+     * @param size the number of bytes to read from the file descriptor
+     * @return the number of bytes actually read
+     */
+    public int read(int fd, MemorySegment buffer, int size) {
+        try (var arena = Arena.ofConfined()) {
+            var capturedState = arena.allocate(CAPTURED_STATE_LAYOUT);
+            var callResult = (int) FileDescriptorContext.READ.invoke(capturedState, fd, buffer, size);
+            processError(callResult, capturedState, "read", fd, buffer, size);
+            return callResult;
         } catch (Throwable e) {
             throw new Pi4JException(e.getMessage(), e);
         }
