@@ -133,7 +133,7 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
             this.eventTaskProcessor = Executors.newSingleThreadExecutor(threadFactory);
         }
         if (watcher == null) {
-            watcher = new EventWatcher(line.chipFileDescriptor, line.mask, line.file, PinEvent.BOTH, (this.debounce > 0)
+            watcher = new EventWatcher(line.chipFileDescriptor, line.mask, PinEvent.BOTH, (this.debounce > 0)
                 ? new TrailingEdgeDebounceProcessing(this.debounce * 1000L, this::handleEvents)
                 : this::handleEvents
             );

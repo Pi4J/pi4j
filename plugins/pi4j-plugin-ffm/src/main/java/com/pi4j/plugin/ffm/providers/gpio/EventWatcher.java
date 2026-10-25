@@ -26,33 +26,46 @@ import java.util.List;
 public class EventWatcher implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(EventWatcher.class);
 
-    private final PollNative poll = new PollNative();
-
     // Graceful period for event watcher to shut down.
     // NOTE: used for poll() inside watcher thread — always keep at half of the total timeout.
     static final int EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS = 200;
 
     private final int fd;
     private final long mask;
-    private final FileDescriptorNative file;
     private final PinEvent pinEvent;
     private final PinEventProcessing eventProcessor;
+
+    private final EventPoller eventPoller;
+    private final EventReader eventReader;
 
     private volatile boolean stopWatching = false;
 
     /**
      * @param fd file descriptor of the GPIO line
      * @param mask bitmask of the GPIO line
-     * @param file file operations
      * @param pinEvent the pin even type to capture (RISING, FALLING, BOTH)
      * @param eventProcessor callback to process the events
      */
-    public EventWatcher(int fd, long mask, FileDescriptorNative file, PinEvent pinEvent, PinEventProcessing eventProcessor) {
+    public EventWatcher(int fd, long mask, PinEvent pinEvent, PinEventProcessing eventProcessor) {
+        this(fd, mask, pinEvent, eventProcessor, EventPoller.DEFAULT, EventReader.DEFAULT);
+    }
+
+    /**
+     * Package private constructor for testing purposes, allowing injection of custom poller and reader implementations.
+     * @param fd file descriptor of the GPIO line
+     * @param mask bitmask of the GPIO line
+     * @param pinEvent the pin even type to capture (RISING, FALLING, BOTH)
+     * @param eventProcessor callback to process the events
+     * @param eventPoller context-appropriate {@link EventPoller}
+     * @param eventReader context-appropriate {@link EventReader}
+     */
+    EventWatcher(int fd, long mask, PinEvent pinEvent, PinEventProcessing eventProcessor, EventPoller eventPoller, EventReader eventReader) {
         this.fd = fd;
         this.mask = mask;
-        this.file = file;
         this.pinEvent = pinEvent;
         this.eventProcessor = eventProcessor;
+        this.eventPoller = eventPoller;
+        this.eventReader = eventReader;
     }
 
     @Override
@@ -69,7 +82,7 @@ public class EventWatcher implements Runnable {
             try {
                 // PollingData must be recreated each time — poll does not erase revents between calls
                 var pollData = new PollingData(fd, (short) (PollFlag.POLLIN | PollFlag.POLLPRI), (short) 0);
-                pollData = poll.poll(pollData, 1, EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS / 2);
+                pollData = eventPoller.poll(pollData, 1, EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS / 2);
                 if (pollData == null) {
                     eventProcessor.process(Collections.emptyList());
                     continue;
@@ -82,7 +95,7 @@ public class EventWatcher implements Runnable {
                 if ((pollData.revents() & (PollFlag.POLLIN | PollFlag.POLLPRI)) != 0) {
                     // default minimum buffer size is 16 line events
                     // see https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/gpio.h#L185
-                    var buf = file.read(fd, new byte[16 * eventSize], 16 * eventSize);
+                    var buf = eventReader.read(fd, new byte[16 * eventSize], 16 * eventSize);
                     var holder = new byte[eventSize];
                     for (int i = 0; i < 16 * LineEvent.LAYOUT.byteSize(); i += eventSize) {
                         // Check all 8 bytes of timestamp_ns — checking only buf[i] (the LSB) is
@@ -133,5 +146,27 @@ public class EventWatcher implements Runnable {
 
     public boolean isRunning() {
         return !this.stopWatching;
+    }
+
+    /**
+     * Local abstraction of the polling operation to allow for testing and mocking of the native poll() call.
+     * The default implementation uses {@link PollNative#poll(PollingData, int, int)}
+     */
+    @FunctionalInterface
+    interface EventPoller {
+        EventPoller DEFAULT = new PollNative()::poll;
+
+        PollingData poll(PollingData pollingData, int size, int timeout);
+    }
+
+    /**
+     * Local abstraction of the event reading operation to allow for testing and mocking of the native read() call.
+     * The default implementation uses {@link FileDescriptorNative#read(int, byte[], int)}
+     */
+    @FunctionalInterface
+    interface EventReader {
+        EventReader DEFAULT = new FileDescriptorNative()::read;
+
+        byte[] read(int fd, byte[] buffer, int size);
     }
 }
