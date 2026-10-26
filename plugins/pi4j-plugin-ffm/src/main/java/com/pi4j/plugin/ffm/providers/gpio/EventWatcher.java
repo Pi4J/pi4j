@@ -108,12 +108,10 @@ public class EventWatcher implements Runnable {
                         for (int i = 0; i < bytesAvailable; i += eventSize) {
                             var slice = memoryBuffer.asSlice(i, eventSize);
 
-                            // check timestampNs is non-zero before committing to deserialise the event.
-                            if ((slice.get(ValueLayout.JAVA_LONG, 0)) == 0L) {
+                            var event = LineEvent.createEmpty().from(slice);
+                            if (event.timestampNs() == 0L) {
                                 continue;
                             }
-
-                            var event = LineEvent.createEmpty().from(slice);
 
                             if (logger.isTraceEnabled()) {
                                 logger.trace("Detected new event on offset {}: {}", mask, event);
