@@ -45,11 +45,6 @@ public record ParallelPortConfig(
     }
 
     @Override
-    public String provider() {
-        return null;
-    }
-
-    @Override
     public void validate() {
         // this current core codebase doesn't seem to do anything here except check that the ID is non-null
         // `@NonNull` annotations could be used to indicate this requirement, so leaving faults up to the user(?)

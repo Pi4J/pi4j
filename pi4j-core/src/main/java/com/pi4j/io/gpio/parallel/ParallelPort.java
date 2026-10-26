@@ -108,4 +108,8 @@ public interface ParallelPort extends com.pi4j.io.IO<ParallelPortConfig> {
     interface PinStateChangeListener extends com.pi4j.event.Listener {
         void onPinStateChanged(PinStateChangedNotification notification);
     }
+
+    static ParallelPortConfigBuilder newConfigBuilder() {
+        return new ParallelPortConfigBuilder();
+    }
 }

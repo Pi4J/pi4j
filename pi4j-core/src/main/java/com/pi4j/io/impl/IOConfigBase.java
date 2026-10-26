@@ -9,10 +9,6 @@ import java.util.Map;
  */
 public abstract class IOConfigBase extends ConfigBase implements IOConfig {
 
-    // private configuration variables
-    protected String provider = null;
-    protected String platform = null;
-
     /**
      * PRIVATE CONSTRUCTOR
      */
@@ -24,15 +20,5 @@ public abstract class IOConfigBase extends ConfigBase implements IOConfig {
      */
     protected IOConfigBase(Map<String,String> properties){
         super(properties);
-
-        // load provider property
-        if(properties.containsKey(PROVIDER_KEY)){
-            this.provider = properties.get(PROVIDER_KEY);
-        }
-    }
-
-    @Override
-    public String provider() {
-        return this.provider;
     }
 }

@@ -8,7 +8,7 @@ class ParallelPortConfigBuilderTest {
 
     @Test
     void impliesBitOrderWhenAddingBcm() {
-        var config = ParallelPortConfigBuilder.newInstance()
+        var config = ParallelPort.newConfigBuilder()
             .bcm(3)
             .bcm(2)
             .bcm(1)
@@ -21,7 +21,7 @@ class ParallelPortConfigBuilderTest {
 
     @Test
     void impliesBitOrderWhenAddingMultipleBcmValues() {
-        var config = ParallelPortConfigBuilder.newInstance()
+        var config = ParallelPort.newConfigBuilder()
             .bcm(3, 2, 1)
             .build();
 
@@ -32,7 +32,7 @@ class ParallelPortConfigBuilderTest {
 
     @Test
     void cannotAddDuplicatesWhenAddingBcm() {
-        var builder = ParallelPortConfigBuilder.newInstance()
+        var builder = ParallelPort.newConfigBuilder()
             .bcm(1)
             .bcm(2);
         assertThrows(IllegalArgumentException.class, () -> builder.bcm(1));
@@ -40,7 +40,7 @@ class ParallelPortConfigBuilderTest {
 
     @Test
     void cannotAddDuplicatesWhenAddingMultipleBcmValues() {
-        var builder = ParallelPortConfigBuilder.newInstance();
+        var builder = ParallelPort.newConfigBuilder();
         assertThrows(IllegalArgumentException.class, () -> builder.bcm(1, 2, 1));
     }
 }
