@@ -93,7 +93,6 @@ public sealed class FFMParallelPort
                 this.eventWatcher = new EventWatcher(
                     gpioLine.chipFileDescriptor,
                     gpioLine.mask,
-                    gpioLine.file,
                     PinEvent.BOTH,
                     /* TODO: No software debounce for now and leaving this to hardware debounce if configured.
                         Current software debounce is designed for Digital devices and does not differentiate between
