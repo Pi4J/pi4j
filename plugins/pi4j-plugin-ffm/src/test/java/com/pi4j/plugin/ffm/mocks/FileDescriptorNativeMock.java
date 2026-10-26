@@ -5,6 +5,7 @@ import org.mockito.AdditionalMatchers;
 import org.mockito.MockedConstruction;
 import org.mockito.invocation.InvocationOnMock;
 
+import java.lang.foreign.MemorySegment;
 import java.util.function.Function;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -23,6 +24,9 @@ public class FileDescriptorNativeMock {
                 when(mock.open(matches(descriptor.device), anyInt())).thenReturn(descriptor.fd);
                 if (descriptor.callback != null) {
                     when(mock.read(eq(descriptor.fd), any(byte[].class), anyInt())).thenAnswer(descriptor.callback::apply);
+                    // This is possible and works. however, the callback is not typesafe.
+                    // The user is required to ensure the callback will match the signature of the method being mocked.
+                    when(mock.read(eq(descriptor.fd), any(MemorySegment.class), anyInt())).thenAnswer(descriptor.callback::apply);
                 } else {
                     when(mock.read(eq(descriptor.fd), any(byte[].class), anyInt())).thenReturn(descriptor.data);
                 }

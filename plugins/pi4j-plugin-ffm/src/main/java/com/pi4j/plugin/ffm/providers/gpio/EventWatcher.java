@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.foreign.Arena;
+import java.lang.foreign.MemorySegment;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,6 +72,7 @@ public class EventWatcher implements Runnable {
     @Override
     public void run() {
         var eventSize = (int) LineEvent.LAYOUT.byteSize();
+        var bufferSize = eventSize * 16; // default minimum buffer size is 16 line events
         var timestamp = Instant.now();
         List<LineEvent> eventList = new ArrayList<>();
 
@@ -78,64 +80,65 @@ public class EventWatcher implements Runnable {
             logger.trace("Start polling GPIO data on offset {} at {}", mask, timestamp);
         }
 
-        while (!stopWatching) {
-            try {
-                // PollingData must be recreated each time — poll does not erase revents between calls
-                var pollData = new PollingData(fd, (short) (PollFlag.POLLIN | PollFlag.POLLPRI), (short) 0);
-                pollData = eventPoller.poll(pollData, 1, EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS / 2);
-                if (pollData == null) {
-                    eventProcessor.process(Collections.emptyList());
-                    continue;
-                }
-                if ((pollData.revents() & (PollFlag.POLLERR | PollFlag.POLLHUP | PollFlag.POLLNVAL)) != 0) {
-                    logger.error("Internal error during polling on offset {}. Last polling data: {}", mask, pollData);
-                    stopWatching();
-                    continue;
-                }
-                if ((pollData.revents() & (PollFlag.POLLIN | PollFlag.POLLPRI)) != 0) {
-                    // default minimum buffer size is 16 line events
-                    // see https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/gpio.h#L185
-                    var buf = eventReader.read(fd, new byte[16 * eventSize], 16 * eventSize);
-                    var holder = new byte[eventSize];
-                    for (int i = 0; i < 16 * LineEvent.LAYOUT.byteSize(); i += eventSize) {
-                        // Check all 8 bytes of timestamp_ns — checking only buf[i] (the LSB) is
-                        // insufficient because a valid timestamp divisible by 256 ns has a zero LSB.
-                        if ((buf[i] | buf[i + 1] | buf[i + 2] | buf[i + 3]
-                            | buf[i + 4] | buf[i + 5] | buf[i + 6] | buf[i + 7]) == 0) {
-                            continue;
+        try (var arena = Arena.ofConfined()) {
+            // Allocate a buffer large enough to hold multiple events.
+            // We're only going to read as many bytes from this as we are told have been read,
+            // so it's safe to over-allocate here.
+            var memoryBuffer = arena.allocate(bufferSize);
+
+            while (!stopWatching) {
+                try {
+                    // PollingData must be recreated each time — poll does not erase revents between calls
+                    var pollData = new PollingData(fd, (short) (PollFlag.POLLIN | PollFlag.POLLPRI), (short) 0);
+                    pollData = eventPoller.poll(pollData, 1, EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS / 2);
+                    if (pollData == null) {
+                        eventProcessor.process(Collections.emptyList());
+                        continue;
+                    }
+                    if ((pollData.revents() & (PollFlag.POLLERR | PollFlag.POLLHUP | PollFlag.POLLNVAL)) != 0) {
+                        logger.error("Internal error during polling on offset {}. Last polling data: {}", mask, pollData);
+                        stopWatching();
+                        continue;
+                    }
+                    if ((pollData.revents() & (PollFlag.POLLIN | PollFlag.POLLPRI)) != 0) {
+                        // default minimum buffer size is 16 line events
+                        // see https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/gpio.h#L185
+                        var bytesAvailable = eventReader.read(fd, memoryBuffer, bufferSize);
+                        for (int i = 0; i < bytesAvailable; i += eventSize) {
+                            var slice = memoryBuffer.asSlice(i, eventSize);
+
+                            var event = LineEvent.createEmpty().from(slice);
+                            if (event.timestampNs() == 0L) {
+                                continue;
+                            }
+
+                            if (logger.isTraceEnabled()) {
+                                logger.trace("Detected new event on offset {}: {}", mask, event);
+                            }
+
+                            if ((event.id() & this.pinEvent.getValue()) != 0) {
+                                eventList.add(event);
+                            }
                         }
-                        System.arraycopy(buf, i, holder, 0, eventSize);
-                        var memoryBuffer = Arena.ofAuto().allocate(LineEvent.LAYOUT);
-                        memoryBuffer.asByteBuffer().put(holder);
-                        var event = LineEvent.createEmpty().from(memoryBuffer);
 
                         if (logger.isTraceEnabled()) {
-                            logger.trace("Detected new event on offset {}: {}", mask, event);
+                            logger.trace("Total events on offset {}: {}", mask, eventList.size());
                         }
 
-                        if ((event.id() & this.pinEvent.getValue()) != 0) {
-                            eventList.add(event);
+                        if (!eventList.isEmpty()) {
+                            eventProcessor.process(eventList);
+                            eventList.clear();
+                        }
+
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("Total processing on offset {} took {}ms", mask, timestamp.until(Instant.now()).toMillis());
+                            timestamp = Instant.now();
                         }
                     }
-
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Total events on offset {}: {}", mask, eventList.size());
-                    }
-
-                    if (!eventList.isEmpty()) {
-                        eventProcessor.process(eventList);
-                        eventList.clear();
-                    }
-
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Total processing on offset {} took {}ms", mask, timestamp.until(Instant.now()).toMillis());
-                    }
-
-                    timestamp = Instant.now();
+                } catch (Throwable e) {
+                    logger.error("Error while polling pin on offset {}", mask, e);
+                    throw new Pi4JException(e);
                 }
-            } catch (Throwable e) {
-                logger.error("Error while polling pin on offset {}", mask, e);
-                throw new Pi4JException(e);
             }
         }
     }
@@ -163,6 +166,6 @@ public class EventWatcher implements Runnable {
      */
     @FunctionalInterface
     interface EventReader {
-        byte[] read(int fd, byte[] buffer, int size);
+        int read(int fd, MemorySegment buffer, int size);
     }
 }

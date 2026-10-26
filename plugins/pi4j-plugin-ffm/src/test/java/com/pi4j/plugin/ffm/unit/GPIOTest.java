@@ -1,6 +1,5 @@
 package com.pi4j.plugin.ffm.unit;
 
-import com.pi4j.Pi4J;
 import com.pi4j.boardinfo.definition.BoardModel;
 import com.pi4j.boardinfo.util.BoardInfoHelper;
 import com.pi4j.context.Context;
@@ -28,8 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.invocation.InvocationOnMock;
 
-import java.lang.foreign.Arena;
-import java.nio.ByteBuffer;
+import java.lang.foreign.MemorySegment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -133,18 +131,14 @@ public class GPIOTest {
             }
         };
         var pollingFile = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 42, ("Test").getBytes(), (answer) -> {
-            byte[] buffer = answer.getArgument(1);
+            MemorySegment buffer = answer.getArgument(1);
             var lineEvent = new LineEvent(1, PinEvent.RISING.getValue(), 3, 4, 5);
-            var memoryBuffer = Arena.ofAuto().allocate(LineEvent.LAYOUT);
             try {
-                lineEvent.to(memoryBuffer);
+                lineEvent.to(buffer);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
-            var lineBuffer = new byte[(int) LineEvent.LAYOUT.byteSize()];
-            ByteBuffer.wrap(lineBuffer).put(memoryBuffer.asByteBuffer());
-            System.arraycopy(lineBuffer, 0, buffer, 0, lineBuffer.length);
-            return buffer;
+            return (int) LineEvent.LAYOUT.byteSize();
         });
         try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE, pollingFile);
              var _ = IoctlNativeMock.setup(lineInfoTestData);
@@ -190,18 +184,14 @@ public class GPIOTest {
         // fd=42 must match the chipFileDescriptor returned by IoctlNativeMock for LineRequest.
         long timestampWithZeroLSB = 256L;
         var pollingFile = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 42, ("Test").getBytes(), (answer) -> {
-            byte[] buffer = answer.getArgument(1);
+            MemorySegment buffer = answer.getArgument(1);
             var lineEvent = new LineEvent(timestampWithZeroLSB, PinEvent.RISING.getValue(), 3, 4, 5);
-            var memoryBuffer = Arena.ofAuto().allocate(LineEvent.LAYOUT);
             try {
-                lineEvent.to(memoryBuffer);
+                lineEvent.to(buffer);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
-            var lineBuffer = new byte[(int) LineEvent.LAYOUT.byteSize()];
-            ByteBuffer.wrap(lineBuffer).put(memoryBuffer.asByteBuffer());
-            System.arraycopy(lineBuffer, 0, buffer, 0, lineBuffer.length);
-            return buffer;
+            return (int) LineEvent.LAYOUT.byteSize();
         });
         try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE, pollingFile);
              var _ = IoctlNativeMock.setup(lineInfoTestData);
@@ -248,19 +238,15 @@ public class GPIOTest {
             }
         };
         var pollingFile = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 42, ("Test").getBytes(), (answer) -> {
-            byte[] buffer = answer.getArgument(1);
+            MemorySegment buffer = answer.getArgument(1);
             long timestampNs = System.nanoTime();
             var lineEvent = new LineEvent(timestampNs, PinEvent.RISING.getValue(), 3, 4, 5);
-            var memoryBuffer = Arena.ofAuto().allocate(LineEvent.LAYOUT);
             try {
-                lineEvent.to(memoryBuffer);
+                lineEvent.to(buffer);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
-            var lineBuffer = new byte[(int) LineEvent.LAYOUT.byteSize()];
-            ByteBuffer.wrap(lineBuffer).put(memoryBuffer.asByteBuffer());
-            System.arraycopy(lineBuffer, 0, buffer, 0, lineBuffer.length);
-            return buffer;
+            return (int) LineEvent.LAYOUT.byteSize();
         });
         try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE, pollingFile);
              var _ = IoctlNativeMock.setup(lineInfoTestData);
@@ -563,18 +549,14 @@ public class GPIOTest {
             }
         };
         var pollingFile = new FileDescriptorNativeMock.FileDescriptorTestData("/dev/null", 42, ("Test").getBytes(), (answer) -> {
-            byte[] buffer = answer.getArgument(1);
+            MemorySegment buffer = answer.getArgument(1);
             var lineEvent = new LineEvent(1, PinEvent.RISING.getValue(), 3, 4, 5);
-            var memoryBuffer = Arena.ofAuto().allocate(LineEvent.LAYOUT);
             try {
-                lineEvent.to(memoryBuffer);
+                lineEvent.to(buffer);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }
-            var lineBuffer = new byte[(int) LineEvent.LAYOUT.byteSize()];
-            ByteBuffer.wrap(lineBuffer).put(memoryBuffer.asByteBuffer());
-            System.arraycopy(lineBuffer, 0, buffer, 0, lineBuffer.length);
-            return buffer;
+            return (int) LineEvent.LAYOUT.byteSize();
         });
         try (var _ = FileDescriptorNativeMock.setup(GPIOCHIP_FILE, pollingFile);
              var _ = IoctlNativeMock.setup(lineInfoTestData);
