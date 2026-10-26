@@ -1,17 +1,34 @@
 package com.pi4j.io.spi;
 
-import com.pi4j.config.ConfigBuilder;
+import com.pi4j.config.Config;
 import com.pi4j.context.Context;
-import com.pi4j.io.IOConfigBuilder;
-import com.pi4j.io.spi.impl.DefaultSpiConfigBuilder;
+import com.pi4j.io.impl.IOConfigBuilderBase;
+import com.pi4j.util.StringUtil;
 
 /**
  * Fluent builder for assembling an {@link SpiConfig}. Set the desired bus, channel/chip-select,
- * clock mode, baud rate, and bit-ordering, then call {@code build()} (inherited from
- * {@link SpiConfigBuilder}) to obtain an immutable configuration.
+ * clock mode, baud rate, and bit-ordering, then call {@code build()} to obtain an immutable configuration.
  */
-public interface SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiConfig>,
-    ConfigBuilder<SpiConfigBuilder, SpiConfig> {
+public class SpiConfigBuilder extends IOConfigBuilderBase<SpiConfigBuilder, SpiConfig> {
+
+    private SpiBus bus = Spi.DEFAULT_BUS;
+    private boolean busUserProvided = false;
+    private Integer channel = Spi.DEFAULT_CHANNEL;
+    private SpiMode mode = Spi.DEFAULT_MODE;
+    private boolean modeUserProvided = false;
+    private Integer baud = Spi.DEFAULT_BAUD;
+    private Integer readLsbFirst = 0;
+    private boolean readLsbFirstUserProvided = false;
+    private Integer writeLsbFirst = 0;
+    private boolean writeLsbFirstUserProvided = false;
+    private Long flags = null;
+
+    /**
+     * Default constructor for creating a new SPI configuration builder.
+     */
+    public SpiConfigBuilder() {
+    }
+
     /**
      * Creates a new {@code SpiConfigBuilder} instance.
      *
@@ -19,9 +36,9 @@ public interface SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiC
      * @return a new builder instance
      * @deprecated use Spi.newConfigBuilder() instead.
      */
-    @Deprecated(since="5.0")
-    static SpiConfigBuilder newInstance(Context context) {
-        return DefaultSpiConfigBuilder.newInstance(context);
+    @Deprecated(since = "5.0")
+    public static SpiConfigBuilder newInstance(Context context) {
+        return new SpiConfigBuilder();
     }
 
     /**
@@ -29,8 +46,8 @@ public interface SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiC
      *
      * @return a new builder instance
      */
-    static SpiConfigBuilder newInstance() {
-        return DefaultSpiConfigBuilder.newInstance();
+    public static SpiConfigBuilder newInstance() {
+        return new SpiConfigBuilder();
     }
 
     /**
@@ -39,7 +56,11 @@ public interface SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiC
      * @param shift {@code 0} to shift the least significant bit first, {@code 1} to shift the most significant bit first
      * @return this builder instance for method chaining
      */
-    SpiConfigBuilder readLsbFirst(Integer shift);
+    public SpiConfigBuilder readLsbFirst(Integer shift) {
+        this.readLsbFirst = shift;
+        this.readLsbFirstUserProvided = (shift != null);
+        return this;
+    }
 
     /**
      * Sets the bit order for write operations.
@@ -47,8 +68,11 @@ public interface SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiC
      * @param shift {@code 0} to shift the least significant bit first, {@code 1} to shift the most significant bit first
      * @return this builder instance for method chaining
      */
-    SpiConfigBuilder writeLsbFirst(Integer shift);
-
+    public SpiConfigBuilder writeLsbFirst(Integer shift) {
+        this.writeLsbFirst = shift;
+        this.writeLsbFirstUserProvided = (shift != null);
+        return this;
+    }
 
     /**
      * Sets the SPI clock (baud) rate.
@@ -56,8 +80,10 @@ public interface SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiC
      * @param rate the clock rate in Hz (typically 500&nbsp;kHz to 32&nbsp;MHz)
      * @return this builder instance for method chaining
      */
-    SpiConfigBuilder baud(Integer rate);
-
+    public SpiConfigBuilder baud(Integer rate) {
+        this.baud = rate;
+        return this;
+    }
 
     /**
      * Sets the SPI bus this device communicates over.
@@ -65,7 +91,11 @@ public interface SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiC
      * @param bus the {@link SpiBus} to use
      * @return this builder instance for method chaining
      */
-    SpiConfigBuilder bus(SpiBus bus);
+    public SpiConfigBuilder bus(SpiBus bus) {
+        this.bus = bus;
+        this.busUserProvided = (bus != null);
+        return this;
+    }
 
     /**
      * Sets the SPI bus by its numeric index.
@@ -73,8 +103,8 @@ public interface SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiC
      * @param bus the SPI bus number, resolved via {@link SpiBus#getByNumber(int)}
      * @return this builder instance for method chaining
      */
-    default SpiConfigBuilder bus(Integer bus) {
-        return bus(SpiBus.getByNumber(bus));
+    public SpiConfigBuilder bus(Integer bus) {
+        return bus(bus == null ? null : SpiBus.getByNumber(bus));
     }
 
     /**
@@ -83,7 +113,11 @@ public interface SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiC
      * @param mode the {@link SpiMode} to use
      * @return this builder instance for method chaining
      */
-    SpiConfigBuilder mode(SpiMode mode);
+    public SpiConfigBuilder mode(SpiMode mode) {
+        this.mode = mode;
+        this.modeUserProvided = (mode != null);
+        return this;
+    }
 
     /**
      * Sets the SPI clock mode by its numeric value.
@@ -91,8 +125,8 @@ public interface SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiC
      * @param mode the mode number (0&ndash;3), resolved via {@link SpiMode#getByNumber(int)}
      * @return this builder instance for method chaining
      */
-    default SpiConfigBuilder mode(Integer mode) {
-        return mode(SpiMode.getByNumber(mode));
+    public SpiConfigBuilder mode(Integer mode) {
+        return mode(mode == null ? null : SpiMode.getByNumber(mode));
     }
 
     /**
@@ -102,7 +136,10 @@ public interface SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiC
      * @param flags the encoded provider flags
      * @return this builder instance for method chaining
      */
-    SpiConfigBuilder flags(Long flags);
+    public SpiConfigBuilder flags(Long flags) {
+        this.flags = flags;
+        return this;
+    }
 
     /**
      * Sets the SPI channel (chip-select line) this device is addressed on. This is an alias for the
@@ -111,7 +148,10 @@ public interface SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiC
      * @param channel the channel number
      * @return this builder instance for method chaining
      */
-    SpiConfigBuilder channel(Integer channel);
+    public SpiConfigBuilder channel(Integer channel) {
+        this.channel = channel;
+        return this;
+    }
 
     /**
      * Sets the chip-select line for this device.
@@ -119,7 +159,9 @@ public interface SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiC
      * @param chipSelect the {@link SpiChipSelect} to use
      * @return this builder instance for method chaining
      */
-    SpiConfigBuilder chipSelect(SpiChipSelect chipSelect);
+    public SpiConfigBuilder chipSelect(SpiChipSelect chipSelect) {
+        return channel(chipSelect == null ? null : chipSelect.getChipSelect());
+    }
 
     /**
      * Sets the target pin using its legacy "address" name.
@@ -129,7 +171,7 @@ public interface SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiC
      * @deprecated use {@link #bcm(Integer)} instead.
      */
     @Deprecated(forRemoval = true)
-    default SpiConfigBuilder address(Integer address) {
+    public SpiConfigBuilder address(Integer address) {
         return bcm(address);
     }
 
@@ -139,5 +181,34 @@ public interface SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiC
      * @param bcm the BCM GPIO pin number
      * @return this builder instance for method chaining
      */
-    SpiConfigBuilder bcm(Integer bcm);
+    public SpiConfigBuilder bcm(Integer bcm) {
+        return channel(bcm);
+    }
+
+    @Override
+    public SpiConfig build() {
+        SpiBus resolvedBus = this.bus != null ? this.bus : Spi.DEFAULT_BUS;
+        Integer resolvedChannel = this.channel != null ? this.channel : Spi.DEFAULT_CHANNEL;
+        String defaultId = "SPI-" + resolvedBus.getBus() + "." + resolvedChannel;
+        String id = StringUtil.setIfNullOrEmpty(this.id(), defaultId, true);
+        String name = StringUtil.setIfNullOrEmpty(this.properties.get(Config.NAME_KEY), id, true);
+        String description = StringUtil.setIfNullOrEmpty(this.properties.get(Config.DESCRIPTION_KEY), id, true);
+
+        return new SpiConfig(
+            id,
+            name,
+            description,
+            resolvedBus,
+            resolvedChannel,
+            this.mode != null ? this.mode : Spi.DEFAULT_MODE,
+            this.baud != null ? this.baud : Spi.DEFAULT_BAUD,
+            this.readLsbFirst != null ? this.readLsbFirst : 0,
+            this.writeLsbFirst != null ? this.writeLsbFirst : 0,
+            this.flags,
+            this.busUserProvided,
+            this.modeUserProvided,
+            this.readLsbFirstUserProvided,
+            this.writeLsbFirstUserProvided
+        );
+    }
 }

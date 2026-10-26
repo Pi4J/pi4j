@@ -1,37 +1,27 @@
 package com.pi4j.io.gpio.digital;
 
+import com.pi4j.config.Config;
 import com.pi4j.context.Context;
-import com.pi4j.io.gpio.digital.impl.DefaultDigitalOutputConfigBuilder;
+import com.pi4j.io.impl.IOConfigBuilderBase;
+import com.pi4j.util.StringUtil;
 
 /**
  * Fluent builder for assembling a {@link DigitalOutputConfig}, adding output-specific settings (pin address,
- * initial state and shutdown state) on top of the shared {@link DigitalOutputConfigBuilder} options.
+ * initial state, shutdown state, and on-state) on top of the shared builder options.
  */
-public interface DigitalOutputConfigBuilder extends com.pi4j.io.IOConfigBuilder<DigitalOutputConfigBuilder, DigitalOutputConfig>, com.pi4j.config.ConfigBuilder<DigitalOutputConfigBuilder, DigitalOutputConfig> {
+public class DigitalOutputConfigBuilder extends IOConfigBuilderBase<DigitalOutputConfigBuilder, DigitalOutputConfig> {
+
+    private Integer bcm = null;
+    private Integer bus = 0;
+    private DigitalState shutdownState = null;
+    private DigitalState initialState = null;
+    private DigitalState onState = DigitalState.HIGH;
 
     /**
-     * Sets the BCM pin number the output controls.
-     *
-     * @param bcm the Broadcom GPIO pin number
-     * @return this builder for method chaining
+     * Default constructor for creating a new digital output configuration builder.
      */
-    DigitalOutputConfigBuilder bcm(Integer bcm);
-
-    /**
-     * Sets the state the output is driven to when Pi4J shuts down.
-     *
-     * @param state the shutdown state to apply
-     * @return this builder for method chaining
-     */
-    DigitalOutputConfigBuilder shutdown(DigitalState state);
-
-    /**
-     * Sets the state the output is driven to immediately after it is initialized.
-     *
-     * @param state the initial state to apply
-     * @return this builder for method chaining
-     */
-    DigitalOutputConfigBuilder initial(DigitalState state);
+    public DigitalOutputConfigBuilder() {
+    }
 
     /**
      * Creates a new digital output config builder bound to the given Pi4J context.
@@ -40,9 +30,9 @@ public interface DigitalOutputConfigBuilder extends com.pi4j.io.IOConfigBuilder<
      * @return a new builder instance
      * @deprecated the context argument is no longer required; use DigitalOutput.newConfigBuilder() instead.
      */
-    @Deprecated(since="5.0")
-    static DigitalOutputConfigBuilder newInstance(Context context) {
-        return DefaultDigitalOutputConfigBuilder.newInstance(context);
+    @Deprecated(since = "5.0")
+    public static DigitalOutputConfigBuilder newInstance(Context context) {
+        return new DigitalOutputConfigBuilder();
     }
 
     /**
@@ -51,17 +41,20 @@ public interface DigitalOutputConfigBuilder extends com.pi4j.io.IOConfigBuilder<
      *
      * @return a new builder instance
      */
-    static DigitalOutputConfigBuilder newInstance() {
-        return DefaultDigitalOutputConfigBuilder.newInstance();
+    public static DigitalOutputConfigBuilder newInstance() {
+        return new DigitalOutputConfigBuilder();
     }
 
     /**
-     * Sets the {@link DigitalState} to be treated as the logical "on" state for the configuration being built.
+     * Sets the Broadcom (BCM) GPIO pin number the output controls.
      *
-     * @param state the state that should map to "on"
+     * @param bcm the Broadcom GPIO pin number
      * @return this builder for method chaining
      */
-    DigitalOutputConfigBuilder onState(DigitalState state);
+    public DigitalOutputConfigBuilder bcm(Integer bcm) {
+        this.bcm = bcm;
+        return this;
+    }
 
     /**
      * Sets the bus number on which the GPIO device is addressed.
@@ -69,7 +62,10 @@ public interface DigitalOutputConfigBuilder extends com.pi4j.io.IOConfigBuilder<
      * @param bus the bus number to associate with the configured GPIO device
      * @return this builder instance for method chaining
      */
-    DigitalOutputConfigBuilder bus(int bus);
+    public DigitalOutputConfigBuilder bus(int bus) {
+        this.bus = bus;
+        return this;
+    }
 
     /**
      * Sets the target pin using its legacy "address" name.
@@ -79,7 +75,59 @@ public interface DigitalOutputConfigBuilder extends com.pi4j.io.IOConfigBuilder<
      * @deprecated use {@link #bcm(Integer)} instead.
      */
     @Deprecated(forRemoval = true)
-    default DigitalOutputConfigBuilder address(Integer address) {
+    public DigitalOutputConfigBuilder address(Integer address) {
         return bcm(address);
+    }
+
+    /**
+     * Sets the state the output is driven to when Pi4J shuts down.
+     *
+     * @param state the shutdown state to apply
+     * @return this builder for method chaining
+     */
+    public DigitalOutputConfigBuilder shutdown(DigitalState state) {
+        this.shutdownState = state;
+        return this;
+    }
+
+    /**
+     * Sets the state the output is driven to immediately after it is initialized.
+     *
+     * @param state the initial state to apply
+     * @return this builder for method chaining
+     */
+    public DigitalOutputConfigBuilder initial(DigitalState state) {
+        this.initialState = state;
+        return this;
+    }
+
+    /**
+     * Sets the {@link DigitalState} to be treated as the logical "on" state for the configuration being built.
+     *
+     * @param state the state that should map to "on"
+     * @return this builder for method chaining
+     */
+    public DigitalOutputConfigBuilder onState(DigitalState state) {
+        this.onState = state != null ? state : DigitalState.HIGH;
+        return this;
+    }
+
+    @Override
+    public DigitalOutputConfig build() {
+        String defaultId = this.bcm != null ? "DOUT-" + this.bcm : "DOUT";
+        String id = StringUtil.setIfNullOrEmpty(this.id(), defaultId, true);
+        String name = StringUtil.setIfNullOrEmpty(this.properties.get(Config.NAME_KEY), id, true);
+        String description = StringUtil.setIfNullOrEmpty(this.properties.get(Config.DESCRIPTION_KEY), id, true);
+
+        return new DigitalOutputConfig(
+            id,
+            name,
+            description,
+            this.bcm,
+            this.bus != null ? this.bus : 0,
+            this.initialState,
+            this.shutdownState,
+            this.onState != null ? this.onState : DigitalState.HIGH
+        );
     }
 }

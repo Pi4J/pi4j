@@ -17,4 +17,9 @@ public abstract class DigitalInputBase extends DigitalBase<DigitalInputConfig> i
     protected DigitalInputBase(DigitalInputConfig config, Consumer<?> onClose){
         super(config, onClose);
     }
+
+    @Override
+    public DigitalState onState() {
+        return config().onState();
+    }
 }
