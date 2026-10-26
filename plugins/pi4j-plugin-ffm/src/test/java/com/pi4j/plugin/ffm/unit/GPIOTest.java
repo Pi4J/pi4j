@@ -488,7 +488,6 @@ public class GPIOTest {
         }
     }
 
-//    @Disabled
     @Test
     public void testMoreThanFourInputsReceiveEvents() throws InterruptedException {
         // Regression test for the carrier-thread-pinning bug:
