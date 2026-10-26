@@ -47,7 +47,7 @@ public class EventWatcher implements Runnable {
      * @param eventProcessor callback to process the events
      */
     public EventWatcher(int fd, long mask, PinEvent pinEvent, PinEventProcessing eventProcessor) {
-        this(fd, mask, pinEvent, eventProcessor, EventPoller.DEFAULT, EventReader.DEFAULT);
+        this(fd, mask, pinEvent, eventProcessor, new PollNative()::poll, new FileDescriptorNative()::read);
     }
 
     /**
@@ -154,8 +154,6 @@ public class EventWatcher implements Runnable {
      */
     @FunctionalInterface
     interface EventPoller {
-        EventPoller DEFAULT = new PollNative()::poll;
-
         PollingData poll(PollingData pollingData, int size, int timeout);
     }
 
@@ -165,8 +163,6 @@ public class EventWatcher implements Runnable {
      */
     @FunctionalInterface
     interface EventReader {
-        EventReader DEFAULT = new FileDescriptorNative()::read;
-
         byte[] read(int fd, byte[] buffer, int size);
     }
 }
