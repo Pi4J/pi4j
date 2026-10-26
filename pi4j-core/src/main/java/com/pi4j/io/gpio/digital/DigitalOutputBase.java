@@ -27,6 +27,11 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutputConfig>
         super(config, onClose);
     }
 
+    @Override
+    public DigitalState onState() {
+        return config().onState();
+    }
+
     /**
      * {@inheritDoc}
      * <p>
@@ -98,7 +103,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutputConfig>
     /**
      * {@inheritDoc}
      * <p>
-     * Drives the output to the configured {@link DigitalConfig#onState()}, defaulting to
+     * Drives the output to the configured {@link DigitalOutputConfig#onState()}, defaulting to
      * {@link DigitalState#HIGH} when none is configured.
      */
     @Override
@@ -119,7 +124,7 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutputConfig>
     /**
      * {@inheritDoc}
      * <p>
-     * Drives the output to the inverse of the configured {@link DigitalConfig#onState()}, defaulting to
+     * Drives the output to the inverse of the configured {@link DigitalOutputConfig#onState()}, defaulting to
      * {@link DigitalState#LOW} when no on-state is configured.
      */
     @Override

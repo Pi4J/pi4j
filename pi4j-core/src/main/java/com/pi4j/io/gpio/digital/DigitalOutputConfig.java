@@ -1,62 +1,46 @@
 package com.pi4j.io.gpio.digital;
 
 import com.pi4j.context.Context;
+import com.pi4j.io.IOConfig;
 
 /**
- * Configuration for a {@link DigitalOutput}, extending the common {@link DigitalConfig} with output-specific
- * settings: the state applied when the output is initialized and the state applied when Pi4J shuts down.
- * Instances are assembled with a {@link DigitalOutputConfigBuilder}.
+ * Immutable configuration for a {@link DigitalOutput} pin, describing the pin address, initial state,
+ * shutdown state, and on-state mapping. Instances are assembled with a {@link DigitalOutputConfigBuilder}.
+ *
+ * @param id the configuration identifier
+ * @param name the configuration name
+ * @param description the configuration description
+ * @param bcm the Broadcom GPIO pin number
+ * @param bus the GPIO bus/chip number (defaulting to 0)
+ * @param initialState the state applied when the output is initialized
+ * @param shutdownState the state applied when Pi4J shuts down
+ * @param onState the {@link DigitalState} treated as the logical "on" state (defaulting to HIGH)
  */
-public interface DigitalOutputConfig extends DigitalConfig {
+public record DigitalOutputConfig(
+    @Override String id,
+    @Override String name,
+    @Override String description,
+    Integer bcm,
+    Integer bus,
+    DigitalState initialState,
+    DigitalState shutdownState,
+    DigitalState onState
+) implements IOConfig {
+
+    /** Property key under which the Broadcom pin number is stored in a configuration map. */
+    public static final String BCM_KEY = "bcm";
+
+    /** Property key under which the bus number is stored in a configuration map. */
+    public static final String BUS_KEY = "bus";
+
+    /** Property key under which the on-state value is stored in a configuration map. */
+    public static final String ON_STATE_KEY = "onstate";
+
     /** Configuration property key for the shutdown state value. */
-    String SHUTDOWN_STATE_KEY = "shutdown";
+    public static final String SHUTDOWN_STATE_KEY = "shutdown";
+
     /** Configuration property key for the initial state value. */
-    String INITIAL_STATE_KEY = "initial";
-
-    /**
-     * Returns the state the output is driven to when Pi4J shuts down.
-     *
-     * @return the configured shutdown state, or {@code null} if none was set
-     */
-    DigitalState shutdownState();
-    /**
-     * Sets the state the output is driven to when Pi4J shuts down.
-     *
-     * @param state the shutdown state to apply
-     * @return this configuration for method chaining
-     */
-    DigitalOutputConfig shutdownState(DigitalState state);
-    /**
-     * Bean-style accessor equivalent to {@link #shutdownState()}.
-     *
-     * @return the configured shutdown state, or {@code null} if none was set
-     */
-    default DigitalState getShutdownState(){
-        return shutdownState();
-    }
-    /**
-     * Bean-style mutator equivalent to {@link #shutdownState(DigitalState)}.
-     *
-     * @param state the shutdown state to apply
-     */
-    default void setShutdownState(DigitalState state){
-        this.shutdownState(state);
-    }
-
-    /**
-     * Returns the state the output is driven to immediately after it is initialized.
-     *
-     * @return the configured initial state, or {@code null} if none was set
-     */
-    DigitalState initialState();
-    /**
-     * Bean-style accessor equivalent to {@link #initialState()}.
-     *
-     * @return the configured initial state, or {@code null} if none was set
-     */
-    default DigitalState getInitialState(){
-        return initialState();
-    }
+    public static final String INITIAL_STATE_KEY = "initial";
 
     /**
      * Creates a new {@link DigitalOutputConfigBuilder}.
@@ -65,8 +49,103 @@ public interface DigitalOutputConfig extends DigitalConfig {
      * @return a new configuration builder instance
      * @deprecated Please use DigitalOutput.newConfigBuilder() instead.
      */
-    @Deprecated(since="5.0")
-    static DigitalOutputConfigBuilder newBuilder(Context context)  {
+    @Deprecated(since = "5.0")
+    public static DigitalOutputConfigBuilder newBuilder(Context context) {
         return DigitalOutputConfigBuilder.newInstance();
+    }
+
+    /**
+     * Returns the target pin using its legacy "address" name.
+     *
+     * @return the BCM pin number
+     * @deprecated use {@link #bcm()} instead.
+     */
+    @Deprecated(forRemoval = true)
+    public Integer address() {
+        return bcm;
+    }
+
+    /**
+     * Returns the target pin using its legacy "address" name.
+     *
+     * @return the BCM pin number
+     * @deprecated use {@link #bcm()} instead.
+     */
+    @Deprecated(forRemoval = true)
+    public Integer getAddress() {
+        return bcm;
+    }
+
+    /**
+     * Bean-style accessor equivalent to {@link #bcm()}.
+     *
+     * @return the BCM pin number
+     */
+    public Integer getBcm() {
+        return bcm;
+    }
+
+    /**
+     * Bean-style accessor equivalent to {@link #bus()}.
+     *
+     * @return the bus number
+     */
+    public Integer getBus() {
+        return bus;
+    }
+
+    /**
+     * Bean-style accessor equivalent to {@link #initialState()}.
+     *
+     * @return the configured initial state, or {@code null} if none was set
+     */
+    public DigitalState getInitialState() {
+        return initialState;
+    }
+
+    /**
+     * Bean-style accessor equivalent to {@link #shutdownState()}.
+     *
+     * @return the configured shutdown state, or {@code null} if none was set
+     */
+    public DigitalState getShutdownState() {
+        return shutdownState;
+    }
+
+    /**
+     * Sets the state the output is driven to when Pi4J shuts down, returning a new configuration instance.
+     *
+     * @param state the shutdown state to apply
+     * @return a new {@link DigitalOutputConfig} with the updated shutdown state
+     */
+    public DigitalOutputConfig shutdownState(DigitalState state) {
+        return new DigitalOutputConfig(id, name, description, bcm, bus, initialState, state, onState);
+    }
+
+    /**
+     * Bean-style accessor equivalent to {@link #onState()}.
+     *
+     * @return the configured on-state, or {@code null} if none was set
+     */
+    public DigitalState getOnState() {
+        return onState;
+    }
+
+    /**
+     * Returns the unique identifier used to distinguish GPIO devices, derived from the configured
+     * BCM pin number so that each physical GPIO pin maps to a distinct identifier.
+     *
+     * @return the BCM GPIO pin number serving as this device's unique identifier
+     */
+    @Override
+    public int getUniqueIdentifier() {
+        return bcm == null ? 0 : bcm;
+    }
+
+    @Override
+    public void validate() {
+        if (id == null) {
+            throw new IllegalStateException("ID cannot be null");
+        }
     }
 }

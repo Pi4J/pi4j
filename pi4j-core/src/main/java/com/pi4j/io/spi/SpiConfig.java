@@ -7,31 +7,62 @@ import com.pi4j.io.IOConfig;
  * Immutable configuration for an {@link Spi} device, describing the bus, channel/chip-select, clock
  * mode, baud rate, bit ordering, and provider flags. Instances are produced by a {@link SpiConfigBuilder}
  * and consumed by the {@link Context} when creating an SPI device.
+ *
+ * @param id the configuration identifier
+ * @param name the configuration name
+ * @param description the configuration description
+ * @param bus the configured SPI bus this device communicates over
+ * @param channel the SPI channel (chip-select line) this device is addressed on
+ * @param mode the configured SPI clock mode (clock polarity and phase)
+ * @param baud the configured SPI clock (baud) rate in Hz
+ * @param readLsbFirst the bit order used for read operations (0 = MSB first, 1 = LSB first)
+ * @param writeLsbFirst the bit order used for write operations (0 = MSB first, 1 = LSB first)
+ * @param flags the raw provider flags value that encodes mode, bus, and bit-order settings
+ * @param busUserProvided indicates whether the bus value was explicitly supplied by the user
+ * @param modeUserProvided indicates whether the mode value was explicitly supplied by the user
+ * @param readLsbFirstUserProvided indicates whether the read bit-order value was explicitly supplied by the user
+ * @param writeLsbFirstUserProvided indicates whether the write bit-order value was explicitly supplied by the user
  */
-public interface SpiConfig extends IOConfig {
+public record SpiConfig(
+    @Override String id,
+    @Override String name,
+    @Override String description,
+    SpiBus bus,
+    Integer channel,
+    SpiMode mode,
+    Integer baud,
+    Integer readLsbFirst,
+    Integer writeLsbFirst,
+    Long flags,
+    boolean busUserProvided,
+    boolean modeUserProvided,
+    boolean readLsbFirstUserProvided,
+    boolean writeLsbFirstUserProvided
+) implements IOConfig {
+
     /**
      * Configuration property key for the legacy SPI address.
      *
      * @deprecated use {@link #BUS_KEY} instead.
      */
     @Deprecated(forRemoval = true)
-    String ADDRESS_KEY = "address";
+    public static final String ADDRESS_KEY = "address";
     /** Configuration property key for the SPI baud (clock) rate. */
-    String BAUD_KEY = "baud";
+    public static final String BAUD_KEY = "baud";
     /** Configuration property key for the SPI bus number. */
-    String BUS_KEY = "bus";
+    public static final String BUS_KEY = "bus";
     /** Configuration property key for the SPI clock mode. */
-    String MODE_KEY = "mode";
+    public static final String MODE_KEY = "mode";
     /** Configuration property key for the raw provider flags value. */
-    String FLAGS_KEY = "flags";
+    public static final String FLAGS_KEY = "flags";
     /** Configuration property key for the write bit-order (LSB-first) setting. */
-    String WRITE_LSB_KEY = "write_lsb";
+    public static final String WRITE_LSB_KEY = "write_lsb";
     /** Configuration property key for the read bit-order (LSB-first) setting. */
-    String READ_LSB_KEY = "read_lsb";
+    public static final String READ_LSB_KEY = "read_lsb";
     /**
      * Property key under which the channel number is stored in the configuration properties map.
      */
-    String CHANNEL_KEY = "channel";
+    public static final String CHANNEL_KEY = "channel";
 
     /**
      * Creates a new {@link SpiConfigBuilder}.
@@ -40,8 +71,8 @@ public interface SpiConfig extends IOConfig {
      * @return a new SPI configuration builder instance
      * @deprecated As of version 5, please use Spi.newConfigBuilder() instead.
      */
-    @Deprecated
-    static SpiConfigBuilder newBuilder(Context context) {
+    @Deprecated(since = "5.0")
+    public static SpiConfigBuilder newBuilder(Context context) {
         return SpiConfigBuilder.newInstance();
     }
 
@@ -54,8 +85,8 @@ public interface SpiConfig extends IOConfig {
      * @return a unique identifier combining the bus number and channel
      */
     @Override
-    default int getUniqueIdentifier() {
-        return (bus().getBus() << 8) + channel();
+    public int getUniqueIdentifier() {
+        return ((bus == null ? 0 : bus.getBus()) << 8) + (channel == null ? 0 : channel);
     }
 
     /**
@@ -63,15 +94,8 @@ public interface SpiConfig extends IOConfig {
      *
      * @return the clock rate in Hz
      */
-    Integer baud();
-
-    /**
-     * Returns the configured SPI clock (baud) rate in Hz.
-     *
-     * @return the clock rate in Hz
-     */
-    default Integer getBaud() {
-        return baud();
+    public Integer getBaud() {
+        return baud;
     }
 
     /**
@@ -80,18 +104,9 @@ public interface SpiConfig extends IOConfig {
      *
      * @return the read bit-order setting
      */
-    Integer readLsbFirst();
-
-    /**
-     * Returns the bit order used for read operations: {@code 0} shifts the least significant bit first,
-     * {@code 1} shifts the most significant bit first.
-     *
-     * @return the read bit-order setting
-     */
-    default Integer getReadLsbFirst() {
-        return readLsbFirst();
+    public Integer getReadLsbFirst() {
+        return readLsbFirst;
     }
-
 
     /**
      * Returns the bit order used for write operations: {@code 0} shifts the least significant bit first,
@@ -99,16 +114,8 @@ public interface SpiConfig extends IOConfig {
      *
      * @return the write bit-order setting
      */
-    Integer writeLsbFirst();
-
-    /**
-     * Returns the bit order used for write operations: {@code 0} shifts the least significant bit first,
-     * {@code 1} shifts the most significant bit first.
-     *
-     * @return the write bit-order setting
-     */
-    default Integer getWriteLsbFirst() {
-        return writeLsbFirst();
+    public Integer getWriteLsbFirst() {
+        return writeLsbFirst;
     }
 
     /**
@@ -116,15 +123,8 @@ public interface SpiConfig extends IOConfig {
      *
      * @return the {@link SpiBus} for this device
      */
-    SpiBus bus();
-
-    /**
-     * Returns the configured SPI bus this device communicates over.
-     *
-     * @return the {@link SpiBus} for this device
-     */
-    default SpiBus getBus() {
-        return bus();
+    public SpiBus getBus() {
+        return bus;
     }
 
     /**
@@ -132,15 +132,8 @@ public interface SpiConfig extends IOConfig {
      *
      * @return {@code true} if the user provided the bus value, otherwise {@code false}
      */
-    boolean busUserProvided();
-
-    /**
-     * Indicates whether the bus value was explicitly supplied by the user rather than defaulted.
-     *
-     * @return {@code true} if the user provided the bus value, otherwise {@code false}
-     */
-    default boolean getBusUserProvided() {
-        return busUserProvided();
+    public boolean getBusUserProvided() {
+        return busUserProvided;
     }
 
     /**
@@ -148,15 +141,8 @@ public interface SpiConfig extends IOConfig {
      *
      * @return {@code true} if the user provided the write bit-order value, otherwise {@code false}
      */
-    boolean writeLsbFirstUserProvided();
-
-    /**
-     * Indicates whether the write bit-order value was explicitly supplied by the user rather than defaulted.
-     *
-     * @return {@code true} if the user provided the write bit-order value, otherwise {@code false}
-     */
-    default boolean getWriteLsbFIrstUserProvided() {
-        return writeLsbFirstUserProvided();
+    public boolean getWriteLsbFIrstUserProvided() {
+        return writeLsbFirstUserProvided;
     }
 
     /**
@@ -164,32 +150,17 @@ public interface SpiConfig extends IOConfig {
      *
      * @return {@code true} if the user provided the read bit-order value, otherwise {@code false}
      */
-    boolean readLsbFirstUserProvided();
-
-    /**
-     * Indicates whether the read bit-order value was explicitly supplied by the user rather than defaulted.
-     *
-     * @return {@code true} if the user provided the read bit-order value, otherwise {@code false}
-     */
-    default boolean getReadLsbFIrstUserProvided() {
-        return readLsbFirstUserProvided();
+    public boolean getReadLsbFIrstUserProvided() {
+        return readLsbFirstUserProvided;
     }
 
-
     /**
      * Returns the configured SPI clock mode (clock polarity and phase).
      *
      * @return the {@link SpiMode} for this device
      */
-    SpiMode mode();
-
-    /**
-     * Returns the configured SPI clock mode (clock polarity and phase).
-     *
-     * @return the {@link SpiMode} for this device
-     */
-    default SpiMode getMode() {
-        return mode();
+    public SpiMode getMode() {
+        return mode;
     }
 
     /**
@@ -197,15 +168,8 @@ public interface SpiConfig extends IOConfig {
      *
      * @return {@code true} if the user provided the mode value, otherwise {@code false}
      */
-    boolean modeUserProvided();
-
-    /**
-     * Indicates whether the mode value was explicitly supplied by the user rather than defaulted.
-     *
-     * @return {@code true} if the user provided the mode value, otherwise {@code false}
-     */
-    default boolean getModeUserProvided() {
-        return modeUserProvided();
+    public boolean getModeUserProvided() {
+        return modeUserProvided;
     }
 
     /**
@@ -214,33 +178,17 @@ public interface SpiConfig extends IOConfig {
      *
      * @return the encoded provider flags
      */
-    Long flags();
-
-    /**
-     * Returns the raw provider flags value that encodes mode, bus, and bit-order settings into the
-     * bit layout expected by the underlying SPI driver.
-     *
-     * @return the encoded provider flags
-     */
-    default Long getFlags() {
-        return flags();
+    public Long getFlags() {
+        return flags;
     }
-
-    /**
-     * Returns the SPI channel (chip-select line) this device is addressed on. This is an alias for the
-     * underlying channel/address value.
-     *
-     * @return the channel number
-     */
-    Integer channel();
 
     /**
      * Returns the SPI channel (chip-select line) this device is addressed on.
      *
      * @return the channel number
      */
-    default Integer getChannel() {
-        return channel();
+    public Integer getChannel() {
+        return channel;
     }
 
     /**
@@ -248,14 +196,23 @@ public interface SpiConfig extends IOConfig {
      *
      * @return the {@link SpiChipSelect} corresponding to the configured channel
      */
-    SpiChipSelect chipSelect();
+    public SpiChipSelect chipSelect() {
+        return channel == null ? null : SpiChipSelect.getByNumber(channel);
+    }
 
     /**
      * Returns the chip-select line for this device, derived from the configured channel.
      *
      * @return the {@link SpiChipSelect} corresponding to the configured channel
      */
-    default SpiChipSelect getChipSelect() {
+    public SpiChipSelect getChipSelect() {
         return chipSelect();
+    }
+
+    @Override
+    public void validate() {
+        if (id == null) {
+            throw new IllegalStateException("ID cannot be null");
+        }
     }
 }

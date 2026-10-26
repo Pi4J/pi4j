@@ -40,4 +40,22 @@ public interface DigitalInput extends Digital<DigitalInputConfig>, Input {
      * @return the configured {@link PullResistance}
      */
     default PullResistance pull() { return config().pull(); }
+
+    /**
+     * Returns the BCM (Broadcom) GPIO pin number this instance is bound to.
+     *
+     * @return the configured BCM pin number, or {@code null} if none was configured
+     */
+    default Integer bcm() {
+        return config().bcm();
+    }
+
+    /**
+     * Returns the {@link DigitalState} configured as the logical "on" state.
+     *
+     * @return the configured on-state
+     */
+    default DigitalState onState() {
+        return config().onState();
+    }
 }

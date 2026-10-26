@@ -3,6 +3,7 @@ package com.pi4j.io.gpio.digital;
 import com.pi4j.event.EventDelegate;
 import com.pi4j.event.EventManager;
 import com.pi4j.io.IOBase;
+import com.pi4j.io.IOConfig;
 
 import java.util.function.Consumer;
 
@@ -12,9 +13,9 @@ import java.util.function.Consumer;
  * {@link DigitalInputBase} build on this to add their specific I/O behaviour, while the
  * generic {@link IOBase} supplies the common GPIO lifecycle support.
  *
- * @param <CONFIG_TYPE> the {@link DigitalConfig} type describing this instance
+ * @param <CONFIG_TYPE> the {@link IOConfig} type describing this instance
  */
-public abstract class DigitalBase<CONFIG_TYPE extends DigitalConfig>
+public abstract class DigitalBase<CONFIG_TYPE extends IOConfig>
         extends IOBase<CONFIG_TYPE>
         implements Digital<CONFIG_TYPE>
 {
@@ -39,7 +40,8 @@ public abstract class DigitalBase<CONFIG_TYPE extends DigitalConfig>
 
     @Override
     public Consumer<Boolean> addConsumer(Consumer<Boolean> listener) {
-        addListener(new ConsumerAdapter(listener, config().onState() != null ? config().onState() : DigitalState.HIGH));
+        DigitalState on = onState();
+        addListener(new ConsumerAdapter(listener, on != null ? on : DigitalState.HIGH));
         return listener;
     }
 
@@ -91,17 +93,16 @@ public abstract class DigitalBase<CONFIG_TYPE extends DigitalConfig>
 
     @Override
     public boolean isOn() {
-        // the default ON state is HIGH
-        DigitalState onState = DigitalState.HIGH;
-
-        // get configured ON state
-        if(config().onState() != null){
-            onState = config().onState();
-        }
-
-        // return TRUE if the current state matches the configured ON state
-        return state().equals(onState);
+        DigitalState on = onState();
+        return state().equals(on != null ? on : DigitalState.HIGH);
     }
+
+    /**
+     * Returns the configured on-state for this digital I/O instance.
+     *
+     * @return the configured {@link DigitalState}
+     */
+    public abstract DigitalState onState();
 
     private static class ConsumerAdapter implements DigitalStateChangeListener {
         private final Consumer<Boolean> consumer;

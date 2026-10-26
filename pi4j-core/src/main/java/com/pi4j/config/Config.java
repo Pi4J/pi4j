@@ -3,9 +3,8 @@ package com.pi4j.config;
 /**
  * Root contract for all Pi4J I/O configuration objects. A {@code Config} carries the common
  * identity properties ({@code id}, {@code name}, {@code description}) shared by every I/O, exposes
- * the raw underlying property map, and validates its own required values. I/O-specific
- * configurations (such as {@link BcmConfig}, {@link BusConfig} or {@link DeviceConfig}) extend
- * this interface, and instances are typically assembled with a {@link ConfigBuilder}.
+ * the raw underlying property map, and validates its own required values. Instances are
+ * typically assembled with a {@link ConfigBuilder}.
  */
 public interface Config {
     /**

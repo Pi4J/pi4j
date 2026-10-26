@@ -1,5 +1,6 @@
 package com.pi4j.io.gpio.digital;
 
+import com.pi4j.io.IOConfig;
 import com.pi4j.io.ListenableOnOffRead;
 
 /**
@@ -8,9 +9,9 @@ import com.pi4j.io.ListenableOnOffRead;
  * {@link DigitalState} access and adds listener registration for state-change events, while
  * {@link ListenableOnOffRead} provides the on/off abstraction shared with simpler I/O types.
  *
- * @param <CONFIG_TYPE> the {@link DigitalConfig} type describing this instance
+ * @param <CONFIG_TYPE> the {@link IOConfig} type describing this instance
  */
-public interface Digital<CONFIG_TYPE extends DigitalConfig>
+public interface Digital<CONFIG_TYPE extends IOConfig>
     extends ListenableOnOffRead, com.pi4j.io.IO<CONFIG_TYPE> {
 
     /**
@@ -20,14 +21,6 @@ public interface Digital<CONFIG_TYPE extends DigitalConfig>
      */
     DigitalState state();
 
-    /**
-     * Returns the BCM (Broadcom) GPIO pin number this instance is bound to, as supplied by its configuration.
-     *
-     * @return the configured BCM pin number, or {@code null} if none was configured
-     */
-    default Integer bcm() {
-        return config().bcm();
-    }
 
     /**
      * Registers one or more listeners to be notified whenever this instance's {@link DigitalState} changes.
