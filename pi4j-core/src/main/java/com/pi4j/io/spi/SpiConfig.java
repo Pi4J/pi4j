@@ -40,29 +40,6 @@ public record SpiConfig(
     boolean writeLsbFirstUserProvided
 ) implements IOConfig {
 
-    /**
-     * Configuration property key for the legacy SPI address.
-     *
-     * @deprecated use {@link #BUS_KEY} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static final String ADDRESS_KEY = "address";
-    /** Configuration property key for the SPI baud (clock) rate. */
-    public static final String BAUD_KEY = "baud";
-    /** Configuration property key for the SPI bus number. */
-    public static final String BUS_KEY = "bus";
-    /** Configuration property key for the SPI clock mode. */
-    public static final String MODE_KEY = "mode";
-    /** Configuration property key for the raw provider flags value. */
-    public static final String FLAGS_KEY = "flags";
-    /** Configuration property key for the write bit-order (LSB-first) setting. */
-    public static final String WRITE_LSB_KEY = "write_lsb";
-    /** Configuration property key for the read bit-order (LSB-first) setting. */
-    public static final String READ_LSB_KEY = "read_lsb";
-    /**
-     * Property key under which the channel number is stored in the configuration properties map.
-     */
-    public static final String CHANNEL_KEY = "channel";
 
     /**
      * Creates a new {@link SpiConfigBuilder}.

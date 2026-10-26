@@ -1,15 +1,14 @@
 package com.pi4j.io.gpio.digital;
 
-import com.pi4j.config.Config;
 import com.pi4j.context.Context;
-import com.pi4j.io.impl.IOConfigBuilderBase;
+import com.pi4j.io.IOConfigBuilder;
 import com.pi4j.util.StringUtil;
 
 /**
  * Fluent builder for assembling a {@link DigitalOutputConfig}, adding output-specific settings (pin address,
  * initial state, shutdown state, and on-state) on top of the shared builder options.
  */
-public class DigitalOutputConfigBuilder extends IOConfigBuilderBase<DigitalOutputConfigBuilder, DigitalOutputConfig> {
+public class DigitalOutputConfigBuilder extends IOConfigBuilder<DigitalOutputConfigBuilder, DigitalOutputConfig> {
 
     private Integer bcm = null;
     private Integer bus = 0;
@@ -115,9 +114,9 @@ public class DigitalOutputConfigBuilder extends IOConfigBuilderBase<DigitalOutpu
     @Override
     public DigitalOutputConfig build() {
         String defaultId = this.bcm != null ? "DOUT-" + this.bcm : "DOUT";
-        String id = StringUtil.setIfNullOrEmpty(this.id(), defaultId, true);
-        String name = StringUtil.setIfNullOrEmpty(this.properties.get(Config.NAME_KEY), id, true);
-        String description = StringUtil.setIfNullOrEmpty(this.properties.get(Config.DESCRIPTION_KEY), id, true);
+        String id = StringUtil.setIfNullOrEmpty(this.id, defaultId, true);
+        String name = StringUtil.setIfNullOrEmpty(this.name, id, true);
+        String description = StringUtil.setIfNullOrEmpty(this.description, id, true);
 
         return new DigitalOutputConfig(
             id,

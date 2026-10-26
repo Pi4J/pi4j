@@ -1,17 +1,16 @@
 package com.pi4j.io.gpio.digital;
 
-import com.pi4j.config.Config;
 import com.pi4j.context.Context;
-import com.pi4j.io.impl.IOConfigBuilderBase;
+import com.pi4j.io.IOConfigBuilder;
 import com.pi4j.util.StringUtil;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * Fluent builder for assembling a {@link DigitalInputConfig}, extending {@link IOConfigBuilderBase}
+ * Fluent builder for assembling a {@link DigitalInputConfig}, extending {@link IOConfigBuilder}
  * with the input-specific pull resistance, debounce, onState, and BCM pin settings.
  */
-public class DigitalInputConfigBuilder extends IOConfigBuilderBase<DigitalInputConfigBuilder, DigitalInputConfig> {
+public class DigitalInputConfigBuilder extends IOConfigBuilder<DigitalInputConfigBuilder, DigitalInputConfig> {
 
     private Integer bcm = null;
     private Integer bus = 0;
@@ -129,9 +128,9 @@ public class DigitalInputConfigBuilder extends IOConfigBuilderBase<DigitalInputC
     @Override
     public DigitalInputConfig build() {
         String defaultId = this.bcm != null ? "DIN-" + this.bcm : "DIN";
-        String id = StringUtil.setIfNullOrEmpty(this.id(), defaultId, true);
-        String name = StringUtil.setIfNullOrEmpty(this.properties.get(Config.NAME_KEY), id, true);
-        String description = StringUtil.setIfNullOrEmpty(this.properties.get(Config.DESCRIPTION_KEY), id, true);
+        String id = StringUtil.setIfNullOrEmpty(this.id, defaultId, true);
+        String name = StringUtil.setIfNullOrEmpty(this.name, id, true);
+        String description = StringUtil.setIfNullOrEmpty(this.description, id, true);
 
         return new DigitalInputConfig(
             id,

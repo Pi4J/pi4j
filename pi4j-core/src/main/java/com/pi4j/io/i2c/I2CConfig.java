@@ -23,14 +23,6 @@ public record I2CConfig(
     I2CImplementation i2cImplementation
 ) implements IOConfig {
 
-    /** Property key under which the bus number is stored in the configuration properties map. */
-    public static final String BUS_KEY = "bus";
-
-    /** Property key under which the device address is stored in the configuration properties map. */
-    public static final String DEVICE_KEY = "device";
-
-    /** Configuration property key identifying the selected {@link I2CImplementation}. */
-    public static final String I2C_IMPLEMENTATION = "i2c_implementation";
 
     /**
      * Returns the hardware bus number this I/O is assigned to.

@@ -1,15 +1,14 @@
 package com.pi4j.io.i2c;
 
-import com.pi4j.config.Config;
 import com.pi4j.context.Context;
-import com.pi4j.io.impl.IOConfigBuilderBase;
+import com.pi4j.io.IOConfigBuilder;
 import com.pi4j.util.StringUtil;
 
 /**
  * Fluent builder for assembling an {@link I2CConfig}. Callers set the bus number, device address and optional
  * {@link I2CImplementation}, then call {@code build()} to produce the immutable configuration.
  */
-public class I2CConfigBuilder extends IOConfigBuilderBase<I2CConfigBuilder, I2CConfig> {
+public class I2CConfigBuilder extends IOConfigBuilder<I2CConfigBuilder, I2CConfig> {
 
     private Integer bus = null;
     private Integer device = null;
@@ -78,9 +77,9 @@ public class I2CConfigBuilder extends IOConfigBuilderBase<I2CConfigBuilder, I2CC
     @Override
     public I2CConfig build() {
         String defaultId = (bus != null && device != null) ? "I2C-" + bus + "." + device : "I2C";
-        String id = StringUtil.setIfNullOrEmpty(this.id(), defaultId, true);
-        String name = StringUtil.setIfNullOrEmpty(this.properties.get(Config.NAME_KEY), id, true);
-        String description = StringUtil.setIfNullOrEmpty(this.properties.get(Config.DESCRIPTION_KEY), id, true);
+        String id = StringUtil.setIfNullOrEmpty(this.id, defaultId, true);
+        String name = StringUtil.setIfNullOrEmpty(this.name, id, true);
+        String description = StringUtil.setIfNullOrEmpty(this.description, id, true);
 
         return new I2CConfig(
             id,
