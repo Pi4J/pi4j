@@ -1,8 +1,7 @@
 package com.pi4j.io.pwm;
 
-import com.pi4j.config.Config;
 import com.pi4j.context.Context;
-import com.pi4j.io.impl.IOConfigBuilderBase;
+import com.pi4j.io.IOConfigBuilder;
 import com.pi4j.util.StringUtil;
 
 /**
@@ -11,7 +10,7 @@ import com.pi4j.util.StringUtil;
  * frequency, duty-cycle, and initial/shutdown values, and produces an immutable configuration via its {@code build()}
  * method.
  */
-public class PwmConfigBuilder extends IOConfigBuilderBase<PwmConfigBuilder, PwmConfig> {
+public class PwmConfigBuilder extends IOConfigBuilder<PwmConfigBuilder, PwmConfig> {
     private Integer chip = null;
     private Integer channel = null;
     private Integer bcm = null;
@@ -281,9 +280,9 @@ public class PwmConfigBuilder extends IOConfigBuilderBase<PwmConfigBuilder, PwmC
     @Override
     public PwmConfig build() {
         String defaultId = channel != null ? "PWM-" + channel : (bcm != null ? "PWM-" + bcm : "PWM");
-        String id = StringUtil.setIfNullOrEmpty(this.id(), defaultId, true);
-        String name = StringUtil.setIfNullOrEmpty(this.properties.get(Config.NAME_KEY), id, true);
-        String description = StringUtil.setIfNullOrEmpty(this.properties.get(Config.DESCRIPTION_KEY), id, true);
+        String id = StringUtil.setIfNullOrEmpty(this.id, defaultId, true);
+        String name = StringUtil.setIfNullOrEmpty(this.name, id, true);
+        String description = StringUtil.setIfNullOrEmpty(this.description, id, true);
 
         return new PwmConfig(
             id,

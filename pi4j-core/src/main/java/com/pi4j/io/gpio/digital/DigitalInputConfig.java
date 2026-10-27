@@ -27,20 +27,6 @@ public record DigitalInputConfig(
     DigitalState onState
 ) implements IOConfig {
 
-    /** Property key under which the Broadcom pin number is stored in a configuration map. */
-    public static final String BCM_KEY = "bcm";
-
-    /** Property key under which the bus number is stored in a configuration map. */
-    public static final String BUS_KEY = "bus";
-
-    /** Property key under which the on-state value is stored in a configuration map. */
-    public static final String ON_STATE_KEY = "onstate";
-
-    /** Property key under which the pull resistance value is stored in a configuration map. */
-    public static final String PULL_RESISTANCE_KEY = "pull";
-
-    /** Property key under which the debounce interval is stored in a configuration map. */
-    public static final String DEBOUNCE_RESISTANCE_KEY = "debounce";
 
     /**
      * Creates a new {@link DigitalInputConfigBuilder}.

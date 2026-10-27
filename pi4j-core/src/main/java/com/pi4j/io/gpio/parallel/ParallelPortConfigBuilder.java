@@ -1,15 +1,14 @@
 package com.pi4j.io.gpio.parallel;
 
-import com.pi4j.config.Config;
+import com.pi4j.io.IOConfigBuilder;
 import com.pi4j.io.gpio.digital.PullResistance;
-import com.pi4j.io.impl.IOConfigBuilderBase;
 
 import java.util.ArrayList;
 
 /**
  * Builder for {@link ParallelPortConfig}
  */
-public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortConfigBuilder, ParallelPortConfig> {
+public class ParallelPortConfigBuilder extends IOConfigBuilder<ParallelPortConfigBuilder, ParallelPortConfig> {
 
     private Integer bus = 0;
     private final ArrayList<Integer> offsets = new ArrayList<>();
@@ -117,9 +116,9 @@ public class ParallelPortConfigBuilder extends IOConfigBuilderBase<ParallelPortC
             throw new IllegalArgumentException("Initial direction must be specified");
         }
         return new ParallelPortConfig(
-            this.id(),
-            this.properties.get(Config.NAME_KEY),
-            this.properties.get(Config.DESCRIPTION_KEY),
+            this.id,
+            this.name,
+            this.description,
             this.bus,
             this.offsets,
             this.pull,

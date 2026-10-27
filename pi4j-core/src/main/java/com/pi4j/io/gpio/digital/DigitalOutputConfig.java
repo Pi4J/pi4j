@@ -27,20 +27,6 @@ public record DigitalOutputConfig(
     DigitalState onState
 ) implements IOConfig {
 
-    /** Property key under which the Broadcom pin number is stored in a configuration map. */
-    public static final String BCM_KEY = "bcm";
-
-    /** Property key under which the bus number is stored in a configuration map. */
-    public static final String BUS_KEY = "bus";
-
-    /** Property key under which the on-state value is stored in a configuration map. */
-    public static final String ON_STATE_KEY = "onstate";
-
-    /** Configuration property key for the shutdown state value. */
-    public static final String SHUTDOWN_STATE_KEY = "shutdown";
-
-    /** Configuration property key for the initial state value. */
-    public static final String INITIAL_STATE_KEY = "initial";
 
     /**
      * Creates a new {@link DigitalOutputConfigBuilder}.

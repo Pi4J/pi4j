@@ -1,15 +1,14 @@
 package com.pi4j.io.spi;
 
-import com.pi4j.config.Config;
 import com.pi4j.context.Context;
-import com.pi4j.io.impl.IOConfigBuilderBase;
+import com.pi4j.io.IOConfigBuilder;
 import com.pi4j.util.StringUtil;
 
 /**
  * Fluent builder for assembling an {@link SpiConfig}. Set the desired bus, channel/chip-select,
  * clock mode, baud rate, and bit-ordering, then call {@code build()} to obtain an immutable configuration.
  */
-public class SpiConfigBuilder extends IOConfigBuilderBase<SpiConfigBuilder, SpiConfig> {
+public class SpiConfigBuilder extends IOConfigBuilder<SpiConfigBuilder, SpiConfig> {
 
     private SpiBus bus = Spi.DEFAULT_BUS;
     private boolean busUserProvided = false;
@@ -190,9 +189,9 @@ public class SpiConfigBuilder extends IOConfigBuilderBase<SpiConfigBuilder, SpiC
         SpiBus resolvedBus = this.bus != null ? this.bus : Spi.DEFAULT_BUS;
         Integer resolvedChannel = this.channel != null ? this.channel : Spi.DEFAULT_CHANNEL;
         String defaultId = "SPI-" + resolvedBus.getBus() + "." + resolvedChannel;
-        String id = StringUtil.setIfNullOrEmpty(this.id(), defaultId, true);
-        String name = StringUtil.setIfNullOrEmpty(this.properties.get(Config.NAME_KEY), id, true);
-        String description = StringUtil.setIfNullOrEmpty(this.properties.get(Config.DESCRIPTION_KEY), id, true);
+        String id = StringUtil.setIfNullOrEmpty(this.id, defaultId, true);
+        String name = StringUtil.setIfNullOrEmpty(this.name, id, true);
+        String description = StringUtil.setIfNullOrEmpty(this.description, id, true);
 
         return new SpiConfig(
             id,
