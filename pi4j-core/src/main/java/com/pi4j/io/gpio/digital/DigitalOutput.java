@@ -50,15 +50,6 @@ public interface DigitalOutput extends Digital<DigitalOutputConfig>,
     }
 
     /**
-     * Returns the {@link DigitalState} configured as the logical "on" state.
-     *
-     * @return the configured on-state
-     */
-    default DigitalState onState() {
-        return config().onState();
-    }
-
-    /**
      * Sets the output to the given digital state, driving the underlying pin accordingly.
      *
      * @param state the digital state to drive the output to
@@ -380,5 +371,19 @@ public interface DigitalOutput extends Digital<DigitalOutputConfig>,
      */
     default Future<?> blinkAsync(int delay, int duration, TimeUnit unit, DigitalState state){
         return this.blinkAsync(delay, duration, unit, state, null);
+    }
+
+    @Override
+    default boolean isOn() {
+        return state().equals(config().onState());
+    }
+
+    @Override
+    default void on() {
+        state(config().onState());
+    }
+
+    default void off() {
+        state(config().onState().not());
     }
 }

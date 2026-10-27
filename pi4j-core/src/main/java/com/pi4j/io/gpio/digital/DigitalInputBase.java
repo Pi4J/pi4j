@@ -18,8 +18,33 @@ public abstract class DigitalInputBase extends DigitalBase<DigitalInputConfig> i
         super(config, onClose);
     }
 
+
     @Override
-    public DigitalState onState() {
-        return config().onState();
+    public Consumer<Boolean> addConsumer(Consumer<Boolean> listener) {
+        DigitalState on = config().onState();
+        addListener(new ConsumerAdapter(listener, on != null ? on : DigitalState.HIGH));
+        return listener;
+    }
+
+    @Override
+    public void removeConsumer(Consumer<Boolean> listener) {
+        stateChangeEventManager.remove(
+            (candidate) -> (candidate instanceof ConsumerAdapter)
+                && ((ConsumerAdapter) candidate).consumer == listener);
+    }
+
+    private static class ConsumerAdapter implements DigitalStateChangeListener {
+        private final Consumer<Boolean> consumer;
+        private final DigitalState onState;
+
+        private ConsumerAdapter(Consumer<Boolean> consumer, DigitalState onState) {
+            this.consumer = consumer;
+            this.onState = onState;
+        }
+
+        @Override
+        public void onDigitalStateChange(DigitalStateChangeEvent event) {
+            consumer.accept(event.state().equals(onState));
+        }
     }
 }

@@ -70,6 +70,14 @@ public enum DigitalState {
     }
 
     /**
+     * Returns the opposite of this state.
+     * @return {@link #LOW} when this state is {@link #HIGH}, otherwise {@link #HIGH}
+     */
+    public DigitalState not() {
+        return (this == HIGH ? LOW : HIGH);
+    }
+
+    /**
      * Compares this state to another for equality.
      *
      * @param state the state to compare against

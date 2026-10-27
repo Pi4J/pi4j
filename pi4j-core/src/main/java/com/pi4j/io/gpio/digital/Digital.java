@@ -12,7 +12,7 @@ import com.pi4j.io.ListenableOnOffRead;
  * @param <CONFIG_TYPE> the {@link IOConfig} type describing this instance
  */
 public interface Digital<CONFIG_TYPE extends IOConfig>
-    extends ListenableOnOffRead, com.pi4j.io.IO<CONFIG_TYPE> {
+    extends com.pi4j.io.IO<CONFIG_TYPE> {
 
     /**
      * Returns the current logic level of this digital I/O instance.

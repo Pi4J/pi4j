@@ -3,13 +3,14 @@ package com.pi4j.io.gpio.digital;
 
 import com.pi4j.context.Context;
 import com.pi4j.io.Input;
+import com.pi4j.io.ListenableOnOffRead;
 
 /**
  * Represents a digital input pin that reads a HIGH/LOW logic level from a GPIO source, optionally with
  * a configured pull resistance and debounce interval. This is the read-only digital counterpart configured via
  * {@link DigitalInputConfig}.
  */
-public interface DigitalInput extends Digital<DigitalInputConfig>, Input {
+public interface DigitalInput extends Digital<DigitalInputConfig>, Input, ListenableOnOffRead {
     /** Default debounce interval in microseconds applied to state-change detection. */
     long DEFAULT_DEBOUNCE = 10000;
 
@@ -50,12 +51,8 @@ public interface DigitalInput extends Digital<DigitalInputConfig>, Input {
         return config().bcm();
     }
 
-    /**
-     * Returns the {@link DigitalState} configured as the logical "on" state.
-     *
-     * @return the configured on-state
-     */
-    default DigitalState onState() {
-        return config().onState();
+    @Override
+    default boolean isOn() {
+        return state().equals(config().onState());
     }
 }
