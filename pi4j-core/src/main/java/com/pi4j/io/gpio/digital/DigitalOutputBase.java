@@ -27,11 +27,6 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutputConfig>
         super(config, onClose);
     }
 
-    @Override
-    public DigitalState onState() {
-        return config().onState();
-    }
-
     /**
      * {@inheritDoc}
      * <p>

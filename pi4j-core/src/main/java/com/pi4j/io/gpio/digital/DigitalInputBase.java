@@ -18,7 +18,6 @@ public abstract class DigitalInputBase extends DigitalBase<DigitalInputConfig> i
         super(config, onClose);
     }
 
-
     @Override
     public Consumer<Boolean> addConsumer(Consumer<Boolean> listener) {
         DigitalState on = config().onState();
