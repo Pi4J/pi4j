@@ -383,6 +383,7 @@ public interface DigitalOutput extends Digital<DigitalOutputConfig>,
         state(config().onState());
     }
 
+    @Override
     default void off() {
         state(config().onState().not());
     }
