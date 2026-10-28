@@ -17,6 +17,8 @@ import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInput;
 import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutput;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2C;
 import com.pi4j.plugin.ffm.providers.parallel.FFMParallelPort;
+import com.pi4j.plugin.ffm.providers.parallel.ParallelDigitalInput;
+import com.pi4j.plugin.ffm.providers.parallel.ParallelDigitalOutput;
 import com.pi4j.plugin.ffm.providers.pwm.FFMPwm;
 import com.pi4j.plugin.ffm.providers.spi.FFMSpi;
 
@@ -35,11 +37,17 @@ public class FFMContext extends DefaultContext {
     public IO<?> createImpl(IOConfig config, IOType type) {
         FFMPermissionHelper.checkUserPermissions(type);
         return switch (type) {
-            case DIGITAL_INPUT -> new FFMDigitalInput((DigitalInputConfig) config, this::shutdown);
-            case DIGITAL_OUTPUT -> new FFMDigitalOutput((DigitalOutputConfig) config, this::shutdown);
             case PWM -> FFMPwm.create((PwmConfig) config, this::shutdown);
             case I2C -> FFMI2C.create((I2CConfig) config, this::shutdown);
             case SPI -> new FFMSpi((SpiConfig) config, this::shutdown);
+            case DIGITAL_INPUT -> {
+                var parallelPort = FFMParallelPort.create(ParallelPortConfig.fromDigitalInputConfig((DigitalInputConfig) config), _ -> {});
+                yield new ParallelDigitalInput((DigitalInputConfig) config, parallelPort, this::shutdown);
+            }
+            case DIGITAL_OUTPUT -> {
+                var parallelPort = FFMParallelPort.create(ParallelPortConfig.fromDigitalOutputConfig((DigitalOutputConfig) config), _ -> {});
+                yield new ParallelDigitalOutput((DigitalOutputConfig) config, parallelPort, this::shutdown);
+            }
             case PARALLEL -> FFMParallelPort.create((ParallelPortConfig) config, this::shutdown);
         };
     }
