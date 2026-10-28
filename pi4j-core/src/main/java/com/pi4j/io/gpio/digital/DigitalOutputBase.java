@@ -28,11 +28,6 @@ public abstract class DigitalOutputBase extends DigitalBase<DigitalOutputConfig>
     }
 
     @Override
-    public DigitalState onState() {
-        return config().onState();
-    }
-
-    @Override
     public Consumer<Boolean> addConsumer(Consumer<Boolean> listener) {
         DigitalState on = config().onState();
         addListener(new ConsumerAdapter(listener, on != null ? on : DigitalState.HIGH));
