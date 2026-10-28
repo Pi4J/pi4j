@@ -39,13 +39,6 @@ public abstract class DigitalBase<CONFIG_TYPE extends IOConfig>
     }
 
     @Override
-    public Consumer<Boolean> addConsumer(Consumer<Boolean> listener) {
-        DigitalState on = onState();
-        addListener(new ConsumerAdapter(listener, on != null ? on : DigitalState.HIGH));
-        return listener;
-    }
-
-    @Override
     public void removeConsumer(Consumer<Boolean> listener) {
         stateChangeEventManager.remove(
             (candidate) -> (candidate instanceof ConsumerAdapter)
@@ -91,24 +84,11 @@ public abstract class DigitalBase<CONFIG_TYPE extends IOConfig>
         super.close();
     }
 
-    @Override
-    public boolean isOn() {
-        DigitalState on = onState();
-        return state().equals(on != null ? on : DigitalState.HIGH);
-    }
-
-    /**
-     * Returns the configured on-state for this digital I/O instance.
-     *
-     * @return the configured {@link DigitalState}
-     */
-    public abstract DigitalState onState();
-
-    private static class ConsumerAdapter implements DigitalStateChangeListener {
-        private final Consumer<Boolean> consumer;
+    protected static class ConsumerAdapter implements DigitalStateChangeListener {
+        final Consumer<Boolean> consumer;
         private final DigitalState onState;
 
-        private ConsumerAdapter(Consumer<Boolean> consumer, DigitalState onState) {
+        protected ConsumerAdapter(Consumer<Boolean> consumer, DigitalState onState) {
             this.consumer = consumer;
             this.onState = onState;
         }
