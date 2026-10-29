@@ -7,6 +7,7 @@ import com.pi4j.util.MaskUtils;
 import com.pi4j.io.gpio.digital.PullResistance;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Configuration for a parallel port
@@ -85,8 +86,14 @@ public record ParallelPortConfig(
             .description(config.description())
             .bus(config.bus())
             .bcm(config.bcm())
-            .initialValue(config.initialState().isHigh() ? 1 : 0)
-            .shutdownValue(config.shutdownState() != null ? (config.shutdownState().isHigh() ? 1 : 0) : 0)
+            .initialValue(Optional.ofNullable(config.initialState())
+                .map(s -> s.isHigh() ? 1 : 0)
+                .orElse(0)
+            )
+            .shutdownValue(Optional.ofNullable(config.shutdownState())
+                .map(s -> s.isHigh() ? 1 : 0)
+                .orElse(0)
+            )
             .initialDirection(ParallelPort.Direction.OUTPUT)
             .build();
     }
