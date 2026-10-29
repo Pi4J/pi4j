@@ -62,6 +62,12 @@ public class ParallelDigitalInput extends DigitalInputBase implements DigitalInp
         }
     }
 
+    @Override
+    public void close() {
+        super.close();
+        parallelPort.close();
+    }
+
     /**
      * Proxy to dispatch {@link com.pi4j.io.gpio.parallel.ParallelPort.PinStateChangedNotification}s as
      * {@link DigitalStateChangeEvent}s
