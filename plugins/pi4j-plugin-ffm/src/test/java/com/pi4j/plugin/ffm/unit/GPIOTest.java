@@ -383,6 +383,13 @@ public class GPIOTest {
                 .build();
             var pin = pi4j0.create(builder);
 
+            /*
+             This test appears to rely on the digital device maintaining state which would generally be
+             provided by hardware.
+
+             This seems to imply that devices need to maintain a view of the hardware state, which could be
+             questionable, if only for the purpose of testing.
+             */
             assertEquals(DigitalState.HIGH, pin.state());
 
             var request = capturedRequest.get();
