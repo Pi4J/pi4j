@@ -228,7 +228,7 @@ public sealed class FFMParallelPort
              */
             eventFlags |= PinFlag.EDGE_RISING.getValue() | PinFlag.EDGE_FALLING.getValue();
 
-            if (config.debounce() * 1000 > Integer.MAX_VALUE) {
+            if (config.debounce() > Integer.MAX_VALUE) {
                 throw new InitializeException("Debounce value of " + config.debounce() + " is too large");
             }
 
@@ -237,7 +237,7 @@ public sealed class FFMParallelPort
                     LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(),
                     0,
                     0,
-                    (int) (config.debounce() * 1000)
+                    (int) config.debounce()
                 );
 
                 attributes = new LineConfigAttribute[] {

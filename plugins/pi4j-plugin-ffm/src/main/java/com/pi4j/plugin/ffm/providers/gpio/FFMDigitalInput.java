@@ -101,11 +101,11 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
     private ArrayList<LineConfigAttribute> getLineConfigAttributes() {
         var attributes = new ArrayList<LineConfigAttribute>();
         if (debounce > 0) {
-            if (debounce * 1000 > Integer.MAX_VALUE) {
+            if (debounce > Integer.MAX_VALUE) {
                 throw new InitializeException("Debounce value of " + debounce + " is too large");
             }
             var debounceAttribute = new LineAttribute(
-                LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(), 0, 0, (int) debounce * 1000);
+                LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(), 0, 0, (int) debounce);
             attributes.add(new LineConfigAttribute(debounceAttribute, line.mask));
         }
         return attributes;
