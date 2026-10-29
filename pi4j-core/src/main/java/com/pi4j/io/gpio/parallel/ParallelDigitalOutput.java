@@ -46,6 +46,7 @@ public class ParallelDigitalOutput extends DigitalOutputBase implements DigitalO
 
     @Override
     public void close() {
+        super.close();
         parallelPort.close();
     }
 }

@@ -45,12 +45,16 @@ public class FFMContext extends DefaultContext {
             case SPI -> new FFMSpi((SpiConfig) config, this::shutdown);
             case DIGITAL_INPUT -> {
                 var parallelConfig = ParallelPortConfig.of((DigitalInputConfig) config);
-                var parallelPort = FFMParallelPort.create(parallelConfig, this::shutdown);
+                // don't need to shutdown the parallel port.
+                // this is called by the digital device
+                var parallelPort = FFMParallelPort.create(parallelConfig, _ -> {});
                 yield new ParallelDigitalInput((DigitalInputConfig) config, parallelPort, this::shutdown);
             }
             case DIGITAL_OUTPUT -> {
                 var parallelConfig = ParallelPortConfig.of((DigitalOutputConfig) config);
-                var parallelPort = FFMParallelPort.create(parallelConfig, this::shutdown);
+                // don't need to shutdown the parallel port.
+                // this is called by the digital device
+                var parallelPort = FFMParallelPort.create(parallelConfig, _ -> {});
                 yield new ParallelDigitalOutput((DigitalOutputConfig) config, parallelPort, this::shutdown);
             }
             case PARALLEL -> FFMParallelPort.create((ParallelPortConfig) config, this::shutdown);
