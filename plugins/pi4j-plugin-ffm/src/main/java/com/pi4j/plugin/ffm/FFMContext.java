@@ -13,12 +13,10 @@ import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
-import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInput;
-import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutput;
 import com.pi4j.plugin.ffm.providers.i2c.FFMI2C;
 import com.pi4j.plugin.ffm.providers.parallel.FFMParallelPort;
-import com.pi4j.plugin.ffm.providers.parallel.ParallelDigitalInput;
-import com.pi4j.plugin.ffm.providers.parallel.ParallelDigitalOutput;
+import com.pi4j.io.gpio.parallel.ParallelDigitalInput;
+import com.pi4j.io.gpio.parallel.ParallelDigitalOutput;
 import com.pi4j.plugin.ffm.providers.pwm.FFMPwm;
 import com.pi4j.plugin.ffm.providers.spi.FFMSpi;
 
@@ -33,6 +31,11 @@ public class FFMContext extends DefaultContext {
         super(config);
     }
 
+    /**
+     * TODO: Providing parallel devices here as a lazy shortcut, only to demonstrate parallel-backed digital devices.
+     *  A merge candidate would either allow this to be configured or be implemented in a separate context
+     *  implementation
+     */
     @Override
     public IO<?> createImpl(IOConfig config, IOType type) {
         FFMPermissionHelper.checkUserPermissions(type);
@@ -41,11 +44,13 @@ public class FFMContext extends DefaultContext {
             case I2C -> FFMI2C.create((I2CConfig) config, this::shutdown);
             case SPI -> new FFMSpi((SpiConfig) config, this::shutdown);
             case DIGITAL_INPUT -> {
-                var parallelPort = FFMParallelPort.create(ParallelPortConfig.fromDigitalInputConfig((DigitalInputConfig) config), _ -> {});
+                var parallelConfig = ParallelPortConfig.of((DigitalInputConfig) config);
+                var parallelPort = FFMParallelPort.create(parallelConfig, this::shutdown);
                 yield new ParallelDigitalInput((DigitalInputConfig) config, parallelPort, this::shutdown);
             }
             case DIGITAL_OUTPUT -> {
-                var parallelPort = FFMParallelPort.create(ParallelPortConfig.fromDigitalOutputConfig((DigitalOutputConfig) config), _ -> {});
+                var parallelConfig = ParallelPortConfig.of((DigitalOutputConfig) config);
+                var parallelPort = FFMParallelPort.create(parallelConfig, this::shutdown);
                 yield new ParallelDigitalOutput((DigitalOutputConfig) config, parallelPort, this::shutdown);
             }
             case PARALLEL -> FFMParallelPort.create((ParallelPortConfig) config, this::shutdown);

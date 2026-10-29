@@ -2,10 +2,7 @@ package com.pi4j.io.gpio.parallel;
 
 import com.pi4j.io.IOConfig;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
-import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
-import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
-import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.util.MaskUtils;
 import com.pi4j.io.gpio.digital.PullResistance;
 
@@ -58,50 +55,38 @@ public record ParallelPortConfig(
         }
     }
 
-    public DigitalInputConfig toDigitalInputConfig() {
-        return DigitalInputConfigBuilder.newInstance()
-                .id(id)
-                .name(name)
-                .description(description)
-                .bcm(offsets.getFirst()) // only the first offset is used for a single digital input
-                .pull(pull)
-                .debounce(debounce)
-                .build();
-    }
-
-    public DigitalOutputConfig toDigitalOutputConfig() {
-        return DigitalOutputConfigBuilder.newInstance()
-            .id(id)
-            .name(name)
-            .description(description)
-            .bcm(offsets.getFirst()) // only the first offset is used for a single digital output
-            .initial(DigitalState.getState(initialValue != 0))
-            .shutdown(shutdownValue != null ? DigitalState.getState(shutdownValue != 0) : null)
-            .build();
-    }
-
-    public static ParallelPortConfig fromDigitalInputConfig(DigitalInputConfig config) {
+    /**
+     * Derive a parallel port configuration from a digital input configuration
+     * @param config the digital configuration
+     * @return the parallel configuration
+     */
+    public static ParallelPortConfig of(DigitalInputConfig config) {
         return ParallelPortConfigBuilder.newInstance()
             .id(config.id())
             .name(config.name())
             .description(config.description())
             .bus(config.bus())
-            .bcm(1 << config.bcm())
+            .bcm(config.bcm())
             .pull(config.pull())
             .debounce(config.debounce())
             .initialDirection(ParallelPort.Direction.INPUT)
             .build();
     }
 
-    public static ParallelPortConfig fromDigitalOutputConfig(DigitalOutputConfig config) {
+    /**
+     * Derive a parallel port configuration from a digital output configuration
+     * @param config the digital configuration
+     * @return the parallel configuration
+     */
+    public static ParallelPortConfig of(DigitalOutputConfig config) {
         return ParallelPortConfigBuilder.newInstance()
             .id(config.id())
             .name(config.name())
             .description(config.description())
             .bus(config.bus())
-            .bcm(1 << config.bcm())
+            .bcm(config.bcm())
             .initialValue(config.initialState().isHigh() ? 1 : 0)
-            .shutdownValue(config.shutdownState() != null ? (config.shutdownState().isHigh() ? 1 : 0) : null)
+            .shutdownValue(config.shutdownState() != null ? (config.shutdownState().isHigh() ? 1 : 0) : 0)
             .initialDirection(ParallelPort.Direction.OUTPUT)
             .build();
     }
