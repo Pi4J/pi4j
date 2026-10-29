@@ -1,28 +1,31 @@
-package com.pi4j.plugin.ffm.providers.parallel;
+package com.pi4j.io.gpio.parallel;
 
-import com.pi4j.io.gpio.digital.DigitalBase;
 import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalInputBase;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.digital.DigitalStateChangeEvent;
 import com.pi4j.io.gpio.digital.DigitalStateChangeListener;
-import com.pi4j.io.gpio.parallel.ParallelPort;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * {@link DigitalInput} which delegates to a {@link ParallelPort} to perform IO
+ */
 public class ParallelDigitalInput extends DigitalInputBase implements DigitalInput {
 
     private final ParallelPort parallelPort;
     private final Map<DigitalStateChangeListener, DigitalEventDelegate> listenerMap = new HashMap<>();
 
     /**
-     * Creates a digital input bound to the given provider and configuration.
+     * Creates a digital input bound to the specified port
      *
-     * @param config  the configuration describing this input (pin, pull resistance, debounce, etc.)
+     * @param config the digital configuration
+     * @param parallelPort the delegate port
+     * @param onClose a callback to be invoked on close
      */
     public ParallelDigitalInput(DigitalInputConfig config, ParallelPort parallelPort, Consumer<DigitalInput> onClose) {
         super(config, onClose);
@@ -31,13 +34,13 @@ public class ParallelDigitalInput extends DigitalInputBase implements DigitalInp
 
     @Override
     public void applyInitialState() {
-        super.applyInitialState();
         parallelPort.applyInitialState();
+        super.applyInitialState();
     }
 
     @Override
     public DigitalState state() {
-        return DigitalState.getState((parallelPort.read() & 1 << config.bcm()) != 0);
+        return DigitalState.getState(parallelPort.read() != 0);
     }
 
     @Override
@@ -59,10 +62,17 @@ public class ParallelDigitalInput extends DigitalInputBase implements DigitalInp
         }
     }
 
+    /**
+     * Proxy to dispatch {@link com.pi4j.io.gpio.parallel.ParallelPort.PinStateChangedNotification}s as
+     * {@link DigitalStateChangeEvent}s
+     */
     private class DigitalEventDelegate implements ParallelPort.PinStateChangeListener {
 
         private final List<DigitalStateChangeListener> listeners;
 
+        /**
+         * @param listeners the digital listeners to be notified of events
+         */
         public DigitalEventDelegate(DigitalStateChangeListener... listeners) {
             this.listeners = List.of(listeners);
         }
@@ -72,7 +82,7 @@ public class ParallelDigitalInput extends DigitalInputBase implements DigitalInp
             for (ParallelPort.PinStateChangedEvent event : notification.events()) {
                 var stateChangeEvent = new DigitalStateChangeEvent<>(
                     ParallelDigitalInput.this,
-                    DigitalState.getState((event.offset() & 1 << config.bcm()) != 0)
+                    event.newState()
                 );
 
                 listeners.forEach(listener -> listener.onDigitalStateChange(stateChangeEvent));
