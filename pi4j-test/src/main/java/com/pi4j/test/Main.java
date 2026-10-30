@@ -26,7 +26,7 @@ public class Main {
     public static void main(String[] args) {
         // Use the line below if you want to store the output of the smoke test in a file
         // System.setProperty(org.slf4j.simple.SimpleLogger.LOG_FILE_KEY, "trace.log");
-        System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
+        System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "INFO");
         // Include millis since start. Useful when observing events
         System.setProperty(SimpleLogger.SHOW_DATE_TIME_KEY, "true");
         logger = LoggerFactory.getLogger(Main.class);
@@ -75,6 +75,7 @@ public class Main {
             DigitalInputMultipleListenersTestCase.run(providerContext),
             ParallelPortTestCase.run(providerContext),
             ParallelPortTestEventsCase.run(providerContext)
+            //DigitalProfilerTestCase.run(providerContext) // This test needs profiler enabled and log level set to INFO
         );
 
         // Overall results
