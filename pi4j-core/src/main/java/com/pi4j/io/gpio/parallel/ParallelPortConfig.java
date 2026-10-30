@@ -32,7 +32,7 @@ public record ParallelPortConfig(
     PullResistance pull,
     long debounce,
     // output
-    int initialValue,
+    Integer initialValue,
     Integer shutdownValue,
     // port
     ParallelPort.Direction initialDirection
@@ -87,12 +87,12 @@ public record ParallelPortConfig(
             .bus(config.bus())
             .bcm(config.bcm())
             .initialValue(Optional.ofNullable(config.initialState())
-                .map(s -> s.isHigh() ? 1 : 0)
-                .orElse(0)
+                .map(state -> state.isHigh() ? 1 : 0)
+                .orElse(null)
             )
             .shutdownValue(Optional.ofNullable(config.shutdownState())
-                .map(s -> s.isHigh() ? 1 : 0)
-                .orElse(0)
+                .map(state -> state.isHigh() ? 1 : 0)
+                .orElse(null)
             )
             .initialDirection(ParallelPort.Direction.OUTPUT)
             .build();
