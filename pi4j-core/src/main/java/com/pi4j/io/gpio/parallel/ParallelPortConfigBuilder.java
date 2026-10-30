@@ -68,7 +68,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilder<ParallelPortConfi
      * @param initialValue the initial value
      * @return this builder instance
      */
-    public ParallelPortConfigBuilder initialValue(int initialValue) {
+    public ParallelPortConfigBuilder initialValue(Integer initialValue) {
         this.initialValue = initialValue;
         return this;
     }
@@ -78,7 +78,7 @@ public class ParallelPortConfigBuilder extends IOConfigBuilder<ParallelPortConfi
      * @param shutdownValue the shutdown value
      * @return this builder instance
      */
-    public ParallelPortConfigBuilder shutdownValue(int shutdownValue) {
+    public ParallelPortConfigBuilder shutdownValue(Integer shutdownValue) {
         this.shutdownValue = shutdownValue;
         return this;
     }
