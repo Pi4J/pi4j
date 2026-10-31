@@ -260,7 +260,7 @@ public sealed class FFMParallelPort
 
         // only configure the initial value when the initial direction is OUTPUT,
         // and the value differs from the hardware default
-        if (config.initialDirection() == ParallelPort.Direction.OUTPUT && config.initialValue() > 0) {
+        if (config.initialDirection() == ParallelPort.Direction.OUTPUT && config.initialValue() != null) {
             var attribute = new LineAttribute(
                 LineAttributeId.GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES.getValue(),
                 0,
