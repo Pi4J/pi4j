@@ -112,10 +112,11 @@ class PinStateChangedNotificationProcessingTest {
             IntUnaryOperator.identity()
         );
 
-        assertThrows(Pi4JException.class, () -> processing.process(List.of(
-            new LineEvent(0L, 1, 32, 3, 4)
-        )));
+        var events = List.of(new LineEvent(0L, 1, 32, 3, 4));
+
+        assertThrows(Pi4JException.class, () -> processing.process(events));
     }
+
 
     /**
      * A no-op implementation of {@link ParallelPortBase} that does not perform any actual I/O operations.
