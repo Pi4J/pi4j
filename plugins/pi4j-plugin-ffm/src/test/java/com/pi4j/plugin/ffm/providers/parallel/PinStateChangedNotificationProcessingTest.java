@@ -1,6 +1,5 @@
 package com.pi4j.plugin.ffm.providers.parallel;
 
-import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortBase;

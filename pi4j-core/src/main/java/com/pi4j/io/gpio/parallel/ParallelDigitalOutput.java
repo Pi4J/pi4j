@@ -40,12 +40,6 @@ public class ParallelDigitalOutput extends DigitalOutputBase implements DigitalO
         return this;
     }
 
-    // TODO: Disabling this for now. Unit tests require that the value is not read from the GPIO lines
-//    @Override
-//    public DigitalState state() {
-//        return parallelPort.read() != 0 ? DigitalState.HIGH : DigitalState.LOW;
-//    }
-
     @Override
     public void close() {
         super.close();
