@@ -149,6 +149,7 @@ public class EventWatcher implements Runnable {
             // Give the poller time to complete before returning
             Thread.sleep(EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS / 2);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
     }
