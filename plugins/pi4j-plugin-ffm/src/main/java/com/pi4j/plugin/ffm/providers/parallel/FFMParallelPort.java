@@ -101,7 +101,11 @@ public sealed class FFMParallelPort
                         Recommendation will probably be to apply debounce as a filter at the port level to allow
                         a strategy to be configured by the user.
                      */
-                    this::handleEvents
+                    new PinStateChangedNotificationProcessing(
+                        this,
+                        notification -> dispatcherService.submit(() -> events.dispatch(notification)),
+                        this::mapGpioToPin
+                    )
                 );
             }
 
@@ -195,17 +199,6 @@ public sealed class FFMParallelPort
     }
 
     /**
-     * Handle the events detected by the {@link EventWatcher} and dispatch them to the registered listeners.
-     * @param eventList the list of line events detected
-     */
-    private void handleEvents(List<LineEvent> eventList) {
-        var notification = eventsAsNotification(eventList);
-        if (!dispatcherService.isShutdown()) {
-            dispatcherService.submit(() -> events.dispatch(notification));
-        }
-    }
-
-    /**
      * Create the {@link LineConfig} for the input mode
      * @param config the parallel port configuration
      * @return the line configuration for the input mode
@@ -273,43 +266,6 @@ public sealed class FFMParallelPort
         }
 
         return  new LineConfig(modeFlags, attributes.length, attributes);
-    }
-
-    /**
-     * Convert a list of {@link LineEvent} to a {@link PinStateChangedNotification}
-     * <p>
-     * TODO: This does not currently detect missing events.
-     * <p>
-     * TODO: Additionally, we then need to ask whether it is necessary to track {@link LineEvent#lineSeqno()} across
-     *  {@link ParallelPort.PinStateChangedNotification}s to capture dropping of first and last events. This might
-     *  have to consider any downside in introducing mutable state to this class.
-     *
-     * @param eventList the list of detected events
-     * @return a {@link PinStateChangedNotification} representing the state changes
-     */
-    private ParallelPort.PinStateChangedNotification eventsAsNotification(List<LineEvent> eventList) {
-        PinStateChangedEvent[] changeEvents = new PinStateChangedEvent[eventList.size()];
-        for (int i = 0; i < eventList.size(); i++) {
-            changeEvents[i] = eventAsChangeEvent(eventList.get(i));
-        }
-
-        return new PinStateChangedNotification(this, false, changeEvents);
-    }
-
-    /**
-     * Map a {@link LineEvent} to a {@link PinStateChangedEvent}
-     * @param event the detected event
-     * @return a {@link PinStateChangedEvent} representing the state change
-     */
-    private ParallelPort.PinStateChangedEvent eventAsChangeEvent(LineEvent event) {
-        // convert the hardware offset to the logical user-specified offset
-        int offset = mapGpioToPin(event.offset());
-        // represent the change type by its resulting digital state value
-        var state = event.pinEvent() == PinEvent.RISING
-            ? DigitalState.HIGH
-            : DigitalState.LOW;
-
-        return new PinStateChangedEvent(offset, state);
     }
 
     /**

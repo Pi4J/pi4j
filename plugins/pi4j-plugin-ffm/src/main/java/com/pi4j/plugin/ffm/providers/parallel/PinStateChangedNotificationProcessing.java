@@ -1,11 +1,14 @@
 package com.pi4j.plugin.ffm.providers.parallel;
 
+import com.pi4j.exception.Pi4JException;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.plugin.ffm.common.gpio.PinEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinEventProcessing;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineEvent;
 import com.pi4j.plugin.ffm.providers.gpio.EventWatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.function.IntUnaryOperator;
@@ -14,6 +17,8 @@ import java.util.function.IntUnaryOperator;
  * {@link PinEventProcessing} to consume {@link LineEvent}s and emit {@link ParallelPort.PinStateChangedNotification}s
  */
 final class PinStateChangedNotificationProcessing implements PinEventProcessing {
+
+    private final Logger logger = LoggerFactory.getLogger(PinStateChangedNotificationProcessing.class);
 
     private final ParallelPort eventSource;
     private final ParallelPort.PinStateChangeListener listener;
@@ -62,12 +67,21 @@ final class PinStateChangedNotificationProcessing implements PinEventProcessing 
         ParallelPort.PinStateChangedEvent[] changeEvents = new ParallelPort.PinStateChangedEvent[eventList.size()];
         for (int i = 0; i < eventList.size(); i++) {
             LineEvent event = eventList.get(i);
+
+            if (event.offset() >= sequenceNumbers.length) {
+                throw new Pi4JException(String.format(
+                    "Detected event for offset %d which is greater than the maximum supported offset of %d",
+                    event.offset(),
+                    sequenceNumbers.length - 1
+                ));
+            }
+
             changeEvents[i] = eventAsChangeEvent(event);
 
             int offset = event.offset();
             int sequenceNumber = event.lineSeqno();
             int lastSequenceNumber = sequenceNumbers[offset];
-            eventsMissing |= (sequenceNumber - lastSequenceNumber > 1);
+            eventsMissing |= ((lastSequenceNumber > 0) && (sequenceNumber - lastSequenceNumber > 1));
             sequenceNumbers[offset] = sequenceNumber;
         }
 
