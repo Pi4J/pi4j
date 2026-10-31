@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.IntUnaryOperator;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -104,7 +105,7 @@ class PinStateChangedNotificationProcessingTest {
     }
 
     @Test
-    void unexpectedOffsetsThrowException() {
+    void unexpectedOffsetsAreIgnored() {
         AtomicReference<ParallelPort.PinStateChangedNotification> capturedNotification = new AtomicReference<>();
         var processing = new PinStateChangedNotificationProcessing(
             noopPort,
@@ -112,9 +113,35 @@ class PinStateChangedNotificationProcessingTest {
             IntUnaryOperator.identity()
         );
 
-        var events = List.of(new LineEvent(0L, 1, 32, 3, 4));
+        processing.process(List.of(new LineEvent(0L, 1, 32, 3, 4)));
 
-        assertThrows(Pi4JException.class, () -> processing.process(events));
+        var notification = capturedNotification.get();
+        assertEquals(1, notification.events().length);
+        assertFalse(notification.eventsMissing());
+
+        var event0 = notification.events()[0];
+        assertEquals(32, event0.offset());
+        assertEquals(DigitalState.HIGH, event0.newState());
+    }
+
+    @Test
+    void handlesIntegerOverflow() {
+        AtomicReference<ParallelPort.PinStateChangedNotification> capturedNotification = new AtomicReference<>();
+        var processing = new PinStateChangedNotificationProcessing(
+            noopPort,
+            capturedNotification::set,
+            IntUnaryOperator.identity()
+        );
+
+        var list = IntStream.range(0, 3)
+            .mapToObj(i -> new LineEvent(i, 1, 0, 0, Integer.MAX_VALUE + i))
+            .toList();
+
+        processing.process(list);
+
+        var notification = capturedNotification.get();
+        assertEquals(3, notification.events().length);
+        assertFalse(notification.eventsMissing());
     }
 
 

@@ -67,22 +67,26 @@ final class PinStateChangedNotificationProcessing implements PinEventProcessing 
         ParallelPort.PinStateChangedEvent[] changeEvents = new ParallelPort.PinStateChangedEvent[eventList.size()];
         for (int i = 0; i < eventList.size(); i++) {
             LineEvent event = eventList.get(i);
-
-            if (event.offset() >= sequenceNumbers.length) {
-                throw new Pi4JException(String.format(
-                    "Detected event for offset %d which is greater than the maximum supported offset of %d",
-                    event.offset(),
-                    sequenceNumbers.length - 1
-                ));
-            }
-
             changeEvents[i] = eventAsChangeEvent(event);
 
             int offset = event.offset();
-            int sequenceNumber = event.lineSeqno();
-            int lastSequenceNumber = sequenceNumbers[offset];
-            eventsMissing |= ((lastSequenceNumber > 0) && (sequenceNumber - lastSequenceNumber > 1));
-            sequenceNumbers[offset] = sequenceNumber;
+
+            if (offset >= sequenceNumbers.length) {
+                /*
+                 This should never happen.
+                 Preferring not to throw a terminal exception for now and instead log a warning.
+                 TODO: Possibly add an event flag for this condition to allow the user to handle it in their listener.
+                */
+                logger.warn("Detected event for offset {} which is greater than the maximum supported offset of {}",
+                    offset,
+                    sequenceNumbers.length - 1
+                );
+            } else {
+                int sequenceNumber = event.lineSeqno();
+                int lastSequenceNumber = sequenceNumbers[offset];
+                eventsMissing |= ((lastSequenceNumber > 0) && (sequenceNumber - lastSequenceNumber > 1));
+                sequenceNumbers[offset] = sequenceNumber;
+            }
         }
 
         return new ParallelPort.PinStateChangedNotification(eventSource, eventsMissing, changeEvents);
