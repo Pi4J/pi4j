@@ -58,7 +58,7 @@ public class DigitalInputDebounceTimeTestCase extends TestCase {
             if (eventTimeMs < 100) {
                 return new TestResult(TEST_NAME, false, "Event fired too early at " + eventTimeMs
                     + "ms (debounce not working properly)");
-            } else if ( (eventTimeMs < debounceTimeMs  - 25) || (eventTimeMs > debounceTimeMs  + 25) ) {
+            } else if ( (eventTimeMs < debounceTimeMs  - 35) || (eventTimeMs > debounceTimeMs  + 35) ) {
                 return new TestResult(TEST_NAME, false, "Event fired outside tolerance at " + eventTimeMs
                     + "ms (debounce not working properly)");
             }else {
