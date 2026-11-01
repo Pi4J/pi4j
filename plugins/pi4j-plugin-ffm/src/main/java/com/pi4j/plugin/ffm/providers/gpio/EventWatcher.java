@@ -108,6 +108,11 @@ public class EventWatcher implements Runnable {
                         if (logger.isTraceEnabled()) {
                             logger.trace("Watcher was requested to stop while waiting for poll to complete");
                         }
+                        // flush the event buffer
+                        if (pollData != null && (pollData.revents() & (PollFlag.POLLIN | PollFlag.POLLPRI)) != 0) {
+                            var bufferLength = eventReader.read(fd, memoryBuffer, bufferSize);
+                            logger.trace("Flushed {} events from buffer", bufferLength / eventSize);
+                        }
                         break;
                     }
                     if (pollData == null) {
