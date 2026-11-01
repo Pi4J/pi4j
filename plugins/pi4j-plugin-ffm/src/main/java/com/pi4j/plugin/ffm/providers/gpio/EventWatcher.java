@@ -17,6 +17,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Runnable that blocks in a native {@code poll()} on the requested GPIO line file descriptor,
@@ -40,6 +43,11 @@ public class EventWatcher implements Runnable {
     private final EventReader eventReader;
 
     private volatile boolean stopWatching = false;
+    /**
+     * {@link BlockingQueue} which is polled after {@link #stopWatching} is set. This allows a stop request
+     * to wait until the last polling loop is complete before returning.
+     */
+    private final BlockingQueue<Boolean> shutdownCompleteSignal = new ArrayBlockingQueue<>(1);
 
     /**
      * @param fd file descriptor of the GPIO line
@@ -79,6 +87,11 @@ public class EventWatcher implements Runnable {
         if (logger.isTraceEnabled()) {
             logger.trace("Start polling GPIO data on offset {} at {}", mask, timestamp);
         }
+
+        // clear non-consumed shutdown notifications
+        shutdownCompleteSignal.clear();
+        // clear the stop watching flag
+        stopWatching = false;
 
         try (var arena = Arena.ofConfined()) {
             // Allocate a buffer large enough to hold multiple events.
@@ -147,10 +160,20 @@ public class EventWatcher implements Runnable {
                 }
             }
         }
+
+        // emit shutdown notification
+        shutdownCompleteSignal.add(true);
     }
 
     public void stopWatching() {
         this.stopWatching = true;
+        try {
+            // wait up to 100ms for shutdown complete notification
+            shutdownCompleteSignal.poll(100, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean isRunning() {
