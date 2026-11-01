@@ -91,6 +91,12 @@ public class EventWatcher implements Runnable {
                     // PollingData must be recreated each time — poll does not erase revents between calls
                     var pollData = new PollingData(fd, (short) (PollFlag.POLLIN | PollFlag.POLLPRI), (short) 0);
                     pollData = eventPoller.poll(pollData, 1, EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS / 2);
+                    if (stopWatching) {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Watcher was requested to stop while waiting for poll to complete");
+                        }
+                        break;
+                    }
                     if (pollData == null) {
                         eventProcessor.process(Collections.emptyList());
                         continue;
