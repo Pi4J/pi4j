@@ -92,8 +92,8 @@ public class EventWatcher implements Runnable {
                     var pollData = new PollingData(fd, (short) (PollFlag.POLLIN | PollFlag.POLLPRI), (short) 0);
                     pollData = eventPoller.poll(pollData, 1, EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS / 2);
                     if (stopWatching) {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Watcher was requested to stop while waiting for poll to complete");
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("Watcher was requested to stop while waiting for poll to complete");
                         }
                         break;
                     }
