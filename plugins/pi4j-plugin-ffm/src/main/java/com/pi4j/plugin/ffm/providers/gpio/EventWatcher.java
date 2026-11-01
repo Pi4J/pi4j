@@ -17,6 +17,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Runnable that blocks in a native {@code poll()} on the requested GPIO line file descriptor,
@@ -40,6 +43,11 @@ public class EventWatcher implements Runnable {
     private final EventReader eventReader;
 
     private volatile boolean stopWatching = false;
+    /**
+     * {@link BlockingQueue} which is polled after {@link #stopWatching} is set. This allows a stop request
+     * to wait until the last polling loop is complete before returning.
+     */
+    private final BlockingQueue<Boolean> shutdownCompleteSignal = new ArrayBlockingQueue<>(1);
 
     /**
      * @param fd file descriptor of the GPIO line
@@ -80,6 +88,11 @@ public class EventWatcher implements Runnable {
             logger.trace("Start polling GPIO data on offset {} at {}", mask, timestamp);
         }
 
+        // clear non-consumed shutdown notifications
+        shutdownCompleteSignal.clear();
+        // clear the stop watching flag
+        stopWatching = false;
+
         try (var arena = Arena.ofConfined()) {
             // Allocate a buffer large enough to hold multiple events.
             // We're only going to read as many bytes from this as we are told have been read,
@@ -91,6 +104,19 @@ public class EventWatcher implements Runnable {
                     // PollingData must be recreated each time — poll does not erase revents between calls
                     var pollData = new PollingData(fd, (short) (PollFlag.POLLIN | PollFlag.POLLPRI), (short) 0);
                     pollData = eventPoller.poll(pollData, 1, EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS / 2);
+                    if (stopWatching) {
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("Watcher was requested to stop while waiting for poll to complete");
+                        }
+                        // flush the event buffer
+                        if (pollData != null && (pollData.revents() & (PollFlag.POLLIN | PollFlag.POLLPRI)) != 0) {
+                            var bufferLength = eventReader.read(fd, memoryBuffer, bufferSize);
+                            if (logger.isTraceEnabled()) {
+                                logger.trace("Flushed {} events from buffer", bufferLength / eventSize);
+                            }
+                        }
+                        break;
+                    }
                     if (pollData == null) {
                         eventProcessor.process(Collections.emptyList());
                         continue;
@@ -141,10 +167,20 @@ public class EventWatcher implements Runnable {
                 }
             }
         }
+
+        // emit shutdown notification
+        shutdownCompleteSignal.add(true);
     }
 
     public void stopWatching() {
         this.stopWatching = true;
+        try {
+            // wait up to 100ms for shutdown complete notification
+            shutdownCompleteSignal.poll(100, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean isRunning() {
