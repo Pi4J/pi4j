@@ -12,7 +12,12 @@ public class SpiTestCase extends TestCase {
 
     private static final String TEST_NAME = "SPI";
 
-    public static TestResult run(ProviderContext providerContext) {
+    public static void main(String[] args) {
+        TestCase.run(SpiTestCase.class, args);
+    }
+
+    @Override
+    public TestResult run(ProviderContext providerContext) {
         logger.info("Starting SPI test");
 
         Spi spi = null;

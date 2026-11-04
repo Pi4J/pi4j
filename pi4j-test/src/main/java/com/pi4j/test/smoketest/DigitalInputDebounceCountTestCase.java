@@ -12,7 +12,12 @@ public class DigitalInputDebounceCountTestCase extends TestCase {
 
     private static final String TEST_NAME = "Digital Debounce Count";
 
-    public static TestResult run(ProviderContext providerContext) {
+    public static void main(String[] args) {
+        TestCase.run(DigitalInputDebounceCountTestCase.class, args);
+    }
+
+    @Override
+    public TestResult run(ProviderContext providerContext) {
         logger.info("Starting Digital Debounce Count test");
 
         DigitalOutput gpioOutTest = null;

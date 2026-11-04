@@ -15,7 +15,12 @@ public class DigitalInputDebounceTimeTestCase extends TestCase {
 
     private static long debounceTimeMs = 1000;
 
-    public static TestResult run(ProviderContext providerContext) {
+    public static void main(String[] args) {
+        TestCase.run(DigitalInputDebounceTimeTestCase.class, args);
+    }
+
+    @Override
+    public TestResult run(ProviderContext providerContext) {
         logger.info("Starting Digital Debounce Time test, debounce time  " + debounceTimeMs + "  ms");
 
         DigitalOutput gpioOutTest = null;

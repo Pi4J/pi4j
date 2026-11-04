@@ -17,9 +17,7 @@ import java.util.function.Function;
  * Test case which writes values 0..3 to a parallel port and expects events to be fired on a second, input parallel port.
  * The test will fail if the expected events are not received.
  */
-public class ParallelPortTestEventsCase {
-
-    private ParallelPortTestEventsCase() {}
+public class ParallelPortTestEventsCase extends TestCase {
 
     private static final Logger logger = LoggerFactory.getLogger(ParallelPortTestEventsCase.class);
 
@@ -40,7 +38,12 @@ public class ParallelPortTestEventsCase {
         .bcm(16)            // input port used by DigitalInputTestCase
         .build();
 
-    public static TestResult run(ProviderContext providerContext) {
+    public static void main(String[] args) {
+        TestCase.run(ParallelPortTestEventsCase.class, args);
+    }
+
+    @Override
+    public TestResult run(ProviderContext providerContext) {
         logger.info("Starting " + TEST_NAME + " test");
 
         try(var outputPort = providerContext.getContext().create(OUTPUT_CONFIG);

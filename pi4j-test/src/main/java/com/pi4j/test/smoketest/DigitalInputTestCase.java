@@ -13,7 +13,12 @@ public class DigitalInputTestCase extends TestCase {
 
     private static final String TEST_NAME = "Digital Input";
 
-    public static TestResult run(ProviderContext providerContext) {
+    public static void main(String[] args) {
+        TestCase.run(DigitalInputTestCase.class, args);
+    }
+
+    @Override
+    public TestResult run(ProviderContext providerContext) {
         logger.info("Starting Digital Input test");
 
         DigitalOutput gpioOutControl = null;

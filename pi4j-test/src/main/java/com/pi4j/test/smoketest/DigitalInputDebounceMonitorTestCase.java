@@ -19,7 +19,12 @@ public class DigitalInputDebounceMonitorTestCase extends TestCase {
     private static final String TEST_NAME = "Digital Debounce Monitor";
     protected static DigitalOutput gpioOutLogic = null;
 
-    public static TestResult run(ProviderContext providerContext) {
+    public static void main(String[] args) {
+        TestCase.run(DigitalInputDebounceMonitorTestCase.class, args);
+    }
+
+    @Override
+    public TestResult run(ProviderContext providerContext) {
         logger.info(TEST_NAME);
 
         int debounceSetting = 0;

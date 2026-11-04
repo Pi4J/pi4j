@@ -12,7 +12,12 @@ public class SpiWithOffsetTestCase  extends TestCase {
 
     private static final String TEST_NAME = "SPI with offset";
 
-    public static TestResult run(ProviderContext providerContext) {
+    public static void main(String[] args) {
+        TestCase.run(SpiWithOffsetTestCase.class, args);
+    }
+
+    @Override
+    public TestResult run(ProviderContext providerContext) {
         logger.info("Starting SPI with offset test");
 
         Spi spi = null;

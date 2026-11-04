@@ -3,16 +3,14 @@ package com.pi4j.test;
 import com.pi4j.test.smoketest.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.simple.SimpleLogger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Simple test of the six providers. Dependent upon the wiring described in the README file.
  */
-public class Main {
-
-    private static Logger logger;
+public class Main extends TestCase {
 
     /**
      * The entry point for the application. This method processes command-line
@@ -24,58 +22,41 @@ public class Main {
      *             - "-h": Displays help information and exits the application.
      */
     public static void main(String[] args) {
-        // Use the line below if you want to store the output of the smoke test in a file
-        // System.setProperty(org.slf4j.simple.SimpleLogger.LOG_FILE_KEY, "trace.log");
-        System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE");
-        // Include millis since start. Useful when observing events
-        System.setProperty(SimpleLogger.SHOW_DATE_TIME_KEY, "true");
-        logger = LoggerFactory.getLogger(Main.class);
+        TestCase.run(Main.class, args);
+    }
 
-        logger.info("==============================================================");
-        logger.info("startup  Main ");
-        logger.info("==============================================================");
-
-        ProviderContext providerContext = null;
-        String helpString = "params: -p <newautocontext,ffm>, -h help";
-        for (int i = 0; i < args.length; i++) {
-            String o = args[i];
-            if (o.contentEquals("-p")) {
-                String a = args[i + 1];
-                providerContext = new ProviderContext(ProviderContext.TestProvider.getByName(a));
-                i++;
-            } else if (o.contentEquals("-h")) {
-                logger.info(helpString);
-                System.exit(31);
-            } else {
-                logger.info("  !!! Invalid Parm " + args);
-                logger.info(helpString);
-                System.exit(32);
-            }
-        }
-
-        // Fallback in case no providerContext was specified with a parameter
-        if (providerContext == null) {
-            providerContext = new ProviderContext(ProviderContext.TestProvider.NEWAUTOCONTEXT);
-        }
+    @Override
+    public TestResult run(ProviderContext providerContext) {
+        Logger logger = LoggerFactory.getLogger(Main.class);
 
         // Run the tests
-        var tests = List.of(
-            I2CTestCase.run(providerContext),
-            I2CWithOffsetTestCase.run(providerContext),
-            SpiTestCase.run(providerContext),
-            SpiWithOffsetTestCase.run(providerContext),
-            //SpiWriteReadTestCase.run(providerContext), // requires manual CS across write/read operation
-            PWMTestCase.run(providerContext, 1, 50, 10),
-            DigitalInputTestCase.run(providerContext),
-            FiveDigitalInputsTestCase.run(providerContext),
-            DigitalOutputTestCase.run(providerContext),
-            //DigitalInputDebounceMonitorTestCase.run(providerContext), // This test needs a Logic Analyzer
-            DigitalInputDebounceTimeTestCase.run(providerContext),
-            DigitalInputDebounceCountTestCase.run(providerContext),
-            DigitalInputMultipleListenersTestCase.run(providerContext),
-            ParallelPortTestCase.run(providerContext),
-            ParallelPortTestEventsCase.run(providerContext)
+        List<Class<? extends TestCase>> testClasses = List.of(
+            I2CTestCase.class,
+            I2CWithOffsetTestCase.class,
+            SpiTestCase.class,
+            SpiWithOffsetTestCase.class,
+            // SpiWriteReadTestCase.class, // requires manual CS across write/read operation
+            PWMTestCase.class,
+            DigitalInputTestCase.class,
+            FiveDigitalInputsTestCase.class,
+            DigitalOutputTestCase.class,
+            // DigitalInputDebounceMonitorTestCase.class, // This test needs a Logic Analyzer
+            DigitalInputDebounceTimeTestCase.class,
+            DigitalInputDebounceCountTestCase.class,
+            DigitalInputMultipleListenersTestCase.class,
+            ParallelPortTestCase.class,
+            ParallelPortTestEventsCase.class
         );
+        var tests = new ArrayList<TestResult>();
+        for (var testClass : testClasses) {
+            try {
+                tests.add(testClass.getDeclaredConstructor().newInstance().run(providerContext));
+            } catch (Exception | LinkageError e) {
+                Throwable cause = e instanceof java.lang.reflect.InvocationTargetException && e.getCause() != null
+                    ? e.getCause() : e;
+                tests.add(new TestResult(testClass.getSimpleName(), false, cause.toString()));
+            }
+        }
 
         // Overall results
         logger.info("");
@@ -90,6 +71,8 @@ public class Main {
         // Output results
         tests.forEach(t -> t.log(logger));
 
-        providerContext.getContext().shutdown();
+        long failed = tests.stream().filter(t -> !t.success()).count();
+        return new TestResult("Smoke test suite", failed == 0,
+            (tests.size() - failed) + " passed, " + failed + " failed");
     }
 }
