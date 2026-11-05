@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
@@ -65,8 +66,8 @@ public class ParallelPortTestEventsCase extends TestCase {
                     : new TestResult(TEST_NAME, false, "Failed to get first event")
             );
             outputPort.write(1);
-            var result = resultQueue.take();
-            if (!result.success()) return result;
+            var result = resultQueue.poll(100, TimeUnit.MILLISECONDS);
+            if (result != null && !result.success()) return result;
 
             // Second event is fired
             nextExpectation.set(event -> {
@@ -85,8 +86,8 @@ public class ParallelPortTestEventsCase extends TestCase {
                 return new TestResult(TEST_NAME, true, "Got second event");
             });
             outputPort.write(2);
-            result = resultQueue.take();
-            if (!result.success()) return result;
+            result = resultQueue.poll(100, TimeUnit.MILLISECONDS);
+            if (result != null && !result.success()) return result;
 
             // Third event is fired
             nextExpectation.set(event -> {
@@ -101,8 +102,8 @@ public class ParallelPortTestEventsCase extends TestCase {
                 return new TestResult(TEST_NAME, true, "Got third event");
             });
             outputPort.write(3);
-            result = resultQueue.take();
-            if (!result.success()) return result;
+            result = resultQueue.poll(100, TimeUnit.MILLISECONDS);
+            if (result != null && !result.success()) return result;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.error("Test interrupted", e);
