@@ -10,9 +10,7 @@ import org.slf4j.LoggerFactory;
  * Test case which outputs values `0..3` on BCM 20 and 21 and reads the value on BCM 7 and 12. The test fails
  * if the value read does not match the value that was written.
  */
-public class ParallelPortTestCase {
-
-    private ParallelPortTestCase() {}
+public class ParallelPortTestCase extends TestCase {
 
     private static final Logger logger = LoggerFactory.getLogger(ParallelPortTestCase.class);
 
@@ -34,7 +32,12 @@ public class ParallelPortTestCase {
         .bcm(16)            // input port used by DigitalInputTestCase
         .build();
 
-    public static TestResult run(ProviderContext providerContext) {
+    public static void main(String[] args) {
+        TestCase.run(ParallelPortTestCase.class, args);
+    }
+
+    @Override
+    public TestResult run(ProviderContext providerContext) {
         logger.info("Starting Parallel Port test");
 
         try(var outputPort = providerContext.getContext().create(OUTPUT_CONFIG);

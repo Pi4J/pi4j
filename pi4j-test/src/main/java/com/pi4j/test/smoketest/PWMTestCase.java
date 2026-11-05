@@ -10,11 +10,32 @@ public class PWMTestCase extends TestCase {
 
     private static final Logger logger = LoggerFactory.getLogger(PWMTestCase.class);
 
-    public static TestResult run(ProviderContext providerContext, int frequency, int dutyCycle, int expected) {
-        return run(providerContext, 0, 2, PwmType.HARDWARE, frequency, dutyCycle, expected);
+    private final int chip;
+    private final int channel;
+    private final PwmType pwmType;
+    private final int frequency;
+    private final int dutyCycle;
+    private final int expected;
+
+    public PWMTestCase() {
+        this(0, 2, PwmType.HARDWARE, 1, 50, 10);
     }
 
-    public static TestResult run(ProviderContext providerContext, int chip, int channel, PwmType pwmType, int frequency, int dutyCycle, int expected) {
+    public PWMTestCase(int chip, int channel, PwmType pwmType, int frequency, int dutyCycle, int expected) {
+        this.chip = chip;
+        this.channel = channel;
+        this.pwmType = pwmType;
+        this.frequency = frequency;
+        this.dutyCycle = dutyCycle;
+        this.expected = expected;
+    }
+
+    public static void main(String[] args) {
+        TestCase.run(PWMTestCase.class, args);
+    }
+
+    @Override
+    public TestResult run(ProviderContext providerContext) {
         logger.info("Starting PWM test");
 
         Pwm pwm = null;

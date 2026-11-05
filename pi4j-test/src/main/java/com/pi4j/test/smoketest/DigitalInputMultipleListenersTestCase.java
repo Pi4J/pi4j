@@ -14,7 +14,12 @@ public class DigitalInputMultipleListenersTestCase extends TestCase {
 
     private static final String TEST_NAME = "Multiple Digital Listeners";
 
-    public static TestResult run(ProviderContext providerContext) {
+    public static void main(String[] args) {
+        TestCase.run(DigitalInputMultipleListenersTestCase.class, args);
+    }
+
+    @Override
+    public TestResult run(ProviderContext providerContext) {
         logger.info("Starting " + TEST_NAME + " test");
 
         try(DigitalOutput gpioOutTest = createDigitalOutput(providerContext.getContext(), 22, DigitalState.LOW, DigitalState.LOW);

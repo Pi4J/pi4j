@@ -13,7 +13,12 @@ public class I2CWithOffsetTestCase extends TestCase {
     private static final int BMP_I2C_BUS = 1;
     private static final int BMP_I2C_ADDR = 0x76;
 
-    public static TestResult run(ProviderContext providerContext) {
+    public static void main(String[] args) {
+        TestCase.run(I2CWithOffsetTestCase.class, args);
+    }
+
+    @Override
+    public TestResult run(ProviderContext providerContext) {
         logger.info("Starting I2C with offset test");
 
         I2C i2c = null;
