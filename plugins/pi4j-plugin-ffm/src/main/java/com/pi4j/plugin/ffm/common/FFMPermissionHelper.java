@@ -5,6 +5,7 @@ import com.pi4j.io.IOConfig;
 import com.pi4j.io.IOType;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
+import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.spi.SpiConfig;
@@ -191,7 +192,7 @@ public class FFMPermissionHelper {
 
         // we need to check permissions of a device depending on hardware interface
         switch (config) {
-            case DigitalInputConfig _, DigitalOutputConfig _, PwmConfig _ -> {
+            case DigitalInputConfig _, DigitalOutputConfig _, PwmConfig _, ParallelPortConfig _ -> {
                 if (!group.getName().equals("gpio") && !group.getName().equals("dialout")) {
                     printError(config instanceof PwmConfig ? "pwm" : "gpio");
                     throw new Pi4JException("Device '" + devicePath + "' (" + owner + ":" + group + ") does not belong to group 'gpio' or 'dialout'.");

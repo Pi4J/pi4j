@@ -7,6 +7,7 @@ import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortBase;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 import com.pi4j.plugin.ffm.common.FFMGpioLine;
+import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.gpio.PinEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.enums.LineAttributeId;
@@ -32,7 +33,7 @@ public sealed class FFMParallelPort
 
     private final LineConfig inputLineConfig;
     private final LineConfig outputLineConfig;
-    private final FFMGpioLine gpioLine;
+    private FFMGpioLine gpioLine;
 
     private EventWatcher eventWatcher;
     /**
@@ -63,7 +64,6 @@ public sealed class FFMParallelPort
         super(config, onClose);
         this.inputLineConfig = createInputLineConfigs(config);
         this.outputLineConfig = createOutputLineConfigs(config);
-        this.gpioLine = new FFMGpioLine(MaskUtils.mask(config.offsets()), config.bus());
 
         // Events are only available if the initial direction is INPUT. No need to create these for OUTPUT ports
         if (config.initialDirection() == Direction.INPUT) {
@@ -87,7 +87,7 @@ public sealed class FFMParallelPort
     @Override
     public void applyInitialState() throws InitializeException {
         if (config.initialDirection() == Direction.INPUT) {
-            gpioLine.openAndRequest(inputLineConfig.flags(), List.of(inputLineConfig.attrs()), config.id());
+            gpioLine = FFMGpioLine.openAndRequest(MaskUtils.mask(config.offsets()), config.bus(), inputLineConfig, config.id());
             if (this.eventWatcher == null) {
                 this.eventWatcher = new EventWatcher(
                     gpioLine.chipFileDescriptor,
@@ -103,8 +103,9 @@ public sealed class FFMParallelPort
             }
 
         } else {
-            gpioLine.openAndRequest(outputLineConfig.flags(), List.of(outputLineConfig.attrs()), config.id());
+            gpioLine = FFMGpioLine.openAndRequest(MaskUtils.mask(config.offsets()), config.bus(), outputLineConfig, config.id());
         }
+        FFMPermissionHelper.checkDevicePermissions(gpioLine.deviceName, config);
         super.applyInitialState();
     }
 

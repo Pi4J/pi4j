@@ -3,7 +3,6 @@ package com.pi4j.plugin.ffm.providers.gpio;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.exception.IOException;
-import com.pi4j.util.MaskUtils;
 import com.pi4j.io.gpio.digital.*;
 import com.pi4j.plugin.ffm.common.FFMGpioLine;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
@@ -13,7 +12,6 @@ import com.pi4j.plugin.ffm.common.gpio.structs.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.function.Consumer;
 
 /**
@@ -24,7 +22,7 @@ import java.util.function.Consumer;
 public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput {
     private static final Logger logger = LoggerFactory.getLogger(FFMDigitalOutput.class);
 
-    private final FFMGpioLine line;
+    private FFMGpioLine line;
 
     /**
      * Creates a digital output bound to a GPIO line. Resolves the target device path
@@ -37,8 +35,6 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
      */
     public FFMDigitalOutput(DigitalOutputConfig config, Consumer<? super FFMDigitalOutput> onClose) {
         super(config, onClose);
-        this.line = new FFMGpioLine(MaskUtils.mask(config.bcm()), config.bus());
-        FFMPermissionHelper.checkDevicePermissions(line.deviceName, config);
     }
 
     /**
@@ -55,27 +51,37 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
      */
     @Override
     public void applyInitialState() throws InitializeException {
-        var flags = PinFlag.OUTPUT.getValue();
-        var attributes = new ArrayList<LineConfigAttribute>();
-        var initialState = config().initialState();
-        if (initialState != null) {
-            // Supply the initial state as part of the line request so the pin is driven to it the
-            // moment the line is claimed — without this the kernel drives a newly requested output
-            // low by default, producing a transient glitch (issue #654).
-            var values = initialState.isHigh() ? 1L : 0L;
-            var outputValues = new LineAttribute(
-                LineAttributeId.GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES.getValue(), 0, values, 0);
-            attributes.add(new LineConfigAttribute(outputValues, 1L));
-            logger.trace("{}-{} - DigitalOutput BCM initial state: {}", line.deviceName, line.mask, initialState);
-        }
+        var mask = 1L << config().bcm();
+        var lineConfig = getLineConfig();
         try {
-            line.openAndRequest(flags, attributes, getClass().getSimpleName());
+            line = FFMGpioLine.openAndRequest(mask, config().bus(), lineConfig, getClass().getSimpleName());
+            FFMPermissionHelper.checkDevicePermissions(line.deviceName, config);
         } catch (InitializeException e) {
-            logger.error("{}-{} - DigitalOutput BCM Initialization error: {}", line.deviceName, line.mask, e.getMessage());
+            logger.error("DigitalOutput BCM Initialization error: {}, {}", config.id(), e.getMessage());
             throw e;
         }
         logger.info("{}-{} - DigitalOutput BCM configured.", line.deviceName, line.mask);
         super.applyInitialState();
+    }
+
+    private LineConfig getLineConfig() {
+        var flags = PinFlag.OUTPUT.getValue();
+
+        var attributes = (config.initialState() != null)
+            ? new LineConfigAttribute[] {
+                new LineConfigAttribute(
+                    new LineAttribute(
+                        LineAttributeId.GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES.getValue(),
+                        0,
+                        config.initialState().isHigh() ? 1L : 0L,
+                        0
+                    ),
+                    1
+                )
+            }
+            : new LineConfigAttribute[0];
+
+        return new LineConfig(flags, attributes.length, attributes);
     }
 
     /**
