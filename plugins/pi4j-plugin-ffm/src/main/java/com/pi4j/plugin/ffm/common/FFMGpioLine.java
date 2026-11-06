@@ -40,18 +40,6 @@ public final class FFMGpioLine implements AutoCloseable {
     public final int chipFileDescriptor;
 
     /**
-     * Construct an instance of this helper with the specified mask and bus.
-     * @param mask the mask containing pin offsets to pass to ioctl
-     * @param chipFileDescriptor the file descriptor of the GPIO chip device
-     * @param deviceName the name of the GPIO chip device (e.g. /dev/gpiochip0)
-     */
-    private FFMGpioLine(long mask, int chipFileDescriptor, String deviceName) {
-        this.mask = mask;
-        this.chipFileDescriptor = chipFileDescriptor;
-        this.deviceName = deviceName;
-    }
-
-    /**
      * Opens the GPIO chip device, verifies that the target BCM line is not already in use,
      * requests it with the supplied flags and attributes, and retains the per-request line fd.
      *
@@ -65,16 +53,18 @@ public final class FFMGpioLine implements AutoCloseable {
     public static FFMGpioLine openAndRequest(long mask, int bus, LineConfig lineConfig, String consumer)
         throws InitializeException {
 
-        // We can't use static instances of these due to Mockito constructor mocking being required for unit tests.
-        IoctlNative ioctl = new IoctlNative();
-        FileDescriptorNative file = new FileDescriptorNative();
-
         if (mask == 0) {
             throw new IllegalArgumentException("Mask must does not specify any offsets");
         }
 
-        String deviceName = "/dev/gpiochip" + bus;
+        /*
+         We can't use static instances of these due to Mockito constructor mocking being required for unit tests.
+         Possible code-smell being imposed by Mockito here
+         */
+        IoctlNative ioctl = new IoctlNative();
+        FileDescriptorNative file = new FileDescriptorNative();
 
+        String deviceName = "/dev/gpiochip" + bus;
         if (file.access(deviceName, FileFlag.R_OK) != 0) {
             try {
                 var posix = Files.readAttributes(Path.of(deviceName), PosixFileAttributes.class);
@@ -119,6 +109,18 @@ public final class FFMGpioLine implements AutoCloseable {
         } finally {
             file.close(fd);
         }
+    }
+
+    /**
+     * Construct an instance of this helper with the specified mask and bus.
+     * @param mask the mask containing pin offsets to pass to ioctl
+     * @param chipFileDescriptor the file descriptor of the GPIO chip device
+     * @param deviceName the name of the GPIO chip device (e.g. /dev/gpiochip0)
+     */
+    private FFMGpioLine(long mask, int chipFileDescriptor, String deviceName) {
+        this.mask = mask;
+        this.chipFileDescriptor = chipFileDescriptor;
+        this.deviceName = deviceName;
     }
 
     /**
@@ -180,11 +182,9 @@ public final class FFMGpioLine implements AutoCloseable {
      * Closes the per-request line file descriptor, releasing the GPIO line back to the kernel.
      */
     public void close() {
-        if (chipFileDescriptor > 0) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("{}-{} - closing GPIO file descriptor '{}'.", deviceName, mask, chipFileDescriptor);
-            }
-            file.close(chipFileDescriptor);
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}-{} - closing GPIO file descriptor '{}'.", deviceName, mask, chipFileDescriptor);
         }
+        file.close(chipFileDescriptor);
     }
 }
