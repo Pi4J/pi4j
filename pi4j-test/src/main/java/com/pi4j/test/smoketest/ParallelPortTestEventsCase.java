@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -23,6 +24,7 @@ public class ParallelPortTestEventsCase extends TestCase {
     private static final Logger logger = LoggerFactory.getLogger(ParallelPortTestEventsCase.class);
 
     private static final String TEST_NAME = "Parallel Port Events";
+    private static final TestResult TIMEOUT_RESULT = new TestResult(TEST_NAME, true, "Timed out waiting");
 
     private static final ParallelPortConfig OUTPUT_CONFIG = ParallelPortConfigBuilder.newInstance()
         .id("parallel-out")
@@ -38,6 +40,7 @@ public class ParallelPortTestEventsCase extends TestCase {
         .bcm(25)            // input port used by DigitalOutputTestCase
         .bcm(16)            // input port used by DigitalInputTestCase
         .build();
+
 
     public static void main(String[] args) {
         TestCase.run(ParallelPortTestEventsCase.class, args);
@@ -66,8 +69,8 @@ public class ParallelPortTestEventsCase extends TestCase {
                     : new TestResult(TEST_NAME, false, "Failed to get first event")
             );
             outputPort.write(1);
-            var result = resultQueue.poll(100, TimeUnit.MILLISECONDS);
-            if (result != null && !result.success()) return result;
+            var result = Optional.ofNullable(resultQueue.poll(100, TimeUnit.MILLISECONDS)).orElse(TIMEOUT_RESULT);
+            if (!result.success()) return result;
 
             // Second event is fired
             nextExpectation.set(event -> {
@@ -86,8 +89,8 @@ public class ParallelPortTestEventsCase extends TestCase {
                 return new TestResult(TEST_NAME, true, "Got second event");
             });
             outputPort.write(2);
-            result = resultQueue.poll(100, TimeUnit.MILLISECONDS);
-            if (result != null && !result.success()) return result;
+            result = Optional.ofNullable(resultQueue.poll(100, TimeUnit.MILLISECONDS)).orElse(TIMEOUT_RESULT);
+            if (!result.success()) return result;
 
             // Third event is fired
             nextExpectation.set(event -> {
@@ -102,8 +105,8 @@ public class ParallelPortTestEventsCase extends TestCase {
                 return new TestResult(TEST_NAME, true, "Got third event");
             });
             outputPort.write(3);
-            result = resultQueue.poll(100, TimeUnit.MILLISECONDS);
-            if (result != null && !result.success()) return result;
+            result = Optional.ofNullable(resultQueue.poll(100, TimeUnit.MILLISECONDS)).orElse(TIMEOUT_RESULT);
+            if (!result.success()) return result;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             logger.error("Test interrupted", e);
