@@ -1,10 +1,13 @@
 package com.pi4j.io.gpio.parallel;
 
 import com.pi4j.io.IOConfig;
+import com.pi4j.io.gpio.digital.DigitalInputConfig;
+import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.util.MaskUtils;
 import com.pi4j.io.gpio.digital.PullResistance;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Configuration for a parallel port
@@ -29,7 +32,7 @@ public record ParallelPortConfig(
     PullResistance pull,
     long debounce,
     // output
-    int initialValue,
+    Integer initialValue,
     Integer shutdownValue,
     // port
     ParallelPort.Direction initialDirection
@@ -51,5 +54,47 @@ public record ParallelPortConfig(
         if (id == null) {
             throw new IllegalStateException("ID cannot be null");
         }
+    }
+
+    /**
+     * Derive a parallel port configuration from a digital input configuration
+     * @param config the digital configuration
+     * @return the parallel configuration
+     */
+    public static ParallelPortConfig of(DigitalInputConfig config) {
+        return ParallelPortConfigBuilder.newInstance()
+            .id(config.id())
+            .name(config.name())
+            .description(config.description())
+            .bus(config.bus())
+            .bcm(config.bcm())
+            .pull(config.pull())
+            .debounce(config.debounce())
+            .initialDirection(ParallelPort.Direction.INPUT)
+            .build();
+    }
+
+    /**
+     * Derive a parallel port configuration from a digital output configuration
+     * @param config the digital configuration
+     * @return the parallel configuration
+     */
+    public static ParallelPortConfig of(DigitalOutputConfig config) {
+        return ParallelPortConfigBuilder.newInstance()
+            .id(config.id())
+            .name(config.name())
+            .description(config.description())
+            .bus(config.bus())
+            .bcm(config.bcm())
+            .initialValue(Optional.ofNullable(config.initialState())
+                .map(state -> state.isHigh() ? 1 : 0)
+                .orElse(null)
+            )
+            .shutdownValue(Optional.ofNullable(config.shutdownState())
+                .map(state -> state.isHigh() ? 1 : 0)
+                .orElse(null)
+            )
+            .initialDirection(ParallelPort.Direction.OUTPUT)
+            .build();
     }
 }
