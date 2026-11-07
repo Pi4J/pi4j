@@ -125,18 +125,18 @@ class EventWatcherTest {
             inCounter.getAndAdd(lineEventList.size());
         };
 
-        EventWatcher.EventPoller poller = (_, _, _) -> outCounter.get() >= 10_000_000
+        EventWatcher.EventPoller poller = () -> outCounter.get() >= 10_000_000
             ? stopPollingData
             : keepPollingData;
 
-        EventWatcher.EventReader reader = (_, buffer, _) -> {
+        EventWatcher.EventReader reader = buffer -> {
             int index = outCounter.getAndIncrement() % fakeLineEvents.length;
             var bytes = fakeLineEvents[index];
             buffer.asByteBuffer().put(bytes);
             return bytes.length;
         };
 
-        var eventWatcher = new EventWatcher(1, 1, PinEvent.BOTH, eventProcessor, poller, reader);
+        var eventWatcher = new EventWatcher(1, PinEvent.BOTH, eventProcessor, poller, reader);
         eventWatcher.run();
         logger.info("Event watcher finished after {} polls.", inCounter.get());
     }

@@ -34,7 +34,6 @@ public class EventWatcher implements Runnable {
     // NOTE: used for poll() inside watcher thread — always keep at half of the total timeout.
     static final int EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS = 200;
 
-    private final int fd;
     private final long mask;
     private final PinEvent pinEvent;
     private final PinEventProcessing eventProcessor;
@@ -55,21 +54,40 @@ public class EventWatcher implements Runnable {
      * @param pinEvent the pin even type to capture (RISING, FALLING, BOTH)
      * @param eventProcessor callback to process the events
      */
-    public EventWatcher(int fd, long mask, PinEvent pinEvent, PinEventProcessing eventProcessor) {
-        this(fd, mask, pinEvent, eventProcessor, new PollNative()::poll, new FileDescriptorNative()::read);
+    public EventWatcher(
+        int fd,
+        long mask,
+        PinEvent pinEvent,
+        PinEventProcessing eventProcessor
+    ) {
+        this(
+            mask,
+            pinEvent,
+            eventProcessor,
+            new DefaultEventPoller(fd),
+            /*
+             default minimum buffer size is 16 line events
+             see https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/gpio.h#L185
+             */
+            new DefaultEventReader(fd, (int) LineEvent.LAYOUT.byteSize() * 16)
+        );
     }
 
     /**
      * Package private constructor for testing purposes, allowing injection of custom poller and reader implementations.
-     * @param fd file descriptor of the GPIO line
      * @param mask bitmask of the GPIO line
      * @param pinEvent the pin even type to capture (RISING, FALLING, BOTH)
      * @param eventProcessor callback to process the events
      * @param eventPoller context-appropriate {@link EventPoller}
      * @param eventReader context-appropriate {@link EventReader}
      */
-    EventWatcher(int fd, long mask, PinEvent pinEvent, PinEventProcessing eventProcessor, EventPoller eventPoller, EventReader eventReader) {
-        this.fd = fd;
+    EventWatcher(
+        long mask,
+        PinEvent pinEvent,
+        PinEventProcessing eventProcessor,
+        EventPoller eventPoller,
+        EventReader eventReader
+    ) {
         this.mask = mask;
         this.pinEvent = pinEvent;
         this.eventProcessor = eventProcessor;
@@ -101,16 +119,18 @@ public class EventWatcher implements Runnable {
 
             while (!stopWatching) {
                 try {
-                    // PollingData must be recreated each time — poll does not erase revents between calls
-                    var pollData = new PollingData(fd, (short) (PollFlag.POLLIN | PollFlag.POLLPRI), (short) 0);
-                    pollData = eventPoller.poll(pollData, 1, EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS / 2);
+                    /*
+                     EventWatcher is not interested in how the PollingData is constructed, only that it is returned
+                     from the poll() call.
+                     */
+                    var pollData = eventPoller.poll();
                     if (stopWatching) {
                         if (logger.isTraceEnabled()) {
                             logger.trace("Watcher was requested to stop while waiting for poll to complete");
                         }
                         // flush the event buffer
                         if (pollData != null && (pollData.revents() & (PollFlag.POLLIN | PollFlag.POLLPRI)) != 0) {
-                            var bufferLength = eventReader.read(fd, memoryBuffer, bufferSize);
+                            var bufferLength = eventReader.read(memoryBuffer);
                             if (logger.isTraceEnabled()) {
                                 logger.trace("Flushed {} events from buffer", bufferLength / eventSize);
                             }
@@ -127,9 +147,11 @@ public class EventWatcher implements Runnable {
                         continue;
                     }
                     if ((pollData.revents() & (PollFlag.POLLIN | PollFlag.POLLPRI)) != 0) {
-                        // default minimum buffer size is 16 line events
-                        // see https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/gpio.h#L185
-                        var bytesAvailable = eventReader.read(fd, memoryBuffer, bufferSize);
+                        /*
+                         Again, EventWatcher is not interested in how the event data is fetched, only that it can be
+                          called to read events and return the number of bytes available.
+                         */
+                        var bytesAvailable = eventReader.read(memoryBuffer);
                         for (int i = 0; i < bytesAvailable; i += eventSize) {
                             var slice = memoryBuffer.asSlice(i, eventSize);
 
@@ -193,7 +215,23 @@ public class EventWatcher implements Runnable {
      */
     @FunctionalInterface
     interface EventPoller {
-        PollingData poll(PollingData pollingData, int size, int timeout);
+        PollingData poll();
+    }
+
+    private static class DefaultEventPoller implements EventPoller {
+        private final PollNative pollNative = new PollNative();
+        private final int fileDescriptor;
+
+        public DefaultEventPoller(int fileDescriptor) {
+            this.fileDescriptor = fileDescriptor;
+        }
+
+        @Override
+        public PollingData poll() {
+            // PollingData must be recreated each time — poll does not erase revents between calls
+            var data = new PollingData(fileDescriptor, (short) (PollFlag.POLLIN | PollFlag.POLLPRI), (short) 0);
+            return pollNative.poll(data, 1, EVENT_WATCHER_SHUTDOWN_TIMEOUT_MS / 2);
+        }
     }
 
     /**
@@ -202,6 +240,22 @@ public class EventWatcher implements Runnable {
      */
     @FunctionalInterface
     interface EventReader {
-        int read(int fd, MemorySegment buffer, int size);
+        int read(MemorySegment buffer);
+    }
+
+    private static class DefaultEventReader implements EventReader {
+        private final FileDescriptorNative fileDescriptorNative = new FileDescriptorNative();
+        private final int fileDescriptor;
+        private final int bufferSize;
+
+        public DefaultEventReader(int fileDescriptor, int bufferSize) {
+            this.fileDescriptor = fileDescriptor;
+            this.bufferSize = bufferSize;
+        }
+
+        @Override
+        public int read(MemorySegment buffer) {
+            return fileDescriptorNative.read(fileDescriptor, buffer, bufferSize);
+        }
     }
 }
