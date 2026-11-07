@@ -65,11 +65,7 @@ public class EventWatcher implements Runnable {
             pinEvent,
             eventProcessor,
             new DefaultEventPoller(fd),
-            /*
-             default minimum buffer size is 16 line events
-             see https://elixir.bootlin.com/linux/latest/source/include/uapi/linux/gpio.h#L185
-             */
-            new DefaultEventReader(fd, (int) LineEvent.LAYOUT.byteSize() * 16)
+            new DefaultEventReader(fd)
         );
     }
 
@@ -98,7 +94,6 @@ public class EventWatcher implements Runnable {
     @Override
     public void run() {
         var eventSize = (int) LineEvent.LAYOUT.byteSize();
-        var bufferSize = eventSize * 16; // default minimum buffer size is 16 line events
         var timestamp = Instant.now();
         List<LineEvent> eventList = new ArrayList<>();
 
@@ -112,10 +107,12 @@ public class EventWatcher implements Runnable {
         stopWatching = false;
 
         try (var arena = Arena.ofConfined()) {
-            // Allocate a buffer large enough to hold multiple events.
-            // We're only going to read as many bytes from this as we are told have been read,
-            // so it's safe to over-allocate here.
-            var memoryBuffer = arena.allocate(bufferSize);
+            /*
+             Allocate a buffer large enough to hold multiple events.
+             We're only going to read as many bytes from this as we are told have been read,
+              so it's safe to over-allocate here.
+            */
+            var memoryBuffer = arena.allocate(eventSize * 16L);
 
             while (!stopWatching) {
                 try {
@@ -246,16 +243,14 @@ public class EventWatcher implements Runnable {
     private static class DefaultEventReader implements EventReader {
         private final FileDescriptorNative fileDescriptorNative = new FileDescriptorNative();
         private final int fileDescriptor;
-        private final int bufferSize;
 
-        public DefaultEventReader(int fileDescriptor, int bufferSize) {
+        public DefaultEventReader(int fileDescriptor) {
             this.fileDescriptor = fileDescriptor;
-            this.bufferSize = bufferSize;
         }
 
         @Override
         public int read(MemorySegment buffer) {
-            return fileDescriptorNative.read(fileDescriptor, buffer, bufferSize);
+            return fileDescriptorNative.read(fileDescriptor, buffer, (int) buffer.byteSize());
         }
     }
 }
