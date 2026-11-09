@@ -20,7 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Low-level wrapper around a single Linux GPIO v2 character-device line. Shared by
@@ -30,44 +29,43 @@ import java.util.List;
  * and retains the resulting per-request file descriptor), read via {@link #readValue()}, written
  * via {@link #writeValue(int)}, and released via {@link #close}.
  */
-public class FFMGpioLine {
+public final class FFMGpioLine implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(FFMGpioLine.class);
 
-    final IoctlNative ioctl = new IoctlNative();
-    public final FileDescriptorNative file = new FileDescriptorNative();
+    private final IoctlNative ioctl = new IoctlNative();
+    private final FileDescriptorNative file = new FileDescriptorNative();
 
     public final String deviceName;
     public final long mask;
-
-    public int chipFileDescriptor;
-    public boolean closed = false;
-
-    /**
-     * Construct an instance of this helper with the specified mask and bus.
-     * @param mask the mask containing pin offsets to pass to ioctl
-     * @param bus the bus number of the GPIO chip
-     */
-    public FFMGpioLine(long mask, int bus) {
-        if (mask == 0) {
-            throw new IllegalArgumentException("Mask must does not specify any offsets");
-        }
-        this.mask = mask;
-        this.deviceName = "/dev/gpiochip" + bus;
-    }
+    public final int chipFileDescriptor;
 
     /**
      * Opens the GPIO chip device, verifies that the target BCM line is not already in use,
      * requests it with the supplied flags and attributes, and retains the per-request line fd.
      *
-     * @param flags      OR-combination of {@link PinFlag} values (direction, edge detection, bias)
-     * @param attributes optional line-config attributes (debounce period, initial output value, etc.)
+     * @param mask       the mask containing pin offsets to pass to ioctl
+     * @param bus        the GPIO chip bus number (e.g. 0 for /
+     * @param lineConfig the line configuration to apply
      * @param consumer   label embedded in the kernel line-request (appears in {@code gpioinfo})
      * @throws InitializeException if the device is inaccessible, the line is in use, or an
      *                             ioctl / file-open call fails
      */
-    public void openAndRequest(long flags, List<LineConfigAttribute> attributes, String consumer)
+    public static FFMGpioLine openAndRequest(long mask, int bus, LineConfig lineConfig, String consumer)
         throws InitializeException {
-        if (!canAccessDevice()) {
+
+        if (mask == 0) {
+            throw new IllegalArgumentException("Mask must does not specify any offsets");
+        }
+
+        /*
+         We can't use static instances of these due to Mockito constructor mocking being required for unit tests.
+         Possible code-smell being imposed by Mockito here
+         */
+        IoctlNative ioctl = new IoctlNative();
+        FileDescriptorNative file = new FileDescriptorNative();
+
+        String deviceName = "/dev/gpiochip" + bus;
+        if (file.access(deviceName, FileFlag.R_OK) != 0) {
             try {
                 var posix = Files.readAttributes(Path.of(deviceName), PosixFileAttributes.class);
                 logger.error("Inaccessible device: '{} {} {} {}'",
@@ -102,15 +100,27 @@ public class FFMGpioLine {
                 throw new InitializeException("Offsets are in use: " + linesInUse);
             }
 
-            var lineConfig = new LineConfig(flags, attributes.size(), attributes.toArray(new LineConfigAttribute[0]));
             var lineRequest = new LineRequest(offsets, ("pi4j." + consumer).getBytes(), lineConfig, offsets.length, 0, 0);
             var result = ioctl.call(fd, Command.getGpioV2GetLineIoctl(), lineRequest);
-            this.chipFileDescriptor = result.fd();
-            this.closed = false;
+
             logger.info("{}-{} - GPIO line configured: {}", deviceName, mask, result);
+
+            return new FFMGpioLine(mask, result.fd(), deviceName);
         } finally {
             file.close(fd);
         }
+    }
+
+    /**
+     * Construct an instance of this helper with the specified mask and bus.
+     * @param mask the mask containing pin offsets to pass to ioctl
+     * @param chipFileDescriptor the file descriptor of the GPIO chip device
+     * @param deviceName the name of the GPIO chip device (e.g. /dev/gpiochip0)
+     */
+    private FFMGpioLine(long mask, int chipFileDescriptor, String deviceName) {
+        this.mask = mask;
+        this.chipFileDescriptor = chipFileDescriptor;
+        this.deviceName = deviceName;
     }
 
     /**
@@ -120,12 +130,15 @@ public class FFMGpioLine {
      * @throws Pi4JException if the line is closed or the ioctl call fails
      */
     public int readValue() {
-        checkClosed();
-        logger.trace("{}-{} - reading GPIO offset.", deviceName, mask);
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}-{} - reading GPIO offset.", deviceName, mask);
+        }
         var lineValues = new LineValues(0, Long.MAX_VALUE);
         try {
             var result = ioctl.call(chipFileDescriptor, Command.getGpioV2GetValuesIoctl(), lineValues);
-            logger.trace("{}-{} - GPIO offset state is {}.", deviceName, mask, result.bits());
+            if (logger.isTraceEnabled()) {
+                logger.trace("{}-{} - GPIO offset state is {}.", deviceName, mask, result.bits());
+            }
             return (int) result.bits();
         } catch (Exception e) {
             throw new Pi4JException(e);
@@ -139,8 +152,9 @@ public class FFMGpioLine {
      * @throws Pi4JException if the line is closed or the ioctl call fails
      */
     public void writeValue(int value) {
-        checkClosed();
-        logger.trace("{}-{} - writing GPIO offset {}.", deviceName, mask, value);
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}-{} - writing GPIO offset {}.", deviceName, mask, value);
+        }
         var lineValues = new LineValues(value, Long.MAX_VALUE);
         try {
             ioctl.call(chipFileDescriptor, Command.getGpioV2SetValuesIoctl(), lineValues);
@@ -154,8 +168,9 @@ public class FFMGpioLine {
      * @param config the line config to apply
      */
     public void reconfigure(LineConfig config) {
-        checkClosed();
-        logger.trace("{}-{} - reconfiguring GPIO offset.", deviceName, mask);
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}-{} - reconfiguring GPIO offset.", deviceName, mask);
+        }
         try {
             ioctl.call(chipFileDescriptor, Command.getGpioV2LineSetConfigIoctl(), config);
         } catch (Exception e) {
@@ -167,24 +182,9 @@ public class FFMGpioLine {
      * Closes the per-request line file descriptor, releasing the GPIO line back to the kernel.
      */
     public void close() {
-        if (chipFileDescriptor > 0) {
+        if (logger.isTraceEnabled()) {
             logger.trace("{}-{} - closing GPIO file descriptor '{}'.", deviceName, mask, chipFileDescriptor);
-            file.close(chipFileDescriptor);
         }
-        this.closed = true;
-    }
-
-    public void checkClosed() {
-        if (closed) {
-            throw new Pi4JException("Offset " + mask + " is closed");
-        }
-    }
-
-    boolean canAccessDevice() {
-        return file.access(deviceName, FileFlag.R_OK) == 0;
-    }
-
-    boolean deviceExists() {
-        return file.access(deviceName, FileFlag.F_OK) == 0;
+        file.close(chipFileDescriptor);
     }
 }

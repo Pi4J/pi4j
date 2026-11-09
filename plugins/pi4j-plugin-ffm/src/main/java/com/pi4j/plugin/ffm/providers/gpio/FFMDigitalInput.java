@@ -10,13 +10,12 @@ import com.pi4j.plugin.ffm.common.gpio.PinEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.enums.LineAttributeId;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineAttribute;
+import com.pi4j.plugin.ffm.common.gpio.structs.LineConfig;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineConfigAttribute;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineEvent;
-import com.pi4j.util.MaskUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,12 +33,10 @@ import java.util.function.Consumer;
 public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
     private static final Logger logger = LoggerFactory.getLogger(FFMDigitalInput.class);
 
-
-
     // Maximum graceful-await cycles before giving up on a stuck watcher thread.
     private static final int EVENT_WATCHER_SHUTDOWN_MAX_ATTEMPTS = 5;
 
-    private final FFMGpioLine line;
+    private FFMGpioLine line;
 
     private final long debounce;
     private final PullResistance pull;
@@ -60,10 +57,8 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
      */
     public FFMDigitalInput(DigitalInputConfig config, Consumer<? super FFMDigitalInput> onClose) {
         super(config, onClose);
-        this.line = new FFMGpioLine(MaskUtils.mask(config.bcm()), config.bus());
         this.debounce = (config.debounce() != null && config.debounce() >= 0) ? config.debounce() : 0;
         this.pull = config.pull();
-        FFMPermissionHelper.checkDevicePermissions(line.deviceName, config);
     }
 
     /**
@@ -82,33 +77,48 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
     @Override
     public void applyInitialState() throws InitializeException {
         super.applyInitialState();
-        var flags = PinFlag.INPUT.getValue() | PinFlag.EDGE_RISING.getValue() | PinFlag.EDGE_FALLING.getValue();
-        var attributes = getLineConfigAttributes();
-        flags |= switch (pull) {
-            case OFF -> 0;
-            case PULL_DOWN -> PinFlag.BIAS_PULL_DOWN.getValue();
-            case PULL_UP -> PinFlag.BIAS_PULL_UP.getValue();
-        };
+
+        if (debounce > Integer.MAX_VALUE) {
+            throw new InitializeException("Debounce value of " + debounce + " is too large");
+        }
+
+        var mask = 1L << config().bcm();
+        var lineConfig = getLineConfig();
+
         try {
-            line.openAndRequest(flags, attributes, getClass().getSimpleName());
+            line = FFMGpioLine.openAndRequest(mask, config().bus(), lineConfig, getClass().getSimpleName());
+            FFMPermissionHelper.checkDevicePermissions(line.deviceName, config);
         } catch (InitializeException e) {
-            logger.error("{}-{} - DigitalInput offset Initialization error: {}", line.deviceName, line.mask, e.getMessage());
+            logger.error("DigitalInput Initialization error: {}, {}", config.id(), e.getMessage());
             throw e;
         }
         logger.info("{}-{} - DigitalInput offset configured.", line.deviceName, line.mask);
     }
 
-    private ArrayList<LineConfigAttribute> getLineConfigAttributes() {
-        var attributes = new ArrayList<LineConfigAttribute>();
-        if (debounce > 0) {
-            if (debounce > Integer.MAX_VALUE) {
-                throw new InitializeException("Debounce value of " + debounce + " is too large");
+    private LineConfig getLineConfig() {
+        var flags = PinFlag.INPUT.getValue() |
+            PinFlag.EDGE_RISING.getValue() |
+            PinFlag.EDGE_FALLING.getValue() |
+            switch (pull) {
+                case OFF -> 0;
+                case PULL_DOWN -> PinFlag.BIAS_PULL_DOWN.getValue();
+                case PULL_UP -> PinFlag.BIAS_PULL_UP.getValue();
+            };
+
+        var attributes = (debounce > 0)
+            ? new LineConfigAttribute[] {
+                new LineConfigAttribute(
+                    new LineAttribute(
+                        LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(),
+                        0,
+                        0,
+                        (int) debounce
+                    ),
+                    1L << config.bcm())
             }
-            var debounceAttribute = new LineAttribute(
-                LineAttributeId.GPIO_V2_LINE_ATTR_ID_DEBOUNCE.getValue(), 0, 0, (int) debounce);
-            attributes.add(new LineConfigAttribute(debounceAttribute, line.mask));
-        }
-        return attributes;
+            : new LineConfigAttribute[0];
+
+        return new LineConfig(flags, attributes.length, attributes);
     }
 
     /**
@@ -201,7 +211,6 @@ public class FFMDigitalInput extends DigitalInputBase implements DigitalInput {
                 }
             }
         } catch (Exception e) {
-            line.closed = true;
             throw new ShutdownException(e);
         } finally {
             line.close();
