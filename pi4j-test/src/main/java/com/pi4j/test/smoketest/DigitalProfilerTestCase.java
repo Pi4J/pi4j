@@ -3,8 +3,15 @@ package com.pi4j.test.smoketest;
 import com.pi4j.io.gpio.digital.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.simple.SimpleLogger;
 
 public class DigitalProfilerTestCase extends TestCase {
+
+    static {
+        System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "WARN");
+        // Include millis since start. Useful when observing events
+        System.setProperty(SimpleLogger.SHOW_DATE_TIME_KEY, "true");
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(DigitalProfilerTestCase.class);
 
