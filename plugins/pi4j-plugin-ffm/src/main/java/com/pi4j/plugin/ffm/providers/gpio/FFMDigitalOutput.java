@@ -67,8 +67,9 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
     private LineConfig getLineConfig() {
         var flags = PinFlag.OUTPUT.getValue();
 
-        var attributes = (config.initialState() != null)
-            ? new LineConfigAttribute[] {
+        var attributes = (config.initialState() == null)
+            ? new LineConfigAttribute[0]
+            : new LineConfigAttribute[] {
                 new LineConfigAttribute(
                     new LineAttribute(
                         LineAttributeId.GPIO_V2_LINE_ATTR_ID_OUTPUT_VALUES.getValue(),
@@ -78,8 +79,7 @@ public class FFMDigitalOutput extends DigitalOutputBase implements DigitalOutput
                     ),
                     1
                 )
-            }
-            : new LineConfigAttribute[0];
+            };
 
         return new LineConfig(flags, attributes.length, attributes);
     }
