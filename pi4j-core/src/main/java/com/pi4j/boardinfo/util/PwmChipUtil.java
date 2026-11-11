@@ -171,7 +171,7 @@ public class PwmChipUtil {
                 int numStart = path.indexOf(pwmChipIdentifier) + chipName.length();
                 while (Character.isDigit(path.substring(numStart, numStart + 1).charAt(0))) {
                     chipName.append(path.charAt(numStart));
-                    chipNum = chipNum + path.charAt(numStart);
+                    chipNum = new StringBuilder().append(chipNum.substring(0, chipNum.length())).append(path.substring(numStart, numStart + 1)).toString();
                     numStart++;
                     if (numStart == path.length())
                         break;
