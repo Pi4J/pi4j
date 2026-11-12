@@ -8,16 +8,9 @@ import com.pi4j.io.gpio.parallel.ParallelPortConfigBuilder;
 import com.pi4j.io.i2c.I2CConfigBuilder;
 import com.pi4j.io.pwm.PwmConfigBuilder;
 import com.pi4j.io.spi.SpiConfigBuilder;
-import com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalInput;
-import com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalOutput;
-import com.pi4j.plugin.mock.provider.gpio.parallel.MockParallelPort;
-import com.pi4j.plugin.mock.provider.i2c.MockI2C;
-import com.pi4j.plugin.mock.provider.pwm.MockPwm;
-import com.pi4j.plugin.mock.provider.spi.MockSpi;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -81,32 +74,14 @@ class MockPluginTest {
     @Test
     void contravarianceAllowsSharedHandlerAcrossDifferentMockTypes() {
         var closedDevices = new ArrayList<IO<?>>();
-        Consumer<IO<?>> sharedCloseHandler = closedDevices::add;
+        var mockContext = new MockContext(closedDevices::add);
 
-        var digitalInput = new MockDigitalInput(
-            DigitalInputConfigBuilder.newInstance().bcm(1).build(),
-            sharedCloseHandler
-        );
-        var digitalOutput = new MockDigitalOutput(
-            DigitalOutputConfigBuilder.newInstance().bcm(2).build(),
-            sharedCloseHandler
-        );
-        var parallelPort = new MockParallelPort(
-            ParallelPortConfigBuilder.newInstance().bcm(3).bcm(4).build(),
-            sharedCloseHandler
-        );
-        var pwm = new MockPwm(
-            PwmConfigBuilder.newInstance().chip(0).channel(0).build(),
-            sharedCloseHandler
-        );
-        var i2c = new MockI2C(
-            I2CConfigBuilder.newInstance().bus(1).device(0x10).build(),
-            sharedCloseHandler
-        );
-        var spi = new MockSpi(
-            SpiConfigBuilder.newInstance().bus(0).channel(0).build(),
-            sharedCloseHandler
-        );
+        var digitalInput = mockContext.create(DigitalInputConfigBuilder.newInstance().id("din").bcm(1).build());
+        var digitalOutput = mockContext.create(DigitalOutputConfigBuilder.newInstance().id("dout").bcm(2).build());
+        var parallelPort = mockContext.create(ParallelPortConfigBuilder.newInstance().id("pp").bcm(3).bcm(4).build());
+        var pwm = mockContext.create(PwmConfigBuilder.newInstance().id("pwm").chip(0).channel(0).build());
+        var i2c = mockContext.create(I2CConfigBuilder.newInstance().id("i2c").bus(1).device(0x10).build());
+        var spi = mockContext.create(SpiConfigBuilder.newInstance().id("spi").bus(0).channel(0).build());
 
         digitalInput.close();
         digitalOutput.close();

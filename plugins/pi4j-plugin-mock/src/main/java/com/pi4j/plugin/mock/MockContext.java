@@ -8,21 +8,31 @@ import com.pi4j.io.IOConfig;
 import com.pi4j.io.IOType;
 import com.pi4j.io.gpio.digital.DigitalOutputConfig;
 import com.pi4j.io.gpio.digital.DigitalInputConfig;
+import com.pi4j.io.gpio.parallel.ParallelDigitalInput;
+import com.pi4j.io.gpio.parallel.ParallelDigitalOutput;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
 import com.pi4j.io.i2c.I2CConfig;
 import com.pi4j.io.pwm.PwmConfig;
 import com.pi4j.io.spi.SpiConfig;
-import com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalInput;
-import com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalOutput;
 import com.pi4j.plugin.mock.provider.gpio.parallel.MockParallelPort;
 import com.pi4j.plugin.mock.provider.i2c.MockI2C;
 import com.pi4j.plugin.mock.provider.pwm.MockPwm;
 import com.pi4j.plugin.mock.provider.spi.MockSpi;
 
+import java.util.function.Consumer;
+
 public class MockContext extends DefaultContext {
+
+    private final Consumer<IO<?>> onClose;
+
+    public MockContext(Consumer<IO<?>> onClose) {
+        super(ContextBuilder.newInstance().toConfig());
+        this.onClose = onClose;
+    }
 
     public MockContext(ContextConfig config) {
         super(config);
+        this.onClose = this::shutdown;
     }
 
     public MockContext() {
@@ -32,12 +42,20 @@ public class MockContext extends DefaultContext {
     @Override
     protected IO<?> createImpl(IOConfig config, IOType type) {
         return switch (type) {
-            case DIGITAL_INPUT -> new MockDigitalInput((DigitalInputConfig) config, this::shutdown);
-            case DIGITAL_OUTPUT -> new MockDigitalOutput((DigitalOutputConfig) config, this::shutdown);
-            case PWM -> new MockPwm((PwmConfig) config, this::shutdown);
-            case I2C -> new MockI2C((I2CConfig) config, this::shutdown);
-            case SPI -> new MockSpi((SpiConfig) config, this::shutdown);
-            case PARALLEL -> new MockParallelPort((ParallelPortConfig) config, this::shutdown);
+            case PWM -> new MockPwm((PwmConfig) config, this.onClose);
+            case I2C -> new MockI2C((I2CConfig) config, this.onClose);
+            case SPI -> new MockSpi((SpiConfig) config, this.onClose);
+            case DIGITAL_INPUT -> {
+                var parallelConfig = ParallelPortConfig.of((DigitalInputConfig) config);
+                var parallelPort = new MockParallelPort(parallelConfig, _ -> {});
+                yield new ParallelDigitalInput((DigitalInputConfig) config, parallelPort, this.onClose);
+            }
+            case DIGITAL_OUTPUT -> {
+                var parallelConfig = ParallelPortConfig.of((DigitalOutputConfig) config);
+                var parallelPort = new MockParallelPort(parallelConfig, _ -> {});
+                yield new ParallelDigitalOutput((DigitalOutputConfig) config, parallelPort, this.onClose);
+            }
+            case PARALLEL -> new MockParallelPort((ParallelPortConfig) config, this.onClose);
         };
     }
 }
