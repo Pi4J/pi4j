@@ -6,7 +6,6 @@ import com.pi4j.exception.ShutdownException;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortBase;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
-import com.pi4j.plugin.ffm.common.FFMGpioLine;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.gpio.PinEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinFlag;
@@ -15,7 +14,6 @@ import com.pi4j.plugin.ffm.common.gpio.structs.LineAttribute;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineConfig;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineConfigAttribute;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineEvent;
-import com.pi4j.plugin.ffm.providers.gpio.EventWatcher;
 import com.pi4j.util.MaskUtils;
 
 import java.util.List;

@@ -5,7 +5,6 @@ import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.plugin.ffm.common.gpio.PinEvent;
 import com.pi4j.plugin.ffm.common.gpio.PinEventProcessing;
 import com.pi4j.plugin.ffm.common.gpio.structs.LineEvent;
-import com.pi4j.plugin.ffm.providers.gpio.EventWatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

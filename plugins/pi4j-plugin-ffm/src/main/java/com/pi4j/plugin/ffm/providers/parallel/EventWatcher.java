@@ -1,4 +1,4 @@
-package com.pi4j.plugin.ffm.providers.gpio;
+package com.pi4j.plugin.ffm.providers.parallel;
 
 import com.pi4j.exception.Pi4JException;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;

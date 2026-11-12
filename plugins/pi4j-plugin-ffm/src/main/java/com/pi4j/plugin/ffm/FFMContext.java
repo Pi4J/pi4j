@@ -31,11 +31,6 @@ public class FFMContext extends DefaultContext {
         super(config);
     }
 
-    /**
-     * TODO: Providing parallel devices here as a lazy shortcut, only to demonstrate parallel-backed digital devices.
-     *  A merge candidate would either allow this to be configured or be implemented in a separate context
-     *  implementation
-     */
     @Override
     public IO<?> createImpl(IOConfig config, IOType type) {
         FFMPermissionHelper.checkUserPermissions(type);
