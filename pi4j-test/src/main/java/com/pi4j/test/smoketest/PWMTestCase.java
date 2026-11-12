@@ -6,6 +6,9 @@ import com.pi4j.io.pwm.PwmType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.pi4j.boardinfo.util.PwmChipUtil.getPWMChannel;
+import static com.pi4j.boardinfo.util.PwmChipUtil.getPWMChip;
+
 public class PWMTestCase extends TestCase {
 
     private static final Logger logger = LoggerFactory.getLogger(PWMTestCase.class);
@@ -18,7 +21,7 @@ public class PWMTestCase extends TestCase {
     private final int expected;
 
     public PWMTestCase() {
-        this(0, 2, PwmType.HARDWARE, 1, 50, 10);
+        this(getPWMChip(), getPWMChannel(), PwmType.HARDWARE, 1, 50, 10);
     }
 
     public PWMTestCase(int chip, int channel, PwmType pwmType, int frequency, int dutyCycle, int expected) {
@@ -30,7 +33,7 @@ public class PWMTestCase extends TestCase {
         this.expected = expected;
     }
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         TestCase.run(PWMTestCase.class, args);
     }
 
@@ -72,7 +75,7 @@ public class PWMTestCase extends TestCase {
 
             // Test
             logger.info("Starting to count flashes, please wait...");
-            flashListener.zeroPwmFlashes() ;
+            flashListener.zeroPwmFlashes();
             pwm.on(dutyCycle, frequency);
             Thread.sleep(10_000);  // wait 10 seconds while listener counts flashes
             var flashCount = flashListener.getPwmFlashes();
@@ -117,6 +120,7 @@ public class PWMTestCase extends TestCase {
         public int getPwmFlashes() {
             return pwmFlashes;
         }
+
         public void zeroPwmFlashes() {
             pwmFlashes = 0;
             logger.debug("Zero flash count");

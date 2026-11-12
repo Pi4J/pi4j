@@ -2,7 +2,6 @@ package com.pi4j.boardinfo.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,14 +30,48 @@ public class PwmChipUtil {
 
     /**
      * Default PWM chip number assumed for RP1-based boards when no chip can be detected from the
-     * PWM filesystem ({@code pwmchip2}).
+     * PWM filesystem ({@code pwmchip0}).
+     * Note: this chip number has changed as kernels are distributed. But the address of
+     * pwm chip is in the hardware and can't change, so look up by address
+     * is secure.,
      */
-    public static int DEFAULT_RP1_PWM_CHIP = 2;
+    public static int DEFAULT_RP1_PWM_CHIP = 0;
 
     /**
      * General default PWM chip number, equal to {@link #DEFAULT_RP1_PWM_CHIP}.
      */
     public static int DEFAULT_PWM_CHIP = DEFAULT_RP1_PWM_CHIP;
+
+    /**
+     * If no RP1 chip is present use this value for the channel number
+     */
+    public static int DEFAULT_PWM_CHANNEL = 0;
+
+    /**
+     * If the  RP1 chip is present use this value for the channel number
+     */
+    public static int RP1_PWM_CHANNEL = 2;
+
+    /**
+     * The ID of the PWM channel:
+     * <p>
+     * The Pi supports at most two active PWM channels.  Pre RP1 chip
+     * the channels are 0 and 1, with the RP1 chip (Pi5) the channels are 2 and 3.
+     * </p>
+     *
+     * <ul>
+     *     <li>System without RP1 (pre-RPi 5): DEFAULT_PWM_CHANNEL</li>
+     *     <li>System with RP1 (RPi 5 and later): RP1_PWM_CHANNEL</li>
+     * </ul>
+     *
+     * @return {@code int} value for the pwmChannel
+     */
+    public static int getPWMChannel() {
+        if (!BoardInfoHelper.usesRP1()) {
+            return DEFAULT_PWM_CHANNEL;
+        }
+        return RP1_PWM_CHANNEL;
+    }
 
     /**
      * The ID of the PWM chip:
@@ -73,7 +106,7 @@ public class PwmChipUtil {
      *
      * @param pwmFileSystemPath the sysfs directory listing the PWM chips, typically {@code /sys/class/pwm}
      * @return the detected {@code pwmchip} number, or {@link #DEFAULT_RP1_PWM_CHIP} if the path is
-     *         missing, unreadable, or contains no matching chip
+     * missing, unreadable, or contains no matching chip
      */
     public static int getPWMChipForRP1(String pwmFileSystemPath) {
         Logger logger = LoggerFactory.getLogger(PwmChipUtil.class);
