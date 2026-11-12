@@ -27,7 +27,7 @@ public class ParallelDigitalInput extends DigitalInputBase implements DigitalInp
      * @param parallelPort the delegate port
      * @param onClose a callback to be invoked on close
      */
-    public ParallelDigitalInput(DigitalInputConfig config, ParallelPort parallelPort, Consumer<DigitalInput> onClose) {
+    public ParallelDigitalInput(DigitalInputConfig config, ParallelPort parallelPort, Consumer<? super DigitalInput> onClose) {
         super(config, onClose);
         this.parallelPort = parallelPort;
     }
@@ -66,6 +66,14 @@ public class ParallelDigitalInput extends DigitalInputBase implements DigitalInp
     public void close() {
         super.close();
         parallelPort.close();
+    }
+
+    /**
+     * Returns the underlying {@link ParallelPort} used by this digital input.
+     * @return the parallel port
+     */
+    public ParallelPort getParallelPort() {
+        return parallelPort;
     }
 
     /**

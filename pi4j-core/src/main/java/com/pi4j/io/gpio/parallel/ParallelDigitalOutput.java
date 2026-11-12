@@ -21,7 +21,7 @@ public class ParallelDigitalOutput extends DigitalOutputBase implements DigitalO
      * @param parallelPort the delegate port
      * @param onClose a callback to be invoked on close
      */
-    public ParallelDigitalOutput(DigitalOutputConfig config, ParallelPort parallelPort, Consumer<DigitalOutput> onClose) {
+    public ParallelDigitalOutput(DigitalOutputConfig config, ParallelPort parallelPort, Consumer<? super DigitalOutput> onClose) {
         super(config, onClose);
         this.parallelPort = parallelPort;
     }
@@ -43,5 +43,13 @@ public class ParallelDigitalOutput extends DigitalOutputBase implements DigitalO
     public void close() {
         super.close();
         parallelPort.close();
+    }
+
+    /**
+     * Returns the underlying {@link ParallelPort} used by this digital output.
+     * @return the parallel port
+     */
+    public ParallelPort getParallelPort() {
+        return parallelPort;
     }
 }

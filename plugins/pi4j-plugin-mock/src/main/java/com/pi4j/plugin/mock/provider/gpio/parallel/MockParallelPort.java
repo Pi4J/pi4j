@@ -1,6 +1,8 @@
 package com.pi4j.plugin.mock.provider.gpio.parallel;
 
+import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalState;
+import com.pi4j.io.gpio.parallel.ParallelDigitalInput;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPortBase;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
@@ -18,6 +20,20 @@ public class MockParallelPort
     extends ParallelPortBase
     implements ParallelPort {
 
+    /**
+     * Helper operation to allow the value of a mock {@link DigitalInput} to be set for testing purposes.
+     * @param input the digital input to set the value for
+     * @param value the value to set
+     */
+    public static void mockDigitalInputValue(DigitalInput input, int value) {
+        if (input instanceof ParallelDigitalInput parallelInput &&
+            parallelInput.getParallelPort() instanceof MockParallelPort mockPort) {
+            mockPort.mockValue(value);
+        } else {
+            throw new IllegalArgumentException("DigitalInput is not a ParallelDigitalInput with a MockParallelPort");
+        }
+    }
+
     private final AtomicInteger value;
 
     /**
@@ -28,7 +44,10 @@ public class MockParallelPort
      */
     public MockParallelPort(ParallelPortConfig config, Consumer<? super MockParallelPort> onClose) {
         super(config, onClose);
-        this.value = new AtomicInteger((int) (config.initialValue() & MaskUtils.packed(config.mask())));
+        this.value = new AtomicInteger((config.initialValue() != null)
+            ? (int) (config.initialValue() & MaskUtils.packed(config.mask()))
+            : 0
+        );
     }
 
     /**

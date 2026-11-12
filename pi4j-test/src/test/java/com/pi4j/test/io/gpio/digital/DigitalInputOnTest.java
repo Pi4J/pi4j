@@ -1,27 +1,22 @@
 package com.pi4j.test.io.gpio.digital;
 
-import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
-import com.pi4j.io.gpio.digital.DigitalInput;
+import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.plugin.mock.MockContext;
-import com.pi4j.plugin.mock.provider.gpio.digital.MockDigitalInput;
+import com.pi4j.plugin.mock.provider.gpio.parallel.MockParallelPort;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class DigitalInputOnTest {
-
-    private static final Logger logger = LoggerFactory.getLogger(DigitalInputOnTest.class);
 
     private Context pi4j;
 
@@ -41,7 +36,7 @@ public class DigitalInputOnTest {
     public void testIsOnDefault() {
 
         // create GPIO digital input config
-        var config = DigitalInput.newConfigBuilder(pi4j)
+        var config = DigitalInputConfigBuilder.newInstance()
             .id("test-input")
             .name("Test Digital Input")
             .bcm(1)
@@ -51,8 +46,7 @@ public class DigitalInputOnTest {
         var input = pi4j.create(config);
 
         // set MOCK state to HIGH
-        MockDigitalInput mockInput = (MockDigitalInput) input;
-        mockInput.mockState(DigitalState.HIGH);
+        MockParallelPort.mockDigitalInputValue(input, 1);
 
         // ensure input is ON and not OFF
         assertTrue(input.isOn());
@@ -63,7 +57,7 @@ public class DigitalInputOnTest {
     public void testIsOnHigh() {
 
         // create GPIO digital input config
-        var config = DigitalInput.newConfigBuilder(pi4j)
+        var config = DigitalInputConfigBuilder.newInstance()
             .id("test-input")
             .name("Test Digital Input")
             .onState(DigitalState.HIGH)
@@ -74,8 +68,7 @@ public class DigitalInputOnTest {
         var input = pi4j.create(config);
 
         // set MOCK state to HIGH
-        MockDigitalInput mockInput = (MockDigitalInput) input;
-        mockInput.mockState(DigitalState.HIGH);
+        MockParallelPort.mockDigitalInputValue(input, 1);
 
         // ensure input is ON and not OFF
         assertTrue(input.isOn());
@@ -86,7 +79,7 @@ public class DigitalInputOnTest {
     public void testIsOnLow() {
 
         // create GPIO digital input config
-        var config = DigitalInput.newConfigBuilder(pi4j)
+        var config = DigitalInputConfigBuilder.newInstance()
             .id("test-input")
             .name("Test Digital Input")
             .onState(DigitalState.LOW)
@@ -97,8 +90,7 @@ public class DigitalInputOnTest {
         var input = pi4j.create(config);
 
         // set MOCK state to LOW
-        MockDigitalInput mockInput = (MockDigitalInput) input;
-        mockInput.mockState(DigitalState.LOW);
+        MockParallelPort.mockDigitalInputValue(input, 0);
 
         // ensure input is ON and not OFF
         assertTrue(input.isOn());
