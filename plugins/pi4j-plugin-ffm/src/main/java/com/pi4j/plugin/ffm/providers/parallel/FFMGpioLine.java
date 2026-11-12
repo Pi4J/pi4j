@@ -1,4 +1,4 @@
-package com.pi4j.plugin.ffm.common;
+package com.pi4j.plugin.ffm.providers.parallel;
 
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
@@ -10,8 +10,6 @@ import com.pi4j.plugin.ffm.common.gpio.PinFlag;
 import com.pi4j.plugin.ffm.common.gpio.structs.*;
 import com.pi4j.plugin.ffm.common.ioctl.Command;
 import com.pi4j.plugin.ffm.common.ioctl.IoctlNative;
-import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalInput;
-import com.pi4j.plugin.ffm.providers.gpio.FFMDigitalOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,8 +20,7 @@ import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
 
 /**
- * Low-level wrapper around a single Linux GPIO v2 character-device line. Shared by
- * {@link FFMDigitalInput} and {@link FFMDigitalOutput} to eliminate duplicated native code.
+ * Low-level wrapper around a single Linux GPIO v2 character-device line
  * <p>
  * A line is opened via {@link #openAndRequest} (which issues the {@code GPIO_V2_GET_LINE_IOCTL}
  * and retains the resulting per-request file descriptor), read via {@link #readValue()}, written
