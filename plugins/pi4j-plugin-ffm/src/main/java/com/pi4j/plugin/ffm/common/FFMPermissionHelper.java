@@ -185,10 +185,15 @@ public class FFMPermissionHelper {
 
         // we need to check permissions of a device depending on hardware interface
         switch (type) {
-            case DIGITAL_INPUT, DIGITAL_OUTPUT, PWM, PARALLEL -> {
-                if (!group.getName().equals("gpio") && !group.getName().equals("dialout")) {
-                    printError(type == IOType.PWM ? "pwm" : "gpio");
-                    throw new Pi4JException("Device '" + devicePath + "' (" + owner + ":" + group + ") does not belong to group 'gpio' or 'dialout'.");
+            case DIGITAL_INPUT, DIGITAL_OUTPUT, PARALLEL, PWM -> {
+                switch (group.getName()) {
+                    case "gpio", "dialout" -> {
+                        // good
+                    }
+                    default -> {
+                        printError(type == IOType.PWM ? "pwm" : "gpio");
+                        throw new Pi4JException("Device '" + devicePath + "' (" + owner + ":" + group + ") does not belong to group 'gpio' or 'dialout'.");
+                    }
                 }
             }
             case I2C -> {
