@@ -2,6 +2,8 @@ package com.pi4j.plugin.ffm.providers.parallel;
 
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.io.IOType;
+import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.util.MaskUtils;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
@@ -62,6 +64,7 @@ public final class FFMGpioLine implements AutoCloseable {
         FileDescriptorNative file = new FileDescriptorNative();
 
         String deviceName = "/dev/gpiochip" + bus;
+        FFMPermissionHelper.checkDevicePermissions(deviceName, IOType.PARALLEL);
         if (file.access(deviceName, FileFlag.R_OK) != 0) {
             try {
                 var posix = Files.readAttributes(Path.of(deviceName), PosixFileAttributes.class);

@@ -3,6 +3,7 @@ package com.pi4j.plugin.ffm.providers.i2c;
 import com.pi4j.common.CheckedFunction;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.io.IOType;
 import com.pi4j.io.i2c.*;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
 import com.pi4j.plugin.ffm.common.file.FileDescriptorNative;
@@ -55,7 +56,7 @@ public class FFMI2CBus extends I2CBusBase {
     public FFMI2CBus(I2CConfig config) {
         super(config);
         this.busName = I2C_BUS + bus;
-        FFMPermissionHelper.checkDevicePermissions(busName, config);
+        FFMPermissionHelper.checkDevicePermissions(busName, IOType.I2C);
         try {
             logger.debug("{} - setting up I2CBus...", busName);
             if (!canAccessDevice()) {
