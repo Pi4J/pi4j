@@ -2,6 +2,7 @@ package com.pi4j.plugin.ffm.providers.spi;
 
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.io.IOType;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiBase;
 import com.pi4j.io.spi.SpiConfig;
@@ -74,7 +75,7 @@ public class FFMSpi extends SpiBase implements Spi {
     public FFMSpi(SpiConfig config, Consumer<? super FFMSpi> onClose) {
         super(config, onClose);
         this.path = SPI_BUS + config.bus().getBus() + "." + config.channel();
-        FFMPermissionHelper.checkDevicePermissions(path, config);
+        FFMPermissionHelper.checkDevicePermissions(path, IOType.SPI);
     }
 
     /**

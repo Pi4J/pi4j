@@ -3,6 +3,7 @@ package com.pi4j.plugin.ffm.providers.pwm;
 import com.pi4j.context.Context;
 import com.pi4j.exception.InitializeException;
 import com.pi4j.exception.Pi4JException;
+import com.pi4j.io.IOType;
 import com.pi4j.io.exception.IOException;
 import com.pi4j.io.pwm.*;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
@@ -91,7 +92,7 @@ public class FFMPwmHardware extends PwmBase implements Pwm {
         super(config, onClose);
         this.chip = config.chip();
         this.channel = config.channel();
-        FFMPermissionHelper.checkDevicePermissions(CHIP_PATH + chip, config);
+        FFMPermissionHelper.checkDevicePermissions(CHIP_PATH + chip, IOType.PWM);
     }
 
     /**

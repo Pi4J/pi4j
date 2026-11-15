@@ -1,14 +1,7 @@
 package com.pi4j.plugin.ffm.common;
 
 import com.pi4j.exception.Pi4JException;
-import com.pi4j.io.IOConfig;
 import com.pi4j.io.IOType;
-import com.pi4j.io.gpio.digital.DigitalInputConfig;
-import com.pi4j.io.gpio.digital.DigitalOutputConfig;
-import com.pi4j.io.gpio.parallel.ParallelPortConfig;
-import com.pi4j.io.i2c.I2CConfig;
-import com.pi4j.io.pwm.PwmConfig;
-import com.pi4j.io.spi.SpiConfig;
 import com.pi4j.plugin.ffm.common.permission.PermissionNative;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,13 +142,13 @@ public class FFMPermissionHelper {
      * for SPI.
      *
      * @param devicePath absolute path of the device node to check, e.g. {@code /dev/i2c-1}
-     * @param config     the I/O configuration that identifies the hardware interface and thus the
+     * @param type     the I/O type that identifies the hardware interface and thus the
      *                   expected owning group
      * @throws Pi4JException if the device does not exist, its attributes cannot be read, it does not
      *                       belong to the expected group, it lacks group read/write permission, or
      *                       the configuration type is not recognized
      */
-    public static void checkDevicePermissions(String devicePath, IOConfig config) {
+    public static void checkDevicePermissions(String devicePath, IOType type) {
         var path = Paths.get(devicePath);
         // checking that device is physically exists
         if (!path.toFile().exists()) {
@@ -191,26 +184,26 @@ public class FFMPermissionHelper {
         }
 
         // we need to check permissions of a device depending on hardware interface
-        switch (config) {
-            case DigitalInputConfig _, DigitalOutputConfig _, PwmConfig _, ParallelPortConfig _ -> {
+        switch (type) {
+            case DIGITAL_INPUT, DIGITAL_OUTPUT, PWM, PARALLEL -> {
                 if (!group.getName().equals("gpio") && !group.getName().equals("dialout")) {
-                    printError(config instanceof PwmConfig ? "pwm" : "gpio");
+                    printError(type == IOType.PWM ? "pwm" : "gpio");
                     throw new Pi4JException("Device '" + devicePath + "' (" + owner + ":" + group + ") does not belong to group 'gpio' or 'dialout'.");
                 }
             }
-            case I2CConfig _ -> {
+            case I2C -> {
                 if (!group.getName().equals("i2c")) {
                     printError("i2c");
                     throw new Pi4JException("Device '" + devicePath + "' (" + owner + ":" + group + ") does not belong to group 'i2c'.");
                 }
             }
-            case SpiConfig _ -> {
+            case SPI -> {
                 if (!group.getName().equals("spi")) {
                     printError("spi");
                     throw new Pi4JException("Device '" + devicePath + "' (" + owner + ":" + group + ") does not belong to group 'spi'.");
                 }
             }
-            default -> throw new Pi4JException("Unknown config: " + config);
+            default -> throw new Pi4JException("Unknown type: " + type);
         }
 
         // finally, check if device has group write/read permissions
