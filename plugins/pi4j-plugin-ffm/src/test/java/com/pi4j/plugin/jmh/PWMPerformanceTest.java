@@ -4,7 +4,6 @@ import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.context.ContextBuilder;
 import com.pi4j.io.pwm.Pwm;
-import com.pi4j.io.pwm.PwmConfigBuilder;
 import com.pi4j.io.pwm.PwmType;
 import com.pi4j.plugin.BaseSetup;
 import com.pi4j.plugin.ffm.FFMContext;
@@ -29,7 +28,7 @@ public class PWMPerformanceTest extends BaseSetup {
     public void setup() throws InterruptedException, IOException {
         setup("pwm");
         this.pi4j = new FFMContext();
-        var config = PwmConfigBuilder.newInstance(pi4j)
+        var config = Pwm.newConfigBuilder()
             .pwmType(PwmType.HARDWARE)
             .chip(0)
             .channel(0)

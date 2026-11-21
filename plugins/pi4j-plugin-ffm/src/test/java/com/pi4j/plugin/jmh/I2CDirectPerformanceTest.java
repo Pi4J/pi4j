@@ -3,7 +3,6 @@ package com.pi4j.plugin.jmh;
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.io.i2c.I2C;
-import com.pi4j.io.i2c.I2CConfigBuilder;
 import com.pi4j.io.i2c.I2CImplementation;
 import com.pi4j.plugin.BaseSetup;
 import com.pi4j.plugin.ffm.FFMContext;
@@ -29,7 +28,7 @@ public class I2CDirectPerformanceTest extends BaseSetup {
     public void setup() throws InterruptedException, IOException {
         setup("i2c");
         this.pi4j = new FFMContext();
-        this.i2c = pi4j.create(I2CConfigBuilder.newInstance()
+        this.i2c = pi4j.create(I2C.newConfigBuilder()
             .bus(99)
             .device(0x1C)
             .i2cImplementation(I2CImplementation.DIRECT));

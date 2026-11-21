@@ -1,7 +1,7 @@
 package com.pi4j.plugin.ffm.unit;
 
 import com.pi4j.context.Context;
-import com.pi4j.io.pwm.PwmConfigBuilder;
+import com.pi4j.io.pwm.Pwm;
 import com.pi4j.io.pwm.PwmType;
 import com.pi4j.plugin.ffm.FFMContext;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
@@ -55,7 +55,7 @@ public class PWMTest {
         var pwmPeriod = new FileDescriptorNativeMock.FileDescriptorTestData("/sys/class/pwm/pwmchip0/pwm0/period", 4, ("1").getBytes());
         try (var _ = FileDescriptorNativeMock.setup(pwmEnable, pwmDutyCycle, pwmPolarity, pwmPeriod)) {
 
-            pi4j.create(PwmConfigBuilder.newInstance(pi4j)
+            pi4j.create(Pwm.newConfigBuilder()
                 .pwmType(PwmType.HARDWARE)
                 .chip(0)
                 .channel(0)
@@ -73,7 +73,7 @@ public class PWMTest {
         var pwmPolarity = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/polarity", 3, ("normal").getBytes());
         var pwmPeriod = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/period", 4, ("1").getBytes());
         try (var _ = FileDescriptorNativeMock.setup(pwmEnable, pwmDutyCycle, pwmPolarity, pwmPeriod)) {
-            var pwm = pi4j.create(PwmConfigBuilder.newInstance(pi4j)
+            var pwm = pi4j.create(Pwm.newConfigBuilder()
                 .pwmType(PwmType.HARDWARE)
                 .chip(chip)
                 .channel(channel)
@@ -98,7 +98,7 @@ public class PWMTest {
         var pwmPeriod = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/period", 4, ("1").getBytes());
 
         try (var _ = FileDescriptorNativeMock.setup(pwmEnable, pwmDutyCycle, pwmPolarity, pwmPeriod)) {
-            var pwm = pi4j.create(PwmConfigBuilder.newInstance(pi4j)
+            var pwm = pi4j.create(Pwm.newConfigBuilder()
                 .pwmType(PwmType.HARDWARE)
                 .chip(chip)
                 .channel(channel)
@@ -136,7 +136,7 @@ public class PWMTest {
         var pwmPeriod = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/period", 4, ("1").getBytes());
 
         try (var construction = FileDescriptorNativeMock.setup(pwmEnable, pwmDutyCycle, pwmPolarity, pwmPeriod)) {
-            var pwm = pi4j.create(PwmConfigBuilder.newInstance(pi4j)
+            var pwm = pi4j.create(Pwm.newConfigBuilder()
                 .pwmType(PwmType.HARDWARE)
                 .chip(chip)
                 .channel(channel)
@@ -180,7 +180,7 @@ public class PWMTest {
         var pwmPeriod = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/period", 4, ("1").getBytes());
 
         try (var construction = FileDescriptorNativeMock.setup(pwmEnable, pwmDutyCycle, pwmPolarity, pwmPeriod)) {
-            var pwm = pi4j.create(PwmConfigBuilder.newInstance(pi4j)
+            var pwm = pi4j.create(Pwm.newConfigBuilder()
                 .pwmType(PwmType.HARDWARE)
                 .chip(chip)
                 .channel(channel)
@@ -212,7 +212,7 @@ public class PWMTest {
         var pwmPeriod = new FileDescriptorNativeMock.FileDescriptorTestData(path + "/period", 4, ("1").getBytes());
 
         try (var construction = FileDescriptorNativeMock.setup(pwmEnable, pwmDutyCycle, pwmPolarity, pwmPeriod)) {
-            var pwm = pi4j.create(PwmConfigBuilder.newInstance(pi4j)
+            var pwm = pi4j.create(Pwm.newConfigBuilder()
                 .pwmType(PwmType.HARDWARE)
                 .chip(chip)
                 .channel(channel)

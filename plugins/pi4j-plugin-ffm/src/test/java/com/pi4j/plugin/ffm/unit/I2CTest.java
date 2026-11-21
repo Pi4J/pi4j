@@ -2,7 +2,7 @@ package com.pi4j.plugin.ffm.unit;
 
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
-import com.pi4j.io.i2c.I2CConfigBuilder;
+import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CImplementation;
 import com.pi4j.plugin.ffm.FFMContext;
 import com.pi4j.plugin.ffm.common.FFMPermissionHelper;
@@ -52,8 +52,8 @@ public class I2CTest {
             | I2CFunctionality.I2C_FUNC_SMBUS_WORD_DATA.getValue();
         try (var _ = FileDescriptorNativeMock.setup(I2C_FILE); var _ = IoctlNativeMock.i2c(functionalities);
              var _ = SMBusNativeMock.setup();
-             var smbus = pi4j.create(I2CConfigBuilder.newInstance().bus(1).device(0x1C).i2cImplementation(I2CImplementation.SMBUS));
-             var direct = pi4j.create(I2CConfigBuilder.newInstance().bus(2).device(0x1C).i2cImplementation(I2CImplementation.DIRECT))) {
+             var smbus = pi4j.create(I2C.newConfigBuilder().bus(1).device(0x1C).i2cImplementation(I2CImplementation.SMBUS));
+             var direct = pi4j.create(I2C.newConfigBuilder().bus(2).device(0x1C).i2cImplementation(I2CImplementation.DIRECT))) {
 
             assertInstanceOf(I2CSMBus.class, smbus);
             assertEquals(1, smbus.bus());
@@ -73,7 +73,7 @@ public class I2CTest {
         try (var _ = FileDescriptorNativeMock.setup(I2C_FILE);
              var _ = IoctlNativeMock.i2c(functionalities);
              var _ = SMBusNativeMock.setup();
-             var smbus = pi4j.create(I2CConfigBuilder.newInstance().bus(4).device(0x1C).i2cImplementation(I2CImplementation.SMBUS))) {
+             var smbus = pi4j.create(I2C.newConfigBuilder().bus(4).device(0x1C).i2cImplementation(I2CImplementation.SMBUS))) {
 
             var result = smbus.write((byte) 0x1C);
             assertEquals(1, result);
@@ -100,7 +100,7 @@ public class I2CTest {
         try (var _ = FileDescriptorNativeMock.setup(I2C_FILE);
              var _ = IoctlNativeMock.i2c(functionalities);
              var _ = SMBusNativeMock.setup();
-             var smbus = pi4j.create(I2CConfigBuilder.newInstance().bus(5).device(0x1C).i2cImplementation(I2CImplementation.SMBUS))) {
+             var smbus = pi4j.create(I2C.newConfigBuilder().bus(5).device(0x1C).i2cImplementation(I2CImplementation.SMBUS))) {
 
             var result = smbus.readByte();
             assertEquals((byte) 0xff, result);
@@ -133,7 +133,7 @@ public class I2CTest {
         var i2cData = new IoctlNativeMock.IoctlTestData(RDWRData.class, (answer) -> answer.<RDWRData>getArgument(2));
         try (var _ = FileDescriptorNativeMock.setup(I2C_FILE);
              var _ = IoctlNativeMock.i2c(functionalities, i2cData);
-             var direct = pi4j.create(I2CConfigBuilder.newInstance().bus(6).device(0x1C).i2cImplementation(I2CImplementation.DIRECT))) {
+             var direct = pi4j.create(I2C.newConfigBuilder().bus(6).device(0x1C).i2cImplementation(I2CImplementation.DIRECT))) {
 
             var result = direct.write((byte) 0x1C);
             assertEquals(1, result);
@@ -170,7 +170,7 @@ public class I2CTest {
         });
         try (var _ = FileDescriptorNativeMock.setup(I2C_FILE);
              var _ = IoctlNativeMock.i2c(functionalities, i2cData);
-             var direct = pi4j.create(I2CConfigBuilder.newInstance().bus(7).device(0x1C).i2cImplementation(I2CImplementation.DIRECT))) {
+             var direct = pi4j.create(I2C.newConfigBuilder().bus(7).device(0x1C).i2cImplementation(I2CImplementation.DIRECT))) {
 
             var data = direct.read();
             assertEquals(0xff, data, "read() returns the byte unsigned, as readRegister(int) does");

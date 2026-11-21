@@ -28,7 +28,7 @@ public class I2CTestCase extends TestCase {
             var identifier = Integer.toHexString(BMP_I2C_ADDR) + "-BMP280";
 
             var i2cDeviceConfig = I2C
-                .newConfigBuilder(providerContext.getContext())
+                .newConfigBuilder()
                 .bus(BMP_I2C_BUS)
                 .device(BMP_I2C_ADDR)
                 .id(identifier)

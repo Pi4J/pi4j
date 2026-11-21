@@ -57,7 +57,7 @@ class RegistryTest {
 
     @Test
     void testShutdownAndRecreate() throws Pi4JException {
-        var config = DigitalInput.newConfigBuilder(pi4j).id("DIN-3").name("DIN-3").bcm(3);
+        var config = DigitalInput.newConfigBuilder().id("DIN-3").name("DIN-3").bcm(3);
 
         // create a new input, then shutdown
         var input = pi4j.create(config);
@@ -72,14 +72,14 @@ class RegistryTest {
 
     @Test
     void testCreateMultipleSameAddress() throws Pi4JException {
-        var inputConfig = DigitalInput.newConfigBuilder(pi4j).id("DIN-3").name("DIN-3").bcm(3);
+        var inputConfig = DigitalInput.newConfigBuilder().id("DIN-3").name("DIN-3").bcm(3);
         var outputConfig = DigitalOutput.newConfigBuilder().id("DOUT-3").name("DOUT-3").bcm(3);
-        var pwmConfig = Pwm.newConfigBuilder(pi4j).id("PWM-3").name("PWM-3").channel(3);
+        var pwmConfig = Pwm.newConfigBuilder().id("PWM-3").name("PWM-3").channel(3);
 
         // create I/O instances
         var input = pi4j.create(inputConfig);
         var output = pi4j.create(outputConfig);
-        var i2c = pi4j.create(I2C.newConfigBuilder(pi4j).bus(0).device(0x70).build());
+        var i2c = pi4j.create(I2C.newConfigBuilder().bus(0).device(0x70).build());
         var pwm = pi4j.create(pwmConfig);
 
         Registry registry = pi4j.registry();
@@ -128,10 +128,10 @@ class RegistryTest {
 
     @Test
     void testCreateMultipleI2C() {
-        var i2c1 = pi4j.create(I2C.newConfigBuilder(pi4j).bus(0).device(0x21).build());
-        var i2c2 = pi4j.create(I2C.newConfigBuilder(pi4j).bus(0).device(0x70).build());
-        var i2c3 = pi4j.create(I2C.newConfigBuilder(pi4j).bus(1).device(0x21).build());
-        var i2c4 = pi4j.create(I2C.newConfigBuilder(pi4j).bus(3).device(0x70).build());
+        var i2c1 = pi4j.create(I2C.newConfigBuilder().bus(0).device(0x21).build());
+        var i2c2 = pi4j.create(I2C.newConfigBuilder().bus(0).device(0x70).build());
+        var i2c3 = pi4j.create(I2C.newConfigBuilder().bus(1).device(0x21).build());
+        var i2c4 = pi4j.create(I2C.newConfigBuilder().bus(3).device(0x70).build());
         assertAll(
             () -> assertNotNull(i2c1),
             () -> assertNotNull(i2c2),
@@ -142,20 +142,20 @@ class RegistryTest {
 
     @Test
     void testCreateMultipleI2CWithSameIdentifierShouldFail() {
-        var i2c1 = pi4j.create(I2C.newConfigBuilder(pi4j).bus(0).device(0x70).build());
+        var i2c1 = pi4j.create(I2C.newConfigBuilder().bus(0).device(0x70).build());
         assertNotNull(i2c1);
-        assertThrows(Pi4JException.class, () -> pi4j.create(I2C.newConfigBuilder(pi4j).bus(0).device(0x70).build()));
+        assertThrows(Pi4JException.class, () -> pi4j.create(I2C.newConfigBuilder().bus(0).device(0x70).build()));
     }
 
     @Test
     void testCreateMultipleSpi() {
-        var config1 = Spi.newConfigBuilder(pi4j).bus(1).channel(0x21).build();
+        var config1 = Spi.newConfigBuilder().bus(1).channel(0x21).build();
         var spi1 = pi4j.create(config1);
-        var config2 = Spi.newConfigBuilder(pi4j).bus(1).channel(0x70).build();
+        var config2 = Spi.newConfigBuilder().bus(1).channel(0x70).build();
         var spi2 = pi4j.create(config2);
-        var config3 = Spi.newConfigBuilder(pi4j).bus(2).channel(0x21).build();
+        var config3 = Spi.newConfigBuilder().bus(2).channel(0x21).build();
         var spi3 = pi4j.create(config3);
-        var config4 = Spi.newConfigBuilder(pi4j).bus(3).channel(0x70).build();
+        var config4 = Spi.newConfigBuilder().bus(3).channel(0x70).build();
         var spi4 = pi4j.create(config4);
         assertAll(
             () -> assertNotNull(spi1),
@@ -167,8 +167,8 @@ class RegistryTest {
 
     @Test
     void testCreateMultipleSpiWithSameIdentifierShouldFail() {
-        var spi1 = pi4j.create(Spi.newConfigBuilder(pi4j).bus(0).channel(0x70).build());
+        var spi1 = pi4j.create(Spi.newConfigBuilder().bus(0).channel(0x70).build());
         assertNotNull(spi1);
-        assertThrows(Pi4JException.class, () -> pi4j.create(Spi.newConfigBuilder(pi4j).bus(0).channel(0x70).build()));
+        assertThrows(Pi4JException.class, () -> pi4j.create(Spi.newConfigBuilder().bus(0).channel(0x70).build()));
     }
 }

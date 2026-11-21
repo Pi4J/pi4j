@@ -49,7 +49,7 @@ public class PWMTestCase extends TestCase {
         try {
             // Initialize PWM
             var configPwm = Pwm
-                .newConfigBuilder(providerContext.getContext())
+                .newConfigBuilder()
                 .chip(chip)
                 .channel(channel)
                 .pwmType(pwmType)
