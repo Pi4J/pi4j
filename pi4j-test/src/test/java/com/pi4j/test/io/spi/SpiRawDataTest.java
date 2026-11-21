@@ -55,7 +55,7 @@ public class SpiRawDataTest {
     public void testRawDataWriteRead() {
 
         // create SPI config
-        var config = Spi.newConfigBuilder(pi4j)
+        var config = Spi.newConfigBuilder()
             .id("my-spi")
             .name("My SPI")
             .channel(0x01)
@@ -109,7 +109,7 @@ public class SpiRawDataTest {
         rand.nextBytes(sample);
 
         // create SPI config
-        var config = Spi.newConfigBuilder(pi4j)
+        var config = Spi.newConfigBuilder()
             .id("my-spi")
             .name("My SPI")
             .chipSelect(SpiChipSelect.CS_0)

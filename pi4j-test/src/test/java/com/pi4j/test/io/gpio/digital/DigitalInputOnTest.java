@@ -2,7 +2,7 @@ package com.pi4j.test.io.gpio.digital;
 
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
-import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
+import com.pi4j.io.gpio.digital.DigitalInput;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.plugin.mock.MockContext;
 import com.pi4j.plugin.mock.provider.gpio.parallel.MockParallelPort;
@@ -36,7 +36,7 @@ public class DigitalInputOnTest {
     public void testIsOnDefault() {
 
         // create GPIO digital input config
-        var config = DigitalInputConfigBuilder.newInstance()
+        var config = DigitalInput.newConfigBuilder()
             .id("test-input")
             .name("Test Digital Input")
             .bcm(1)
@@ -57,7 +57,7 @@ public class DigitalInputOnTest {
     public void testIsOnHigh() {
 
         // create GPIO digital input config
-        var config = DigitalInputConfigBuilder.newInstance()
+        var config = DigitalInput.newConfigBuilder()
             .id("test-input")
             .name("Test Digital Input")
             .onState(DigitalState.HIGH)
@@ -79,7 +79,7 @@ public class DigitalInputOnTest {
     public void testIsOnLow() {
 
         // create GPIO digital input config
-        var config = DigitalInputConfigBuilder.newInstance()
+        var config = DigitalInput.newConfigBuilder()
             .id("test-input")
             .name("Test Digital Input")
             .onState(DigitalState.LOW)

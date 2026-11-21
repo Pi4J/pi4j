@@ -57,7 +57,7 @@ public class I2CRawDataTest {
     public void testRawDataWriteRead() {
 
         // create I2C config
-        var config  = I2C.newConfigBuilder(pi4j)
+        var config  = I2C.newConfigBuilder()
                 .id("my-i2c-bus")
                 .name("My I2C Bus")
                 .bus(I2C_BUS)
@@ -110,7 +110,7 @@ public class I2CRawDataTest {
         rand.nextBytes(sample);
 
         // create I2C config
-        var config  = I2C.newConfigBuilder(pi4j)
+        var config  = I2C.newConfigBuilder()
                 .id("my-i2c-bus")
                 .name("My I2C Bus")
                 .bus(I2C_BUS)

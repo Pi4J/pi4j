@@ -4,7 +4,6 @@ import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.parallel.ParallelPort;
 import com.pi4j.io.gpio.parallel.ParallelPort.PinStateChangedEvent;
 import com.pi4j.io.gpio.parallel.ParallelPortConfig;
-import com.pi4j.io.gpio.parallel.ParallelPortConfigBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +25,7 @@ public class ParallelPortTestEventsCase extends TestCase {
     private static final String TEST_NAME = "Parallel Port Events";
     private static final TestResult TIMEOUT_RESULT = new TestResult(TEST_NAME, true, "Timed out waiting");
 
-    private static final ParallelPortConfig OUTPUT_CONFIG = ParallelPortConfigBuilder.newInstance()
+    private static final ParallelPortConfig OUTPUT_CONFIG = ParallelPort.newConfigBuilder()
         .id("parallel-out")
         .initialDirection(ParallelPort.Direction.OUTPUT)
         .shutdownValue(0)   // shutdown value should be exclusive of the initial value
@@ -34,7 +33,7 @@ public class ParallelPortTestEventsCase extends TestCase {
         .bcm(26)            // output port used by DigitalInputTestCase
         .build();
 
-    private static final ParallelPortConfig INPUT_CONFIG = ParallelPortConfigBuilder.newInstance()
+    private static final ParallelPortConfig INPUT_CONFIG = ParallelPort.newConfigBuilder()
         .id("parallel-in")
         .initialDirection(ParallelPort.Direction.INPUT)
         .bcm(25)            // input port used by DigitalOutputTestCase

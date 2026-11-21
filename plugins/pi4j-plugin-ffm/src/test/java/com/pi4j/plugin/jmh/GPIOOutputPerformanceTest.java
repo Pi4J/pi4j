@@ -3,7 +3,6 @@ package com.pi4j.plugin.jmh;
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.io.gpio.digital.DigitalOutput;
-import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.plugin.BaseSetup;
 import com.pi4j.plugin.ffm.FFMContext;
@@ -29,7 +28,7 @@ public class GPIOOutputPerformanceTest extends BaseSetup {
     public void setup() throws InterruptedException, IOException {
         setup("gpio");
         this.pi4j = new FFMContext();
-        var config = DigitalOutputConfigBuilder.newInstance()
+        var config = DigitalOutput.newConfigBuilder()
             .bus(97)
             .bcm(5)
             .build();

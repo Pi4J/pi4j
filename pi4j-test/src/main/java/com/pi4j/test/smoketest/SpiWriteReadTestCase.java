@@ -27,7 +27,7 @@ public class SpiWriteReadTestCase   extends TestCase{
             SpiBus bmpSpiBus = SpiBus.BUS_0;
             int chipId = 0xD0;
             var spiConfig = Spi
-                .newConfigBuilder(providerContext.getContext())
+                .newConfigBuilder()
                 .id("SPI" + bmpSpiBus + "_BMP280")
                 .name("Sensor")
                 .bus(bmpSpiBus)

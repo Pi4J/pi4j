@@ -77,7 +77,7 @@ public abstract class TestCase {
     }
 
     protected static DigitalInput createDigitalInput(Context pi4j, int bcm, PullResistance pull, long debounceTime) {
-        var inputConfig3 = DigitalInput.newConfigBuilder(pi4j)
+        var inputConfig3 = DigitalInput.newConfigBuilder()
             .bcm(bcm)
             .pull(pull)
             .debounce(debounceTime);

@@ -29,7 +29,7 @@ public class GPIOInputPerformanceTest extends BaseSetup {
         setup("gpio");
 
         this.pi4j = new FFMContext();
-        var config = DigitalInputConfigBuilder.newInstance()
+        var config = DigitalInput.newConfigBuilder()
             .bus(97)
             .bcm(3)
             .debounce(99L, TimeUnit.MICROSECONDS)

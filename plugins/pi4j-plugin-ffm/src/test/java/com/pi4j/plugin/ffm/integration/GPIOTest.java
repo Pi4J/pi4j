@@ -3,8 +3,8 @@ package com.pi4j.plugin.ffm.integration;
 import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.exception.Pi4JException;
-import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
-import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
+import com.pi4j.io.gpio.digital.DigitalInput;
+import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.gpio.digital.DigitalState;
 import com.pi4j.io.gpio.digital.PullResistance;
 import com.pi4j.plugin.BaseSetup;
@@ -41,7 +41,7 @@ public class GPIOTest extends BaseSetup {
     @Test
     public void testInputUnavailable() {
         assertThrows(Pi4JException.class, () -> pi4j.create(
-            DigitalInputConfigBuilder.newInstance()
+            DigitalInput.newConfigBuilder()
                 .bus(98)
                 .bcm(99)
                 .build())
@@ -52,7 +52,7 @@ public class GPIOTest extends BaseSetup {
     @Test
     public void testInputCreate() {
         var input = pi4j.create(
-            DigitalInputConfigBuilder.newInstance()
+            DigitalInput.newConfigBuilder()
                 .bus(97)
                 .bcm(0)
                 .build()
@@ -63,7 +63,7 @@ public class GPIOTest extends BaseSetup {
     @Test
     public void testInputState() {
         var input = pi4j.create(
-            DigitalInputConfigBuilder.newInstance()
+            DigitalInput.newConfigBuilder()
                 .bus(97)
                 .bcm(1)
                 .build()
@@ -74,7 +74,7 @@ public class GPIOTest extends BaseSetup {
     @Test
     public void testInputIsOccupied() {
         assertThrows(IllegalStateException.class, () -> pi4j.create(
-            DigitalInputConfigBuilder.newInstance()
+            DigitalInput.newConfigBuilder()
                 .bus(97)
                 .bcm(2)
                 .build()
@@ -83,7 +83,7 @@ public class GPIOTest extends BaseSetup {
 
     @Test
     public void testInputCustomConfig() {
-        var config = DigitalInputConfigBuilder.newInstance()
+        var config = DigitalInput.newConfigBuilder()
             .bus(97)
             .bcm(3)
             .debounce(99L, TimeUnit.MICROSECONDS)
@@ -98,7 +98,7 @@ public class GPIOTest extends BaseSetup {
     @Test
     public void testOutputCreate() {
         var output = pi4j.create(
-            DigitalOutputConfigBuilder.newInstance()
+            DigitalOutput.newConfigBuilder()
                 .bus(97)
                 .bcm(4)
                 .build()
@@ -109,7 +109,7 @@ public class GPIOTest extends BaseSetup {
     @Test
     public void testOutputChangeState() {
         var pin = pi4j.create(
-            DigitalOutputConfigBuilder.newInstance()
+            DigitalOutput.newConfigBuilder()
                 .bus(97)
                 .bcm(5)
                 .build()
@@ -122,7 +122,7 @@ public class GPIOTest extends BaseSetup {
 
     @Test
     public void testOutputCustomConfig() {
-        var config = DigitalOutputConfigBuilder.newInstance()
+        var config = DigitalOutput.newConfigBuilder()
             .bus(97)
             .bcm(6)
             .initial(DigitalState.HIGH)
@@ -139,7 +139,7 @@ public class GPIOTest extends BaseSetup {
         // device ABI: the kernel validates the output-values attribute we attach to the line
         // request and rejects a malformed one with EINVAL. A successful creation therefore proves
         // the initial state is passed to the kernel at request time (issue #654).
-        var config = DigitalOutputConfigBuilder.newInstance()
+        var config = DigitalOutput.newConfigBuilder()
             .bus(97)
             .bcm(7)
             .initial(DigitalState.HIGH)
