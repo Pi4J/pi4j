@@ -35,7 +35,6 @@ public class Main extends TestCase {
             I2CWithOffsetTestCase.class,
             SpiTestCase.class,
             SpiWithOffsetTestCase.class,
-            // SpiWriteReadTestCase.class, // requires manual CS across write/read operation
             PWMTestCase.class,
             DigitalInputTestCase.class,
             FiveDigitalInputsTestCase.class,
