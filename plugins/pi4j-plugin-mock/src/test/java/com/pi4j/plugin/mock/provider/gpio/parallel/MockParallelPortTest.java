@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MockParallelPortTest {
 
-    private final ParallelPortConfigBuilder configBuilder = ParallelPortConfigBuilder.newInstance()
+    private final ParallelPortConfigBuilder configBuilder = ParallelPort.newConfigBuilder()
         .id("parallel-port")
         .bcm(1)
         .bcm(3);

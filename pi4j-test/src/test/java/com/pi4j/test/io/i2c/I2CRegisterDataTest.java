@@ -95,7 +95,7 @@ public class I2CRegisterDataTest {
     public void testRegisterDataWriteRead() {
 
         // create I2C config
-        var config = I2C.newConfigBuilder(pi4j)
+        var config = I2C.newConfigBuilder()
             .id("my-i2c-bus")
             .name("My I2C Bus")
             .bus(I2C_BUS)

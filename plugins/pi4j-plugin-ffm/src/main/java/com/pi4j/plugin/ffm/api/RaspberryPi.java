@@ -7,7 +7,6 @@ import com.pi4j.io.gpio.digital.DigitalOutput;
 import com.pi4j.io.i2c.I2C;
 import com.pi4j.io.i2c.I2CImplementation;
 import com.pi4j.io.pwm.Pwm;
-import com.pi4j.io.pwm.PwmConfigBuilder;
 import com.pi4j.io.pwm.PwmPolarity;
 import com.pi4j.io.spi.Spi;
 import com.pi4j.io.spi.SpiMode;
@@ -140,7 +139,7 @@ public interface RaspberryPi extends Pi4JApi.API {
          * @return a new {@link Pwm} handle for chip 0, channel 0
          */
         public Pwm pwm0(PwmPolarity pwmPolarity, int frequency, double dutyCycle) {
-            var config = PwmConfigBuilder.newInstance(context)
+            var config = Pwm.newConfigBuilder()
                 .chip(0)
                 .channel(0)
                 .polarity(pwmPolarity)
@@ -171,7 +170,7 @@ public interface RaspberryPi extends Pi4JApi.API {
          * @return a new {@link Pwm} handle for chip 0, channel 1
          */
         public Pwm pwm1(PwmPolarity pwmPolarity, int frequency, double dutyCycle) {
-            var config = PwmConfigBuilder.newInstance(context)
+            var config = Pwm.newConfigBuilder()
                 .chip(0)
                 .channel(1)
                 .polarity(pwmPolarity)

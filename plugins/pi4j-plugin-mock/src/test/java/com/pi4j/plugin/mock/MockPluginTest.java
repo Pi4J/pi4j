@@ -2,12 +2,12 @@ package com.pi4j.plugin.mock;
 
 import com.pi4j.context.Context;
 import com.pi4j.io.IO;
-import com.pi4j.io.gpio.digital.DigitalInputConfigBuilder;
-import com.pi4j.io.gpio.digital.DigitalOutputConfigBuilder;
-import com.pi4j.io.gpio.parallel.ParallelPortConfigBuilder;
-import com.pi4j.io.i2c.I2CConfigBuilder;
-import com.pi4j.io.pwm.PwmConfigBuilder;
-import com.pi4j.io.spi.SpiConfigBuilder;
+import com.pi4j.io.gpio.digital.DigitalInput;
+import com.pi4j.io.gpio.digital.DigitalOutput;
+import com.pi4j.io.gpio.parallel.ParallelPort;
+import com.pi4j.io.i2c.I2C;
+import com.pi4j.io.pwm.Pwm;
+import com.pi4j.io.spi.Spi;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ class MockPluginTest {
 
     @Test
     void canRecreateOutput() {
-        var config = DigitalOutputConfigBuilder.newInstance()
+        var config = DigitalOutput.newConfigBuilder()
             .bcm(1)
             .build();
 
@@ -35,7 +35,7 @@ class MockPluginTest {
 
     @Test
     void canRecreatePwmDevice() {
-        var config = PwmConfigBuilder.newInstance(pi4j)
+        var config = Pwm.newConfigBuilder()
             .chip(0)
             .channel(0)
             .build();
@@ -52,7 +52,7 @@ class MockPluginTest {
 
     @Test
     void canRecreateDevice() {
-        var config = SpiConfigBuilder.newInstance()
+        var config = Spi.newConfigBuilder()
             .bus(0)
             .channel(0)
             .build();
@@ -76,12 +76,12 @@ class MockPluginTest {
         var closedDevices = new ArrayList<IO<?>>();
         var mockContext = new MockContext(closedDevices::add);
 
-        var digitalInput = mockContext.create(DigitalInputConfigBuilder.newInstance().id("din").bcm(1).build());
-        var digitalOutput = mockContext.create(DigitalOutputConfigBuilder.newInstance().id("dout").bcm(2).build());
-        var parallelPort = mockContext.create(ParallelPortConfigBuilder.newInstance().id("pp").bcm(3).bcm(4).build());
-        var pwm = mockContext.create(PwmConfigBuilder.newInstance().id("pwm").chip(0).channel(0).build());
-        var i2c = mockContext.create(I2CConfigBuilder.newInstance().id("i2c").bus(1).device(0x10).build());
-        var spi = mockContext.create(SpiConfigBuilder.newInstance().id("spi").bus(0).channel(0).build());
+        var digitalInput = mockContext.create(DigitalInput.newConfigBuilder().id("din").bcm(1).build());
+        var digitalOutput = mockContext.create(DigitalOutput.newConfigBuilder().id("dout").bcm(2).build());
+        var parallelPort = mockContext.create(ParallelPort.newConfigBuilder().id("pp").bcm(3).bcm(4).build());
+        var pwm = mockContext.create(Pwm.newConfigBuilder().id("pwm").chip(0).channel(0).build());
+        var i2c = mockContext.create(I2C.newConfigBuilder().id("i2c").bus(1).device(0x10).build());
+        var spi = mockContext.create(Spi.newConfigBuilder().id("spi").bus(0).channel(0).build());
 
         digitalInput.close();
         digitalOutput.close();

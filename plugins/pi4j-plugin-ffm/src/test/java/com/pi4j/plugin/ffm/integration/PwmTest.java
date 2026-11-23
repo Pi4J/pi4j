@@ -4,7 +4,6 @@ import com.pi4j.Pi4J;
 import com.pi4j.context.Context;
 import com.pi4j.context.ContextBuilder;
 import com.pi4j.io.pwm.Pwm;
-import com.pi4j.io.pwm.PwmConfigBuilder;
 import com.pi4j.io.pwm.PwmType;
 import com.pi4j.plugin.BaseSetup;
 import com.pi4j.plugin.ffm.FFMContext;
@@ -33,7 +32,7 @@ public class PwmTest extends BaseSetup {
         setup("pwm");
 
         pi4j = new FFMContext();
-        pwm = pi4j.create(PwmConfigBuilder.newInstance(pi4j)
+        pwm = pi4j.create(Pwm.newConfigBuilder()
             .pwmType(PwmType.HARDWARE)
             .chip(findMockPwmChip())
             .channel(0)
